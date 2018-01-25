@@ -25,17 +25,31 @@ gem 'puma', '~> 3.7'
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
+# API Handling
+gem 'jsonapi-resources'                                             # JSON API Resource handling
+gem 'jsonapi-authorization'                                         # Authz for JSON API
+
+# i18n
+gem 'tzinfo-data'                                                   # Timezone info for different OSs
+
+# Testing & Debugging
+gem 'pry-rails'
+gem 'terminal-table'
+
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+    # cli debugger
+  gem 'awesome_print'
+  gem 'colorize'
+  gem 'pry-byebug'                                                  # Debugger
+
+  gem 'brakeman', require: false                                    # Static security tests
+  gem 'bullet'                                                      # Detect N+1 queries
+  gem 'rubocop', '~> 0.52.1', require: false                        # Static code checks
+  gem 'rubocop-rspec', '~> 1.22.1', require: false                  # Rubocop for Rspec
 end
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem 'spring'
+  gem 'spring'                                                      # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]

@@ -1,24 +1,43 @@
-# README
+# HQ Trust Core API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Setup
 
-Things you may want to cover:
+### Prerequisites
+* A running Docker environment
 
-* Ruby version
+### Install
+After cloning the project locally, run
+```
+docker-compose build
+```
 
-* System dependencies
+### Develop
+To run the server locally, run
+```
+docker-compose up
+```
 
-* Configuration
+In case the database needs to be migrated, run
+```
+docker-compose run api rake db:migrate
+```
 
-* Database creation
+To reset the database, run
+```
+docker-compose run api rake db:drop db:create db:migrate
+```
 
-* Database initialization
+To debug, add `binding.pry` to the code to add a breakpoint at that line.
 
-* How to run the test suite
+## Stack
 
-* Services (job queues, cache servers, search engines, etc.)
+### API
 
-* Deployment instructions
+#### Specification
+The API follows the [JSON API](http://jsonapi.org/) specification. It is implemented using [JSONAPI::Resources](http://jsonapi-resources.com/). An example project for JSONAPI::Resource can be found [here](https://github.com/cerebris/peeps).
 
-* ...
+#### Authentication
+
+
+#### Authorization
+Authorization is handled by [JSONAPI::Authorization](https://github.com/venuu/jsonapi-authorization).

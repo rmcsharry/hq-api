@@ -1,13 +1,18 @@
 version: '3'
 services:
   db:
-    image: postgres
-  app:
+    image: 'postgres:9.6-alpine'
+    environment:
+      POSTGRES_USER: 'hqtrust_core_api'
+      POSTGRES_PASSWORD: '86RRfQkPw93NYDyX'
+    ports:
+      - '5432:5432'
+  api:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0'"
+    command: sh -c 'rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0''
     volumes:
       - .:/app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - db
