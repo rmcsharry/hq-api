@@ -1,3 +1,2 @@
-class ApplicationController < ActionController::API
-  include JSONAPI::ActsAsResourceController
+class ApplicationController < JSONAPI::ResourceController
 end
