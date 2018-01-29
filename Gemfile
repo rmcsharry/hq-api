@@ -37,11 +37,11 @@ gem 'terminal-table'
 group :development, :test do
     # cli debugger
   gem 'awesome_print'
-  gem 'colorize'
-  gem 'pry-byebug'                                                  # Debugger
-
   gem 'brakeman', require: false                                    # Static security tests
   gem 'bullet'                                                      # Detect N+1 queries
+  gem 'colorize'
+  gem 'pry-byebug'                                                  # Debugger
+  gem 'rspec-rails', '~> 3.7'                                       # Run RSpec tests
   gem 'rubocop', '~> 0.52.1', require: false                        # Static code checks
   gem 'rubocop-rspec', '~> 1.22.1', require: false                  # Rubocop for Rspec
 end
