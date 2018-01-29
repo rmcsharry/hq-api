@@ -16,3 +16,4 @@
 .byebug_history
 *.aes
 *.env
+config/kubernetes_config.yml
