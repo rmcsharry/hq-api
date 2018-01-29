@@ -1,3 +1,4 @@
+# Defines the Contact model
 class Contact < ApplicationRecord
   has_many :addresses
 

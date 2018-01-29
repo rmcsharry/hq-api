@@ -1,10 +1,10 @@
+# rubocop:disable Metrics/LineLength
 source 'https://rubygems.org'
 
 git_source(:github) do |repo_name|
-  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
+  repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?('/')
   "https://github.com/#{repo_name}.git"
 end
-
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.1.4'
@@ -23,19 +23,19 @@ gem 'puma', '~> 3.7'
 # gem 'capistrano-rails', group: :development
 
 # API Handling
-gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem 'jsonapi-resources'                                             # JSON API Resource handling
 gem 'jsonapi-authorization'                                         # Authz for JSON API
+gem 'jsonapi-resources'                                             # JSON API Resource handling
+gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # i18n
-gem 'tzinfo-data'                                                   # Timezone info for different OSs
+gem 'tzinfo-data' # Timezone info for different OSs
 
 # Testing & Debugging
 gem 'pry-rails'
 gem 'terminal-table'
 
 group :development, :test do
-    # cli debugger
+  # cli debugger
   gem 'awesome_print'
   gem 'brakeman', require: false                                    # Static security tests
   gem 'bullet'                                                      # Detect N+1 queries
@@ -51,3 +51,4 @@ group :development do
   gem 'spring'                                                      # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
+# rubocop:enable Metrics/LineLength

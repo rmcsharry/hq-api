@@ -1,6 +1,9 @@
 - name: Run tests
   service: app
   command: rspec
+- name: Run Rubocop
+  service: app
+  command: rubocop
 - name: Push to AWS ECR
   tag: ^master$
   service: app
