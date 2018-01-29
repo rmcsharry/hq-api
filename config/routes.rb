@@ -3,4 +3,6 @@ Rails.application.routes.draw do
     jsonapi_resources :contacts
     jsonapi_resources :addresses
   end
+
+  get 'health', to: proc { [200, {}, ['']] }
 end
