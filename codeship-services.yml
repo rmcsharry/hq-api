@@ -14,3 +14,4 @@ kubectl_deployment:
   dockercfg_service: dockercfg_generator
   environment:
     - SERVICE_NAME=hqtrust-core-api
+    - DEPLOYMENT_NAME=hqtrust-core-api-deployment
