@@ -11,7 +11,7 @@ dockercfg-generator:
 kubectl-deployment:
   image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/kubectl-deployment
   encrypted_env_file: deployment-k8s.env.encrypted
-  dockercfg_service: dockercfg_generator
+  dockercfg_service: dockercfg-generator
   environment:
     - SERVICE_NAME=hqtrust-core-api
     - DEPLOYMENT_NAME=hqtrust-core-api-deployment
