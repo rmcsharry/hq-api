@@ -2,13 +2,13 @@ app:
   build:
     image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
     dockerfile_path: Dockerfile
-dockercfg_generator:
+dockercfg-generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: deployment-ecr.env.encrypted
   environment:
     - AWS_REGION=eu-central-1
-kubectl_deployment:
+kubectl-deployment:
   image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/kubectl-deployment
   encrypted_env_file: deployment-k8s.env.encrypted
   dockercfg_service: dockercfg_generator
