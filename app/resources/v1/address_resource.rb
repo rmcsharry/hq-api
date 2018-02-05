@@ -4,6 +4,6 @@ module V1
     attributes :street, :house_number, :postal_code, :city, :country, :addition
     relationship :contact, to: :one
 
-    filter :contact
+    filter :contact_id
   end
 end
