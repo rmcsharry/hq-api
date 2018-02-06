@@ -10,7 +10,9 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins 'localhost:3001', 'app-dev.hqtrust-dev.sherpasdv.de', 'app.dev.hqfinanz.de'
 
     resource '*',
-             headers: :any,
-             methods: %i[get post put patch delete options head]
+             headers: %w[Authorization],
+             methods: %i[get post put patch delete options head],
+             expose: %w[Authorization],
+             max_age: 600
   end
 end

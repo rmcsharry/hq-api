@@ -1,12 +1,14 @@
-- name: Run tests
-  service: app
-  command: rspec
-- name: Run Rubocop
-  service: app
-  command: rubocop
+- type: parallel
+  steps:
+  - name: Run tests
+    service: api
+    command: bin/ci rspec
+  - name: Run Rubocop
+    service: api
+    command: rubocop
 - name: Push to AWS ECR
   tag: ^master$
-  service: app
+  service: api
   type: push
   image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
   image_tag: "commit-{{.CommitID}}"

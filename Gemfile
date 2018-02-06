@@ -19,8 +19,10 @@ gem 'puma', '~> 3.7'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use Capistrano for deployment
-# gem 'capistrano-rails', group: :development
+# Authentication
+gem 'devise'                                                        # Authentication
+gem 'devise-jwt', '~> 0.5.5'                                        # Authn with JWT for devise
+gem 'devise_invitable'                                              # Invitation management for users based on devise
 
 # API Handling
 gem 'jsonapi-authorization'                                         # Authz for JSON API

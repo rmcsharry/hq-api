@@ -1,7 +1,15 @@
-app:
+api:
   build:
     image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
     dockerfile_path: Dockerfile
+  depends_on:
+    - db
+  cached: true
+db:
+  image: healthcheck/postgres:alpine
+  environment:
+    POSTGRES_USER: hqtrust_core_api
+    POSTGRES_DB: 86RRfQkPw93NYDyX
 dockercfg-generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
