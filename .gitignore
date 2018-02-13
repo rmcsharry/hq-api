@@ -23,3 +23,4 @@ config/kubernetes_config_cert_manager.yml
 config/kubernetes_config_tiller_role.yml
 config/kubernetes_config_ingress_aws.yml
 config/kubernetes_config_ingress_setup.yml
+config/kubernetes_config_codeship_role.yml
