@@ -21,3 +21,5 @@ config/kubernetes_config_admin_user.yml
 config/kubernetes_config_cert_creation.yml
 config/kubernetes_config_cert_manager.yml
 config/kubernetes_config_tiller_role.yml
+config/kubernetes_config_ingress_aws.yml
+config/kubernetes_config_ingress_setup.yml
