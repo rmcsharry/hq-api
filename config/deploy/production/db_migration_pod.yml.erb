@@ -13,24 +13,24 @@ spec:
   restartPolicy: Never
   containers:
     - name: hqtrust-core-api
-        image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
-        imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "rake db:migrate"]
-        env:
-          - name: RAILS_ENV
-            value: "production"
-          - name: DATABASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: hqtrust-core-api-secrets
-                key: database-url
-          - name: SECRET_KEY_BASE
-            valueFrom:
-              secretKeyRef:
-                name: hqtrust-core-api-secrets
-                key: secret-key-base
-          - name: DEVISE_JWT_SECRET_KEY
-            valueFrom:
-              secretKeyRef:
-                name: hqtrust-core-api-secrets
-                key: devise-jwt-secret-key
+      image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
+      imagePullPolicy: IfNotPresent
+      command: ["sh", "-c", "rake db:migrate"]
+      env:
+        - name: RAILS_ENV
+          value: "production"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: hqtrust-core-api-secrets
+              key: database-url
+        - name: SECRET_KEY_BASE
+          valueFrom:
+            secretKeyRef:
+              name: hqtrust-core-api-secrets
+              key: secret-key-base
+        - name: DEVISE_JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hqtrust-core-api-secrets
+              key: devise-jwt-secret-key
