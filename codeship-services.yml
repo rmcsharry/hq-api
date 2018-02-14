@@ -11,7 +11,7 @@ deploy:
   encrypted_env_file: deployment-k8s.env.encrypted
   environment:
     - KUBECONFIG=/config/.kube/config
-    - NAMESPACE=hqtrust
+    - NAMESPACE=hqtrust-core-api
     - CLUSTER_USER=codeship
 db:
   image: healthcheck/postgres:alpine
