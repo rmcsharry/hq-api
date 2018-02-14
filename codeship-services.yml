@@ -8,6 +8,10 @@ api:
 deploy:
   build:
     dockerfile_path: Dockerfile-deploy
+  encrypted_env_file: deployment-k8s.env.encrypted
+  environment:
+    - SERVICE_NAME=hqtrust-core-api
+    - DEPLOYMENT_NAME=hqtrust-core-api-deployment
 db:
   image: healthcheck/postgres:alpine
   environment:

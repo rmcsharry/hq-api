@@ -9,5 +9,5 @@ kubectl config current-context
 echo "Listing pods"
 kubectl get deployments --insecure-skip-tls-verify=true
 echo "Running 'kubectl set image deployments/$DEPLOYMENT_NAME $SERVICE_NAME=$IMAGE_URL:commit-$CI_COMMIT_ID'"
-$REVISION=$CI_COMMIT_ID $ENVIRONMENT=production kubernetes-deploy default $CLUSTER_NAME
+REVISION=$CI_COMMIT_ID ENVIRONMENT=production kubernetes-deploy default $CLUSTER_NAME
 echo "Finished kubernetes deployment"
