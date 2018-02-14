@@ -6,8 +6,5 @@ kubectl config set-credentials codeship --token=$KUBERNETES_BEARER_TOKEN
 kubectl config set-context $CLUSTER_NAME --cluster=$CLUSTER_NAME --user=codeship
 kubectl config use-context $CLUSTER_NAME
 kubectl config current-context
-echo "Listing pods"
-kubectl get deployments --insecure-skip-tls-verify=true
-echo "Running 'kubectl set image deployments/$DEPLOYMENT_NAME $SERVICE_NAME=$IMAGE_URL:commit-$CI_COMMIT_ID'"
+echo "Deploying commit-$CI_COMMIT_ID"
 REVISION=$CI_COMMIT_ID ENVIRONMENT=production kubernetes-deploy default $CLUSTER_NAME
-echo "Finished kubernetes deployment"

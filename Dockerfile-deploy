@@ -5,7 +5,7 @@ RUN apk update && apk add build-base
 # Install kubectl
 # Note: Latest version may be found on:
 # https://aur.archlinux.org/packages/kubectl-bin/
-ADD https://storage.googleapis.com/kubernetes-release/release/v1.6.4/bin/linux/amd64/kubectl /usr/local/bin/kubectl
+ADD https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kubectl /usr/local/bin/kubectl
 
 ENV HOME=/config
 
@@ -24,11 +24,11 @@ RUN gem install kubernetes-deploy
 # Clean up
 RUN apk del build-base
 
-RUN mkdir -p /app/config/deploy
-WORKDIR /app
-COPY bin/deploy bin/deploy
-RUN chmod +x bin/deploy
-COPY config/deploy config/deploy
+COPY bin/deploy /bin/deploy
+RUN chmod +x /bin/deploy
+
+RUN mkdir /config/deploy
+COPY ./config/deploy/ /config/deploy/
 
 USER kubectl
 
