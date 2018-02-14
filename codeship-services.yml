@@ -20,7 +20,7 @@ db:
   environment:
     POSTGRES_USER: hqtrust_core_api
     POSTGRES_DB: 86RRfQkPw93NYDyX
-dockercfg-generator:
+dockercfg_generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: deployment-ecr.env.encrypted
