@@ -30,5 +30,6 @@ RUN apk del build-base
 USER kubectl
 
 COPY . /app/config/deploy
+COPY . /bin/deploy
 
-ENTRYPOINT ["/deploy.sh"]
+ENTRYPOINT ["bin/deploy"]
