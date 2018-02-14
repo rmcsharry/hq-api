@@ -16,5 +16,5 @@
   dockercfg_service: dockercfg-generator
 - name: Deploy to Kubernetes cluster
   tag: ^master$
-  service: kubectl-deployment
-  command: deploy.sh
+  service: deploy
+  command: bin/deploy

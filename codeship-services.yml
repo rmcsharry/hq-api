@@ -5,6 +5,9 @@ api:
   depends_on:
     - db
   cached: true
+deploy:
+  build:
+    dockerfile_path: Dockerfile-deploy
 db:
   image: healthcheck/postgres:alpine
   environment:

@@ -1,0 +1,51 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hqtrust-core-api-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hqtrust-core-api
+    spec:
+      containers:
+      - name: hqtrust-core-api
+        image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= deployment_id %>
+        ports:
+          - containerPort: 3000
+            name: api-http
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          failureThreshold: 5
+        env:
+          - name: RAILS_ENV
+            value: "production"
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: database-url
+          - name: SECRET_KEY_BASE
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: secret-key-base
+          - name: DEVISE_JWT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: devise-jwt-secret-key
