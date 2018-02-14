@@ -12,7 +12,7 @@ deploy:
   environment:
     - SERVICE_NAME=hqtrust-core-api
     - DEPLOYMENT_NAME=hqtrust-core-api-deployment
-    - KUBECONFIG=~/.kube/config
+    - KUBECONFIG=/config/.kube/config
 db:
   image: healthcheck/postgres:alpine
   environment:
