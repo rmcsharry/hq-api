@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: hqtrust-core-api
-        image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= deployment_id %>
+        image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
         ports:
           - containerPort: 3000
             name: api-http
