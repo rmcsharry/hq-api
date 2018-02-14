@@ -50,3 +50,38 @@ spec:
               secretKeyRef:
                 name: hqtrust-core-api-secrets
                 key: devise-jwt-secret-key
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: hqtrust-core-api-service
+  namespace: hqtrust-core-api
+spec:
+  selector:
+    app: hqtrust-core-api
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: api-http
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hqtrust-core-api-ingress
+  namespace: hqtrust-core-api
+  annotations:
+    ingress.kubernetes.io/secure-backends: "true"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: "api-core.dev.hqfinanz.de"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: hqtrust-core-api-service
+              servicePort: 3000
+  
