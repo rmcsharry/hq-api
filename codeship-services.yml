@@ -26,3 +26,10 @@ dockercfg-generator:
   encrypted_env_file: deployment-ecr.env.encrypted
   environment:
     - AWS_REGION=eu-central-1
+kubectl-deployment:
+  image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/kubectl-deployment
+  encrypted_env_file: deployment-k8s.env.encrypted
+  dockercfg_service: dockercfg-generator
+  environment:
+    - SERVICE_NAME=hqtrust-core-api
+    - DEPLOYMENT_NAME=hqtrust-core-api-deployment
