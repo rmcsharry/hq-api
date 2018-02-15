@@ -36,8 +36,10 @@ gem 'tzinfo-data' # Timezone info for different OSs
 gem 'pry-rails'
 gem 'terminal-table'
 
+# Logging & Issue Management
+gem 'sentry-raven'                                                  # Issue Management with Sentry
+
 group :development, :test do
-  # cli debugger
   gem 'awesome_print'
   gem 'brakeman', require: false                                    # Static security tests
   gem 'bullet'                                                      # Detect N+1 queries
