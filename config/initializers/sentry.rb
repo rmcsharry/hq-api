@@ -1,6 +1,8 @@
 if Rails.application.secrets.sentry_dsn
   Raven.configure do |config|
     config.sanitize_fields = Rails.application.config.filter_parameters.map(&:to_s)
+    p Rails.application.secrets.sentry_dsn
+    p Rails.application.secrets.sentry_dsn.class
     uri = URI.parse(Rails.application.secrets.sentry_dsn)
     p uri
     uri_path = uri.path.split('/')
