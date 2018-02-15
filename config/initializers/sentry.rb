@@ -1,12 +1,10 @@
-if Rails.application.secrets.sentry_dsn
+if Rails.application.secrets.sentry_dsn.present?
   Raven.configure do |config|
-    config.sanitize_fields = Rails.application.config.filter_parameters.map(&:to_s)
     p Rails.application.secrets.sentry_dsn
     p Rails.application.secrets.sentry_dsn.class
     uri = URI.parse(Rails.application.secrets.sentry_dsn)
     p uri
-    uri_path = uri.path.split('/')
-    p uri_path
     config.dsn = Rails.application.secrets.sentry_dsn
+    config.sanitize_fields = Rails.application.config.filter_parameters.map(&:to_s)
   end
 end
