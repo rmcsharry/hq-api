@@ -1,3 +1,5 @@
+require 'le'
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -76,6 +78,8 @@ Rails.application.configure do
     logger.formatter = config.log_formatter
     config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
+
+  config.logger = Le.new(Rails.application.secrets.logentries_token, 'eu', ssl: true, local: true, tag: true)
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false

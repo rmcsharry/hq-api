@@ -37,6 +37,7 @@ gem 'pry-rails'
 gem 'terminal-table'
 
 # Logging & Issue Management
+gem 'r7insight'                                                     # Logging with Logentries (Rapid7 Insight)
 gem 'sentry-raven'                                                  # Issue Management with Sentry
 
 group :development, :test do

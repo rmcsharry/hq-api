@@ -50,6 +50,16 @@ spec:
               secretKeyRef:
                 name: hqtrust-core-api-secrets
                 key: devise-jwt-secret-key
+          - name: SENTRY_DSN
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: sentry-dsn
+          - name: LOGENTRIES_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: logentries-token
 ---
 kind: Service
 apiVersion: v1
