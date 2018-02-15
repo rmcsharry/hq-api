@@ -7,4 +7,5 @@ kubectl config set-context $CLUSTER_NAME --cluster=$CLUSTER_NAME --user=$CLUSTER
 kubectl config use-context $CLUSTER_NAME
 kubectl config current-context
 echo "Deploying commit-$CI_COMMIT_ID"
-REVISION=$CI_COMMIT_ID ENVIRONMENT=production kubernetes-deploy $NAMESPACE $CLUSTER_NAME
+REVISION=$CI_COMMIT_ID ENVIRONMENT=production kubernetes-deploy $NAMESPACE $CLUSTER_NAME \
+  --bindings=whitelisted_ips=$WHITELISTED_IPS
