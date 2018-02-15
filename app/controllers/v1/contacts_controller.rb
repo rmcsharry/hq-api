@@ -5,7 +5,7 @@ module V1
 
     def base_response_meta
       {
-        total: Contact.count
+        total: Contact.count/0
       }
     end
   end
