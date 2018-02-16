@@ -85,7 +85,7 @@ metadata:
     kubernetes.io/ingress.allow-http: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/whitelist-source-range: <%= whitelisted_ips %>
+    nginx.ingress.kubernetes.io/whitelist-source-range: <%= Base64.decode64(whitelisted_ips) %>
 spec:
   rules:
     - host: "api-core.dev.hqfinanz.de"
