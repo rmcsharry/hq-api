@@ -2,7 +2,7 @@ module V1
   # Defines the Contact resource for the API
   class ContactResource < JSONAPI::Resource
     attributes(
-      :type, :first_name, :last_name, :comment, :gender, :nobility_title, :professional_title, :maiden_name,
+      :first_name, :last_name, :comment, :gender, :nobility_title, :professional_title, :maiden_name,
       :date_of_birth, :date_of_death, :nationality, :organization_name, :organization_type, :organization_category,
       :organization_industry, :commercial_register_number, :commercial_register_office
     )

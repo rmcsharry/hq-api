@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180220165330) do
+ActiveRecord::Schema.define(version: 20180221160127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,6 +76,27 @@ ActiveRecord::Schema.define(version: 20180220165330) do
     t.index ["tax_detail_id"], name: "index_foreign_tax_numbers_on_tax_detail_id"
   end
 
+  create_table "mandates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "state"
+    t.string "category"
+    t.text "comment"
+    t.string "valid_from"
+    t.string "valid_to"
+    t.string "datev_creditor_id"
+    t.string "datev_debitor_id"
+    t.string "psplus_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "primary_consultant_id"
+    t.uuid "secondary_consultant_id"
+    t.uuid "assistant_id"
+    t.uuid "bookkeeper_id"
+    t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
+    t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
+    t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"
+    t.index ["secondary_consultant_id"], name: "index_mandates_on_secondary_consultant_id"
+  end
+
   create_table "tax_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "de_tax_number"
     t.string "de_tax_id"
@@ -139,5 +160,9 @@ ActiveRecord::Schema.define(version: 20180220165330) do
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
+  add_foreign_key "mandates", "contacts", column: "assistant_id"
+  add_foreign_key "mandates", "contacts", column: "bookkeeper_id"
+  add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
+  add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
   add_foreign_key "tax_details", "contacts"
 end

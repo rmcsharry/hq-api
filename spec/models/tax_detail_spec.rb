@@ -1,21 +1,33 @@
 # == Schema Information
 #
-# Table name: foreign_tax_numbers
+# Table name: tax_details
 #
-#  id            :uuid             not null, primary key
-#  tax_number    :string
-#  country       :string
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  tax_detail_id :uuid
+#  id                        :uuid             not null, primary key
+#  de_tax_number             :string
+#  de_tax_id                 :string
+#  de_tax_office             :string
+#  de_retirement_insurance   :boolean          default(FALSE), not null
+#  de_unemployment_insurance :boolean          default(FALSE), not null
+#  de_health_insurance       :boolean          default(FALSE), not null
+#  de_church_tax             :boolean          default(FALSE), not null
+#  us_tax_number             :string
+#  us_tax_form               :string
+#  us_fatca_status           :string
+#  common_reporting_standard :boolean          default(FALSE), not null
+#  eu_vat_number             :string
+#  legal_entity_identifier   :string
+#  transparency_register     :boolean          default(FALSE), not null
+#  created_at                :datetime         not null
+#  updated_at                :datetime         not null
+#  contact_id                :uuid
 #
 # Indexes
 #
-#  index_foreign_tax_numbers_on_tax_detail_id  (tax_detail_id)
+#  index_tax_details_on_contact_id  (contact_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (tax_detail_id => tax_details.id)
+#  fk_rails_...  (contact_id => contacts.id)
 #
 
 require 'rails_helper'
