@@ -3,7 +3,7 @@
 # Table name: addresses
 #
 #  id           :uuid             not null, primary key
-#  contact_id   :integer
+#  contact_id   :uuid
 #  street       :string
 #  house_number :string
 #  postal_code  :string

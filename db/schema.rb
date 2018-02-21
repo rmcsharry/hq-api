@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(version: 20180221160127) do
   enable_extension "pgcrypto"
 
   create_table "addresses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.integer "contact_id"
+    t.uuid "contact_id"
     t.string "street"
     t.string "house_number"
     t.string "postal_code"
