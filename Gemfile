@@ -29,8 +29,12 @@ gem 'jsonapi-authorization'                                         # Authz for 
 gem 'jsonapi-resources'                                             # JSON API Resource handling
 gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
-# i18n
-gem 'tzinfo-data' # Timezone info for different OSs
+# i18n & Business Logic
+gem 'carmen'                                                        # A repository of geographic regions for Ruby
+gem 'enumerize'                                                     # Advanced Enum handling
+gem 'steuernummer'                                                  # Validates German tax numbers
+gem 'tzinfo-data'                                                   # Timezone info for different OSs
+gem 'valvat'                                                        # Validates European VAT numbers
 
 # Testing & Debugging
 gem 'pry-rails'
@@ -45,6 +49,7 @@ group :development, :test do
   gem 'brakeman', require: false                                    # Static security tests
   gem 'bullet'                                                      # Detect N+1 queries
   gem 'colorize'
+  gem 'factory_bot_rails'                                           # Factory for testing objects
   gem 'pry-byebug'                                                  # Debugger
   gem 'rspec-rails', '~> 3.7'                                       # Run RSpec tests
   gem 'rubocop', '~> 0.52.1', require: false                        # Static code checks
@@ -52,8 +57,14 @@ group :development, :test do
 end
 
 group :development do
+  gem 'annotate'                                                    # Use Annotate to add database schema to models
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'spring'                                                      # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'
+end
+
+group :test do
+  gem 'database_cleaner'                                            # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
+  gem 'shoulda-matchers', require: false                            # Collection of testing matchers extracted from Shoulda
 end
 # rubocop:enable Metrics/LineLength

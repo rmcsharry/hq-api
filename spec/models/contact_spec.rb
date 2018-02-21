@@ -36,17 +36,26 @@
 #  fk_rails_...  (primary_contact_address_id => addresses.id)
 #
 
-# Defines the Contact model
-class Contact < ApplicationRecord
-  has_many :addresses
-  has_one :compliance_detail
-  has_one :tax_detail
-  belongs_to :legal_address, class_name: 'Address', optional: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true
+require 'rails_helper'
 
-  # Returns boolean to define whether the contact is an organization or not
-  # @return [Boolean] generaly false, overwritte in subclass
-  def organization?
-    false
+RSpec.describe Contact, type: :model do
+  describe '#addresses' do
+    it { is_expected.to have_many(:addresses) }
+  end
+
+  describe '#compliance_detail' do
+    it { is_expected.to have_one(:compliance_detail) }
+  end
+
+  describe '#tax_detail' do
+    it { is_expected.to have_one(:tax_detail) }
+  end
+
+  describe '#legal_address' do
+    it { is_expected.to belong_to(:legal_address) }
+  end
+
+  describe '#primary_contact_address' do
+    it { is_expected.to belong_to(:primary_contact_address) }
   end
 end

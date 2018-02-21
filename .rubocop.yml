@@ -4,3 +4,9 @@ Metrics/LineLength:
 AllCops:
   Exclude:
     - 'db/**/*.rb'
+
+Metrics/BlockLength:
+  CountComments: false
+  Max: 25
+  Exclude:
+    - 'spec/**/*.rb'

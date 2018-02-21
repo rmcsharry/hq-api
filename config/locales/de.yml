@@ -1,0 +1,82 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at http://guides.rubyonrails.org/i18n.html.
+
+de:
+  enumerize:
+    contact:
+      gender:
+        male: "Herr"
+        female: "Frau"
+      nobility_title:
+        baron: "Freiherr"
+        baroness: "Freiherrin"
+        count: "Graf"
+        countess: "Gräfin"
+      professional_title:
+        doctor: "Dr."
+        professor: "Prof."
+        professor_doctor: "Prof. Dr."
+      organziation_type:
+        gmbh: "GmbH"
+        ag: "AG"
+        foreign_ag: "ausländische AG (z.B. S.A.)"
+        lp: "LP"
+        gmbh_co_kg: "GmbH & Co KG (GmbH & Cie KG)"
+        gbr: "GbR"
+        limited: "Limited (Ltd.)"
+        llc: "LLC"
+        vvag: "VVaG"
+        ev: "e. V."
+    tax_detail:
+      wphg_classification:
+        none: "keine Angabe"
+        private: "Privatkunde"
+        born_professional: "Geborener professioneller Kunde"
+        chosen_professional: "Gekorener professioneller Kunde"
+        suitable_counterparty: "Geeignete Gegenpartei"
+      kagb_classification:
+        none: "keine Angabe"
+        private: "Privatanleger"
+        semi_professional: "Semiprofessioneller Anleger"
+        professional: "Professioneller Anleger"
+      us_tax_form:
+        w_8ben: "W-8BEN"
+        w_8ben_e: "W-8BEN-E"
+        w_8imy: "W-8IMY"
+        w_8eci: "W-8ECI"
+        w_8exp: "W-8EXP"
+      us_fatca_status:
+        participation_ffi: "Participating FFI"
+        reporting_ffi: "Reporting FFI"
+        nonreporting_ffi: "Nonreporting FFI"
+        owner_documented_ffi: "Owner-documented FFI"
+        active_nffe: "Active NFFE"
+        passive_nffe: "Passive NFFE"

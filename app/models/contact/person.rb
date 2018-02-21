@@ -36,17 +36,26 @@
 #  fk_rails_...  (primary_contact_address_id => addresses.id)
 #
 
-# Defines the Contact model
-class Contact < ApplicationRecord
-  has_many :addresses
-  has_one :compliance_detail
-  has_one :tax_detail
-  belongs_to :legal_address, class_name: 'Address', optional: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true
+class Contact
+  # Defines the Contact model for natural persons
+  class Person < Contact
+    extend Enumerize
 
-  # Returns boolean to define whether the contact is an organization or not
-  # @return [Boolean] generaly false, overwritte in subclass
-  def organization?
-    false
+    validates :first_name, presence: true
+    validates :last_name, presence: true
+    validates :gender, presence: true
+    validates :date_of_birth, presence: true, if: :date_of_death
+
+    validate :date_of_death_greater_or_equal_date_of_birth
+
+    enumerize :gender, in: %i[male female], scope: true
+    enumerize :nobility_title, in: %i[baron baroness count countess], scope: true
+    enumerize :professional_title, in: %i[doctor professor professor_doctor], scope: true
+    enumerize :nationality, in: Address::COUNTRIES
+
+    def date_of_death_greater_or_equal_date_of_birth
+      return if date_of_death.blank? || date_of_death >= date_of_birth
+      errors.add(:date_of_death, "can't be before the date of birth")
+    end
   end
 end

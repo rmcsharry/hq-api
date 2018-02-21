@@ -1,0 +1,120 @@
+# == Schema Information
+#
+# Table name: foreign_tax_numbers
+#
+#  id            :uuid             not null, primary key
+#  tax_number    :string
+#  country       :string
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  tax_detail_id :uuid
+#
+# Indexes
+#
+#  index_foreign_tax_numbers_on_tax_detail_id  (tax_detail_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (tax_detail_id => tax_details.id)
+#
+
+require 'rails_helper'
+
+RSpec.describe TaxDetail, type: :model do
+  subject { build(:tax_detail, contact: contact) }
+  let(:contact) { build(:contact_person) }
+
+  it { is_expected.to have_many(:foreign_tax_numbers) }
+  it { is_expected.to validate_presence_of(:common_reporting_standard) }
+  it { is_expected.to enumerize(:us_tax_form) }
+  it { is_expected.to enumerize(:us_fatca_status) }
+
+  describe '#contact' do
+    it { is_expected.to validate_presence_of(:contact) }
+    it { is_expected.to belong_to(:contact) }
+  end
+
+  describe '#de_tax_number' do
+    let(:valid_tax_numbers) do
+      ['93815/08152', '2893081508152', '181/815/08155', '9181081508155', '21/815/08150', '1121081508150']
+    end
+    let(:invalid_tax_numbers) { %w[ABC 123456789 0] }
+
+    it 'validates vat format' do
+      expect(subject).to allow_values(*valid_tax_numbers).for(:de_tax_number)
+      expect(subject).not_to allow_values(*invalid_tax_numbers).for(:de_tax_number)
+    end
+  end
+
+  describe '#de_tax_id' do
+    let(:valid_tax_ids) { %w[12345678995 12345679998] }
+    # TODO: 12345678996 and 12345679998 should be invalid as well but checksum is currently not checked
+    let(:invalid_tax_ids) { %w[ABC 02345679999 0] }
+
+    it 'validates vat format' do
+      expect(subject).to allow_values(*valid_tax_ids).for(:de_tax_id)
+      expect(subject).not_to allow_values(*invalid_tax_ids).for(:de_tax_id)
+    end
+  end
+
+  describe '#eu_vat_number' do
+    context 'contact is person' do
+      let(:contact) { build(:contact_person) }
+
+      it 'does validate absence' do
+        expect(subject).to validate_absence_of(:eu_vat_number)
+      end
+    end
+
+    context 'contact is organization' do
+      let(:contact) { build(:contact_organization) }
+      let(:valid_vat_numbers) { %w[DE314892157 ATU99999999 CY99999999L DE999999999 FI99999999 NL999999999B99] }
+      let(:invalid_vat_number) { %w[ABC DE00000000 DE31489215 D3314892157 XX314892157 1234567890] }
+
+      it 'validates vat format' do
+        expect(subject).to allow_values(*valid_vat_numbers).for(:eu_vat_number)
+        expect(subject).not_to allow_values(*invalid_vat_number).for(:eu_vat_number)
+      end
+    end
+  end
+
+  describe 'insurances and church tax' do
+    context 'contact is person' do
+      let(:contact) { build(:contact_person) }
+
+      it 'validates presence' do
+        expect(subject).to validate_presence_of(:de_retirement_insurance)
+        expect(subject).to validate_presence_of(:de_unemployment_insurance)
+        expect(subject).to validate_presence_of(:de_health_insurance)
+        expect(subject).to validate_presence_of(:de_church_tax)
+      end
+    end
+
+    context 'contact is organization' do
+      let(:contact) { build(:contact_organization) }
+
+      it 'does not validate presence' do
+        expect(subject).not_to validate_presence_of(:de_retirement_insurance)
+        expect(subject).not_to validate_presence_of(:de_unemployment_insurance)
+        expect(subject).not_to validate_presence_of(:de_health_insurance)
+        expect(subject).not_to validate_presence_of(:de_church_tax)
+      end
+    end
+  end
+
+  describe '#legal_entity_identifier' do
+    let(:contact) { build(:contact_person) }
+
+    it 'validates absensce' do
+      expect(subject).to validate_absence_of(:legal_entity_identifier)
+    end
+  end
+
+  describe '#transparency_register' do
+    let(:contact) { build(:contact_person) }
+
+    it 'validates absensce' do
+      expect(subject).to validate_absence_of(:transparency_register)
+    end
+  end
+end

@@ -36,17 +36,39 @@
 #  fk_rails_...  (primary_contact_address_id => addresses.id)
 #
 
-# Defines the Contact model
-class Contact < ApplicationRecord
-  has_many :addresses
-  has_one :compliance_detail
-  has_one :tax_detail
-  belongs_to :legal_address, class_name: 'Address', optional: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true
+require 'rails_helper'
 
-  # Returns boolean to define whether the contact is an organization or not
-  # @return [Boolean] generaly false, overwritte in subclass
-  def organization?
-    false
+RSpec.describe Contact::Person, type: :model do
+  it { is_expected.to validate_presence_of(:first_name) }
+  it { is_expected.to validate_presence_of(:last_name) }
+  it { is_expected.to enumerize(:nobility_title) }
+  it { is_expected.to enumerize(:professional_title) }
+  it { is_expected.to enumerize(:nationality) }
+
+  describe '#gender' do
+    it { is_expected.to validate_presence_of(:gender) }
+    it { is_expected.to enumerize(:gender) }
+  end
+
+  describe '#date_of_death_greater_or_equal_date_of_birth' do
+    subject { build(:contact_person, date_of_birth: date_of_birth, date_of_death: date_of_death) }
+    let(:date_of_birth) { 5.days.ago }
+
+    context 'date of death before date of birth' do
+      let(:date_of_death) { date_of_birth - 1.day }
+
+      it 'is invalid' do
+        expect(subject).not_to be_valid
+        expect(subject.errors.messages[:date_of_death]).to include("can't be before the date of birth")
+      end
+    end
+
+    context 'date of death before date of birth' do
+      let(:date_of_death) { date_of_birth + 1.day }
+
+      it 'is invalid' do
+        expect(subject).to be_valid
+      end
+    end
   end
 end

@@ -36,17 +36,31 @@
 #  fk_rails_...  (primary_contact_address_id => addresses.id)
 #
 
-# Defines the Contact model
-class Contact < ApplicationRecord
-  has_many :addresses
-  has_one :compliance_detail
-  has_one :tax_detail
-  belongs_to :legal_address, class_name: 'Address', optional: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true
+require 'rails_helper'
 
-  # Returns boolean to define whether the contact is an organization or not
-  # @return [Boolean] generaly false, overwritte in subclass
-  def organization?
-    false
+RSpec.describe Contact::Organization, type: :model do
+  it { is_expected.to validate_presence_of(:organization_name) }
+
+  it { is_expected.to enumerize(:organization_type) }
+  it { is_expected.to validate_presence_of(:organization_type) }
+
+  describe '#commercial_register_office' do
+    context 'commercial_register_number is present' do
+      subject { build(:contact_organization, commercial_register_number: 'HRB 123456 B') }
+
+      it 'validates presence' do
+        expect(subject).to validate_presence_of(:commercial_register_office)
+      end
+    end
+  end
+
+  describe '#commercial_register_number' do
+    context 'commercial_register_office is present' do
+      subject { build(:contact_organization, commercial_register_office: 'Amtsgericht Berlin-Charlottenburg') }
+
+      it 'validates presence' do
+        expect(subject).to validate_presence_of(:commercial_register_number)
+      end
+    end
   end
 end
