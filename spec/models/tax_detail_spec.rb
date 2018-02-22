@@ -42,8 +42,8 @@ RSpec.describe TaxDetail, type: :model do
   it { is_expected.to enumerize(:us_fatca_status) }
 
   describe '#contact' do
-    it { is_expected.to validate_presence_of(:contact) }
-    it { is_expected.to belong_to(:contact) }
+    it { is_expected.to belong_to(:contact).required }
+    it { is_expected.to validate_uniqueness_of(:contact_id).case_insensitive }
   end
 
   describe '#de_tax_number' do

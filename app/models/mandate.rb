@@ -39,15 +39,19 @@ class Mandate < ApplicationRecord
   include AASM
 
   belongs_to :primary_consultant, class_name: 'Contact', optional: true, inverse_of: :primary_consultant_mandates
-  belongs_to :secondary_consultant, class_name: 'Contact', optional: true, inverse_of: :secondary_consultant_mandates
+  belongs_to(
+    :secondary_consultant, class_name: 'Contact', optional: true, inverse_of: :secondary_consultant_mandates
+  )
   belongs_to :assistant, class_name: 'Contact', optional: true, inverse_of: :assistant_mandates
   belongs_to :bookkeeper, class_name: 'Contact', optional: true, inverse_of: :bookkeeper_mandates
+  has_many :mandate_members, dependent: :destroy
+  has_many :contacts, through: :mandate_members
 
   aasm do
     state :prospect, initial: true
     state :client, :cancelled
 
-    event :become_client do
+    event :become_client, if: :primary_and_secondary_consultant_present? do
       transitions from: %i[prospect cancelled], to: :client
     end
 
@@ -61,9 +65,8 @@ class Mandate < ApplicationRecord
   end
 
   validates :category, presence: true
-  validates :primary_consultant, presence: true
+  validates :primary_consultant, presence: true, if: :client?
   validates :secondary_consultant, presence: true, if: :client?
-
   validate :valid_to_greater_or_equal_valid_from
 
   enumerize(
@@ -79,5 +82,11 @@ class Mandate < ApplicationRecord
   def valid_to_greater_or_equal_valid_from
     return if valid_to.blank? || valid_from.blank? || valid_to >= valid_from
     errors.add(:valid_to, "can't be before valid_from")
+  end
+
+  # Checks if primary and secondary consultant are present
+  # @return [Boolean]
+  def primary_and_secondary_consultant_present?
+    primary_consultant.present? && secondary_consultant.present?
   end
 end

@@ -26,8 +26,7 @@ require 'rails_helper'
 
 RSpec.describe ComplianceDetail, type: :model do
   describe '#contact' do
-    it { is_expected.to belong_to(:contact) }
-    it { is_expected.to validate_presence_of(:contact) }
+    it { is_expected.to belong_to(:contact).required }
   end
 
   describe '#wphg_classification' do
@@ -38,5 +37,9 @@ RSpec.describe ComplianceDetail, type: :model do
   describe '#kagb_classification' do
     it { is_expected.to validate_presence_of(:kagb_classification) }
     it { is_expected.to enumerize(:kagb_classification) }
+  end
+
+  describe '#occupation_role' do
+    it { is_expected.to enumerize(:occupation_role) }
   end
 end

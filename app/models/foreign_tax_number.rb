@@ -24,7 +24,6 @@ class ForeignTaxNumber < ApplicationRecord
 
   belongs_to :tax_detail
 
-  validates :tax_detail, presence: true
   validates :tax_number, presence: true
   validates :country, presence: true
 

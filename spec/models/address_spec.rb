@@ -22,8 +22,7 @@ RSpec.describe Address, type: :model do
   it { is_expected.to validate_presence_of(:city) }
 
   describe '#contact' do
-    it { is_expected.to belong_to(:contact) }
-    it { is_expected.to validate_presence_of(:contact) }
+    it { is_expected.to belong_to(:contact).required }
   end
 
   describe '#category' do

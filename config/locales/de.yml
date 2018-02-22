@@ -4,11 +4,10 @@
 #
 # To use the locales, use `I18n.t`:
 #
-#     I18n.t 'hello'
-#
+#     I18n.t "hello"#
 # In views, this is aliased to just `t`:
 #
-#     <%= t('hello') %>
+#     <%= t("hello") %>
 #
 # To use a different locale, set it with `I18n.locale`:
 #
@@ -24,8 +23,7 @@
 # Instead, surround them with single quotes.
 #
 # en:
-#   'true': 'foo'
-#
+#   "true": "foo"#
 # To learn more, please read the Rails Internationalization guide
 # available at http://guides.rubyonrails.org/i18n.html.
 
@@ -55,7 +53,7 @@ de:
         llc: "LLC"
         vvag: "VVaG"
         ev: "e. V."
-    tax_detail:
+    compliance_detail:
       wphg_classification:
         none: "keine Angabe"
         private: "Privatkunde"
@@ -67,6 +65,23 @@ de:
         private: "Privatanleger"
         semi_professional: "Semiprofessioneller Anleger"
         professional: "Professioneller Anleger"
+      occupation_role:
+        worker: "Arbeiter"
+        technician: "Facharbeiter"
+        foreman: "Meister"
+        employee: "Angestellter"
+        qualified_employee: "qualifizierter Angestellter"
+        chief_executive: "leitender Angestellter"
+        managing_director: "Vorstand / Geschäftsführer"
+        officer: "Beamter"
+        retiree: "Rentner / Pensionär"
+        housewife: "Hausfrau/-mann"
+        pupil: "Schüler"
+        student: "Student"
+        apprentice: "Auszubildender"
+        military_or_civil_service: "Grundwehr-/Zivildienstleistender"
+        unemployed: "Ohne Beschäftigung"
+    tax_detail:
       us_tax_form:
         w_8ben: "W-8BEN"
         w_8ben_e: "W-8BEN-E"
@@ -89,3 +104,20 @@ de:
         alternative_investments: "Alternative Investments"
         institutional: "Institutionell"
         reporting: "HQ AS Reporting"
+    mandate_member:
+      member_type:
+        owner: "Mandatsinhaber"
+        tax_advisor: "Steuerberater"
+        beneficiary: "Wirtschaftlich Berechtigter"
+        wealth_manager: "Vermögensverwalter"
+        lawyer: "Rechtsanwalt"
+        notary: "Notar"
+        family_officer: "Family Officer"
+        bookkeeper: "Buchhalter"
+        contact_depot_bank: "Ansprechpartner Depotbank"
+        contact_fund: "Ansprechpartner Fondsgesellschaft"
+        advisor: "Beirat"
+        chairman: "Vorstand"
+        board_member: "Verwaltungsrat"
+        auditor: "Wirtschaftsprüfer"
+        managing_director: "Geschäftsführer"

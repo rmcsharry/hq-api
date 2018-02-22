@@ -29,7 +29,6 @@ RSpec.describe ForeignTaxNumber, type: :model do
   end
 
   describe '#tax_detail' do
-    it { is_expected.to belong_to(:tax_detail) }
-    it { is_expected.to validate_presence_of(:tax_detail) }
+    it { is_expected.to belong_to(:tax_detail).required }
   end
 end

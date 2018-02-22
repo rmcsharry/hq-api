@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222085004) do
+ActiveRecord::Schema.define(version: 20180222121950) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,18 @@ ActiveRecord::Schema.define(version: 20180222085004) do
     t.datetime "updated_at", null: false
     t.uuid "tax_detail_id"
     t.index ["tax_detail_id"], name: "index_foreign_tax_numbers_on_tax_detail_id"
+  end
+
+  create_table "mandate_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "member_type"
+    t.date "start_date"
+    t.date "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "contact_id"
+    t.uuid "mandate_id"
+    t.index ["contact_id"], name: "index_mandate_members_on_contact_id"
+    t.index ["mandate_id"], name: "index_mandate_members_on_mandate_id"
   end
 
   create_table "mandates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -160,6 +172,8 @@ ActiveRecord::Schema.define(version: 20180222085004) do
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
+  add_foreign_key "mandate_members", "contacts"
+  add_foreign_key "mandate_members", "mandates"
   add_foreign_key "mandates", "contacts", column: "assistant_id"
   add_foreign_key "mandates", "contacts", column: "bookkeeper_id"
   add_foreign_key "mandates", "contacts", column: "primary_consultant_id"

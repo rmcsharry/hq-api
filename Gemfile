@@ -65,7 +65,7 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner'                                            # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
-  gem 'shoulda-matchers', require: false                            # Collection of testing matchers extracted from Shoulda
+  gem 'database_cleaner'                                                            # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
+  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master'   # Collection of testing matchers extracted from Shoulda
 end
 # rubocop:enable Metrics/LineLength

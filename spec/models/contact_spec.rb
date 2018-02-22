@@ -39,9 +39,9 @@
 require 'rails_helper'
 
 RSpec.describe Contact, type: :model do
-  describe '#addresses' do
-    it { is_expected.to have_many(:addresses) }
-  end
+  it { is_expected.to have_many(:mandate_members) }
+  it { is_expected.to have_many(:mandates) }
+  it { is_expected.to have_many(:addresses) }
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }
@@ -52,10 +52,10 @@ RSpec.describe Contact, type: :model do
   end
 
   describe '#legal_address' do
-    it { is_expected.to belong_to(:legal_address) }
+    it { is_expected.to belong_to(:legal_address).optional }
   end
 
   describe '#primary_contact_address' do
-    it { is_expected.to belong_to(:primary_contact_address) }
+    it { is_expected.to belong_to(:primary_contact_address).optional }
   end
 end

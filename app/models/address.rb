@@ -22,7 +22,6 @@ class Address < ApplicationRecord
 
   belongs_to :contact
 
-  validates :contact, presence: true
   validates :category, presence: true
   validates :street_and_number, presence: true
   validates :postal_code, presence: true

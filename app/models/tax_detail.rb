@@ -37,7 +37,7 @@ class TaxDetail < ApplicationRecord
   belongs_to :contact
   has_many :foreign_tax_numbers, dependent: :destroy
 
-  validates :contact, presence: true
+  validates :contact_id, uniqueness: { case_sensitive: false }
   validates :de_tax_number, de_tax_number: true
   validates :de_tax_id, de_tax_id: true
   validates :de_retirement_insurance, presence: true, unless: -> { belongs_to_organization? }

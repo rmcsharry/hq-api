@@ -36,8 +36,10 @@
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
-  it { is_expected.to belong_to(:assistant) }
-  it { is_expected.to belong_to(:bookkeeper) }
+  it { is_expected.to belong_to(:assistant).optional }
+  it { is_expected.to belong_to(:bookkeeper).optional }
+  it { is_expected.to have_many(:mandate_members) }
+  it { is_expected.to have_many(:contacts) }
 
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
@@ -45,14 +47,43 @@ RSpec.describe Mandate, type: :model do
   end
 
   describe '#primary_consultant' do
-    it { is_expected.to validate_presence_of(:primary_consultant) }
-    it { is_expected.to belong_to(:primary_consultant) }
+    context 'for client' do
+      subject { build(:mandate, aasm_state: :client) }
+      it 'is required' do
+        expect(subject).to validate_presence_of(:primary_consultant)
+      end
+    end
+
+    context 'for prospect' do
+      subject { build(:mandate, aasm_state: :prospect, primary_consultant: nil) }
+      it 'is optional' do
+        expect(subject).to belong_to(:primary_consultant).optional
+      end
+      it 'can be converted to client if primary consultant is set' do
+        subject.primary_consultant = build(:contact_person)
+        expect(subject.may_become_client?).to be_truthy
+      end
+    end
   end
 
   describe '#secondary_consultant' do
-    subject { build(:mandate, aasm_state: :client) }
-    it { is_expected.to validate_presence_of(:secondary_consultant) }
-    it { is_expected.to belong_to(:secondary_consultant) }
+    context 'for client' do
+      subject { build(:mandate, aasm_state: :client) }
+      it 'is required' do
+        expect(subject).to validate_presence_of(:secondary_consultant)
+      end
+    end
+
+    context 'for prospect' do
+      subject { build(:mandate, aasm_state: :prospect, secondary_consultant: nil) }
+      it 'is optional' do
+        expect(subject).to belong_to(:secondary_consultant).optional
+      end
+      it 'can be converted to client if secondary consultant is set' do
+        subject.secondary_consultant = build(:contact_person)
+        expect(subject.may_become_client?).to be_truthy
+      end
+    end
   end
 
   describe '#valid_to_greater_or_equal_valid_from' do

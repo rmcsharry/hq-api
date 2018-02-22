@@ -28,7 +28,7 @@ class ComplianceDetail < ApplicationRecord
 
   belongs_to :contact
 
-  validates :contact, presence: true
+  validates :contact_id, uniqueness: { case_sensitive: false }
   validates :wphg_classification, presence: true
   validates :kagb_classification, presence: true
 
@@ -37,5 +37,13 @@ class ComplianceDetail < ApplicationRecord
   )
   enumerize(
     :kagb_classification, in: %i[none private semi_professional professional], scope: true
+  )
+  enumerize(
+    :occupation_role,
+    in: %i[
+      worker technician foreman employee qualified_employee chief_executive managing_director officer retiree
+      housewife pupil student apprentice military_or_civil_service unemployed
+    ],
+    scope: true
   )
 end

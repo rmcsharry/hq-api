@@ -1,6 +1,6 @@
 FROM ruby:2.4.3-alpine3.7
 
-RUN apk update && apk add build-base postgresql postgresql-dev
+RUN apk update && apk add build-base postgresql postgresql-dev git
 
 RUN mkdir /app
 WORKDIR /app
