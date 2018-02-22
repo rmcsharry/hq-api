@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (4.12.3)
+      concurrent-ruby (~> 1.0)
     actioncable (5.1.5)
       actionpack (= 5.1.5)
       nio4r (~> 2.0)
@@ -48,9 +50,9 @@ GEM
     ast (2.4.0)
     awesome_print (1.8.0)
     bcrypt (3.1.11)
-    brakeman (4.1.1)
+    brakeman (4.2.0)
     builder (3.2.3)
-    bullet (5.7.2)
+    bullet (5.7.3)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11.0)
     byebug (10.0.0)
@@ -128,8 +130,8 @@ GEM
     nori (2.6.0)
     orm_adapter (0.5.0)
     parallel (1.12.1)
-    parser (2.4.0.2)
-      ast (~> 2.3)
+    parser (2.5.0.1)
+      ast (~> 2.4.0)
     pg (0.21.0)
     powerpack (0.1.1)
     pry (0.11.3)
@@ -263,6 +265,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aasm
   annotate
   awesome_print
   brakeman
@@ -285,9 +288,9 @@ DEPENDENCIES
   r7insight
   rack-cors
   rails (~> 5.1.5)
-  rspec-rails (~> 3.7)
-  rubocop (~> 0.52.1)
-  rubocop-rspec (~> 1.22.1)
+  rspec-rails
+  rubocop
+  rubocop-rspec
   sentry-raven
   shoulda-matchers
   spring

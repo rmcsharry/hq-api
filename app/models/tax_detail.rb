@@ -35,7 +35,7 @@ class TaxDetail < ApplicationRecord
   extend Enumerize
 
   belongs_to :contact
-  has_many :foreign_tax_numbers
+  has_many :foreign_tax_numbers, dependent: :destroy
 
   validates :contact, presence: true
   validates :de_tax_number, de_tax_number: true

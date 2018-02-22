@@ -53,6 +53,8 @@ class Contact
     enumerize :professional_title, in: %i[doctor professor professor_doctor], scope: true
     enumerize :nationality, in: Address::COUNTRIES
 
+    # Validates if date_of_birth is before or on the same date as date_of_death if date_of_death is set
+    # @return [void]
     def date_of_death_greater_or_equal_date_of_birth
       return if date_of_death.blank? || date_of_death >= date_of_birth
       errors.add(:date_of_death, "can't be before the date of birth")

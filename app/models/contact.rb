@@ -38,11 +38,15 @@
 
 # Defines the Contact model
 class Contact < ApplicationRecord
-  has_many :addresses
-  has_one :compliance_detail
-  has_one :tax_detail
-  belongs_to :legal_address, class_name: 'Address', optional: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true
+  belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :contact
+  belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :contact
+  has_many :addresses, dependent: :destroy
+  has_many :primary_consultant_mandates, class_name: 'Mandate', inverse_of: :primary_consultant, dependent: :nullify
+  has_many :secondary_consultant_mandates, class_name: 'Mandate', inverse_of: :secondary_consultant, dependent: :nullify
+  has_many :assistant_mandates, class_name: 'Mandate', inverse_of: :assistant, dependent: :nullify
+  has_many :bookkeeper_mandates, class_name: 'Mandate', inverse_of: :bookkeeper, dependent: :nullify
+  has_one :compliance_detail, dependent: :destroy
+  has_one :tax_detail, dependent: :destroy
 
   # Returns boolean to define whether the contact is an organization or not
   # @return [Boolean] generaly false, overwritte in subclass

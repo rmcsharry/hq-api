@@ -80,3 +80,12 @@ de:
         owner_documented_ffi: "Owner-documented FFI"
         active_nffe: "Active NFFE"
         passive_nffe: "Passive NFFE"
+    mandate:
+      category:
+        family_office_with_investment_advice: "Family Office mit Anlageberatung"
+        family_office_without_investment_advice: "Family Office ohne Anlageberatung"
+        wealth_management: "Vermögensverwaltung"
+        investment_advice: "Anlageberatung"
+        alternative_investments: "Alternative Investments"
+        institutional: "Institutionell"
+        reporting: "HQ AS Reporting"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222073114) do
+ActiveRecord::Schema.define(version: 20180222085004) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -77,11 +77,11 @@ ActiveRecord::Schema.define(version: 20180222073114) do
   end
 
   create_table "mandates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "state"
+    t.string "aasm_state"
     t.string "category"
     t.text "comment"
-    t.string "valid_from"
-    t.string "valid_to"
+    t.date "valid_from"
+    t.date "valid_to"
     t.string "datev_creditor_id"
     t.string "datev_debitor_id"
     t.string "psplus_id"

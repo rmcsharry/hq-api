@@ -30,6 +30,7 @@ gem 'jsonapi-resources'                                             # JSON API R
 gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # i18n & Business Logic
+gem 'aasm'                                                          # State machines for Ruby classes
 gem 'carmen'                                                        # A repository of geographic regions for Ruby
 gem 'enumerize'                                                     # Advanced Enum handling
 gem 'steuernummer'                                                  # Validates German tax numbers
@@ -51,9 +52,9 @@ group :development, :test do
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
   gem 'pry-byebug'                                                  # Debugger
-  gem 'rspec-rails', '~> 3.7'                                       # Run RSpec tests
-  gem 'rubocop', '~> 0.52.1', require: false                        # Static code checks
-  gem 'rubocop-rspec', '~> 1.22.1', require: false                  # Rubocop for Rspec
+  gem 'rspec-rails'                                                 # Run RSpec tests
+  gem 'rubocop', require: false                                     # Static code checks
+  gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
 end
 
 group :development do
