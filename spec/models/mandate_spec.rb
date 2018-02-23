@@ -46,6 +46,10 @@ RSpec.describe Mandate, type: :model do
     it { is_expected.to enumerize(:category) }
   end
 
+  describe '#mandate_groups' do
+    it { is_expected.to have_and_belong_to_many(:mandate_groups) }
+  end
+
   describe '#primary_consultant' do
     context 'for client' do
       subject { build(:mandate, aasm_state: :client) }

@@ -121,3 +121,7 @@ de:
         board_member: "Verwaltungsrat"
         auditor: "Wirtschaftsprüfer"
         managing_director: "Geschäftsführer"
+    mandate_group:
+      group_type:
+        organization: "Organisation"
+        family: "Familie"

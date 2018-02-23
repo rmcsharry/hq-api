@@ -49,4 +49,6 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :invitable, :registerable, :recoverable, :rememberable, :trackable, :validatable,
          :jwt_authenticatable, :confirmable, :lockable, jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
+
+  has_and_belongs_to_many :user_groups
 end

@@ -6,6 +6,7 @@ module V1
     )
 
     has_many :mandate_members
+    has_many :mandate_groups
     has_one :primary_consultant, class_name: 'Contact'
     has_one :secondary_consultant, class_name: 'Contact'
     has_one :assistant, class_name: 'Contact'

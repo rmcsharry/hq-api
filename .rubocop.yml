@@ -13,3 +13,6 @@ Metrics/BlockLength:
 
 Rails:
   Enabled: true
+
+Rails/HasAndBelongsToMany:
+  Enabled: false

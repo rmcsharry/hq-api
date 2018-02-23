@@ -1,36 +1,25 @@
 # == Schema Information
 #
-# Table name: mandates
+# Table name: mandate_members
 #
-#  id                      :uuid             not null, primary key
-#  aasm_state              :string
-#  category                :string
-#  comment                 :text
-#  valid_from              :date
-#  valid_to                :date
-#  datev_creditor_id       :string
-#  datev_debitor_id        :string
-#  psplus_id               :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  primary_consultant_id   :uuid
-#  secondary_consultant_id :uuid
-#  assistant_id            :uuid
-#  bookkeeper_id           :uuid
+#  id          :uuid             not null, primary key
+#  member_type :string
+#  start_date  :date
+#  end_date    :date
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  contact_id  :uuid
+#  mandate_id  :uuid
 #
 # Indexes
 #
-#  index_mandates_on_assistant_id             (assistant_id)
-#  index_mandates_on_bookkeeper_id            (bookkeeper_id)
-#  index_mandates_on_primary_consultant_id    (primary_consultant_id)
-#  index_mandates_on_secondary_consultant_id  (secondary_consultant_id)
+#  index_mandate_members_on_contact_id  (contact_id)
+#  index_mandate_members_on_mandate_id  (mandate_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (assistant_id => contacts.id)
-#  fk_rails_...  (bookkeeper_id => contacts.id)
-#  fk_rails_...  (primary_consultant_id => contacts.id)
-#  fk_rails_...  (secondary_consultant_id => contacts.id)
+#  fk_rails_...  (contact_id => contacts.id)
+#  fk_rails_...  (mandate_id => mandates.id)
 #
 
 require 'rails_helper'

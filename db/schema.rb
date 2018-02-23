@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222121950) do
+ActiveRecord::Schema.define(version: 20180222213919) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,6 +76,27 @@ ActiveRecord::Schema.define(version: 20180222121950) do
     t.index ["tax_detail_id"], name: "index_foreign_tax_numbers_on_tax_detail_id"
   end
 
+  create_table "mandate_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.string "group_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "mandate_groups_mandates", id: false, force: :cascade do |t|
+    t.bigint "mandate_id"
+    t.bigint "mandate_group_id"
+    t.index ["mandate_group_id"], name: "index_mandate_groups_mandates_on_mandate_group_id"
+    t.index ["mandate_id"], name: "index_mandate_groups_mandates_on_mandate_id"
+  end
+
+  create_table "mandate_groups_user_groups", id: false, force: :cascade do |t|
+    t.bigint "user_group_id"
+    t.bigint "mandate_group_id"
+    t.index ["mandate_group_id"], name: "index_mandate_groups_user_groups_on_mandate_group_id"
+    t.index ["user_group_id"], name: "index_mandate_groups_user_groups_on_user_group_id"
+  end
+
   create_table "mandate_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "member_type"
     t.date "start_date"
@@ -128,6 +149,19 @@ ActiveRecord::Schema.define(version: 20180222121950) do
     t.datetime "updated_at", null: false
     t.uuid "contact_id"
     t.index ["contact_id"], name: "index_tax_details_on_contact_id"
+  end
+
+  create_table "user_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "user_groups_users", id: false, force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "user_group_id"
+    t.index ["user_group_id"], name: "index_user_groups_users_on_user_group_id"
+    t.index ["user_id"], name: "index_user_groups_users_on_user_id"
   end
 
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
