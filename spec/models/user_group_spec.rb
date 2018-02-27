@@ -6,6 +6,7 @@
 #  name       :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  comment    :text
 #
 
 require 'rails_helper'
@@ -21,5 +22,9 @@ RSpec.describe UserGroup, type: :model do
 
   describe '#name' do
     it { is_expected.to validate_presence_of(:name) }
+  end
+
+  describe '#comment' do
+    it { is_expected.to respond_to(:comment) }
   end
 end

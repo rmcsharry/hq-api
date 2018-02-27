@@ -7,7 +7,7 @@ git_source(:github) do |repo_name|
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 5.1.5'
+gem 'rails', '5.2.0.rc1'
 # Use postgresql as the database for Active Record
 gem 'pg', '~> 0.18'
 # Use Puma as the app server
@@ -40,6 +40,9 @@ gem 'tzinfo-data'                                                   # Timezone i
 gem 'validate_url'                                                  # Validates URLs
 gem 'valvat'                                                        # Validates European VAT numbers
 
+# Cloud Resources
+gem 'aws-sdk-s3' # Interact with AWS
+
 # Testing & Debugging
 gem 'pry-rails'
 gem 'terminal-table'
@@ -61,9 +64,9 @@ group :development, :test do
 end
 
 group :development do
-  gem 'annotate'                                                    # Use Annotate to add database schema to models
+  gem 'annotate', github: 'ctran/annotate_models', branch: 'develop'  # Use Annotate to add database schema to models
   gem 'listen', '>= 3.0.5', '< 3.2'
-  gem 'spring'                                                      # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'spring'                                                        # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'
 end
 

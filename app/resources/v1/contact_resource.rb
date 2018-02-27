@@ -9,6 +9,7 @@ module V1
 
     has_many :addresses
     has_many :mandate_members
+    has_many :documents
     has_one :compliance_detail
     has_one :tax_detail
     has_one :primary_contact_address, class_name: 'Address'

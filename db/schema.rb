@@ -10,11 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180223085247) do
+ActiveRecord::Schema.define(version: 2018_02_26_184747) do
 
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
   enable_extension "pgcrypto"
+  enable_extension "plpgsql"
+
+  create_table "active_storage_attachments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "record_type", null: false
+    t.uuid "record_id", null: false
+    t.uuid "blob_id", null: false
+    t.datetime "created_at", null: false
+    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
+    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+  end
+
+  create_table "active_storage_blobs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "key", null: false
+    t.string "filename", null: false
+    t.string "content_type"
+    t.text "metadata"
+    t.bigint "byte_size", null: false
+    t.string "checksum", null: false
+    t.datetime "created_at", null: false
+    t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
+  end
 
   create_table "activities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "type"
@@ -100,6 +121,18 @@ ActiveRecord::Schema.define(version: 20180223085247) do
     t.uuid "primary_contact_address_id"
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_contacts_on_primary_contact_address_id"
+  end
+
+  create_table "documents", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name", null: false
+    t.string "category", null: false
+    t.date "valid_from"
+    t.date "valid_to"
+    t.uuid "uploader_id", null: false
+    t.string "owner_type", null: false
+    t.uuid "owner_id", null: false
+    t.index ["owner_type", "owner_id"], name: "index_documents_on_owner_type_and_owner_id"
+    t.index ["uploader_id"], name: "index_documents_on_uploader_id"
   end
 
   create_table "foreign_tax_numbers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -190,6 +223,7 @@ ActiveRecord::Schema.define(version: 20180223085247) do
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "comment"
   end
 
   create_table "user_groups_users", id: false, force: :cascade do |t|
@@ -246,6 +280,7 @@ ActiveRecord::Schema.define(version: 20180223085247) do
   add_foreign_key "contact_details", "contacts"
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
+  add_foreign_key "documents", "users", column: "uploader_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
   add_foreign_key "mandate_groups_mandates", "mandate_groups"
   add_foreign_key "mandate_groups_mandates", "mandates"

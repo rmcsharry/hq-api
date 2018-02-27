@@ -46,6 +46,7 @@ class Mandate < ApplicationRecord
   belongs_to :bookkeeper, class_name: 'Contact', optional: true, inverse_of: :bookkeeper_mandates
   has_many :mandate_members, dependent: :destroy
   has_many :contacts, through: :mandate_members
+  has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_and_belongs_to_many :activities
   has_and_belongs_to_many :mandate_groups
 

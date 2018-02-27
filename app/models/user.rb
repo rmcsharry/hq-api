@@ -28,7 +28,7 @@
 #  invitation_accepted_at :datetime
 #  invitation_limit       :integer
 #  invited_by_type        :string
-#  invited_by_id          :integer
+#  invited_by_id          :bigint(8)
 #  invitations_count      :integer          default(0)
 #
 # Indexes
@@ -51,5 +51,6 @@ class User < ApplicationRecord
          :jwt_authenticatable, :confirmable, :lockable, jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   has_many :activities, inverse_of: :creator, dependent: :nullify
+  has_many :documents, inverse_of: :uploader, dependent: :nullify
   has_and_belongs_to_many :user_groups
 end

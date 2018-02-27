@@ -19,5 +19,5 @@ class MandateGroup < ApplicationRecord
   validates :name, presence: true
   validates :group_type, presence: true
 
-  enumerize(:group_type, in: %i[family organization])
+  enumerize :group_type, in: %i[family organization]
 end

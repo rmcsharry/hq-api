@@ -118,10 +118,26 @@ de:
         contact_fund: "Ansprechpartner Fondsgesellschaft"
         advisor: "Beirat"
         chairman: "Vorstand"
-        board_member: "Verwaltungsrat"
+        administrative_board_member: "Verwaltungsratsmitglied"
+        supervisory_board_member: "Aufsichtsratsmitglied"
         auditor: "Wirtschaftsprüfer"
         managing_director: "Geschäftsführer"
     mandate_group:
       group_type:
         organization: "Organisation"
         family: "Familie"
+    document:
+      category:
+        contract_hq: "HQ Verträge"
+        contract_general: "Andere Verträge"
+        invoice: "Rechnungen"
+        performance_report: "Wertentwicklungsberichte"
+        bank_reports: "Bankberichte"
+        commercial_register: "Handelsregister"
+        tax: "Steuern"
+        insurance: "Versicherungen"
+        legitimation: "Legitimation"
+        warrant: "Vollmacht"
+        client_communication: "Kundenkommunikation"
+        kyc: "KYC-Dokumente"
+        bank_documents: "Bankunterlagen"
