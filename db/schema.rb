@@ -10,11 +10,35 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180222213919) do
+ActiveRecord::Schema.define(version: 20180225205634) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pgcrypto"
+
+  create_table "activities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "type"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.string "title"
+    t.text "description"
+    t.uuid "creator_id"
+    t.index ["creator_id"], name: "index_activities_on_creator_id"
+  end
+
+  create_table "activities_contacts", id: false, force: :cascade do |t|
+    t.uuid "activity_id"
+    t.uuid "contact_id"
+    t.index ["activity_id"], name: "index_activities_contacts_on_activity_id"
+    t.index ["contact_id"], name: "index_activities_contacts_on_contact_id"
+  end
+
+  create_table "activities_mandates", id: false, force: :cascade do |t|
+    t.uuid "activity_id"
+    t.uuid "mandate_id"
+    t.index ["activity_id"], name: "index_activities_mandates_on_activity_id"
+    t.index ["mandate_id"], name: "index_activities_mandates_on_mandate_id"
+  end
 
   create_table "addresses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "contact_id"
@@ -84,15 +108,15 @@ ActiveRecord::Schema.define(version: 20180222213919) do
   end
 
   create_table "mandate_groups_mandates", id: false, force: :cascade do |t|
-    t.bigint "mandate_id"
-    t.bigint "mandate_group_id"
+    t.uuid "mandate_id"
+    t.uuid "mandate_group_id"
     t.index ["mandate_group_id"], name: "index_mandate_groups_mandates_on_mandate_group_id"
     t.index ["mandate_id"], name: "index_mandate_groups_mandates_on_mandate_id"
   end
 
   create_table "mandate_groups_user_groups", id: false, force: :cascade do |t|
-    t.bigint "user_group_id"
-    t.bigint "mandate_group_id"
+    t.uuid "user_group_id"
+    t.uuid "mandate_group_id"
     t.index ["mandate_group_id"], name: "index_mandate_groups_user_groups_on_mandate_group_id"
     t.index ["user_group_id"], name: "index_mandate_groups_user_groups_on_user_group_id"
   end
@@ -158,8 +182,8 @@ ActiveRecord::Schema.define(version: 20180222213919) do
   end
 
   create_table "user_groups_users", id: false, force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "user_group_id"
+    t.uuid "user_id"
+    t.uuid "user_group_id"
     t.index ["user_group_id"], name: "index_user_groups_users_on_user_group_id"
     t.index ["user_id"], name: "index_user_groups_users_on_user_id"
   end
@@ -202,10 +226,19 @@ ActiveRecord::Schema.define(version: 20180222213919) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "activities", "users", column: "creator_id"
+  add_foreign_key "activities_contacts", "activities"
+  add_foreign_key "activities_contacts", "contacts"
+  add_foreign_key "activities_mandates", "activities"
+  add_foreign_key "activities_mandates", "mandates"
   add_foreign_key "compliance_details", "contacts"
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
+  add_foreign_key "mandate_groups_mandates", "mandate_groups"
+  add_foreign_key "mandate_groups_mandates", "mandates"
+  add_foreign_key "mandate_groups_user_groups", "mandate_groups"
+  add_foreign_key "mandate_groups_user_groups", "user_groups"
   add_foreign_key "mandate_members", "contacts"
   add_foreign_key "mandate_members", "mandates"
   add_foreign_key "mandates", "contacts", column: "assistant_id"
@@ -213,4 +246,6 @@ ActiveRecord::Schema.define(version: 20180222213919) do
   add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
   add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
   add_foreign_key "tax_details", "contacts"
+  add_foreign_key "user_groups_users", "user_groups"
+  add_foreign_key "user_groups_users", "users"
 end

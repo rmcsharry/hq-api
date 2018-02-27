@@ -58,4 +58,8 @@ RSpec.describe Contact, type: :model do
   describe '#primary_contact_address' do
     it { is_expected.to belong_to(:primary_contact_address).optional }
   end
+
+  describe '#activities' do
+    it { is_expected.to have_and_belong_to_many(:activities) }
+  end
 end

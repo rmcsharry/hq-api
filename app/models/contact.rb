@@ -49,6 +49,7 @@ class Contact < ApplicationRecord
   has_many :mandates, through: :mandate_members
   has_one :compliance_detail, dependent: :destroy
   has_one :tax_detail, dependent: :destroy
+  has_and_belongs_to_many :activities
 
   # Returns boolean to define whether the contact is an organization or not
   # @return [Boolean] generaly false, overwritte in subclass

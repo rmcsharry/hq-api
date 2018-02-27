@@ -49,4 +49,8 @@ RSpec.describe User, type: :model do
   describe '#user_groups' do
     it { is_expected.to have_and_belong_to_many(:user_groups) }
   end
+
+  describe '#activities' do
+    it { is_expected.to have_many(:activities) }
+  end
 end

@@ -14,18 +14,18 @@ class CreateMandateGroups < ActiveRecord::Migration[5.1]
     end
 
     create_table :mandate_groups_mandates, id: false do |t|
-      t.belongs_to :mandate, index: true
-      t.belongs_to :mandate_group, index: true
+      t.belongs_to :mandate, index: true, foreign_key: true, type: :uuid
+      t.belongs_to :mandate_group, index: true, foreign_key: true, type: :uuid
     end
 
     create_table :mandate_groups_user_groups, id: false do |t|
-      t.belongs_to :user_group, index: true
-      t.belongs_to :mandate_group, index: true
+      t.belongs_to :user_group, index: true, foreign_key: true, type: :uuid
+      t.belongs_to :mandate_group, index: true, foreign_key: true, type: :uuid
     end
 
     create_table :user_groups_users, id: false do |t|
-      t.belongs_to :user, index: true
-      t.belongs_to :user_group, index: true
+      t.belongs_to :user, index: true, foreign_key: true, type: :uuid
+      t.belongs_to :user_group, index: true, foreign_key: true, type: :uuid
     end
   end
 end
