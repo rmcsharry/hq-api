@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :mandate_member, class: MandateMember do
+  factory :mandate_member do
     member_type :owner
     contact { build(:contact_person) }
     mandate { build(:mandate) }

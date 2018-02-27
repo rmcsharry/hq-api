@@ -29,12 +29,15 @@ gem 'jsonapi-authorization'                                         # Authz for 
 gem 'jsonapi-resources'                                             # JSON API Resource handling
 gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
-# i18n & Business Logic
+# Business Logic & Validation
 gem 'aasm'                                                          # State machines for Ruby classes
 gem 'carmen'                                                        # A repository of geographic regions for Ruby
+gem 'email_validator'                                               # Validates Emails
 gem 'enumerize'                                                     # Advanced Enum handling
+gem 'phony_rails'                                                   # Validates, displays and saves phone numbers
 gem 'steuernummer'                                                  # Validates German tax numbers
 gem 'tzinfo-data'                                                   # Timezone info for different OSs
+gem 'validate_url'                                                  # Validates URLs
 gem 'valvat'                                                        # Validates European VAT numbers
 
 # Testing & Debugging
