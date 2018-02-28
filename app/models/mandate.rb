@@ -80,6 +80,10 @@ class Mandate < ApplicationRecord
     ]
   )
 
+  alias_attribute :state, :aasm_state
+
+  private
+
   # Validates if valid_from date is before or on the same date as valid_to if both are set
   # @return [void]
   def valid_to_greater_or_equal_valid_from

@@ -31,6 +31,8 @@ class Activity < ApplicationRecord
   validates :description, presence: true
   validate :ended_at_greater_started_at
 
+  private
+
   # Validates if started_at timestamp is before ended_at if ended_at is set
   # @return [void]
   def ended_at_greater_started_at

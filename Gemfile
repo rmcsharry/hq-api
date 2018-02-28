@@ -58,6 +58,7 @@ group :development, :test do
   gem 'bullet'                                                      # Detect N+1 queries
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
+  gem 'faker'                                                       # A library for generating fake data such as names, addresses, and phone numbers.
   gem 'pry-byebug'                                                  # Debugger
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
@@ -73,6 +74,7 @@ end
 
 group :test do
   gem 'database_cleaner'                                                            # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
+  gem 'jsonapi-resources-matchers', require: false                                  # Test matchers for jsonapi-resources
   gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master'   # Collection of testing matchers extracted from Shoulda
 end
 # rubocop:enable Metrics/LineLength

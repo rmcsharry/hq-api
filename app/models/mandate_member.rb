@@ -41,9 +41,11 @@ class MandateMember < ApplicationRecord
     :member_type,
     in: %i[
       owner tax_advisor beneficiary wealth_manager lawyer notary family_officer bookkeeper contact_depot_bank
-      contact_fund advisor chairman board_member auditor managing_director
+      contact_fund advisor chairman administrative_board_member supervisory_board_member auditor managing_director
     ]
   )
+
+  private
 
   # Validates if start_date is before or on the same date as end_date if both are set
   # @return [void]
