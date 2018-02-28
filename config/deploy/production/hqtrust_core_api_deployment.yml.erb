@@ -60,6 +60,18 @@ spec:
               secretKeyRef:
                 name: hqtrust-core-api-secrets
                 key: logentries-token
+          - name: AWS_SES_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: aws-ses-access-key-id
+          - name: AWS_SES_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: hqtrust-core-api-secrets
+                key: aws-ses-secret-access-key
+          - name: HOST_URL
+            value: "https://api-core.dev.hqfinanz.de"
 ---
 kind: Service
 apiVersion: v1

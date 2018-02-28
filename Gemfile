@@ -41,7 +41,8 @@ gem 'validate_url'                                                  # Validates 
 gem 'valvat'                                                        # Validates European VAT numbers
 
 # Cloud Resources
-gem 'aws-sdk-s3' # Interact with AWS
+gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
+gem 'aws-sdk-s3'                                                    # Interact with AWS S3
 
 # Testing & Debugging
 gem 'pry-rails'

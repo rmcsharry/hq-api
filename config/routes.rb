@@ -8,5 +8,7 @@ Rails.application.routes.draw do
     jsonapi_resources :addresses
   end
 
+  root to: 'v1/users#index'
+
   get 'health', to: proc { [200, {}, ['']] }
 end
