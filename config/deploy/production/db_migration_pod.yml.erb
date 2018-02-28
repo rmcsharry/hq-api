@@ -37,3 +37,15 @@ spec:
               key: devise-jwt-secret-key
         - name: AWS_REGION
           value: "eu-central-1"
+        - name: AWS_S3_BUCKET_NAME
+          value: "hqfinanz-dev-file-store"
+        - name: AWS_S3_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: hqtrust-core-api-secrets
+              key: aws-s3-access-key-id
+        - name: AWS_S3_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: hqtrust-core-api-secrets
+              key: aws-s3-secret-access-key
