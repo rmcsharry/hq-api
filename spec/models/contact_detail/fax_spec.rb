@@ -26,12 +26,12 @@ RSpec.describe ContactDetail::Fax, type: :model do
   subject { build(:fax) }
 
   describe '#value' do
-    let(:valid_phone_numbers) { ['+49301234567', '0170-12345678', '88754312'] }
-    let(:invalid_phone_numbers) { %w[ABC 0170123456 12] }
+    let(:valid_fax_numbers) { ['+49301234567', '0170-12345678', '88754312'] }
+    let(:invalid_fax_numbers) { %w[ABC 0170123456 12] }
 
     it 'validates fax format' do
-      expect(subject).to allow_values(*valid_phone_numbers).for(:value)
-      expect(subject).not_to allow_values(*invalid_phone_numbers).for(:value)
+      expect(subject).to allow_values(*valid_fax_numbers).for(:value)
+      expect(subject).not_to allow_values(*invalid_fax_numbers).for(:value)
     end
   end
 end

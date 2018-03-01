@@ -19,6 +19,7 @@ class Address < ApplicationRecord
   extend Enumerize
 
   COUNTRIES = Carmen::Country.all.map(&:code)
+  CATEGORIES = %i[home work vacation].freeze
 
   belongs_to :contact
 
@@ -29,5 +30,5 @@ class Address < ApplicationRecord
   validates :country, presence: true
 
   enumerize :country, in: COUNTRIES
-  enumerize :category, in: %w[home work vacation]
+  enumerize :category, in: CATEGORIES
 end

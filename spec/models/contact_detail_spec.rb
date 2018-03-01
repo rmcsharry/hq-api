@@ -27,10 +27,6 @@ RSpec.describe ContactDetail, type: :model do
     it { is_expected.to belong_to(:contact).required }
   end
 
-  describe '#primary' do
-    it { is_expected.to validate_presence_of(:primary) }
-  end
-
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }

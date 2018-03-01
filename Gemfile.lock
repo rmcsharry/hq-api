@@ -52,6 +52,8 @@ GEM
       activemodel (= 5.2.0.rc1)
       activesupport (= 5.2.0.rc1)
       arel (>= 9.0)
+    activerecord-import (0.22.0)
+      activerecord (>= 3.2)
     activestorage (5.2.0.rc1)
       actionpack (= 5.2.0.rc1)
       activerecord (= 5.2.0.rc1)
@@ -322,6 +324,7 @@ PLATFORMS
 
 DEPENDENCIES
   aasm
+  activerecord-import
   annotate!
   awesome_print
   aws-sdk-rails

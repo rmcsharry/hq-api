@@ -41,6 +41,10 @@ class Contact
   class Person < Contact
     extend Enumerize
 
+    GENDERS = %i[male female].freeze
+    NOBILITY_TITLES = %i[baron baroness count countess].freeze
+    PROFESSIONAL_TITLES = %i[doctor professor professor_doctor].freeze
+
     validates :first_name, presence: true
     validates :last_name, presence: true
     validates :gender, presence: true
@@ -48,10 +52,12 @@ class Contact
 
     validate :date_of_death_greater_or_equal_date_of_birth
 
-    enumerize :gender, in: %i[male female], scope: true
-    enumerize :nobility_title, in: %i[baron baroness count countess], scope: true
-    enumerize :professional_title, in: %i[doctor professor professor_doctor], scope: true
+    enumerize :gender, in: GENDERS, scope: true
+    enumerize :nobility_title, in: NOBILITY_TITLES, scope: true
+    enumerize :professional_title, in: PROFESSIONAL_TITLES, scope: true
     enumerize :nationality, in: Address::COUNTRIES
+
+    private
 
     # Validates if date_of_birth is before or on the same date as date_of_death if date_of_death is set
     # @return [void]

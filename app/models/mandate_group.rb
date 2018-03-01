@@ -13,11 +13,13 @@
 class MandateGroup < ApplicationRecord
   extend Enumerize
 
+  GROUP_TYPES = %i[family organization].freeze
+
   has_and_belongs_to_many :mandates
   has_and_belongs_to_many :user_groups
 
   validates :name, presence: true
   validates :group_type, presence: true
 
-  enumerize :group_type, in: %i[family organization]
+  enumerize :group_type, in: GROUP_TYPES, scope: true
 end

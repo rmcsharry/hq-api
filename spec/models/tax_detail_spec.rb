@@ -37,7 +37,6 @@ RSpec.describe TaxDetail, type: :model do
   let(:contact) { build(:contact_person) }
 
   it { is_expected.to have_many(:foreign_tax_numbers) }
-  it { is_expected.to validate_presence_of(:common_reporting_standard) }
   it { is_expected.to enumerize(:us_tax_form) }
   it { is_expected.to enumerize(:us_fatca_status) }
 
@@ -52,7 +51,7 @@ RSpec.describe TaxDetail, type: :model do
     end
     let(:invalid_tax_numbers) { %w[ABC 123456789 0] }
 
-    it 'validates vat format' do
+    it 'validates tax number format' do
       expect(subject).to allow_values(*valid_tax_numbers).for(:de_tax_number)
       expect(subject).not_to allow_values(*invalid_tax_numbers).for(:de_tax_number)
     end
@@ -63,7 +62,7 @@ RSpec.describe TaxDetail, type: :model do
     # TODO: 12345678996 and 12345679998 should be invalid as well but checksum is currently not checked
     let(:invalid_tax_ids) { %w[ABC 02345679999 0] }
 
-    it 'validates vat format' do
+    it 'validates id format' do
       expect(subject).to allow_values(*valid_tax_ids).for(:de_tax_id)
       expect(subject).not_to allow_values(*invalid_tax_ids).for(:de_tax_id)
     end
@@ -91,25 +90,14 @@ RSpec.describe TaxDetail, type: :model do
   end
 
   describe 'insurances and church tax' do
-    context 'contact is person' do
-      let(:contact) { build(:contact_person) }
-
-      it 'validates presence' do
-        expect(subject).to validate_presence_of(:de_retirement_insurance)
-        expect(subject).to validate_presence_of(:de_unemployment_insurance)
-        expect(subject).to validate_presence_of(:de_health_insurance)
-        expect(subject).to validate_presence_of(:de_church_tax)
-      end
-    end
-
     context 'contact is organization' do
       let(:contact) { build(:contact_organization) }
 
       it 'does not validate presence' do
-        expect(subject).not_to validate_presence_of(:de_retirement_insurance)
-        expect(subject).not_to validate_presence_of(:de_unemployment_insurance)
-        expect(subject).not_to validate_presence_of(:de_health_insurance)
-        expect(subject).not_to validate_presence_of(:de_church_tax)
+        expect(subject).to validate_absence_of(:de_retirement_insurance)
+        expect(subject).to validate_absence_of(:de_unemployment_insurance)
+        expect(subject).to validate_absence_of(:de_health_insurance)
+        expect(subject).to validate_absence_of(:de_church_tax)
       end
     end
   end

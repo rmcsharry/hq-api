@@ -25,6 +25,11 @@
 class Document < ApplicationRecord
   extend Enumerize
 
+  CATEGORIES = %i[
+    contract_hq contract_general invoice performance_report bank_reports commercial_register tax insurance
+    legitimation warrant client_communication kyc bank_documents
+  ].freeze
+
   belongs_to :uploader, class_name: 'User', inverse_of: :documents
   belongs_to :owner, polymorphic: true, inverse_of: :documents
   has_one_attached :file
@@ -33,13 +38,7 @@ class Document < ApplicationRecord
   validates :category, presence: true
   validate :valid_to_greater_or_equal_valid_from
 
-  enumerize(
-    :category,
-    in: %i[
-      contract_hq contract_general invoice performance_report bank_reports commercial_register tax insurance
-      legitimation warrant client_communication kyc bank_documents
-    ]
-  )
+  enumerize :category, in: CATEGORIES, scope: true
 
   private
 

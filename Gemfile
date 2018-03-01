@@ -8,8 +8,6 @@ end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '5.2.0.rc1'
-# Use postgresql as the database for Active Record
-gem 'pg', '~> 0.18'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -43,6 +41,10 @@ gem 'valvat'                                                        # Validates 
 # Cloud Resources
 gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
 gem 'aws-sdk-s3'                                                    # Interact with AWS S3
+
+# Database & Storage Handling
+gem 'activerecord-import'                                           # Bulk import object into the database
+gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 
 # Testing & Debugging
 gem 'pry-rails'

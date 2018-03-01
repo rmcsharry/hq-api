@@ -24,12 +24,13 @@
 class ContactDetail < ApplicationRecord
   extend Enumerize
 
+  CATEGORIES = %i[home work vacation].freeze
+
   belongs_to :contact
 
   validates :type, presence: true
   validates :category, presence: true
   validates :value, presence: true
-  validates :primary, presence: true
 
-  enumerize(:category, in: %i[home work vacation], scope: true)
+  enumerize :category, in: CATEGORIES, scope: true
 end

@@ -34,28 +34,33 @@
 class TaxDetail < ApplicationRecord
   extend Enumerize
 
+  US_TAX_FORMS = %i[w_8ben w_8ben_e w_8imy w_8eci w_8exp].freeze
+  US_FATCA_STATUSES = %i[
+    participation_ffi reporting_ffi nonreporting_ffi owner_documented_ffi active_nffe passive_nffe
+  ].freeze
+
   belongs_to :contact
   has_many :foreign_tax_numbers, dependent: :destroy
 
   validates :contact_id, uniqueness: { case_sensitive: false }
   validates :de_tax_number, de_tax_number: true
   validates :de_tax_id, de_tax_id: true
-  validates :de_retirement_insurance, presence: true, unless: -> { belongs_to_organization? }
-  validates :de_unemployment_insurance, presence: true, unless: -> { belongs_to_organization? }
-  validates :de_health_insurance, presence: true, unless: -> { belongs_to_organization? }
-  validates :de_church_tax, presence: true, unless: -> { belongs_to_organization? }
-  validates :common_reporting_standard, presence: true
+  validates :de_retirement_insurance, absence: true, if: -> { belongs_to_organization? }
+  validates :de_retirement_insurance, inclusion: { in: [true, false] }
+  validates :de_unemployment_insurance, absence: true, if: -> { belongs_to_organization? }
+  validates :de_unemployment_insurance, inclusion: { in: [true, false] }
+  validates :de_health_insurance, absence: true, if: -> { belongs_to_organization? }
+  validates :de_health_insurance, inclusion: { in: [true, false] }
+  validates :de_church_tax, absence: true, if: -> { belongs_to_organization? }
+  validates :de_church_tax, inclusion: { in: [true, false] }
+  validates :common_reporting_standard, inclusion: { in: [true, false] }
   validates :eu_vat_number, absence: true, unless: -> { belongs_to_organization? }
-  validates :eu_vat_number, valvat: true
+  validates :eu_vat_number, valvat: true, if: -> { belongs_to_organization? }
   validates :legal_entity_identifier, absence: true, unless: -> { belongs_to_organization? }
   validates :transparency_register, absence: true, unless: -> { belongs_to_organization? }
 
-  enumerize :us_tax_form, in: %i[w_8ben w_8ben_e w_8imy w_8eci w_8exp], scope: true
-  enumerize(
-    :us_fatca_status,
-    in: %i[participation_ffi reporting_ffi nonreporting_ffi owner_documented_ffi active_nffe passive_nffe],
-    scope: true
-  )
+  enumerize :us_tax_form, in: US_TAX_FORMS, scope: true
+  enumerize :us_fatca_status, in: US_FATCA_STATUSES, scope: true
 
   def belongs_to_organization?
     contact.present? && contact.organization?

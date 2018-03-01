@@ -38,6 +38,11 @@ class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
 
+  CATEGORIES = %i[
+    family_office_with_investment_advice family_office_without_investment_advice wealth_management investment_advice
+    alternative_investments institutional reporting
+  ].freeze
+
   belongs_to :primary_consultant, class_name: 'Contact', optional: true, inverse_of: :primary_consultant_mandates
   belongs_to(
     :secondary_consultant, class_name: 'Contact', optional: true, inverse_of: :secondary_consultant_mandates
@@ -72,13 +77,7 @@ class Mandate < ApplicationRecord
   validates :secondary_consultant, presence: true, if: :client?
   validate :valid_to_greater_or_equal_valid_from
 
-  enumerize(
-    :category,
-    in: %i[
-      family_office_with_investment_advice family_office_without_investment_advice wealth_management investment_advice
-      alternative_investments institutional reporting
-    ]
-  )
+  enumerize :category, in: CATEGORIES, scope: true
 
   alias_attribute :state, :aasm_state
 

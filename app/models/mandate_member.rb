@@ -26,6 +26,11 @@
 class MandateMember < ApplicationRecord
   extend Enumerize
 
+  MEMBER_TYPES = %i[
+    owner tax_advisor beneficiary wealth_manager lawyer notary family_officer bookkeeper contact_depot_bank
+    contact_fund advisor chairman administrative_board_member supervisory_board_member auditor managing_director
+  ].freeze
+
   belongs_to :mandate
   belongs_to :contact
 
@@ -37,13 +42,7 @@ class MandateMember < ApplicationRecord
 
   validate :end_date_greater_or_equal_start_date
 
-  enumerize(
-    :member_type,
-    in: %i[
-      owner tax_advisor beneficiary wealth_manager lawyer notary family_officer bookkeeper contact_depot_bank
-      contact_fund advisor chairman administrative_board_member supervisory_board_member auditor managing_director
-    ]
-  )
+  enumerize :member_type, in: MEMBER_TYPES, scope: true
 
   private
 
