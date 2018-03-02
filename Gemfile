@@ -32,6 +32,7 @@ gem 'aasm'                                                          # State mach
 gem 'carmen'                                                        # A repository of geographic regions for Ruby
 gem 'email_validator'                                               # Validates Emails
 gem 'enumerize'                                                     # Advanced Enum handling
+gem 'faker'                                                         # A library for generating fake data such as names, addresses, and phone numbers.
 gem 'phony_rails'                                                   # Validates, displays and saves phone numbers
 gem 'steuernummer'                                                  # Validates German tax numbers
 gem 'tzinfo-data'                                                   # Timezone info for different OSs
@@ -60,7 +61,6 @@ group :development, :test do
   gem 'bullet'                                                      # Detect N+1 queries
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
-  gem 'faker'                                                       # A library for generating fake data such as names, addresses, and phone numbers.
   gem 'pry-byebug'                                                  # Debugger
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
