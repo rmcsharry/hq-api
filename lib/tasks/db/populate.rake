@@ -6,7 +6,7 @@ namespace :db do
       password = 'testmctest1A!'
       User.create!(email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
       User.create!(email: 'sales@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
-      User.create!(email: 'bookkeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
+      User.create!(email: 'bookkeeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
     end
 
     populate 'contact persons' do
