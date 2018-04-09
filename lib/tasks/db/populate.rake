@@ -62,19 +62,19 @@ namespace :db do
           ContactDetail::Phone.new(
             contact: contact,
             category: categories.sample,
-            value: Faker::PhoneNumber.phone_number,
+            value: "+4930#{Faker::Number.number(7)}",
             primary: true
           ),
           ContactDetail::Phone.new(
             contact: contact,
             category: categories.sample,
-            value: Faker::PhoneNumber.phone_number,
+            value: "+4930#{Faker::Number.number(7)}",
             primary: false
           ),
           ContactDetail::Fax.new(
             contact: contact,
             category: categories.sample,
-            value: Faker::PhoneNumber.phone_number,
+            value: "+4930#{Faker::Number.number(7)}",
             primary: true
           ),
           ContactDetail::Email.new(
