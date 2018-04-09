@@ -50,6 +50,8 @@ class Contact
 
     enumerize :organization_type, in: ORGANIZATION_TYPES, scope: true
 
+    alias_attribute :name, :organization_name
+
     # Returns boolean to define whether the contact is an organization or not
     # @return [Boolean] if contact is organization
     def organization?
