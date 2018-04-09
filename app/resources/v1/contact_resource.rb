@@ -1,10 +1,27 @@
 module V1
   # Defines the Contact resource for the API
   class ContactResource < JSONAPI::Resource
+    model_hint model: Contact::Organization, resource: :contact
+    model_hint model: Contact::Person, resource: :contact
+
     attributes(
-      :first_name, :last_name, :comment, :gender, :nobility_title, :professional_title, :maiden_name,
-      :date_of_birth, :date_of_death, :nationality, :organization_name, :organization_type, :organization_category,
-      :organization_industry, :commercial_register_number, :commercial_register_office
+      :comment,
+      :commercial_register_number,
+      :commercial_register_office,
+      :date_of_birth,
+      :date_of_death,
+      :first_name,
+      :gender,
+      :last_name,
+      :maiden_name,
+      :name,
+      :nationality,
+      :nobility_title,
+      :organization_category,
+      :organization_industry,
+      :organization_name,
+      :organization_type,
+      :professional_title
     )
 
     has_many :addresses

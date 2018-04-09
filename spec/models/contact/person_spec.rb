@@ -50,6 +50,14 @@ RSpec.describe Contact::Person, type: :model do
     it { is_expected.to enumerize(:gender) }
   end
 
+  describe '#name' do
+    subject { build(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
+
+    it 'responds with the full name' do
+      expect(subject.name).to eq 'Max Mustermann'
+    end
+  end
+
   describe '#date_of_death_greater_or_equal_date_of_birth' do
     subject { build(:contact_person, date_of_birth: date_of_birth, date_of_death: date_of_death) }
     let(:date_of_birth) { 5.days.ago }
