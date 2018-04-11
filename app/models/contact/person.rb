@@ -57,12 +57,6 @@ class Contact
     enumerize :professional_title, in: PROFESSIONAL_TITLES, scope: true
     enumerize :nationality, in: Address::COUNTRIES
 
-    # Returns the Person's full name
-    # @return [String]
-    def name
-      "#{first_name} #{last_name}"
-    end
-
     private
 
     # Validates if date_of_birth is before or on the same date as date_of_death if date_of_death is set

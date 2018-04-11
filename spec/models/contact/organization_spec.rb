@@ -44,14 +44,6 @@ RSpec.describe Contact::Organization, type: :model do
   it { is_expected.to enumerize(:organization_type) }
   it { is_expected.to validate_presence_of(:organization_type) }
 
-  describe '#name' do
-    subject { build(:contact_organization, organization_name: 'HQ Trust GmbH') }
-
-    it 'responds with the full name' do
-      expect(subject.name).to eq 'HQ Trust GmbH'
-    end
-  end
-
   describe '#commercial_register_office' do
     context 'commercial_register_number is present' do
       subject { build(:contact_organization, commercial_register_number: 'HRB 123456 B') }

@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# Starts the webserver in interactive mode for binding.pry
+
+# If we are outside the container, execute self inside the container
+which docker > /dev/null
+
+if [ "$?" == "0" ]; then
+  docker-compose stop api
+  docker-compose run --service-ports --rm api bin/interactive-puma "$@"
+  exit
+fi
+
+while :; do
+  puma -C config/puma.rb
+  EXIT_CODE=$?
+  echo
+  echo "Process terminated with code $EXIT_CODE. Press 'r' to restart, any other key to exit."
+  read -n 1 -s
+  if [ "$REPLY" != "r" ]; then
+    exit
+  else
+    echo "Restarting server process..."
+    echo
+  fi
+done

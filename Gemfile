@@ -30,6 +30,7 @@ gem 'rack-cors'                                                     # Use Rack C
 # Business Logic & Validation
 gem 'aasm'                                                          # State machines for Ruby classes
 gem 'carmen'                                                        # A repository of geographic regions for Ruby
+gem 'draper'                                                        # Decorate models
 gem 'email_validator'                                               # Validates Emails
 gem 'enumerize'                                                     # Advanced Enum handling
 gem 'faker'                                                         # A library for generating fake data such as names, addresses, and phone numbers.

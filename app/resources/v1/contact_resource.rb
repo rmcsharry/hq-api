@@ -32,5 +32,12 @@ module V1
     has_one :tax_detail
     has_one :primary_contact_address, class_name: 'Address'
     has_one :legal_address, class_name: 'Address'
+
+    def self.resources_for(records, context)
+      records.collect do |model|
+        resource_class = resource_for_model(model)
+        resource_class.new(model.decorate, context)
+      end
+    end
   end
 end
