@@ -10,6 +10,7 @@ namespace :db do
     end
 
     populate 'contact persons' do
+      addresses = []
       contact_persons = Array.new(86) do
         contact = Contact::Person.new(
           first_name: Faker::Name.first_name,
@@ -23,13 +24,16 @@ namespace :db do
           date_of_death: rand > 0.9 ? Faker::Date.birthday(0, 17) : nil,
           nationality: Faker::Address.country_code
         )
-        generate_addresses(contact)
+        contact = contact_with_addresses(contact)
+        addresses << contact.addresses
         contact
       end
+      Address.import!(addresses.flatten)
       Contact::Person.import!(contact_persons, recursive: true)
     end
 
     populate 'contact organizations' do
+      addresses = []
       contact_organizations = Array.new(35) do
         contact = Contact::Organization.new(
           organization_name: Faker::Company.name,
@@ -39,10 +43,12 @@ namespace :db do
           commercial_register_number: Faker::Company.duns_number,
           commercial_register_office: Faker::Address.city
         )
-        generate_addresses(contact)
+        contact = contact_with_addresses(contact)
+        addresses << contact.addresses
         contact
       end
-      Contact::Organization.import!(contact_organizations)
+      Address.import!(addresses.flatten)
+      Contact::Organization.import!(contact_organizations, recursive: true)
     end
 
     populate 'tax details' do
@@ -203,10 +209,16 @@ namespace :db do
     puts 'done'
   end
 
-  def generate_addresses(contact)
-    legal_address = build_address(contact)
-    contact.legal_address = legal_address
-    contact.primary_contact_address = rand > 0.6 ? build_address(contact) : legal_address
+  def contact_with_addresses(contact)
+    contact.legal_address = build_address(contact)
+    contact.addresses << contact.legal_address
+    if rand > 0.6
+      contact.primary_contact_address = build_address(contact)
+      contact.addresses << contact.primary_contact_address
+    else
+      contact.primary_contact_address = contact.legal_address
+    end
+    contact
   end
 
   def build_address(contact)

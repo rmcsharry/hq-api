@@ -33,4 +33,6 @@ class ContactDetail < ApplicationRecord
   validates :value, presence: true
 
   enumerize :category, in: CATEGORIES, scope: true
+
+  alias_attribute :contact_detail_type, :type
 end

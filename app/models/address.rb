@@ -22,6 +22,15 @@ class Address < ApplicationRecord
   CATEGORIES = %i[home work vacation].freeze
 
   belongs_to :contact
+  has_one(
+    :legal_address_contact,
+    class_name: 'Contact', inverse_of: :legal_address, foreign_key: :legal_address_id, dependent: :nullify
+  )
+  has_one(
+    :primary_contact_address_contact,
+    class_name: 'Contact', inverse_of: :primary_contact_address,
+    foreign_key: :primary_contact_address_id, dependent: :nullify
+  )
 
   validates :category, presence: true
   validates :street_and_number, presence: true
