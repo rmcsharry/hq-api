@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::ComplianceDetailResource, type: :resource do
-  let(:compliance_detail) { build(:compliance_detail) }
+  let(:compliance_detail) { create(:compliance_detail) }
   subject { described_class.new(compliance_detail, {}) }
 
   it { is_expected.to have_attribute :wphg_classification }

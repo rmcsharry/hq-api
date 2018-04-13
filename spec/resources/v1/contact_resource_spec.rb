@@ -1,6 +1,8 @@
-RSpec.describe V1::ContactResource, type: :resource do
-  let(:contact) { build(:contact_person) }
-  subject { described_class.new(contact.decorate, {}) }
+require 'rails_helper'
+
+RSpec.describe ::V1::ContactResource, type: :resource do
+  let(:contact) { create(:contact_person) }
+  subject { described_class.new(Contact.with_name.find(contact.id), {}) }
 
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :commercial_register_number }
@@ -27,10 +29,12 @@ RSpec.describe V1::ContactResource, type: :resource do
   it { is_expected.to have_one(:compliance_detail) }
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
   it { is_expected.to have_one(:legal_address).with_class_name('Address') }
+  it { is_expected.to have_one(:primary_email).with_class_name('ContactDetail') }
+  it { is_expected.to have_one(:primary_phone).with_class_name('ContactDetail') }
 
   describe '#name' do
     context 'person' do
-      let(:contact) { build(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
+      let(:contact) { create(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
 
       it "responds with the person's full name" do
         expect(subject.name).to eq 'Max Mustermann'
@@ -38,7 +42,7 @@ RSpec.describe V1::ContactResource, type: :resource do
     end
 
     context 'organization' do
-      let(:contact) { build(:contact_organization, organization_name: 'HQ Trust GmbH') }
+      let(:contact) { create(:contact_organization, organization_name: 'HQ Trust GmbH') }
 
       it "responds with the organization's name" do
         expect(subject.name).to eq 'HQ Trust GmbH'

@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::UserGroupResource, type: :resource do
-  let(:user_group) { build(:user_group) }
+  let(:user_group) { create(:user_group) }
   subject { described_class.new(user_group, {}) }
 
   it { is_expected.to have_attribute :name }

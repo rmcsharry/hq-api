@@ -32,11 +32,16 @@ module V1
     has_one :tax_detail
     has_one :primary_contact_address, class_name: 'Address'
     has_one :legal_address, class_name: 'Address'
+    has_one :primary_email, class_name: 'ContactDetail'
+    has_one :primary_phone, class_name: 'ContactDetail'
 
-    def self.resources_for(records, context)
-      records.collect do |model|
-        resource_class = resource_for_model(model)
-        resource_class.new(model.decorate, context)
+    class << self
+      def records(_options)
+        super.with_name
+      end
+
+      def sortable_fields(context)
+        super + %i[primary_email.value primary_phone.value primary_contact_address.street_and_number]
       end
     end
   end

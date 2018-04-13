@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::TaxDetailResource, type: :resource do
-  let(:tax_detail) { build(:tax_detail) }
+  let(:tax_detail) { create(:tax_detail) }
   subject { described_class.new(tax_detail, {}) }
 
   it { is_expected.to have_attribute :de_tax_number }

@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::AddressResource, type: :resource do
-  let(:address) { build(:address) }
+  let(:address) { create(:address) }
   subject { described_class.new(address, {}) }
 
   it { is_expected.to have_attribute :category }

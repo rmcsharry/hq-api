@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::UserResource, type: :resource do
-  let(:user) { build(:user) }
+  let(:user) { create(:user) }
   subject { described_class.new(user, {}) }
 
   it { is_expected.to have_attribute :email }

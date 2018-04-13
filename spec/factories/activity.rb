@@ -3,6 +3,6 @@ FactoryBot.define do
     started_at { 1.day.ago }
     title 'Call with Mr. X'
     description 'Lorem ipsum'
-    creator { build(:user, activities: [@instance.presence]) }
+    creator { create(:user) }
   end
 end

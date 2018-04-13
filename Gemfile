@@ -23,9 +23,9 @@ gem 'devise-jwt', '~> 0.5.5'                                        # Authn with
 gem 'devise_invitable'                                              # Invitation management for users based on devise
 
 # API Handling
-gem 'jsonapi-authorization'                                         # Authz for JSON API
-gem 'jsonapi-resources'                                             # JSON API Resource handling
-gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+gem 'jsonapi-authorization', '~> 1.0.0.alpha6' # Authz for JSON API
+gem 'jsonapi-resources', github: 'HQTrust/jsonapi-resources', branch: 'feature/properly-join-associations' # JSON API Resource handling
+gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # Business Logic & Validation
 gem 'aasm'                                                          # State machines for Ruby classes
@@ -76,8 +76,8 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner'                                                            # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
-  gem 'jsonapi-resources-matchers', require: false                                  # Test matchers for jsonapi-resources
-  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master'   # Collection of testing matchers extracted from Shoulda
+  gem 'database_cleaner' # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
+  gem 'jsonapi-resources-matchers', github: 'GabrielSandoval/jsonapi-resources-matchers', branch: 'ae-rails_5_upgrade_dependencies-155929975', require: false # Test matchers for jsonapi-resources
+  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master' # Collection of testing matchers extracted from Shoulda
 end
 # rubocop:enable Metrics/LineLength

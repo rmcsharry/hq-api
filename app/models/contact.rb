@@ -53,7 +53,21 @@ class Contact < ApplicationRecord
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_one :compliance_detail, dependent: :destroy
   has_one :tax_detail, dependent: :destroy
+  has_one :primary_email,
+          -> { where(primary: true) },
+          class_name: 'ContactDetail::Email',
+          inverse_of: :contact
+  has_one :primary_phone,
+          -> { where(primary: true) },
+          class_name: 'ContactDetail::Phone',
+          inverse_of: :contact
   has_and_belongs_to_many :activities
+
+  scope :with_name, lambda {
+    from(
+      "(SELECT COALESCE(first_name || ' ' || last_name, organization_name) AS name, contacts.* FROM contacts) contacts"
+    )
+  }
 
   # Returns boolean to define whether the contact is an organization or not
   # @return [Boolean] generaly false, overwritte in subclass

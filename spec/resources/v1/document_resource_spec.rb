@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::DocumentResource, type: :resource do
-  let(:document) { build(:document) }
+  let(:document) { create(:document) }
   subject { described_class.new(document, {}) }
 
   it { is_expected.to have_attribute :name }

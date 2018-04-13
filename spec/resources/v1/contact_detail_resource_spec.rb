@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::ContactDetailResource, type: :resource do
-  let(:phone) { build(:phone) }
+  let(:phone) { create(:phone) }
   subject { described_class.new(phone, {}) }
 
   it { is_expected.to have_attribute :category }

@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::MandateGroupResource, type: :resource do
-  let(:mandate_group) { build(:mandate_group) }
+  let(:mandate_group) { create(:mandate_group) }
   subject { described_class.new(mandate_group, {}) }
 
   it { is_expected.to have_attribute :name }

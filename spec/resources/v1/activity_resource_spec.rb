@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::ActivityResource, type: :resource do
-  let(:activity) { build(:activity) }
+  let(:activity) { create(:activity) }
   subject { described_class.new(activity, {}) }
 
   it { is_expected.to have_attribute :started_at }

@@ -1,5 +1,7 @@
+require 'rails_helper'
+
 RSpec.describe V1::MandateResource, type: :resource do
-  let(:mandate) { build(:mandate) }
+  let(:mandate) { create(:mandate) }
   subject { described_class.new(mandate, {}) }
 
   it { is_expected.to have_attribute :state }
