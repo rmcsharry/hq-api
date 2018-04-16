@@ -35,6 +35,10 @@ module V1
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
 
+    filter :name, apply: lambda { |records, value, _options|
+      records.where('contacts.name LIKE ?', "%#{value[0]}%")
+    }
+
     class << self
       def records(_options)
         super.with_name
