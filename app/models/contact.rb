@@ -69,6 +69,8 @@ class Contact < ApplicationRecord
     )
   }
 
+  alias_attribute :contact_type, :type
+
   # Returns boolean to define whether the contact is an organization or not
   # @return [Boolean] generaly false, overwritte in subclass
   def organization?

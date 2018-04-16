@@ -8,6 +8,7 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
+      :contact_type,
       :date_of_birth,
       :date_of_death,
       :first_name,
@@ -34,6 +35,45 @@ module V1
     has_one :legal_address, class_name: 'Address'
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
+
+    filters(
+      :comment,
+      :commercial_register_number,
+      :commercial_register_office,
+      :date_of_birth,
+      :date_of_death,
+      :gender,
+      :nationality,
+      :nobility_title,
+      :organization_category,
+      :organization_industry,
+      :organization_type,
+      :professional_title
+    )
+
+    filter :contact_type, apply: lambda { |records, value, _options|
+      records.where('contacts.type = ?', value[0])
+    }
+
+    filter :name, apply: lambda { |records, value, _options|
+      records.where('contacts.name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :first_name, apply: lambda { |records, value, _options|
+      records.where('contacts.first_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :last_name, apply: lambda { |records, value, _options|
+      records.where('contacts.last_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :maiden_name, apply: lambda { |records, value, _options|
+      records.where('contacts.maiden_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :organization_name, apply: lambda { |records, value, _options|
+      records.where('contacts.organization_name LIKE ?', "%#{value[0]}%")
+    }
 
     class << self
       def records(_options)
