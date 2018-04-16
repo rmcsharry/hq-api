@@ -7,6 +7,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :commercial_register_number }
   it { is_expected.to have_attribute :commercial_register_office }
+  it { is_expected.to have_attribute :contact_type }
   it { is_expected.to have_attribute :date_of_birth }
   it { is_expected.to have_attribute :date_of_death }
   it { is_expected.to have_attribute :first_name }
@@ -31,6 +32,24 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_one(:legal_address).with_class_name('Address') }
   it { is_expected.to have_one(:primary_email).with_class_name('ContactDetail') }
   it { is_expected.to have_one(:primary_phone).with_class_name('ContactDetail') }
+
+  it { is_expected.to filter(:comment) }
+  it { is_expected.to filter(:commercial_register_number) }
+  it { is_expected.to filter(:commercial_register_office) }
+  it { is_expected.to filter(:contact_type) }
+  it { is_expected.to filter(:date_of_birth) }
+  it { is_expected.to filter(:date_of_death) }
+  it { is_expected.to filter(:first_name) }
+  it { is_expected.to filter(:gender) }
+  it { is_expected.to filter(:last_name) }
+  it { is_expected.to filter(:maiden_name) }
+  it { is_expected.to filter(:nationality) }
+  it { is_expected.to filter(:nobility_title) }
+  it { is_expected.to filter(:organization_category) }
+  it { is_expected.to filter(:organization_industry) }
+  it { is_expected.to filter(:organization_name) }
+  it { is_expected.to filter(:organization_type) }
+  it { is_expected.to filter(:professional_title) }
 
   describe '#name' do
     context 'person' do
