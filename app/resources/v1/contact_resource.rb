@@ -35,6 +35,25 @@ module V1
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
 
+    filters(
+      :comment,
+      :commercial_register_number,
+      :commercial_register_office,
+      :date_of_birth,
+      :date_of_death,
+      :first_name,
+      :gender,
+      :last_name,
+      :maiden_name,
+      :nationality,
+      :nobility_title,
+      :organization_category,
+      :organization_industry,
+      :organization_name,
+      :organization_type,
+      :professional_title
+    )
+
     filter :name, apply: lambda { |records, value, _options|
       records.where('contacts.name LIKE ?', "%#{value[0]}%")
     }
