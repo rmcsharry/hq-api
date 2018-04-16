@@ -56,23 +56,23 @@ module V1
     }
 
     filter :name, apply: lambda { |records, value, _options|
-      records.where('contacts.name LIKE ?', "%#{value[0]}%")
+      records.where('contacts.name ILIKE ?', "%#{value[0]}%")
     }
 
     filter :first_name, apply: lambda { |records, value, _options|
-      records.where('contacts.first_name LIKE ?', "%#{value[0]}%")
+      records.where('contacts.first_name ILIKE ?', "%#{value[0]}%")
     }
 
     filter :last_name, apply: lambda { |records, value, _options|
-      records.where('contacts.last_name LIKE ?', "%#{value[0]}%")
+      records.where('contacts.last_name ILIKE ?', "%#{value[0]}%")
     }
 
     filter :maiden_name, apply: lambda { |records, value, _options|
-      records.where('contacts.maiden_name LIKE ?', "%#{value[0]}%")
+      records.where('contacts.maiden_name ILIKE ?', "%#{value[0]}%")
     }
 
     filter :organization_name, apply: lambda { |records, value, _options|
-      records.where('contacts.organization_name LIKE ?', "%#{value[0]}%")
+      records.where('contacts.organization_name ILIKE ?', "%#{value[0]}%")
     }
 
     class << self
