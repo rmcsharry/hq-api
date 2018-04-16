@@ -41,21 +41,33 @@ module V1
       :commercial_register_office,
       :date_of_birth,
       :date_of_death,
-      :first_name,
       :gender,
-      :last_name,
-      :maiden_name,
       :nationality,
       :nobility_title,
       :organization_category,
       :organization_industry,
-      :organization_name,
       :organization_type,
       :professional_title
     )
 
     filter :name, apply: lambda { |records, value, _options|
       records.where('contacts.name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :first_name, apply: lambda { |records, value, _options|
+      records.where('contacts.first_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :last_name, apply: lambda { |records, value, _options|
+      records.where('contacts.last_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :maiden_name, apply: lambda { |records, value, _options|
+      records.where('contacts.maiden_name LIKE ?', "%#{value[0]}%")
+    }
+
+    filter :organization_name, apply: lambda { |records, value, _options|
+      records.where('contacts.organization_name LIKE ?', "%#{value[0]}%")
     }
 
     class << self
