@@ -8,6 +8,7 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
+      :contact_type,
       :date_of_birth,
       :date_of_death,
       :first_name,
@@ -49,6 +50,10 @@ module V1
       :organization_type,
       :professional_title
     )
+
+    filter :contact_type, apply: lambda { |records, value, _options|
+      records.where('contacts.type = ?', value[0])
+    }
 
     filter :name, apply: lambda { |records, value, _options|
       records.where('contacts.name LIKE ?', "%#{value[0]}%")
