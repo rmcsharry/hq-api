@@ -14,5 +14,7 @@ module V1
     )
 
     has_one :contact
+
+    filter :contact_id
   end
 end

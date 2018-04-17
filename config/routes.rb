@@ -4,8 +4,9 @@ Rails.application.routes.draw do
              path: 'v1/users'
 
   namespace :v1 do
-    jsonapi_resources :contacts
     jsonapi_resources :addresses
+    jsonapi_resources :contact_details
+    jsonapi_resources :contacts
   end
 
   root to: 'v1/users#index'

@@ -9,4 +9,6 @@ RSpec.describe V1::ContactDetailResource, type: :resource do
   it { is_expected.to have_attribute :primary }
 
   it { is_expected.to have_one(:contact) }
+
+  it { is_expected.to filter(:contact_id) }
 end
