@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     jsonapi_resources :addresses
     jsonapi_resources :contact_details
     jsonapi_resources :contacts
+    jsonapi_resources :documents
   end
 
   root to: 'v1/users#index'

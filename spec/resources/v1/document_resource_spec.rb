@@ -5,9 +5,12 @@ RSpec.describe V1::DocumentResource, type: :resource do
   subject { described_class.new(document, {}) }
 
   it { is_expected.to have_attribute :name }
+  it { is_expected.to have_attribute :created_at }
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :valid_from }
   it { is_expected.to have_attribute :valid_to }
 
   it { is_expected.to have_one(:owner) }
+
+  it { is_expected.to filter(:owner_id) }
 end

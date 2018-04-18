@@ -7,6 +7,8 @@ class CreateActivities < ActiveRecord::Migration[5.1]
       t.string :title
       t.text :description
       t.belongs_to :creator, index: true, foreign_key: { to_table: :users }, type: :uuid
+
+      t.timestamps
     end
 
     create_table :activities_mandates, id: false do |t|

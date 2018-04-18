@@ -198,7 +198,7 @@ namespace :db do
     populate 'documents' do
       users = User.all
       owners = [Contact.all, Mandate.all, Activity.all].flatten
-      documents = Array.new(273) do
+      documents = Array.new(847) do
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
         Document.new(
           name: Faker::SiliconValley.invention,

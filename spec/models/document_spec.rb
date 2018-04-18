@@ -10,6 +10,8 @@
 #  uploader_id :uuid             not null
 #  owner_type  :string           not null
 #  owner_id    :uuid             not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
 #
 # Indexes
 #

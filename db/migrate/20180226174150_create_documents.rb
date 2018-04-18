@@ -7,6 +7,8 @@ class CreateDocuments < ActiveRecord::Migration[5.2]
       t.date :valid_to
       t.belongs_to :uploader, index: true, foreign_key: { to_table: :users }, type: :uuid, null: false
       t.belongs_to :owner, index: true, polymorphic: true, type: :uuid, null: false
+
+      t.timestamps
     end
   end
 end

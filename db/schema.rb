@@ -44,6 +44,8 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
     t.string "title"
     t.text "description"
     t.uuid "creator_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["creator_id"], name: "index_activities_on_creator_id"
   end
 
@@ -131,6 +133,8 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
     t.uuid "uploader_id", null: false
     t.string "owner_type", null: false
     t.uuid "owner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id"], name: "index_documents_on_owner_type_and_owner_id"
     t.index ["uploader_id"], name: "index_documents_on_uploader_id"
   end
