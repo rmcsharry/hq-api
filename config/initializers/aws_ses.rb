@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 creds = Aws::Credentials.new(
   Rails.application.secrets.aws_ses_access_key_id,
   Rails.application.secrets.aws_ses_secret_access_key

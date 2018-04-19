@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: contacts
@@ -42,6 +44,8 @@ class Contact
     extend Enumerize
 
     ORGANIZATION_TYPES = %i[gmbh ag foreign_ag lp gmbh_co_kg gbr limited llc vvag ev].freeze
+
+    has_many :bank_accounts, foreign_key: :bank, dependent: :nullify, inverse_of: :bank
 
     validates :organization_name, presence: true
     validates :organization_type, presence: true

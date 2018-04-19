@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :contact_person, class: Contact::Person do
     first_name 'Thomas'

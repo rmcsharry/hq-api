@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the Activity resource for the API
   class ActivityResource < JSONAPI::Resource

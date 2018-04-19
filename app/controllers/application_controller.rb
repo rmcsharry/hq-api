@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # General Application controller
 class ApplicationController < JSONAPI::ResourceController
   respond_to :json

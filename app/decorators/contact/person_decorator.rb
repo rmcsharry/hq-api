@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Contact
   # Defines the decorator for natural persons
   class PersonDecorator < ContactDecorator

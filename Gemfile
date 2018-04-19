@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # rubocop:disable Metrics/LineLength
 source 'https://rubygems.org'
 
@@ -34,6 +36,8 @@ gem 'draper'                                                        # Decorate m
 gem 'email_validator'                                               # Validates Emails
 gem 'enumerize'                                                     # Advanced Enum handling
 gem 'faker'                                                         # A library for generating fake data such as names, addresses, and phone numbers.
+gem 'ibanizator'                                                    # Validates IBAN
+gem 'money'                                                         # List of Currency
 gem 'phony_rails'                                                   # Validates, displays and saves phone numbers
 gem 'steuernummer'                                                  # Validates German tax numbers
 gem 'tzinfo-data'                                                   # Timezone info for different OSs

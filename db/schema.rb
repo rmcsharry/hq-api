@@ -75,6 +75,22 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
     t.string "street_and_number"
   end
 
+  create_table "bank_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "account_type"
+    t.string "owner"
+    t.string "bank_account_number"
+    t.string "bank_routing_number"
+    t.string "iban"
+    t.string "bic"
+    t.string "currency"
+    t.uuid "mandate_id"
+    t.uuid "bank_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["bank_id"], name: "index_bank_accounts_on_bank_id"
+    t.index ["mandate_id"], name: "index_bank_accounts_on_mandate_id"
+  end
+
   create_table "compliance_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "wphg_classification"
     t.string "kagb_classification"
@@ -280,6 +296,8 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
   add_foreign_key "activities_contacts", "contacts"
   add_foreign_key "activities_mandates", "activities"
   add_foreign_key "activities_mandates", "mandates"
+  add_foreign_key "bank_accounts", "contacts", column: "bank_id"
+  add_foreign_key "bank_accounts", "mandates"
   add_foreign_key "compliance_details", "contacts"
   add_foreign_key "contact_details", "contacts"
   add_foreign_key "contacts", "addresses", column: "legal_address_id"

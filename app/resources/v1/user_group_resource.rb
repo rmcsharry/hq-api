@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the User Group resource for the API
   class UserGroupResource < JSONAPI::Resource

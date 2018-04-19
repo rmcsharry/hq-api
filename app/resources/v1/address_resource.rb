@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the Address resource for the API
   class AddressResource < JSONAPI::Resource

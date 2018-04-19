@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the ForeignTaxNumber resource for the API
   class ForeignTaxNumberResource < JSONAPI::Resource

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Validates German tax numbers
 class DeTaxNumberValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)

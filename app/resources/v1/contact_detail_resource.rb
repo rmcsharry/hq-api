@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the Contact Detail resource for the API
   class ContactDetailResource < JSONAPI::Resource

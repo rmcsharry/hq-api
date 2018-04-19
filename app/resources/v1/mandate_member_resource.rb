@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module V1
   # Defines the Mandate Member resource for the API
   class MandateMemberResource < JSONAPI::Resource

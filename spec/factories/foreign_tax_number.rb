@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :foreign_tax_number do
     tax_number '21/815/08150'
