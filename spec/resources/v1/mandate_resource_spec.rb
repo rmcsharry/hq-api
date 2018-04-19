@@ -18,6 +18,7 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:mandate_groups) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_one(:primary_consultant).with_class_name('Contact') }
   it { is_expected.to have_one(:secondary_consultant).with_class_name('Contact') }
   it { is_expected.to have_one(:assistant).with_class_name('Contact') }
