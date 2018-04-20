@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     jsonapi_resources :contact_details
     jsonapi_resources :contacts
     jsonapi_resources :documents
+    jsonapi_resources :foreign_tax_numbers
   end
 
   root to: 'v1/users#index'
