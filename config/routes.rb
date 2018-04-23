@@ -11,6 +11,9 @@ Rails.application.routes.draw do
     jsonapi_resources :contacts
     jsonapi_resources :documents
     jsonapi_resources :foreign_tax_numbers
+    jsonapi_resources :mandate_members
+    jsonapi_resources :mandates
+    jsonapi_resources :organization_members
   end
 
   root to: 'v1/users#index'

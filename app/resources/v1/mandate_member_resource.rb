@@ -7,5 +7,8 @@ module V1
 
     has_one :contact
     has_one :mandate
+
+    filter :contact_id
+    filter :mandate_id
   end
 end

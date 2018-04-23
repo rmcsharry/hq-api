@@ -28,6 +28,11 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 de:
+  support:
+    array:
+      words_connector: ", "
+      two_words_connector: " und "
+      last_word_connector: " und "
   enumerize:
     contact:
       gender:

@@ -149,6 +149,14 @@ namespace :db do
       MandateMember.import!(mandate_members.flatten)
     end
 
+    populate 'organization members' do
+      contacts = Contact.all
+      organization_members = Contact::Organization.all.map do |organization|
+        generate_organization_members(organization: organization, contacts: contacts)
+      end
+      OrganizationMember.import!(organization_members.flatten)
+    end
+
     populate 'mandate groups' do
       mandates = Mandate.all
       families = Array.new(32) do
@@ -347,6 +355,16 @@ namespace :db do
       create_other_mandate_member(mandate: mandate, contacts: contacts, start_date: start_date)
     end
     [owner, other_mandate_members].flatten
+  end
+
+  def generate_organization_members(organization:, contacts:)
+    Array.new(Faker::Number.between(0, 10)) do
+      OrganizationMember.new(
+        contact: contacts.sample,
+        organization: organization,
+        role: %w[Geschäftsführer Gesellschafter Mitarbeiter Berater].sample
+      )
+    end
   end
 
   def create_other_mandate_member(mandate:, contacts:, start_date:)

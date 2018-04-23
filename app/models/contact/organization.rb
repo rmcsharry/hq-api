@@ -46,6 +46,14 @@ class Contact
     ORGANIZATION_TYPES = %i[gmbh ag foreign_ag lp gmbh_co_kg gbr limited llc vvag ev].freeze
 
     has_many :bank_accounts, foreign_key: :bank, dependent: :nullify, inverse_of: :bank
+    has_many(
+      :contact_memberships,
+      class_name: 'OrganizationMember',
+      foreign_key: :organization,
+      dependent: :destroy,
+      inverse_of: :organization
+    )
+    has_many :contacts, through: :contact_memberships
 
     validates :organization_name, presence: true
     validates :organization_type, presence: true

@@ -45,6 +45,8 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:mandates) }
+  it { is_expected.to have_many(:organization_memberships) }
+  it { is_expected.to have_many(:organizations) }
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }

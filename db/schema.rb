@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_26_184747) do
+ActiveRecord::Schema.define(version: 2018_04_23_101725) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -218,6 +218,16 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
     t.index ["secondary_consultant_id"], name: "index_mandates_on_secondary_consultant_id"
   end
 
+  create_table "organization_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "role", null: false
+    t.uuid "organization_id", null: false
+    t.uuid "contact_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_id"], name: "index_organization_members_on_contact_id"
+    t.index ["organization_id"], name: "index_organization_members_on_organization_id"
+  end
+
   create_table "tax_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "de_tax_number"
     t.string "de_tax_id"
@@ -314,6 +324,7 @@ ActiveRecord::Schema.define(version: 2018_02_26_184747) do
   add_foreign_key "mandates", "contacts", column: "bookkeeper_id"
   add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
   add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
+  add_foreign_key "organization_members", "contacts", column: "organization_id"
   add_foreign_key "tax_details", "contacts"
   add_foreign_key "user_groups_users", "user_groups"
   add_foreign_key "user_groups_users", "users"

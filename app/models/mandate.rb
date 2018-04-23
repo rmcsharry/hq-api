@@ -55,6 +55,7 @@ class Mandate < ApplicationRecord
   has_many :contacts, through: :mandate_members
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :bank_accounts, dependent: :destroy
+  has_many :owners, -> { where(member_type: 'owner') }, class_name: 'MandateMember', inverse_of: :mandate
   has_and_belongs_to_many :activities
   has_and_belongs_to_many :mandate_groups
 
