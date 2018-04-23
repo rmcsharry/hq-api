@@ -42,8 +42,6 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
-      :date_of_birth,
-      :date_of_death,
       :gender,
       :nationality,
       :nobility_title,
@@ -55,6 +53,14 @@ module V1
 
     filter :contact_type, apply: lambda { |records, value, _options|
       records.where('contacts.type = ?', value[0])
+    }
+
+    filter :date_of_birth, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_birth = ?', Date.parse(value[0]))
+    }
+
+    filter :date_of_death, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_death = ?', Date.parse(value[0]))
     }
 
     filter :name, apply: lambda { |records, value, _options|
@@ -75,6 +81,28 @@ module V1
 
     filter :organization_name, apply: lambda { |records, value, _options|
       records.where('contacts.organization_name ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :"primary_email.value", apply: lambda { |records, value, _options|
+      records.joins(:primary_email).where('contact_details.value ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :"primary_phone.value", apply: lambda { |records, value, _options|
+      records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :"primary_contact_address.street_and_number", apply: lambda { |records, value, _options|
+      records.joins(:primary_contact_address).where(
+        "addresses.street_and_number || ', ' || addresses.postal_code || ' ' || addresses.city || ', ' || " \
+        'addresses.country ILIKE ?', "%#{value[0]}%"
+      )
+    }
+
+    filter :"legal_address.street_and_number", apply: lambda { |records, value, _options|
+      records.joins(:legal_address).where(
+        "addresses.street_and_number || ', ' || addresses.postal_code || ' ' || addresses.city || ', ' || " \
+        'addresses.country ILIKE ?', "%#{value[0]}%"
+      )
     }
 
     class << self
