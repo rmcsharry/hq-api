@@ -2,6 +2,7 @@
 
 module V1
   # Defines the Contact resource for the API
+  # rubocop:disable Metrics/ClassLength
   class ContactResource < JSONAPI::Resource
     model_hint model: Contact::Organization, resource: :contact
     model_hint model: Contact::Person, resource: :contact
@@ -115,8 +116,14 @@ module V1
       end
 
       def sortable_fields(context)
-        super + %i[primary_email.value primary_phone.value primary_contact_address.street_and_number]
+        super + %i[
+          primary_email.value
+          primary_phone.value
+          primary_contact_address.street_and_number
+          legal_address.street_and_number
+        ]
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
