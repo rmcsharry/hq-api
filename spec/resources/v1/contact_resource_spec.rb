@@ -24,6 +24,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :organization_name }
   it { is_expected.to have_attribute :organization_type }
   it { is_expected.to have_attribute :professional_title }
+  it { is_expected.to have_attribute :updated_at }
 
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:mandate_members) }

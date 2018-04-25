@@ -25,7 +25,8 @@ module V1
       :organization_industry,
       :organization_name,
       :organization_type,
-      :professional_title
+      :professional_title,
+      :updated_at
     )
 
     has_many :addresses
