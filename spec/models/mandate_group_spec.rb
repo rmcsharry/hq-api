@@ -30,4 +30,29 @@ RSpec.describe MandateGroup, type: :model do
     it { is_expected.to validate_presence_of(:group_type) }
     it { is_expected.to enumerize(:group_type) }
   end
+
+  describe '#families' do
+    let!(:family) { create(:mandate_group, group_type: 'family') }
+    let!(:organization) { create(:mandate_group, group_type: 'organization') }
+    it 'finds all families' do
+      expect(MandateGroup.families).to eq [family]
+    end
+  end
+
+  describe '#organizations' do
+    let!(:family) { create(:mandate_group, group_type: 'family') }
+    let!(:organization) { create(:mandate_group, group_type: 'organization') }
+    it 'finds all organizations' do
+      expect(MandateGroup.organizations).to eq [organization]
+    end
+  end
+
+  describe '#mandate_count' do
+    subject { create(:mandate_group) }
+    let!(:mandates) { create_list(:mandate, 3, mandate_groups: [subject]) }
+
+    it 'counts 3 mandates' do
+      expect(MandateGroup.with_mandate_count.where(id: subject.id).first.mandate_count).to eq 3
+    end
+  end
 end

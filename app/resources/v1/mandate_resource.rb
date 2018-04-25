@@ -25,6 +25,10 @@ module V1
     has_one :assistant, class_name: 'Contact'
     has_one :bookkeeper, class_name: 'Contact'
 
+    filter :mandate_group_id, apply: lambda { |records, value, _options|
+      records.joins(:mandate_groups).where('mandate_groups.id = ?', value[0])
+    }
+
     class << self
       def resource_for(model_record, context)
         resource_klass = resource_klass_for_model(model_record)

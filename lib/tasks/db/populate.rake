@@ -159,21 +159,20 @@ namespace :db do
 
     populate 'mandate groups' do
       mandates = Mandate.all
-      families = Array.new(32) do
-        MandateGroup.new(
+      32.times do
+        MandateGroup.create(
           name: Faker::GameOfThrones.house,
           group_type: :family,
           mandates: mandates.sample(Faker::Number.between(2, 12))
         )
       end
-      organizations = Array.new(12) do
-        MandateGroup.new(
+      12.times do
+        MandateGroup.create(
           name: Faker::Company.name,
           group_type: :organization,
           mandates: mandates.sample(Faker::Number.between(5, 34))
         )
       end
-      MandateGroup.import!(families + organizations)
     end
 
     populate 'user groups' do

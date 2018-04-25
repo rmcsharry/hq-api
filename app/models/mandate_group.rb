@@ -24,4 +24,15 @@ class MandateGroup < ApplicationRecord
   validates :group_type, presence: true
 
   enumerize :group_type, in: GROUP_TYPES, scope: true
+
+  scope :families, -> { where(group_type: 'family') }
+  scope :organizations, -> { where(group_type: 'organization') }
+
+  scope :with_mandate_count, lambda {
+    from(
+      '(SELECT mg.*, mgc.mandate_count FROM mandate_groups mg LEFT JOIN (SELECT mgm.mandate_group_id AS ' \
+      'mandate_group_id, COUNT(*) AS mandate_count FROM mandate_groups_mandates mgm GROUP BY mgm.mandate_group_id) ' \
+      'mgc ON mg.id = mgc.mandate_group_id) mandate_groups'
+    )
+  }
 end
