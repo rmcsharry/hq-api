@@ -48,8 +48,10 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:commercial_register_number) }
   it { is_expected.to filter(:commercial_register_office) }
   it { is_expected.to filter(:contact_type) }
-  it { is_expected.to filter(:date_of_birth) }
-  it { is_expected.to filter(:date_of_death) }
+  it { is_expected.to filter(:date_of_birth_min) }
+  it { is_expected.to filter(:date_of_birth_max) }
+  it { is_expected.to filter(:date_of_death_min) }
+  it { is_expected.to filter(:date_of_death_max) }
   it { is_expected.to filter(:first_name) }
   it { is_expected.to filter(:gender) }
   it { is_expected.to filter(:last_name) }

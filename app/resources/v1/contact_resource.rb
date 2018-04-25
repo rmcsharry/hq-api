@@ -61,12 +61,20 @@ module V1
       records.where('contacts.type = ?', value[0])
     }
 
-    filter :date_of_birth, apply: lambda { |records, value, _options|
-      records.where('contacts.date_of_birth = ?', Date.parse(value[0]))
+    filter :date_of_birth_min, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_birth >= ?', Date.parse(value[0]))
     }
 
-    filter :date_of_death, apply: lambda { |records, value, _options|
-      records.where('contacts.date_of_death = ?', Date.parse(value[0]))
+    filter :date_of_birth_max, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_birth <= ?', Date.parse(value[0]))
+    }
+
+    filter :date_of_death_min, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_death >= ?', Date.parse(value[0]))
+    }
+
+    filter :date_of_death_max, apply: lambda { |records, value, _options|
+      records.where('contacts.date_of_death <= ?', Date.parse(value[0]))
     }
 
     filter :name, apply: lambda { |records, value, _options|
