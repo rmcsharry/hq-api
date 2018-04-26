@@ -12,7 +12,8 @@ module V1
       :psplus_id,
       :state,
       :valid_from,
-      :valid_to
+      :valid_to,
+      :updated_at
     )
 
     has_many :mandate_members
