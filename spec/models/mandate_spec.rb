@@ -49,7 +49,21 @@ RSpec.describe Mandate, type: :model do
   end
 
   describe '#mandate_groups' do
+    let!(:family) { create(:mandate_group, group_type: 'family', mandates: [subject]) }
+    let!(:organization) { create(:mandate_group, group_type: 'organization', mandates: [subject]) }
+    subject { create(:mandate) }
+
     it { is_expected.to have_and_belong_to_many(:mandate_groups) }
+    it { is_expected.to have_and_belong_to_many(:mandate_groups_families) }
+    it { is_expected.to have_and_belong_to_many(:mandate_groups_organizations) }
+
+    it 'filters as expected' do
+      expect(subject.mandate_groups).to include(family, organization)
+      expect(subject.mandate_groups_families).to include(family)
+      expect(subject.mandate_groups_families).to_not include(organization)
+      expect(subject.mandate_groups_organizations).to include(organization)
+      expect(subject.mandate_groups_organizations).to_not include(family)
+    end
   end
 
   describe '#activities' do

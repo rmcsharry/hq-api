@@ -51,13 +51,23 @@ class Mandate < ApplicationRecord
   )
   belongs_to :assistant, class_name: 'Contact', optional: true, inverse_of: :assistant_mandates
   belongs_to :bookkeeper, class_name: 'Contact', optional: true, inverse_of: :bookkeeper_mandates
-  has_many :mandate_members, dependent: :destroy
+  has_many :bank_accounts, dependent: :destroy
   has_many :contacts, through: :mandate_members
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
-  has_many :bank_accounts, dependent: :destroy
+  has_many :mandate_members, dependent: :destroy
   has_many :owners, -> { where(member_type: 'owner') }, class_name: 'MandateMember', inverse_of: :mandate
   has_and_belongs_to_many :activities
   has_and_belongs_to_many :mandate_groups
+  has_and_belongs_to_many(
+    :mandate_groups_families,
+    -> { where(group_type: 'family') },
+    class_name: 'MandateGroup'
+  )
+  has_and_belongs_to_many(
+    :mandate_groups_organizations,
+    -> { where(group_type: 'organization') },
+    class_name: 'MandateGroup'
+  )
 
   aasm do
     state :prospect, initial: true

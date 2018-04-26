@@ -21,6 +21,8 @@ module V1
     has_many :documents
     has_many :bank_accounts
     has_many :owners, class_name: 'MandateMember'
+    has_many :mandate_groups_organizations, class_name: 'MandateGroup'
+    has_many :mandate_groups_families, class_name: 'MandateGroup'
     has_one :primary_consultant, class_name: 'Contact'
     has_one :secondary_consultant, class_name: 'Contact'
     has_one :assistant, class_name: 'Contact'
@@ -81,6 +83,10 @@ module V1
         "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) ILIKE ?",
         "%#{value[0]}%"
       )
+    }
+
+    filter :mandate_groups_organizations, apply: lambda { |records, value, _options|
+      records.joins(:mandate_groups_organizations).where('mandate_groups.name ILIKE ?', "%#{value[0]}%")
     }
 
     class << self

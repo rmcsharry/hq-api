@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     jsonapi_resources :documents
     jsonapi_resources :families
     jsonapi_resources :foreign_tax_numbers
+    jsonapi_resources :mandate_groups
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates
     jsonapi_resources :organization_members
