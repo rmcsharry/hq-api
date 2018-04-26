@@ -24,5 +24,16 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_one(:assistant).with_class_name('Contact') }
   it { is_expected.to have_one(:bookkeeper).with_class_name('Contact') }
 
+  it { is_expected.to filter(:"assistant.name") }
+  it { is_expected.to filter(:"bookkeeper.name") }
+  it { is_expected.to filter(:"primary_consultant.name") }
+  it { is_expected.to filter(:"secondary_consultant.name") }
+  it { is_expected.to filter(:category) }
   it { is_expected.to filter(:mandate_group_id) }
+  it { is_expected.to filter(:owner_name) }
+  it { is_expected.to filter(:state) }
+  it { is_expected.to filter(:valid_from_max) }
+  it { is_expected.to filter(:valid_from_min) }
+  it { is_expected.to filter(:valid_to_max) }
+  it { is_expected.to filter(:valid_to_min) }
 end

@@ -134,8 +134,8 @@ namespace :db do
           psplus_id: Faker::Number.number(10),
           primary_consultant: contacts.sample,
           secondary_consultant: contacts.sample,
-          assistant_id: contacts.sample,
-          bookkeeper_id: contacts.sample
+          assistant: contacts.sample,
+          bookkeeper: contacts.sample
         )
       end
       Mandate.import!(mandates)
