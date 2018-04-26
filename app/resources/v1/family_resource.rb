@@ -5,7 +5,7 @@ module V1
   class FamilyResource < JSONAPI::Resource
     model_name 'MandateGroup'
 
-    attributes(:name, :mandate_count)
+    attributes(:name, :mandate_count, :updated_at)
 
     has_many :mandates
     has_many :user_groups
