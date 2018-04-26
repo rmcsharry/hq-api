@@ -53,7 +53,7 @@ class BankAccount < ApplicationRecord
 
   def iban_or_bank_number_present
     return if iban.present? || bank_account_number.present?
-    errors.add(:iban_bank_account_numbe, "can't be blank together")
+    errors.add(:iban_bank_account_number, "can't be blank together")
   end
 
   def bank_name
