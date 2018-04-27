@@ -7,5 +7,13 @@ module V1
 
     has_many :mandates
     has_many :user_groups
+
+    filters(
+      :group_type
+    )
+
+    filter :name, apply: lambda { |records, value, _options|
+      records.where('mandate_groups.name ILIKE ?', "%#{value[0]}%")
+    }
   end
 end
