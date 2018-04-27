@@ -10,5 +10,10 @@ module V1
 
     filter :contact_id
     filter :mandate_id
+
+    filter :is_owner, apply: lambda { |records, value, _options|
+      is_owner = ActiveRecord::Type::Boolean.new.cast(value[0])
+      records.where("member_type #{is_owner ? '=' : '!='} 'owner'")
+    }
   end
 end

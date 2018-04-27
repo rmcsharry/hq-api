@@ -12,4 +12,6 @@ RSpec.describe V1::MandateMemberResource, type: :resource do
 
   it { is_expected.to have_one(:contact) }
   it { is_expected.to have_one(:mandate) }
+
+  it { is_expected.to filter(:is_owner) }
 end
