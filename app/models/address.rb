@@ -10,6 +10,7 @@
 #  city              :string
 #  country           :string
 #  addition          :string
+#  state             :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  category          :string
