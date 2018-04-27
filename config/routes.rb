@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   namespace :v1 do
     jsonapi_resources :addresses
+    jsonapi_resources :bank_accounts
     jsonapi_resources :contact_details
     jsonapi_resources :contacts
     jsonapi_resources :documents

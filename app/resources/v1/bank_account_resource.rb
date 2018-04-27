@@ -7,5 +7,7 @@ module V1
 
     has_one :mandate
     has_one :bank, class_name: 'Contact'
+
+    filter :mandate_id
   end
 end
