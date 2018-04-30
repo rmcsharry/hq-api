@@ -206,6 +206,7 @@ ActiveRecord::Schema.define(version: 2018_04_23_101725) do
     t.date "valid_to"
     t.string "datev_creditor_id"
     t.string "datev_debitor_id"
+    t.string "mandate_number"
     t.string "psplus_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

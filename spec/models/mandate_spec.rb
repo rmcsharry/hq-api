@@ -12,6 +12,7 @@
 #  valid_to                :date
 #  datev_creditor_id       :string
 #  datev_debitor_id        :string
+#  mandate_number          :string
 #  psplus_id               :string
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null

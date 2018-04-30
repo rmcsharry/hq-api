@@ -6,14 +6,15 @@ RSpec.describe V1::MandateResource, type: :resource do
   let(:mandate) { create(:mandate) }
   subject { described_class.new(mandate, {}) }
 
-  it { is_expected.to have_attribute :state }
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :comment }
-  it { is_expected.to have_attribute :valid_from }
-  it { is_expected.to have_attribute :valid_to }
   it { is_expected.to have_attribute :datev_creditor_id }
   it { is_expected.to have_attribute :datev_debitor_id }
+  it { is_expected.to have_attribute :mandate_number }
   it { is_expected.to have_attribute :psplus_id }
+  it { is_expected.to have_attribute :state }
+  it { is_expected.to have_attribute :valid_from }
+  it { is_expected.to have_attribute :valid_to }
 
   it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_many(:documents) }
@@ -31,9 +32,13 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to filter(:"primary_consultant.name") }
   it { is_expected.to filter(:"secondary_consultant.name") }
   it { is_expected.to filter(:category) }
+  it { is_expected.to filter(:datev_creditor_id) }
+  it { is_expected.to filter(:datev_debitor_id) }
   it { is_expected.to filter(:mandate_group_id) }
   it { is_expected.to filter(:mandate_groups_organizations) }
+  it { is_expected.to filter(:mandate_number) }
   it { is_expected.to filter(:owner_name) }
+  it { is_expected.to filter(:psplus_id) }
   it { is_expected.to filter(:state) }
   it { is_expected.to filter(:valid_from_max) }
   it { is_expected.to filter(:valid_from_min) }
