@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(version: 2018_04_23_101725) do
     t.string "city"
     t.string "country"
     t.string "addition"
+    t.string "state"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "category"

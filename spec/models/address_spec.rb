@@ -10,6 +10,7 @@
 #  city              :string
 #  country           :string
 #  addition          :string
+#  state             :string
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  category          :string
@@ -22,6 +23,7 @@ RSpec.describe Address, type: :model do
   it { is_expected.to validate_presence_of(:street_and_number) }
   it { is_expected.to validate_presence_of(:postal_code) }
   it { is_expected.to validate_presence_of(:city) }
+  it { is_expected.to respond_to(:state) }
 
   describe '#contact' do
     it { is_expected.to belong_to(:contact).required }
