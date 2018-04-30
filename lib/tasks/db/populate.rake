@@ -132,6 +132,7 @@ namespace :db do
           datev_creditor_id: Faker::Number.number(10),
           datev_debitor_id: Faker::Number.number(10),
           psplus_id: Faker::Number.number(10),
+          mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
           primary_consultant: contacts.sample,
           secondary_consultant: contacts.sample,
           assistant: contacts.sample,
