@@ -132,14 +132,14 @@ module V1
           bookkeeper.name
         ]
       end
-    end
 
-    private
+      private
 
-    def order_by_name_of_contact(records, direction)
-      records.order(
-        "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
-      )
+      def order_by_name_of_contact(records, direction)
+        records.order(
+          "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
+        )
+      end
     end
   end
   # rubocop:enable Metrics/ClassLength
