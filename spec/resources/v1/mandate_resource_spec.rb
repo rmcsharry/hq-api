@@ -44,4 +44,9 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to filter(:valid_from_min) }
   it { is_expected.to filter(:valid_to_max) }
   it { is_expected.to filter(:valid_to_min) }
+
+  it { is_expected.to have_sortable_field(:"primary_consultant.name") }
+  it { is_expected.to have_sortable_field(:"secondary_consultant.name") }
+  it { is_expected.to have_sortable_field(:"assistant.name") }
+  it { is_expected.to have_sortable_field(:"bookkeeper.name") }
 end

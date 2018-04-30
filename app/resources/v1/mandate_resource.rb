@@ -2,6 +2,7 @@
 
 module V1
   # Defines the Mandate resource for the API
+  # rubocop:disable Metrics/ClassLength
   class MandateResource < JSONAPI::Resource
     attributes(
       :category,
@@ -97,6 +98,22 @@ module V1
       records.joins(:mandate_groups_organizations).where('mandate_groups.name ILIKE ?', "%#{value[0]}%")
     }
 
+    sort :"primary_consultant.name", apply: lambda { |records, direction, _context|
+      order_by_name_of_contact(records.joins(:primary_consultant), direction)
+    }
+
+    sort :"secondary_consultant.name", apply: lambda { |records, direction, _context|
+      order_by_name_of_contact(records.joins(:secondary_consultant), direction)
+    }
+
+    sort :"assistant.name", apply: lambda { |records, direction, _context|
+      order_by_name_of_contact(records.joins(:assistant), direction)
+    }
+
+    sort :"bookkeeper.name", apply: lambda { |records, direction, _context|
+      order_by_name_of_contact(records.joins(:bookkeeper), direction)
+    }
+
     class << self
       def records(_options)
         super.with_owner_name
@@ -116,5 +133,14 @@ module V1
         ]
       end
     end
+
+    private
+
+    def order_by_name_of_contact(records, direction)
+      records.order(
+        "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
+      )
+    end
   end
+  # rubocop:enable Metrics/ClassLength
 end
