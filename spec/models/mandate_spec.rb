@@ -44,6 +44,11 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }
 
+  it { is_expected.to respond_to(:datev_creditor_id) }
+  it { is_expected.to respond_to(:datev_debitor_id) }
+  it { is_expected.to respond_to(:mandate_number) }
+  it { is_expected.to respond_to(:psplus_id) }
+
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }
