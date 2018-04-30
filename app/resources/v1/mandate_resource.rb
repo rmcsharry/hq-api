@@ -8,12 +8,13 @@ module V1
       :comment,
       :datev_creditor_id,
       :datev_debitor_id,
+      :mandate_number,
       :owner_name,
       :psplus_id,
       :state,
+      :updated_at,
       :valid_from,
-      :valid_to,
-      :updated_at
+      :valid_to
     )
 
     has_many :mandate_members
@@ -30,6 +31,9 @@ module V1
 
     filters(
       :category,
+      :datev_creditor_id,
+      :datev_debitor_id,
+      :psplus_id,
       :state
     )
 
@@ -39,6 +43,10 @@ module V1
 
     filter :owner_name, apply: lambda { |records, value, _options|
       records.with_owner_name.where('mandates.owner_name ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :mandate_number, apply: lambda { |records, value, _options|
+      records.with_owner_name.where('mandates.mandate_number ILIKE ?', "%#{value[0]}%")
     }
 
     filter :valid_from_min, apply: lambda { |records, value, _options|
