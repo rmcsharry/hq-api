@@ -3,9 +3,24 @@
 module V1
   # Defines the User Group resource for the API
   class UserGroupResource < JSONAPI::Resource
-    attributes :name, :comment
+    attributes(
+      :comment,
+      :name,
+      :updated_at,
+      :user_count
+    )
 
     has_many :users
     has_many :mandate_groups
+
+    filter :user_id, apply: lambda { |records, value, _options|
+      records.joins(:users).where('users.id = ?', value[0])
+    }
+
+    class << self
+      def records(_options)
+        super.with_user_count
+      end
+    end
   end
 end

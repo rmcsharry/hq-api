@@ -4,13 +4,6 @@
 namespace :db do
   desc 'Populate test data'
   task populate: ['db:schema:load'] do
-    populate 'users' do
-      password = 'testmctest1A!'
-      User.create!(email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
-      User.create!(email: 'sales@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
-      User.create!(email: 'bookkeeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago)
-    end
-
     populate 'contact persons' do
       contacts = Array.new(86) do
         Contact::Person.new(
@@ -61,6 +54,22 @@ namespace :db do
       Address.import!(addresses.flatten)
       Contact::Organization.import!(
         contacts_with_addresses, on_duplicate_key_update: %i[primary_contact_address_id legal_address_id]
+      )
+    end
+
+    populate 'users' do
+      password = 'testmctest1A!'
+      User.create!(
+        email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        comment: Faker::RickAndMorty.quote
+      )
+      User.create!(
+        email: 'sales@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        comment: Faker::RickAndMorty.quote
+      )
+      User.create!(
+        email: 'bookkeeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        comment: Faker::RickAndMorty.quote
       )
     end
 

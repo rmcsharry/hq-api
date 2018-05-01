@@ -17,4 +17,12 @@ class UserGroup < ApplicationRecord
   has_and_belongs_to_many :users
 
   validates :name, presence: true
+
+  scope :with_user_count, lambda {
+    from(
+      '(SELECT ug.*, uc.user_count FROM user_groups ug LEFT JOIN (SELECT ugu.user_group_id AS ' \
+      'user_group_id, COUNT(*) AS user_count FROM user_groups_users ugu GROUP BY ugu.user_group_id) ' \
+      'uc ON ug.id = uc.user_group_id) user_groups'
+    )
+  }
 end

@@ -29,4 +29,13 @@ RSpec.describe UserGroup, type: :model do
   describe '#comment' do
     it { is_expected.to respond_to(:comment) }
   end
+
+  describe '#user_group_count' do
+    subject { create(:user_group) }
+    let!(:users) { create_list(:user, 3, user_groups: [subject]) }
+
+    it 'counts 3 user' do
+      expect(UserGroup.with_user_count.where(id: subject.id).first.user_count).to eq 3
+    end
+  end
 end

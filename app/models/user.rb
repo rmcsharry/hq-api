@@ -32,10 +32,13 @@
 #  invited_by_type        :string
 #  invited_by_id          :bigint(8)
 #  invitations_count      :integer          default(0)
+#  comment                :text
+#  contact_id             :uuid
 #
 # Indexes
 #
 #  index_users_on_confirmation_token                 (confirmation_token) UNIQUE
+#  index_users_on_contact_id                         (contact_id)
 #  index_users_on_email                              (email) UNIQUE
 #  index_users_on_invitation_token                   (invitation_token) UNIQUE
 #  index_users_on_invitations_count                  (invitations_count)
@@ -43,6 +46,10 @@
 #  index_users_on_invited_by_type_and_invited_by_id  (invited_by_type,invited_by_id)
 #  index_users_on_reset_password_token               (reset_password_token) UNIQUE
 #  index_users_on_unlock_token                       (unlock_token) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (contact_id => contacts.id)
 #
 
 # Defines the User model used for authentication
@@ -52,7 +59,16 @@ class User < ApplicationRecord
   devise :database_authenticatable, :invitable, :registerable, :recoverable, :rememberable, :trackable, :validatable,
          :jwt_authenticatable, :confirmable, :lockable, jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
+  belongs_to :contact
   has_many :activities, inverse_of: :creator, dependent: :nullify
   has_many :documents, inverse_of: :uploader, dependent: :nullify
   has_and_belongs_to_many :user_groups
+
+  scope :with_user_group_count, lambda {
+    from(
+      '(SELECT u.*, ugc.user_group_count FROM users u LEFT JOIN (SELECT ugu.user_id AS ' \
+      'user_id, COUNT(*) AS user_group_count FROM user_groups_users ugu GROUP BY ugu.user_id) ' \
+      'ugc ON u.id = ugc.user_id) users'
+    )
+  }
 end

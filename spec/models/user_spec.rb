@@ -32,10 +32,13 @@
 #  invited_by_type        :string
 #  invited_by_id          :bigint(8)
 #  invitations_count      :integer          default(0)
+#  comment                :text
+#  contact_id             :uuid
 #
 # Indexes
 #
 #  index_users_on_confirmation_token                 (confirmation_token) UNIQUE
+#  index_users_on_contact_id                         (contact_id)
 #  index_users_on_email                              (email) UNIQUE
 #  index_users_on_invitation_token                   (invitation_token) UNIQUE
 #  index_users_on_invitations_count                  (invitations_count)
@@ -44,15 +47,34 @@
 #  index_users_on_reset_password_token               (reset_password_token) UNIQUE
 #  index_users_on_unlock_token                       (unlock_token) UNIQUE
 #
+# Foreign Keys
+#
+#  fk_rails_...  (contact_id => contacts.id)
+#
 
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  it { is_expected.to respond_to(:comment) }
+
+  describe '#contact' do
+    it { is_expected.to belong_to(:contact) }
+  end
+
   describe '#user_groups' do
     it { is_expected.to have_and_belong_to_many(:user_groups) }
   end
 
   describe '#activities' do
     it { is_expected.to have_many(:activities) }
+  end
+
+  describe '#user_group_count' do
+    subject { create(:user) }
+    let!(:user_groups) { create_list(:user_group, 3, users: [subject]) }
+
+    it 'counts 3 user groups' do
+      expect(User.with_user_group_count.where(id: subject.id).first.user_group_count).to eq 3
+    end
   end
 end

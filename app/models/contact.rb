@@ -57,6 +57,7 @@ class Contact < ApplicationRecord
   has_many :organizations, through: :organization_memberships
   has_one :compliance_detail, dependent: :destroy
   has_one :tax_detail, dependent: :destroy
+  has_one :user, dependent: :destroy
   has_one :primary_email,
           -> { where(primary: true) },
           class_name: 'ContactDetail::Email',

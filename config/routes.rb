@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates
     jsonapi_resources :organization_members
+    jsonapi_resources :user_groups
+    jsonapi_resources :users
   end
 
   root to: 'v1/users#index'
