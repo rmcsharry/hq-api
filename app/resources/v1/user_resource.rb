@@ -32,6 +32,10 @@ module V1
       )
     }
 
+    filter :user_group_id, apply: lambda { |records, value, _options|
+      records.joins(:user_groups).where('user_groups.id = ?', value[0])
+    }
+
     filter :current_sign_in_at_min, apply: lambda { |records, value, _options|
       records.where('users.current_sign_in_at >= ?', Date.parse(value[0]))
     }

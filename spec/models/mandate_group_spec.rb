@@ -7,6 +7,7 @@
 #  id         :uuid             not null, primary key
 #  name       :string
 #  group_type :string
+#  comment    :text
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

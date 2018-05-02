@@ -6,6 +6,7 @@ module V1
     attributes(
       :comment,
       :name,
+      :roles,
       :updated_at,
       :user_count
     )
@@ -16,6 +17,14 @@ module V1
     filter :user_id, apply: lambda { |records, value, _options|
       records.joins(:users).where('users.id = ?', value[0])
     }
+
+    filter :name, apply: lambda { |records, value, _options|
+      records.where('user_groups.name ILIKE ?', "%#{value[0]}%")
+    }
+
+    def roles
+      %i[admin mandate_read mandate_write]
+    end
 
     class << self
       def records(_options)

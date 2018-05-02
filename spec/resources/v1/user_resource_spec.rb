@@ -29,6 +29,7 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to filter(:sign_in_count) }
   it { is_expected.to filter(:updated_at_max) }
   it { is_expected.to filter(:updated_at_min) }
+  it { is_expected.to filter(:user_group_id) }
 
   it { is_expected.to have_sortable_field(:"contact.name") }
 end

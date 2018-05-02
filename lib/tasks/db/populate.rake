@@ -9,7 +9,7 @@ namespace :db do
         Contact::Person.new(
           first_name: Faker::Name.first_name,
           last_name: Faker::Name.last_name,
-          comment: Faker::RickAndMorty.quote,
+          comment: Faker::SiliconValley.quote,
           gender: Contact::Person::GENDERS.sample,
           nobility_title: rand > 0.8 ? Contact::Person::NOBILITY_TITLES.sample : nil,
           professional_title: rand > 0.5 ? Contact::Person::PROFESSIONAL_TITLES.sample : nil,
@@ -61,15 +61,15 @@ namespace :db do
       password = 'testmctest1A!'
       User.create!(
         email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
-        comment: Faker::RickAndMorty.quote
+        comment: Faker::SiliconValley.quote
       )
       User.create!(
         email: 'sales@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
-        comment: Faker::RickAndMorty.quote
+        comment: Faker::SiliconValley.quote
       )
       User.create!(
         email: 'bookkeeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
-        comment: Faker::RickAndMorty.quote
+        comment: Faker::SiliconValley.quote
       )
     end
 
@@ -135,7 +135,7 @@ namespace :db do
         Mandate.new(
           aasm_state: %i[prospect client cancelled].sample,
           category: Mandate::CATEGORIES.sample,
-          comment: Faker::RickAndMorty.quote,
+          comment: Faker::SiliconValley.quote,
           valid_from: valid_from,
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
           datev_creditor_id: Faker::Number.number(10),
@@ -171,26 +171,32 @@ namespace :db do
       mandates = Mandate.all
       32.times do
         MandateGroup.create(
-          name: Faker::GameOfThrones.house,
+          comment: Faker::SiliconValley.quote,
           group_type: :family,
-          mandates: mandates.sample(Faker::Number.between(2, 12))
+          mandates: mandates.sample(Faker::Number.between(2, 12)),
+          name: Faker::GameOfThrones.house
         )
       end
       12.times do
         MandateGroup.create(
-          name: Faker::Company.name,
+          comment: Faker::SiliconValley.quote,
           group_type: :organization,
-          mandates: mandates.sample(Faker::Number.between(5, 34))
+          mandates: mandates.sample(Faker::Number.between(5, 34)),
+          name: Faker::Company.name
         )
       end
     end
 
     populate 'user groups' do
       UserGroup.create!(
+        comment: Faker::SiliconValley.quote,
+        mandate_groups: MandateGroup.organizations.all,
         name: 'Administratoren',
         users: [User.first]
       )
       UserGroup.create!(
+        comment: Faker::SiliconValley.quote,
+        mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
         name: 'HQ Trust',
         users: User.all
       )

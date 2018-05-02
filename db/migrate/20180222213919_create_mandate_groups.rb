@@ -3,6 +3,7 @@ class CreateMandateGroups < ActiveRecord::Migration[5.1]
     create_table :mandate_groups, id: :uuid do |t|
       t.string :name
       t.string :group_type
+      t.text :comment
 
       t.timestamps
     end

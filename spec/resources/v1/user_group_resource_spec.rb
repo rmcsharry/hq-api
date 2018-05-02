@@ -8,6 +8,7 @@ RSpec.describe V1::UserGroupResource, type: :resource do
 
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :name }
+  it { is_expected.to have_attribute :roles }
   it { is_expected.to have_attribute :updated_at }
   it { is_expected.to have_attribute :user_count }
 
@@ -15,4 +16,5 @@ RSpec.describe V1::UserGroupResource, type: :resource do
   it { is_expected.to have_many(:mandate_groups) }
 
   it { is_expected.to filter(:user_id) }
+  it { is_expected.to filter(:name) }
 end
