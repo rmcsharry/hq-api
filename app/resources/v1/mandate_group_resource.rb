@@ -4,6 +4,7 @@ module V1
   # Defines the Mandate Group resource for the API
   class MandateGroupResource < JSONAPI::Resource
     attributes(
+      :comment,
       :group_type,
       :mandate_count,
       :name,
