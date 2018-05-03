@@ -96,6 +96,14 @@ RSpec.describe BankAccount, type: :model do
       it { is_expected.to_not be_valid }
     end
 
+    context 'iban and bank_account_number present' do
+      let(:iban) { 'DE21301204000000015228' }
+      let(:bic) { Faker::Bank.swift_bic }
+      let(:bank_account_number) { '1234567890' }
+      let(:bank_routing_number) { '09876543' }
+      it { is_expected.to_not be_valid }
+    end
+
     context 'with bank name present' do
       it "returns the Bank's name" do
         expect(subject.bank_name).to eq('Deutsche Bank')

@@ -33,6 +33,7 @@ class BankAccount < ApplicationRecord
   extend Enumerize
 
   CURRENCIES = Money::Currency.all.map(&:iso_code)
+  ACCOUNT_TYPE = %i[currency_account settlement_account].freeze
 
   belongs_to :mandate
   belongs_to :bank, class_name: 'Contact::Organization', inverse_of: :bank_accounts
@@ -48,12 +49,12 @@ class BankAccount < ApplicationRecord
 
   validate :iban_or_bank_number_present
 
-  enumerize :account_type, in: %i[currency_account settlement_account], scope: true
+  enumerize :account_type, in: ACCOUNT_TYPE, scope: true
   enumerize :currency, in: CURRENCIES
 
   def iban_or_bank_number_present
-    return if iban.present? || bank_account_number.present?
-    errors.add(:iban_bank_account_number, "can't be blank together")
+    return if (iban.present? && bank_account_number.blank?) || (iban.blank? && bank_account_number.present?)
+    errors.add(:iban_bank_account_number, 'exactly one of IBAN or bank account number must be set')
   end
 
   def bank_name

@@ -237,6 +237,17 @@ namespace :db do
       end
       Document.import!(documents)
     end
+
+    populate 'bank account' do
+      bank_accounts = []
+      banks = Contact::Organization.all
+      # 10% should be banks
+      banks = banks.sample((banks.length * 0.1).to_i)
+      Mandate.all.map do |mandate|
+        bank_accounts.push(generate_bank_accounts(mandate, banks))
+      end
+      BankAccount.import!(bank_accounts.flatten)
+    end
   end
 
   def populate(name)
@@ -389,6 +400,27 @@ namespace :db do
       member_type: (MandateMember::MEMBER_TYPES - [:owner]).sample,
       start_date: start_date,
       end_date: start_date ? Faker::Date.between(start_date, 3.years.from_now) : nil
+    )
+  end
+
+  def generate_bank_accounts(mandate, banks)
+    Array.new(rand(1..5)) do
+      bank = banks.sample
+      use_iban = Faker::Boolean.boolean(0.66)
+      create_bank_account(mandate, bank, use_iban)
+    end
+  end
+
+  def create_bank_account(mandate, bank, use_iban)
+    BankAccount.new(
+      account_type: BankAccount::ACCOUNT_TYPE.sample,
+      owner: Faker::Name.name,
+      currency: BankAccount::CURRENCIES.sample,
+      bank: bank, mandate: mandate,
+      bank_account_number: !use_iban ? Faker::Number.number(10) : nil,
+      bank_routing_number: !use_iban ? Faker::Number.number(8) : nil,
+      bic: use_iban ? Faker::Bank.swift_bic : nil,
+      iban: use_iban ? IbanGenerator.random_iban : nil
     )
   end
 end
