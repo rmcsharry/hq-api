@@ -130,6 +130,7 @@ GEM
     bullet (5.7.5)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11.0)
+    byebug (10.0.2)
     carmen (1.1.0)
       activesupport (>= 3.0.0)
     coderay (1.1.2)
@@ -232,6 +233,9 @@ GEM
       activesupport (>= 3.0)
       phony (> 2.15)
     powerpack (0.1.1)
+    pry-byebug (3.6.0)
+      byebug (~> 10.0)
+      pry (~> 0.10)
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.2)
@@ -390,6 +394,7 @@ DEPENDENCIES
   pg (~> 0.18)
   phony_rails
   pry!
+  pry-byebug
   pry-rails
   puma (~> 3.7)
   r7insight

@@ -67,7 +67,7 @@ group :development, :test do
   gem 'bullet'                                                      # Detect N+1 queries
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
-  # gem 'pry-byebug'                                                  # Debugger
+  gem 'pry-byebug'                                                  # Debugger
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
   gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
