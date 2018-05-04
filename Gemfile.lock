@@ -18,16 +18,25 @@ GIT
 
 GIT
   remote: https://github.com/ctran/annotate_models.git
-  revision: 3cfde3727795efe04c1a62bd5de199e0b01cfff5
+  revision: d57ef25536e8abf4cab435cbd4a8b970a229e376
   branch: develop
   specs:
-    annotate (2.7.2)
+    annotate (2.7.3)
       activerecord (>= 3.2, < 6.0)
       rake (>= 10.4, < 13.0)
 
 GIT
+  remote: https://github.com/pry/pry.git
+  revision: bec4ae4e55b911742d45c8f50a080f940bce98ce
+  branch: master
+  specs:
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+
+GIT
   remote: https://github.com/thoughtbot/shoulda-matchers.git
-  revision: 7fd9ac6413b3955e4e9d736fd48f35b6b5241b56
+  revision: c0960bd72dd41c4e9bd8b4375254f539776bfe95
   branch: master
   specs:
     shoulda-matchers (3.1.2)
@@ -74,7 +83,7 @@ GEM
       activemodel (= 5.2.0)
       activesupport (= 5.2.0)
       arel (>= 9.0)
-    activerecord-import (0.22.0)
+    activerecord-import (0.23.0)
       activerecord (>= 3.2)
     activestorage (5.2.0)
       actionpack (= 5.2.0)
@@ -85,19 +94,19 @@ GEM
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
-    addressable (2.5.2)
-      public_suffix (>= 2.0.2, < 4.0)
     adamantium (0.2.0)
       ice_nine (~> 0.11.0)
       memoizable (~> 0.4.0)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     akami (1.3.1)
       gyoku (>= 0.4.0)
       nokogiri
     arel (9.0.0)
     ast (2.4.0)
     awesome_print (1.8.0)
-    aws-partitions (1.80.0)
-    aws-sdk-core (3.19.0)
+    aws-partitions (1.83.0)
+    aws-sdk-core (3.20.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
@@ -107,7 +116,7 @@ GEM
     aws-sdk-rails (2.0.1)
       aws-sdk-ses (~> 1)
       railties (>= 3)
-    aws-sdk-s3 (1.9.0)
+    aws-sdk-s3 (1.9.1)
       aws-sdk-core (~> 3)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.0)
@@ -121,14 +130,13 @@ GEM
     bullet (5.7.5)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11.0)
-    byebug (10.0.2)
     carmen (1.1.0)
       activesupport (>= 3.0.0)
     coderay (1.1.2)
     colorize (0.8.1)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
-    database_cleaner (1.6.2)
+    database_cleaner (1.7.0)
     devise (4.4.3)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -168,7 +176,7 @@ GEM
       railties (>= 3.0.0)
     faker (1.8.7)
       i18n (>= 0.7)
-    faraday (0.14.0)
+    faraday (0.15.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.23)
     globalid (0.4.1)
@@ -178,7 +186,7 @@ GEM
     httpi (2.4.3)
       rack
       socksify
-    i18n (1.0.0)
+    i18n (1.0.1)
       concurrent-ruby (~> 1.0)
     ibanizator (0.3.4)
       adamantium (~> 0.2.0)
@@ -207,10 +215,10 @@ GEM
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
-    money (6.10.1)
-      i18n (>= 0.6.4, < 1.0)
+    money (6.11.2)
+      i18n (>= 0.6.4, < 1.1)
     multipart-post (2.0.0)
-    nio4r (2.3.0)
+    nio4r (2.3.1)
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     nori (2.6.0)
@@ -224,12 +232,6 @@ GEM
       activesupport (>= 3.0)
       phony (> 2.15)
     powerpack (0.1.1)
-    pry (0.11.3)
-      coderay (~> 1.1.0)
-      method_source (~> 0.9.0)
-    pry-byebug (3.6.0)
-      byebug (~> 10.0)
-      pry (~> 0.10)
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.2)
@@ -237,7 +239,7 @@ GEM
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     r7insight (2.7.6)
-    rack (2.0.4)
+    rack (2.0.5)
     rack-cors (1.0.2)
     rack-test (1.0.0)
       rack (>= 1.0, < 3)
@@ -292,7 +294,7 @@ GEM
       rspec-mocks (~> 3.7.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.1)
-    rubocop (0.54.0)
+    rubocop (0.55.0)
       parallel (~> 1.10)
       parser (>= 2.5)
       powerpack (~> 0.1)
@@ -311,7 +313,7 @@ GEM
       nokogiri (>= 1.8.1)
       nori (~> 2.4)
       wasabi (~> 3.4)
-    sentry-raven (2.7.2)
+    sentry-raven (2.7.3)
       faraday (>= 0.7.6, < 1.0)
     socksify (1.7.1)
     spring (2.0.2)
@@ -335,7 +337,7 @@ GEM
       thread_safe (~> 0.1)
     tzinfo-data (1.2018.4)
       tzinfo (>= 1.0.0)
-    unicode-display_width (1.3.0)
+    unicode-display_width (1.3.2)
     uniform_notifier (1.11.0)
     validate_url (1.0.2)
       activemodel (>= 3.0.0)
@@ -387,7 +389,7 @@ DEPENDENCIES
   money
   pg (~> 0.18)
   phony_rails
-  pry-byebug
+  pry!
   pry-rails
   puma (~> 3.7)
   r7insight

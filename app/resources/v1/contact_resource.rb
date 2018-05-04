@@ -17,6 +17,7 @@ module V1
       :first_name,
       :gender,
       :last_name,
+      :legal_address,
       :maiden_name,
       :name,
       :nationality,
@@ -25,6 +26,7 @@ module V1
       :organization_industry,
       :organization_name,
       :organization_type,
+      :primary_contact_address,
       :professional_title,
       :updated_at
     )
@@ -43,6 +45,35 @@ module V1
     has_one :legal_address, class_name: 'Address'
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
+
+    # rubocop:disable Metrics/MethodLength
+    def legal_address=(params)
+      @model.build_legal_address(
+        addition: params[:addition],
+        category: params[:category] || 'home',
+        city: params[:city],
+        contact: @model,
+        country: params[:country],
+        postal_code: params[:'postal-code'],
+        state: params[:state],
+        street_and_number: params[:'street-and-number']
+      )
+      @model.primary_contact_address = @model.legal_address if @model.primary_contact_address.blank?
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def primary_contact_address=(params)
+      @model.build_primary_contact_address(
+        addition: params[:addition],
+        category: params[:category],
+        city: params[:city],
+        contact: @model,
+        country: params[:country],
+        postal_code: params[:'postal-code'],
+        state: params[:state],
+        street_and_number: params[:'street-and-number']
+      )
+    end
 
     filters(
       :comment,

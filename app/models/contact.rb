@@ -40,10 +40,8 @@
 
 # Defines the Contact model
 class Contact < ApplicationRecord
-  belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :legal_address_contact
-  belongs_to(
-    :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :primary_contact_address_contact
-  )
+  belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :contact
+  belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :contact
   has_many :addresses, dependent: :destroy
   has_many :primary_consultant_mandates, class_name: 'Mandate', inverse_of: :primary_consultant, dependent: :nullify
   has_many :secondary_consultant_mandates, class_name: 'Mandate', inverse_of: :secondary_consultant, dependent: :nullify
@@ -73,6 +71,8 @@ class Contact < ApplicationRecord
       "(SELECT COALESCE(first_name || ' ' || last_name, organization_name) AS name, contacts.* FROM contacts) contacts"
     )
   }
+
+  validates_associated :legal_address, :primary_contact_address
 
   alias_attribute :contact_type, :type
 

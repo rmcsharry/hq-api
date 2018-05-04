@@ -53,6 +53,7 @@ gem 'activerecord-import'                                           # Bulk impor
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 
 # Testing & Debugging
+gem 'pry', github: 'pry/pry', branch: 'master'
 gem 'pry-rails'
 gem 'terminal-table'
 
@@ -66,7 +67,7 @@ group :development, :test do
   gem 'bullet'                                                      # Detect N+1 queries
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
-  gem 'pry-byebug'                                                  # Debugger
+  # gem 'pry-byebug'                                                  # Debugger
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
   gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
