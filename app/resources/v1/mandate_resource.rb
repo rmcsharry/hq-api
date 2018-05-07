@@ -30,6 +30,12 @@ module V1
     has_one :assistant, class_name: 'Contact'
     has_one :bookkeeper, class_name: 'Contact'
 
+    def owner_ids=(relationship_key_values)
+      relationship_key_values.each do |key|
+        @model.owners << MandateMember.new(member_type: 'owner', contact: Contact.find(key))
+      end
+    end
+
     filters(
       :category,
       :datev_creditor_id,
