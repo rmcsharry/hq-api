@@ -117,4 +117,36 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'GET /v1/contacts' do
+    let!(:user) { create(:user) }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+    let!(:contacts) { create_list(:contact_person, 10, :with_contact_details) }
+
+    context 'authenticated as user' do
+      it 'fetches the contacts' do
+        get(CONTACTS_ENDPOINT, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(body['meta']['total-record-count']).to eq 11
+      end
+    end
+
+    context 'with includes' do
+      let(:params) { { include: 'legal-address,primary-contact-address,primary-email,primary-phone' } }
+
+      it 'fetches the contacts with includes' do
+        get(CONTACTS_ENDPOINT, params: params, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'included', 'links'
+        expect(body['included'].length).to eq 40
+        expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 20
+        expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 20
+        expect(body['meta']['total-record-count']).to eq 11
+      end
+    end
+  end
 end

@@ -152,7 +152,7 @@ module V1
 
     class << self
       def records(_options)
-        super.with_name
+        super.with_name.includes(:legal_address, :primary_contact_address)
       end
 
       def sortable_fields(context)

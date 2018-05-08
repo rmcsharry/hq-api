@@ -44,4 +44,11 @@ Rails.application.configure do
 
   # Configure ActiveStorage
   config.active_storage.service = :test
+
+  # Enable Bullet for testing
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.raise = true
+    Bullet.bullet_logger = true
+  end
 end
