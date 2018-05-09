@@ -35,6 +35,9 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :aws_sdk
   config.action_mailer.default_url_options = { host: Rails.application.secrets.host_url }
 
+  # Routes configuration
+  routes.default_url_options = { host: Rails.application.secrets.host_url }
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

@@ -3,8 +3,54 @@
 # rubocop:disable Metrics/BlockLength
 namespace :db do
   desc 'Populate test data'
-  task populate: ['db:schema:load'] do
-    populate 'contact persons' do
+  task populate: [:environment, 'db:schema:load'] do
+    ActiveRecord::Base.transaction do
+      puts 'Creating contact persons'
+      Rake::Task['db:populate:contact_persons'].invoke
+
+      puts 'Creating contact organization'
+      Rake::Task['db:populate:contact_organizations'].invoke
+
+      puts 'Creating users'
+      Rake::Task['db:populate:users'].invoke
+
+      puts 'Creating tax details'
+      Rake::Task['db:populate:tax_details'].invoke
+
+      puts 'Creating compliance details'
+      Rake::Task['db:populate:compliance_details'].invoke
+
+      puts 'Creating contact details'
+      Rake::Task['db:populate:contact_details'].invoke
+
+      puts 'Creating mandates'
+      Rake::Task['db:populate:mandates'].invoke
+
+      puts 'Creating mandate members'
+      Rake::Task['db:populate:mandate_members'].invoke
+
+      puts 'Creating organization members'
+      Rake::Task['db:populate:organization_members'].invoke
+
+      puts 'Creating mandate groups'
+      Rake::Task['db:populate:mandate_groups'].invoke
+
+      puts 'Creating user groups'
+      Rake::Task['db:populate:user_groups'].invoke
+
+      puts 'Creating activities'
+      Rake::Task['db:populate:activities'].invoke
+
+      puts 'Creating documents'
+      Rake::Task['db:populate:documents'].invoke
+
+      puts 'Creating bank accounts'
+      Rake::Task['db:populate:bank_accounts'].invoke
+    end
+  end
+
+  namespace :populate do
+    task contact_persons: :environment do
       contacts = Array.new(86) do
         Contact::Person.new(
           first_name: Faker::Name.first_name,
@@ -32,7 +78,7 @@ namespace :db do
       )
     end
 
-    populate 'contact organizations' do
+    task contact_organizations: :environment do
       addresses = []
       contacts = Array.new(35) do
         Contact::Organization.new(
@@ -57,7 +103,7 @@ namespace :db do
       )
     end
 
-    populate 'users' do
+    task users: :environment do
       password = 'testmctest1A!'
       User.create!(
         email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
@@ -73,17 +119,17 @@ namespace :db do
       )
     end
 
-    populate 'tax details' do
+    task tax_details: :environment do
       generate_person_tax_details
       generate_organization_tax_details
     end
 
-    populate 'compliance details' do
+    task compliance_details: :environment do
       generate_person_compliance_details
       generate_organization_compliance_details
     end
 
-    populate 'contact details' do
+    task contact_details: :environment do
       contact_details = Contact.all.map do |contact|
         categories = contact.organization? ? %i[work] : ContactDetail::CATEGORIES
         [
@@ -128,7 +174,7 @@ namespace :db do
       ContactDetail.import!(contact_details.flatten)
     end
 
-    populate 'mandates' do
+    task mandates: :environment do
       contacts = Contact::Person.all
       mandates = Array.new(48) do
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
@@ -151,7 +197,7 @@ namespace :db do
       Mandate.import!(mandates)
     end
 
-    populate 'mandate members' do
+    task mandate_members: :environment do
       contacts = Contact.all
       mandate_members = Mandate.all.map do |mandate|
         generate_mandate_members(mandate: mandate, contacts: contacts)
@@ -159,7 +205,7 @@ namespace :db do
       MandateMember.import!(mandate_members.flatten)
     end
 
-    populate 'organization members' do
+    task organization_members: :environment do
       contacts = Contact.all
       organization_members = Contact::Organization.all.map do |organization|
         generate_organization_members(organization: organization, contacts: contacts)
@@ -167,7 +213,7 @@ namespace :db do
       OrganizationMember.import!(organization_members.flatten)
     end
 
-    populate 'mandate groups' do
+    task mandate_groups: :environment do
       mandates = Mandate.all
       32.times do
         MandateGroup.create(
@@ -187,7 +233,7 @@ namespace :db do
       end
     end
 
-    populate 'user groups' do
+    task user_groups: :environment do
       UserGroup.create!(
         comment: Faker::SiliconValley.quote,
         mandate_groups: MandateGroup.organizations.all,
@@ -202,7 +248,7 @@ namespace :db do
       )
     end
 
-    populate 'activities' do
+    task activities: :environment do
       participants = { contacts: Contact.all, mandates: Mandate.all }
       users = User.all
       activities = Array.new(432) do
@@ -220,25 +266,31 @@ namespace :db do
       Activity.import!(activities)
     end
 
-    populate 'documents' do
+    task documents: :environment do
       users = User.all
       owners = [Contact.all, Mandate.all, Activity.all].flatten
       documents = Array.new(847) do
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
-        Document.new(
-          name: Faker::SiliconValley.invention,
-          category: Document::CATEGORIES.sample,
+        generate_document(
           valid_from: valid_from,
-          valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
-          uploader: users.sample,
           owner: owners.sample,
-          file: Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')
+          uploader: users.sample
         )
       end
       Document.import!(documents)
+      document = Document.first
+      document.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')),
+        filename: 'hqtrust_sample.pdf',
+        content_type: 'application/pdf'
+      )
+      blob = document.file.blob
+      Document.where.not(id: document.id).find_each do |doc|
+        doc.file.attach(blob)
+      end
     end
 
-    populate 'bank account' do
+    task bank_accounts: :environment do
       bank_accounts = []
       banks = Contact::Organization.all
       # 10% should be banks
@@ -248,12 +300,6 @@ namespace :db do
       end
       BankAccount.import!(bank_accounts.flatten)
     end
-  end
-
-  def populate(name)
-    print "Populating #{name}... "
-    yield
-    puts 'done'
   end
 
   def contact_with_addresses(contact)
@@ -391,6 +437,17 @@ namespace :db do
         role: %w[Geschäftsführer Gesellschafter Mitarbeiter Berater].sample
       )
     end
+  end
+
+  def generate_document(valid_from:, owner:, uploader:)
+    Document.new(
+      name: Faker::SiliconValley.invention,
+      category: Document::CATEGORIES.sample,
+      valid_from: valid_from,
+      valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
+      uploader: uploader,
+      owner: owner
+    )
   end
 
   def create_other_mandate_member(mandate:, contacts:, start_date:)

@@ -75,6 +75,7 @@ end
 
 group :development do
   gem 'annotate', github: 'ctran/annotate_models', branch: 'develop'  # Use Annotate to add database schema to models
+  gem 'get_process_mem'
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'spring'                                                        # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'

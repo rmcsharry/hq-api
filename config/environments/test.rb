@@ -36,6 +36,9 @@ Rails.application.configure do
   # ActionMailer::Base.deliveries array.
   config.action_mailer.delivery_method = :test
 
+  # Routes configuration
+  routes.default_url_options = { host: 'http://localhost:3000' }
+
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
@@ -44,11 +47,6 @@ Rails.application.configure do
 
   # Configure ActiveStorage
   config.active_storage.service = :test
-
-  routes.default_url_options = {
-    host: ENV['HTTP_HOST'] || 'localhost',
-    port: ENV['PORT'] || 3000
-  }
 
   # Enable Bullet for testing
   config.after_initialize do
