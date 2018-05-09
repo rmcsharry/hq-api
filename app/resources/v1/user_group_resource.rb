@@ -26,6 +26,10 @@ module V1
       %i[admin mandate_read mandate_write]
     end
 
+    def roles=(_params)
+      # TODO: Set roles
+    end
+
     class << self
       def records(_options)
         super.with_user_count

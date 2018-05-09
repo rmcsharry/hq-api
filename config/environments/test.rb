@@ -45,6 +45,11 @@ Rails.application.configure do
   # Configure ActiveStorage
   config.active_storage.service = :test
 
+  routes.default_url_options = {
+    host: ENV['HTTP_HOST'] || 'localhost',
+    port: ENV['PORT'] || 3000
+  }
+
   # Enable Bullet for testing
   config.after_initialize do
     Bullet.enable = true

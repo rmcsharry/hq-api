@@ -7,6 +7,7 @@ module V1
       :category,
       :created_at,
       :name,
+      :file_url,
       :valid_from,
       :valid_to
     )
@@ -14,5 +15,15 @@ module V1
     has_one :owner, polymorphic: true
 
     filter :owner_id
+
+    def file_url
+      Rails.application.routes.url_helpers.rails_blob_url(@model.file)
+    end
+
+    class << self
+      def records(_options)
+        super.includes(file_attachment: [:blob])
+      end
+    end
   end
 end
