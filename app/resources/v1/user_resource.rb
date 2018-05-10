@@ -3,6 +3,8 @@
 module V1
   # Defines the User resource for the API
   class UserResource < JSONAPI::Resource
+    custom_action :invite, type: :post, level: :collection
+
     attributes(
       :comment,
       :confirmed_at,
@@ -73,6 +75,13 @@ module V1
                "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
              )
     }
+
+    def invite(data)
+      contact = Contact.find(data.require(:relationships).require(:contact).require(:data).require(:id))
+      user_group_ids = data.require(:relationships).require(:user_groups).require(:data).map { |ug| ug.require(:id) }
+      user_groups = UserGroup.find(user_group_ids)
+      User.invite!(email: data.require(:attributes).require(:email), contact: contact, user_groups: user_groups)
+    end
 
     class << self
       def records(_options)

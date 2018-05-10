@@ -26,7 +26,7 @@ gem 'devise_invitable'                                              # Invitation
 
 # API Handling
 gem 'jsonapi-authorization', '~> 1.0.0.alpha6' # Authz for JSON API
-gem 'jsonapi-resources', github: 'HQTrust/jsonapi-resources', branch: 'feature/properly-join-associations' # JSON API Resource handling
+gem 'jsonapi-resources', github: 'HQTrust/jsonapi-resources', branch: 'hqtrust' # JSON API Resource handling
 gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # Business Logic & Validation

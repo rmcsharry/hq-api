@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/HQTrust/jsonapi-resources.git
-  revision: 4c6d991493d9e914c6d77975a6256c4b9958058f
-  branch: feature/properly-join-associations
+  revision: 65bc5ced36c4ea25687a3e1d0b8db6ce0a27d53f
+  branch: hqtrust
   specs:
     jsonapi-resources (0.10.0.pre)
       activerecord (>= 4.1)
