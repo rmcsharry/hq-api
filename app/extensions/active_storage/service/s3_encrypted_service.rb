@@ -13,6 +13,7 @@ module ActiveStorage
       def initialize(bucket:, upload: {}, encryption: {}, **options)
         @client = Aws::S3::Client.new(**options)
         @bucket = bucket
+        p encryption[:public_key]
         encryption_key = OpenSSL::PKey::RSA.new(encryption[:public_key].gsub('\\n', "\n"))
         decryption_key = OpenSSL::PKey::RSA.new(encryption[:private_key].gsub('\\n', "\n"), encryption[:passphrase])
         @encryption_client = Aws::S3::Encryption::Client.new(client: client, encryption_key: encryption_key)
