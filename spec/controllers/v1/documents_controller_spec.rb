@@ -25,6 +25,27 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
     end
   end
 
+  describe 'GET document file' do
+    let(:document) { create(:document) }
+
+    context 'not authenticated as user' do
+      it 'responds with 401' do
+        get(Rails.application.routes.url_helpers.rails_blob_url(document.file))
+        expect(response).to have_http_status(401)
+      end
+    end
+
+    context 'authenticated as user' do
+      it 'fetches the documents' do
+        get(Rails.application.routes.url_helpers.rails_blob_url(document.file), headers: auth_headers)
+        expect(response).to have_http_status(200)
+        expect(Base64.encode64(response.body)).to eq(
+          Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
+        )
+      end
+    end
+  end
+
   describe 'POST /v1/documents' do
     subject { -> { post(DOCUMENTS_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
@@ -54,8 +75,9 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
       end
 
       it 'creates a new contact' do
-        is_expected.to change(Document, :count).by(1)
+        post(DOCUMENTS_ENDPOINT, params: payload.to_json, headers: auth_headers)
         expect(response).to have_http_status(201)
+        is_expected.to change(Document, :count).by(1)
         document = Document.find(JSON.parse(response.body)['data']['id'])
         expect(document.category).to eq 'contract_hq'
         expect(document.name).to eq 'HQT Verträge M. Mustermann'

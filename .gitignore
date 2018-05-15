@@ -16,6 +16,7 @@
 .byebug_history
 *.aes
 *.env
+*.pem
 config/kubernetes_config.yml
 config/kubernetes_config_admin_user.yml
 config/kubernetes_config_cert_creation.yml

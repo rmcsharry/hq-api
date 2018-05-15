@@ -6,9 +6,13 @@ test:
   service: Disk
   root: <%= Rails.root.join("tmp/storage") %>
 
-amazon:
-  service: S3
+amazon_encrypted:
+  service: S3Encrypted
   access_key_id: <%= Rails.application.secrets.aws_s3_access_key_id %>
   secret_access_key: <%= Rails.application.secrets.aws_s3_secret_access_key %>
-  region: <%= ENV['AWS_REGION'] %>
-  bucket: <%= ENV['AWS_S3_BUCKET_NAME'] %>
+  region: <%= ENV["AWS_REGION"] %>
+  bucket: <%= ENV["AWS_S3_BUCKET_NAME"] %>
+  encryption:
+    public_key: "<%= ENV["AWS_S3_ENCRYPTION_PUBLIC_KEY"] %>"
+    private_key: "<%= ENV["AWS_S3_ENCRYPTION_PRIVATE_KEY"] %>"
+    passphrase: <%= ENV["AWS_S3_ENCRYPTION_PASSPHRASE"] %>

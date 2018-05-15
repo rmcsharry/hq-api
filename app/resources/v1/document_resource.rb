@@ -50,7 +50,7 @@ module V1
 
     class << self
       def records(_options)
-        super.includes(file_attachment: [:blob])
+        super.with_attached_file
       end
 
       def create(context)
