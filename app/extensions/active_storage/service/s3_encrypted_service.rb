@@ -10,10 +10,11 @@ module ActiveStorage
     class S3EncryptedService < Service
       attr_reader :client, :bucket, :upload_options, :encryption_client, :decryption_client
 
+      # rubocop:disable Metrics/AbcSize
       def initialize(bucket:, upload: {}, encryption: {}, **options)
         @client = Aws::S3::Client.new(**options)
         @bucket = bucket
-        p encryption[:public_key]
+        p encryption[:public_key] # rubocop:disable Rails/Output
         encryption_key = OpenSSL::PKey::RSA.new(encryption[:public_key].gsub('\\n', "\n"))
         decryption_key = OpenSSL::PKey::RSA.new(encryption[:private_key].gsub('\\n', "\n"), encryption[:passphrase])
         @encryption_client = Aws::S3::Encryption::Client.new(client: client, encryption_key: encryption_key)
@@ -21,6 +22,7 @@ module ActiveStorage
 
         @upload_options = upload
       end
+      # rubocop:enable Metrics/AbcSize
 
       def upload(key, io, checksum: nil)
         instrument :upload, key: key, checksum: checksum do
