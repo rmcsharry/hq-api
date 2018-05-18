@@ -1,12 +1,19 @@
 version: '3'
 services:
   db:
-    image: 'postgres:9.6-alpine'
+    image: postgres:9.6-alpine
     environment:
       POSTGRES_USER: 'hqtrust_core_api'
       POSTGRES_PASSWORD: '86RRfQkPw93NYDyX'
     ports:
       - '5432:5432'
+  redis:
+    image: redis:4.0-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - /data
   api:
     build: .
     command: sh -c 'rm -f tmp/pids/server.pid && bundle exec rails server -p 3000 -b '0.0.0.0''
@@ -16,8 +23,10 @@ services:
       - '3000:3000'
     depends_on:
       - db
+      - redis
     environment:
       AWS_SES_ACCESS_KEY_ID: 'replace me with a valid AWS_SES_ACCESS_KEY_ID'
       AWS_SES_SECRET_ACCESS_KEY: 'replace me with a valid AWS_SES_SECRET_ACCESS_KEY'
       AWS_S3_ACCESS_KEY_ID: 'replace me with a valid AWS_S3_ACCESS_KEY_ID'
       AWS_S3_SECRET_ACCESS_KEY: 'replace me with a valid AWS_S3_SECRET_ACCESS_KEY'
+      REDIS_URL: 'redis://redis'

@@ -6,6 +6,8 @@ require 'devise/jwt/test_helpers'
 DOCUMENTS_ENDPOINT = '/v1/documents'
 
 RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
+  include ActiveJob::TestHelper
+
   let!(:user) { create(:user) }
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
@@ -75,9 +77,8 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
       end
 
       it 'creates a new contact' do
-        post(DOCUMENTS_ENDPOINT, params: payload.to_json, headers: auth_headers)
-        expect(response).to have_http_status(201)
         is_expected.to change(Document, :count).by(1)
+        expect(response).to have_http_status(201)
         document = Document.find(JSON.parse(response.body)['data']['id'])
         expect(document.category).to eq 'contract_hq'
         expect(document.name).to eq 'HQT Verträge M. Mustermann'
@@ -88,6 +89,25 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
           Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
         )
         expect(document.file.filename.to_s).to eq 'hqtrust_beispiel.pdf'
+      end
+    end
+  end
+
+  describe 'DELETE /v1/documents' do
+    subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", headers: auth_headers) } }
+
+    context 'with valid payload' do
+      let!(:document) { create(:document) }
+
+      before do
+        document.file.analyze
+      end
+
+      it 'deletes a document' do
+        clear_enqueued_jobs
+        is_expected.to change(Document, :count).by(-1)
+        expect(response).to have_http_status(204)
+        expect(ActiveStorage::PurgeJob).to have_been_enqueued
       end
     end
   end

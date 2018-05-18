@@ -53,4 +53,7 @@ Rails.application.configure do
 
   # Configure ActiveStorage
   config.active_storage.service = :local
+
+  # Configure ActiveJob
+  config.active_job.queue_adapter = :sidekiq
 end

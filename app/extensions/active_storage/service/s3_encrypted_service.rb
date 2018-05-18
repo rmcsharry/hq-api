@@ -8,10 +8,11 @@ module ActiveStorage
     # Wraps the Amazon Simple Storage Service (S3) as an Active Storage service.
     # See ActiveStorage::Service for the generic API documentation that applies to all services.
     class S3EncryptedService < Service
-      attr_reader :client, :bucket, :upload_options, :encryption_client, :decryption_client
+      attr_reader :resource, :bucket, :upload_options, :encryption_client, :decryption_client
 
       def initialize(bucket:, upload: {}, encryption: {}, **options)
-        @client = Aws::S3::Client.new(**options)
+        @resource = Aws::S3::Resource.new(**options)
+        client = resource.client
         @bucket = bucket
         encryption_key = OpenSSL::PKey::RSA.new(encryption[:public_key].gsub('\\n', "\n"))
         decryption_key = OpenSSL::PKey::RSA.new(encryption[:private_key].gsub('\\n', "\n"), encryption[:passphrase])
@@ -35,7 +36,7 @@ module ActiveStorage
 
       def download(key)
         instrument :download, key: key do
-          object_for(key).body.string.force_encoding(Encoding::BINARY)
+          decrypted_object_for(key).body.string.force_encoding(Encoding::BINARY)
         end
       end
 
@@ -104,8 +105,12 @@ module ActiveStorage
 
       private
 
-      def object_for(key)
+      def decrypted_object_for(key)
         decryption_client.get_object(bucket: bucket, key: key)
+      end
+
+      def object_for(key)
+        resource.bucket(bucket).object(key)
       end
     end
   end

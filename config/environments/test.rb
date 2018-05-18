@@ -48,6 +48,9 @@ Rails.application.configure do
   # Configure ActiveStorage
   config.active_storage.service = :test
 
+  # Configure ActiveJob
+  config.active_job.queue_adapter = :test
+
   # Enable Bullet for testing
   config.after_initialize do
     Bullet.enable = true

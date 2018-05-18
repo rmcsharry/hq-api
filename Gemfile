@@ -48,9 +48,10 @@ gem 'valvat'                                                        # Validates 
 gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
 gem 'aws-sdk-s3'                                                    # Interact with AWS S3
 
-# Database & Storage Handling
+# Database, Storage & Job Handling
 gem 'activerecord-import'                                           # Bulk import object into the database
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
+gem 'sidekiq'                                                       # Handle background jobs with sidekiq
 
 # Testing & Debugging
 gem 'pry', github: 'pry/pry', branch: 'master'
