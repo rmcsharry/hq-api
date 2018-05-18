@@ -14,4 +14,5 @@ RUN apk del build-base
 COPY . /app/
 
 EXPOSE 3000
-CMD bundle exec rails s -p 3000 -b 0.0.0.0
+
+ENTRYPOINT ["bin/docker-entrypoint.sh"]

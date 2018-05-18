@@ -13,6 +13,7 @@ spec:
       containers:
         - name: hqtrust-core-api
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
+          args: ["bin/bundle exec sidekiq -C config/sidekiq.yml"]
           ports:
             - containerPort: 3000
               name: api-http
