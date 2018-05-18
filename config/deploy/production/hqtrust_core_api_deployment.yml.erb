@@ -36,7 +36,7 @@ spec:
             - name: RAILS_ENV
               value: "production"
             - name: REDIS_URL
-              value: "redis"
+              value: "redis://redis"
             - name: REDIS_PORT
               value: "6379"
             - name: DATABASE_URL
@@ -196,12 +196,12 @@ spec:
       containers:
       - name: sidekiq
         image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
-        args: ["sidekiq -C config/sidekiq.yml"]
+        args: ["bin/bundle exec sidekiq -C config/sidekiq.yml"]
         env:
           - name: RAILS_ENV
             value: "production"
           - name: REDIS_URL
-            value: "redis"
+            value: "redis://redis"
           - name: REDIS_PORT
             value: "6379"
           - name: DATABASE_URL
