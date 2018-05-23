@@ -7,6 +7,8 @@ module V1
       :category,
       :created_at,
       :file,
+      :file_name,
+      :file_type,
       :file_url,
       :name,
       :valid_from,
@@ -19,6 +21,14 @@ module V1
 
     def file_url
       Rails.application.routes.url_helpers.rails_blob_url(@model.file)
+    end
+
+    def file_type
+      @model.file.content_type
+    end
+
+    def file_name
+      @model.file.filename.to_s
     end
 
     def file=(params)

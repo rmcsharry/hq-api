@@ -8,6 +8,8 @@ RSpec.describe V1::DocumentResource, type: :resource do
 
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :created_at }
+  it { is_expected.to have_attribute :file_name }
+  it { is_expected.to have_attribute :file_type }
   it { is_expected.to have_attribute :file_url }
   it { is_expected.to have_attribute :name }
   it { is_expected.to have_attribute :valid_from }
