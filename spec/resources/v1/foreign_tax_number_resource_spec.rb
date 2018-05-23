@@ -11,5 +11,6 @@ RSpec.describe V1::ForeignTaxNumberResource, type: :resource do
 
   it { is_expected.to have_one(:tax_detail) }
 
+  it { is_expected.to filter(:tax_detail_id) }
   it { is_expected.to filter(:"tax_detail.contact_id") }
 end
