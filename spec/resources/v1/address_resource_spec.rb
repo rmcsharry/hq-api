@@ -13,6 +13,8 @@ RSpec.describe V1::AddressResource, type: :resource do
   it { is_expected.to have_attribute :postal_code }
   it { is_expected.to have_attribute :state }
   it { is_expected.to have_attribute :street_and_number }
+  it { is_expected.to have_attribute :legal_address }
+  it { is_expected.to have_attribute :primary_contact_address }
 
   it { is_expected.to have_one(:contact) }
 
