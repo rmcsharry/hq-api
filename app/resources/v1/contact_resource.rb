@@ -151,8 +151,12 @@ module V1
     }
 
     class << self
-      def records(_options)
-        super.with_name.includes(:legal_address, :primary_contact_address)
+      def records(options)
+        records = super.with_name
+        unless options.dig(:context, :request_method) == 'DELETE'
+          records = records.includes(:legal_address, :primary_contact_address)
+        end
+        records
       end
 
       def sortable_fields(context)
