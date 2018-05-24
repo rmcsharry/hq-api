@@ -31,8 +31,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_many(:documents) }
   it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:organizations).with_class_name('Contact') }
-  it { is_expected.to have_many(:organization_memberships).with_class_name('OrganizationMember') }
-  it { is_expected.to have_many(:contact_memberships).with_class_name('OrganizationMember') }
+  it { is_expected.to have_many(:organization_members) }
+  it { is_expected.to have_many(:contact_members).with_class_name('OrganizationMember') }
   it { is_expected.to have_many(:contacts) }
   it { is_expected.to have_one(:compliance_detail) }
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }

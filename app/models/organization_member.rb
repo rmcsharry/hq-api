@@ -23,8 +23,8 @@
 
 # Defines the Organization Member
 class OrganizationMember < ApplicationRecord
-  belongs_to :organization, class_name: 'Contact::Organization', inverse_of: :contact_memberships
-  belongs_to :contact, inverse_of: :organization_memberships
+  belongs_to :organization, class_name: 'Contact::Organization', inverse_of: :contact_members
+  belongs_to :contact, inverse_of: :organization_members
 
   validates :role, presence: true
 end

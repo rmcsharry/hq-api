@@ -51,8 +51,8 @@ class Contact < ApplicationRecord
   has_many :mandates, through: :mandate_members
   has_many :contact_details, dependent: :destroy
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
-  has_many :organization_memberships, class_name: 'OrganizationMember', dependent: :destroy, inverse_of: :contact
-  has_many :organizations, through: :organization_memberships
+  has_many :organization_members, dependent: :destroy, inverse_of: :contact
+  has_many :organizations, through: :organization_members
   has_one :compliance_detail, dependent: :destroy
   has_one :tax_detail, dependent: :destroy
   has_one :user, dependent: :destroy

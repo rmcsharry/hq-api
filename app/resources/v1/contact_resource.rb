@@ -33,11 +33,11 @@ module V1
 
     has_many :addresses
     has_many :contact_details
-    has_many :contact_memberships, class_name: 'OrganizationMember'
+    has_many :contact_members, class_name: 'OrganizationMember'
     has_many :contacts
     has_many :documents
     has_many :mandate_members
-    has_many :organization_memberships, class_name: 'OrganizationMember'
+    has_many :organization_members
     has_many :organizations, class_name: 'Contact'
     has_one :compliance_detail
     has_one :tax_detail
