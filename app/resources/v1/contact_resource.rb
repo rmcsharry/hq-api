@@ -33,11 +33,11 @@ module V1
 
     has_many :addresses
     has_many :contact_details
-    has_many :contact_memberships, class_name: 'OrganizationMember'
+    has_many :contact_members, class_name: 'OrganizationMember'
     has_many :contacts
     has_many :documents
     has_many :mandate_members
-    has_many :organization_memberships, class_name: 'OrganizationMember'
+    has_many :organization_members
     has_many :organizations, class_name: 'Contact'
     has_one :compliance_detail
     has_one :tax_detail
@@ -151,8 +151,12 @@ module V1
     }
 
     class << self
-      def records(_options)
-        super.with_name.includes(:legal_address, :primary_contact_address)
+      def records(options)
+        records = super.with_name
+        unless options.dig(:context, :request_method) == 'DELETE'
+          records = records.includes(:legal_address, :primary_contact_address)
+        end
+        records
       end
 
       def sortable_fields(context)

@@ -6,10 +6,11 @@ require 'devise/jwt/test_helpers'
 CONTACTS_ENDPOINT = '/v1/contacts'
 
 RSpec.describe CONTACTS_ENDPOINT, type: :request do
+  let!(:user) { create(:user) }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+
   describe 'POST /v1/contacts' do
-    let!(:user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     subject { -> { post(CONTACTS_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
     context 'with valid payload' do
@@ -119,9 +120,6 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
   end
 
   describe 'GET /v1/contacts' do
-    let!(:user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     let!(:contacts) { create_list(:contact_person, 10, :with_contact_details) }
 
     context 'authenticated as user' do
@@ -146,6 +144,72 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 20
         expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 20
         expect(body['meta']['total-record-count']).to eq 11
+      end
+    end
+  end
+
+  describe 'DELETE /v1/contacts/<contact_id>/relationships/contact-members' do
+    subject do
+      lambda do
+        delete(
+          "#{CONTACTS_ENDPOINT}/#{organization.id}/relationships/contact-members",
+          params: payload.to_json,
+          headers: auth_headers
+        )
+      end
+    end
+
+    let(:organization) { organization_member.organization }
+    let(:payload) do
+      {
+        data: [
+          {
+            type: 'organization-members',
+            id: organization_member.id
+          }
+        ]
+      }
+    end
+
+    context 'with valid organization member' do
+      let!(:organization_member) { create(:organization_member) }
+
+      it 'deletes an organization member' do
+        is_expected.to change(OrganizationMember, :count).by(-1)
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
+
+  describe 'DELETE /v1/contacts/<contact_id>/relationships/organization-members' do
+    subject do
+      lambda do
+        delete(
+          "#{CONTACTS_ENDPOINT}/#{contact.id}/relationships/organization-members",
+          params: payload.to_json,
+          headers: auth_headers
+        )
+      end
+    end
+
+    let(:contact) { organization_member.contact }
+    let(:payload) do
+      {
+        data: [
+          {
+            type: 'organization-members',
+            id: organization_member.id
+          }
+        ]
+      }
+    end
+
+    context 'with valid organization member' do
+      let!(:organization_member) { create(:organization_member) }
+
+      it 'deletes an organization member' do
+        is_expected.to change(OrganizationMember, :count).by(-1)
+        expect(response).to have_http_status(204)
       end
     end
   end

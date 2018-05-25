@@ -47,13 +47,13 @@ class Contact
 
     has_many :bank_accounts, foreign_key: :bank, dependent: :nullify, inverse_of: :bank
     has_many(
-      :contact_memberships,
+      :contact_members,
       class_name: 'OrganizationMember',
       foreign_key: :organization,
       dependent: :destroy,
       inverse_of: :organization
     )
-    has_many :contacts, through: :contact_memberships
+    has_many :contacts, through: :contact_members
 
     validates :organization_name, presence: true
     validates :organization_type, presence: true
