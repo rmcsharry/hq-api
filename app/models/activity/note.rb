@@ -26,5 +26,12 @@
 class Activity
   # Defines the Activity model for Notes
   class Note < Activity
+    validates :started_at, absence: true
+    validates :ended_at, absence: true
+
+    before_validation do |note|
+      note.started_at = nil
+      note.ended_at = nil
+    end
   end
 end

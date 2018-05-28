@@ -31,7 +31,6 @@ class Activity < ApplicationRecord
   has_and_belongs_to_many :contacts
 
   validates :type, presence: true
-  validates :started_at, presence: true
   validates :title, presence: true
   validates :description, presence: true
   validate :ended_at_greater_started_at
@@ -43,7 +42,7 @@ class Activity < ApplicationRecord
   # Validates if started_at timestamp is before ended_at if ended_at is set
   # @return [void]
   def ended_at_greater_started_at
-    return if ended_at.blank? || ended_at > started_at
+    return if ended_at.blank? || started_at.blank? || ended_at > started_at
     errors.add(:ended_at, 'has to be after started_at')
   end
 end

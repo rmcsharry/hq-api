@@ -46,12 +46,8 @@ RSpec.describe Activity, type: :model do
     it { is_expected.to validate_presence_of(:description) }
   end
 
-  describe '#started_at' do
-    it { is_expected.to validate_presence_of(:started_at) }
-  end
-
   describe '#ended_at_greater_started_at' do
-    subject { build(:activity, started_at: started_at, ended_at: ended_at) }
+    subject { build(:activity_call, started_at: started_at, ended_at: ended_at) }
     let(:started_at) { 1.day.ago }
 
     context 'ended_at before started_at' do

@@ -38,6 +38,11 @@ module V1
     end
     # rubocop:enable Metrics/MethodLength
 
+    def activity_type=(params)
+      @model.activity_type = params
+      @model = @model.becomes(@model.type.constantize)
+    end
+
     class << self
       def create(context)
         new(create_model(context), context)

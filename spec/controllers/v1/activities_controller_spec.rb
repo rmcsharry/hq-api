@@ -6,10 +6,11 @@ require 'devise/jwt/test_helpers'
 ACTIVITIES_ENDPOINT = '/v1/activities'
 
 RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
+  let!(:user) { create(:user) }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+
   describe 'POST /v1/activities' do
-    let!(:user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     subject { -> { post(ACTIVITIES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
     context 'with valid payload' do
@@ -46,6 +47,42 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         expect(activity.started_at).to eq started_at
         expect(activity.title).to eq 'Telephone call'
         expect(activity.type).to eq 'Activity::Call'
+        expect(activity.creator).to eq user
+        expect(activity.mandates).to include(mandate_1, mandate_2)
+      end
+    end
+
+    context 'with valid payload for a Note' do
+      let(:mandate_1) { create(:mandate) }
+      let(:mandate_2) { create(:mandate) }
+      let(:payload) do
+        {
+          data: {
+            type: 'activities',
+            attributes: {
+              description: 'Some description of the note',
+              title: 'Note',
+              'activity-type': 'Activity::Note'
+            },
+            relationships: {
+              mandates: {
+                data: [
+                  { id: mandate_1.id, type: 'mandates' },
+                  { id: mandate_2.id, type: 'mandates' }
+                ]
+              }
+            }
+          }
+        }
+      end
+
+      it 'creates a new activity' do
+        is_expected.to change(Activity, :count).by(1)
+        expect(response).to have_http_status(201)
+        activity = Activity.find(JSON.parse(response.body)['data']['id'])
+        expect(activity.description).to eq 'Some description of the note'
+        expect(activity.title).to eq 'Note'
+        expect(activity.type).to eq 'Activity::Note'
         expect(activity.creator).to eq user
         expect(activity.mandates).to include(mandate_1, mandate_2)
       end
@@ -121,6 +158,52 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         is_expected.to change(Document, :count).by(0)
         expect(response).to have_http_status(422)
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq 'documents - is invalid'
+      end
+    end
+  end
+
+  describe 'PATCH /v1/activities' do
+    subject { -> { patch("#{ACTIVITIES_ENDPOINT}/#{activity.id}", params: payload.to_json, headers: auth_headers) } }
+
+    context 'changes call to note' do
+      let(:started_at) { 1.day.ago.to_s }
+      let!(:activity) { create(:activity_call, started_at: started_at) }
+      let(:mandate_1) { create(:mandate) }
+      let(:mandate_2) { create(:mandate) }
+      let(:payload) do
+        {
+          data: {
+            type: 'activities',
+            id: activity.id,
+            attributes: {
+              description: 'Some description of the note',
+              title: 'Note',
+              'activity-type': 'Activity::Note'
+            },
+            relationships: {
+              mandates: {
+                data: [
+                  { id: mandate_1.id, type: 'mandates' },
+                  { id: mandate_2.id, type: 'mandates' }
+                ]
+              }
+            }
+          }
+        }
+      end
+
+      it 'updates the activity' do
+        expect(activity.type).to eq 'Activity::Call'
+        expect(activity.started_at).to eq started_at
+        is_expected.to change(Activity, :count).by(0)
+        expect(response).to have_http_status(200)
+        updated_activity = Activity.find(activity.id)
+        expect(updated_activity.description).to eq 'Some description of the note'
+        expect(updated_activity.started_at).to be_nil
+        expect(updated_activity.title).to eq 'Note'
+        expect(updated_activity.type).to eq 'Activity::Note'
+        expect(updated_activity.creator).to_not eq user
+        expect(updated_activity.mandates).to include(mandate_1, mandate_2)
       end
     end
   end

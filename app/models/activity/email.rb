@@ -26,5 +26,6 @@
 class Activity
   # Defines the Activity model for Emails
   class Email < Activity
+    validates :started_at, presence: true
   end
 end

@@ -26,5 +26,6 @@
 class Activity
   # Defines the Activity model for Calls
   class Call < Activity
+    validates :started_at, presence: true
   end
 end

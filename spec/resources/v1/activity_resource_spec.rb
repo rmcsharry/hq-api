@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe V1::ActivityResource, type: :resource do
-  let(:activity) { create(:activity) }
+  let(:activity) { create(:activity_call) }
   subject { described_class.new(activity, {}) }
 
   it { is_expected.to have_attribute :activity_type }

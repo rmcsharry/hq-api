@@ -23,9 +23,10 @@
 #  fk_rails_...  (creator_id => users.id)
 #
 
-class Activity
-  # Defines the Activity model for Meetings
-  class Meeting < Activity
-    validates :started_at, presence: true
+require 'rails_helper'
+
+RSpec.describe Activity::Call, type: :model do
+  describe '#started_at' do
+    it { is_expected.to validate_presence_of(:started_at) }
   end
 end
