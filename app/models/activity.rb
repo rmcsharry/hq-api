@@ -30,10 +30,13 @@ class Activity < ApplicationRecord
   has_and_belongs_to_many :mandates
   has_and_belongs_to_many :contacts
 
+  validates :type, presence: true
   validates :started_at, presence: true
   validates :title, presence: true
   validates :description, presence: true
   validate :ended_at_greater_started_at
+
+  alias_attribute :activity_type, :type
 
   private
 

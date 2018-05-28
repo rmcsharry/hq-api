@@ -6,6 +6,7 @@ RSpec.describe V1::ActivityResource, type: :resource do
   let(:activity) { create(:activity) }
   subject { described_class.new(activity, {}) }
 
+  it { is_expected.to have_attribute :activity_type }
   it { is_expected.to have_attribute :started_at }
   it { is_expected.to have_attribute :ended_at }
   it { is_expected.to have_attribute :title }

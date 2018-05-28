@@ -44,6 +44,19 @@ class Document < ApplicationRecord
 
   enumerize :category, in: CATEGORIES, scope: true
 
+  def attach_file(params)
+    file = Tempfile.new
+    file.binmode
+    file.write Base64.decode64(params[:body])
+    file.close
+    self.file.attach(
+      io: File.open(file),
+      filename: params[:filename]
+    )
+  ensure
+    file.unlink
+  end
+
   private
 
   # Validates if valid_from is before or on the same date as valid_to if both are set

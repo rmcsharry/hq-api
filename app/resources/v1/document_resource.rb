@@ -32,16 +32,7 @@ module V1
     end
 
     def file=(params)
-      file = Tempfile.new
-      file.binmode
-      file.write Base64.decode64(params[:body])
-      file.close
-      @model.file.attach(
-        io: File.open(file),
-        filename: params[:filename]
-      )
-    ensure
-      file.unlink
+      @model.attach_file(params)
     end
 
     # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160

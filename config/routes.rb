@@ -6,6 +6,7 @@ Rails.application.routes.draw do
              path: 'v1/users'
 
   namespace :v1 do
+    jsonapi_resources :activities
     jsonapi_resources :addresses
     jsonapi_resources :bank_accounts
     jsonapi_resources :contact_details

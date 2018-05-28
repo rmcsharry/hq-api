@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :activity do
+    type 'Activity::Call'
     started_at { 1.day.ago }
     title 'Call with Mr. X'
     description 'Lorem ipsum'
