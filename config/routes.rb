@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     jsonapi_resources :tax_details
     jsonapi_resources :user_groups
     jsonapi_resources :users
+
+    get 'users/invitation/:invitation_token', to: 'users#read_invitation'
+    post 'users/invitation/:invitation_token', to: 'users#accept_invitation'
   end
 
   root to: 'v1/users#index'
