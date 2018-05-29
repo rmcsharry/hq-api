@@ -100,6 +100,20 @@ module V1
       )
     }
 
+    filter :user_id, apply: lambda { |records, value, _options|
+      contact = User.find_by(id: value[0])&.contact
+      return records.none unless contact
+      records.where(
+        primary_consultant: contact
+      ).or(
+        records.where(secondary_consultant: contact)
+      ).or(
+        records.where(assistant: contact)
+      ).or(
+        records.where(bookkeeper: contact)
+      )
+    }
+
     filter :mandate_groups_organizations, apply: lambda { |records, value, _options|
       records.joins(:mandate_groups_organizations).where('mandate_groups.name ILIKE ?', "%#{value[0]}%")
     }
@@ -122,7 +136,7 @@ module V1
 
     class << self
       def records(_options)
-        super.with_owner_name
+        super.includes(:owners).with_owner_name
       end
 
       def resource_for(model_record, context)

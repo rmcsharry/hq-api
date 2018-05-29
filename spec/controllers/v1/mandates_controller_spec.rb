@@ -6,10 +6,10 @@ require 'devise/jwt/test_helpers'
 MANDATES_ENDPOINT = '/v1/mandates'
 
 RSpec.describe MANDATES_ENDPOINT, type: :request do
+  let!(:user) { create(:user) }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
   describe 'POST /v1/mandates' do
-    let!(:user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     subject { -> { post(MANDATES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
     context 'with valid payload' do
@@ -61,6 +61,36 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(mandate.primary_consultant).to eq primary_consultant
         expect(mandate.secondary_consultant).to eq secondary_consultant
         expect(mandate.mandate_groups_organizations).to include(mandate_group1, mandate_group2)
+      end
+    end
+  end
+
+  describe 'GET /v1/mandates' do
+    let(:contact) { create(:contact_person, user: user) }
+    let!(:mandate1) { create(:mandate, primary_consultant: contact) }
+    let!(:mandate2) { create(:mandate, secondary_consultant: contact) }
+    let!(:mandate3) { create(:mandate, assistant: contact) }
+    let!(:mandate4) { create(:mandate, bookkeeper: contact) }
+    let!(:mandate5) { create(:mandate) }
+
+    context 'authenticated as user' do
+      it 'fetches the mandates for user\'s user_id' do
+        get(MANDATES_ENDPOINT, params: { filter: { user_id: user.id } }, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        expect(body['meta']['record-count']).to eq 4
+        expect(body['meta']['total-record-count']).to eq 5
+      end
+
+      it 'fetches 0 mandates for random user_id' do
+        get(MANDATES_ENDPOINT, params: { filter: { user_id: 'asdf' } }, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        expect(body.keys).to include 'data', 'meta', 'links'
+        expect(body['meta']['record-count']).to eq 0
+        expect(body['meta']['total-record-count']).to eq 5
       end
     end
   end
