@@ -88,7 +88,6 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
-        expect(body.keys).to include 'data', 'meta', 'links'
         expect(body['meta']['record-count']).to eq 0
         expect(body['meta']['total-record-count']).to eq 5
       end

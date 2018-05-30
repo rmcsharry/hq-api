@@ -170,4 +170,20 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'GET /v1/users/<user_id>' do
+    let!(:user) { create(:user, email: email) }
+    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+    let(:email) { 'test@hqfinanz.de' }
+
+    it 'invites a new user' do
+      expect(user.sign_in_count).to eq 0
+      get("#{USERS_ENDPOINT}/#{user.id}", headers: auth_headers)
+      expect(user.reload.sign_in_count).to eq 0
+      expect(response).to have_http_status(200)
+      body = JSON.parse(response.body)
+      expect(body.keys).to include 'data', 'meta'
+      expect(body['data']['attributes']['email']).to eq email
+    end
+  end
 end
