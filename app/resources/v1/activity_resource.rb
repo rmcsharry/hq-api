@@ -10,11 +10,13 @@ module V1
 
     attributes(
       :activity_type,
+      :created_at,
       :description,
       :documents,
       :ended_at,
       :started_at,
-      :title
+      :title,
+      :updated_at
     )
 
     has_one :creator, class_name: 'User'
@@ -42,6 +44,18 @@ module V1
       @model.activity_type = params
       @model = @model.becomes(@model.type.constantize)
     end
+
+    filters(
+      :activity_type
+    )
+
+    filter :contact_id, apply: lambda { |records, value, _options|
+      records.joins(:contacts).where('contacts.id = ?', value[0])
+    }
+
+    filter :mandate_id, apply: lambda { |records, value, _options|
+      records.joins(:mandates).where('mandates.id = ?', value[0])
+    }
 
     class << self
       def create(context)
