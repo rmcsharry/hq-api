@@ -71,4 +71,23 @@ class User < ApplicationRecord
       'ugc ON u.id = ugc.user_id) users'
     )
   }
+
+  def self.send_reset_password_instructions(email:, reset_password_url:)
+    user = User.find_by(email: email)
+    user.send_reset_password_instructions(reset_password_url: reset_password_url) if user&.persisted?
+    user
+  end
+
+  def send_reset_password_instructions(reset_password_url:)
+    token = set_reset_password_token
+    send_reset_password_instructions_notification(token: token, reset_password_url: reset_password_url)
+
+    token
+  end
+
+  protected
+
+  def send_reset_password_instructions_notification(token:, reset_password_url:)
+    send_devise_notification(:reset_password_instructions, token, reset_password_url: reset_password_url)
+  end
 end

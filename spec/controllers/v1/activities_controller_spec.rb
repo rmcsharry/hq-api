@@ -157,7 +157,9 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         is_expected.to change(Activity, :count).by(0)
         is_expected.to change(Document, :count).by(0)
         expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)['errors'].first['detail']).to eq 'documents - is invalid'
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'documents - ist nicht gültig'
+        )
       end
     end
   end

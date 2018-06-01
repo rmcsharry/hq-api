@@ -34,6 +34,8 @@ module HqtrustCoreApi
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
 
+    config.i18n.default_locale = :de
+
     # Use UUID as primary key in ActiveRecord
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid

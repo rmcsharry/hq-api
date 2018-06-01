@@ -33,5 +33,6 @@ services:
       - redis
     environment:
       REDIS_URL: 'redis://redis'
+      WHITELISTED_URLS: 'http://localhost:3001,https://app.dev.hqfinanz.de'
     env_file:
       - development.env

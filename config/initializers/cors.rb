@@ -9,7 +9,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'localhost:3001', 'app-dev.hqtrust-dev.sherpasdv.de', 'app.dev.hqfinanz.de'
+    origins 'localhost:3001', 'app.dev.hqfinanz.de'
 
     resource '*',
              headers: %w[Authorization],

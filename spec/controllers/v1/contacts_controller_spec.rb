@@ -114,7 +114,9 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         is_expected.to change(Contact, :count).by(0)
         is_expected.to change(Address, :count).by(0)
         expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)['errors'].first['detail']).to eq 'legal-address - is invalid'
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'legal-address - ist nicht gültig'
+        )
       end
     end
   end

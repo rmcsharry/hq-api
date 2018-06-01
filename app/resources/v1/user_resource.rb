@@ -3,7 +3,10 @@
 module V1
   # Defines the User resource for the API
   class UserResource < JSONAPI::Resource
+    include WhitelistedUrl
+
     custom_action :invite, type: :post, level: :collection
+    custom_action :reset_password, type: :post, level: :collection
 
     attributes(
       :comment,
@@ -76,11 +79,24 @@ module V1
              )
     }
 
+    # rubocop:disable Metrics/AbcSize
     def invite(data)
-      contact = Contact.find(data.require(:relationships).require(:contact).require(:data).require(:id))
       user_group_ids = data.require(:relationships).require(:user_groups).require(:data).map { |ug| ug.require(:id) }
-      user_groups = UserGroup.find(user_group_ids)
-      User.invite!(email: data.require(:attributes).require(:email), contact: contact, user_groups: user_groups)
+      invite_user!(
+        email: data.require(:attributes).require(:email),
+        contact: Contact.find(data.require(:relationships).require(:contact).require(:data).require(:id)),
+        user_groups: UserGroup.find(user_group_ids),
+        set_password_url: data.require(:attributes).require(:set_password_url)
+      )
+    end
+    # rubocop:enable Metrics/AbcSize
+
+    def reset_password(data)
+      sleep(rand * 0.5 + 0.5) # Random delay between 0.5 and 1.0 seconds to obscure if the email exists
+      email = data.require(:attributes).require(:email)
+      reset_password_url = data.require(:attributes).require(:reset_password_url)
+      check_whitelisted_url!(key: 'reset_password_url', url: reset_password_url)
+      User.send_reset_password_instructions(email: email, reset_password_url: reset_password_url)
     end
 
     class << self
@@ -91,6 +107,21 @@ module V1
       def sortable_fields(context)
         super + %i[contact.name]
       end
+    end
+
+    private
+
+    def invite_user!(email:, contact:, user_groups:, set_password_url:)
+      check_whitelisted_url!(key: 'set_password_url', url: set_password_url)
+      User.invite!(
+        {
+          email: email,
+          contact: contact,
+          user_groups: user_groups
+        },
+        nil,
+        set_password_url: set_password_url
+      )
     end
   end
 end

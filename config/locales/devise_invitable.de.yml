@@ -1,0 +1,31 @@
+de:
+  devise:
+    failure:
+      invited: "Es liegt eine Einladung per E-Mail für Sie vor. Bitte bestätigen Sie diese um fortzufahren."
+    invitations:
+      send_instructions: "Eine Einladung wurde an #{email} versandt."
+      invitation_token_invalid: "Die Einladung ist ungültig!"
+      updated: "Ihr Passwort wurde erfolgreich gesetzt. Sie sind jetzt eingeloggt."
+      updated_not_active: "Ihr Passwort wurde erfolgreich gesetzt."
+      no_invitations_remaining: "Es existieren keine offenen Einladungen."
+      invitation_removed: "Ihre Einladung wurde gelöscht."
+      new:
+        header: "Einladung versenden"
+        submit_button: "Einladung versenden"
+      edit:
+        header: "Passwort setzen"
+        submit_button: "Passwort setzen"
+    mailer:
+      invitation_instructions:
+        subject: "Einladung zur HQ Trust Digital-Plattform bestätigen"
+        title: "Einladung bestätigen"
+        someone_invited_you: "Sie wurden zu der HQ Trust Digital-Plattform eingeladen. Bitte bestätigen Sie die Einladung um fortzufahren."
+        accept: "Einladung bestätigen"
+        alternative: "Wenn der Button nicht funktioniert, klicken Sie bitten auf den folgenden Link:"
+        questions: "Bei Problemen oder Fragen wenden Sie sich gerne per E-Mail an die Administratoren:"
+  time:
+    formats:
+      devise:
+        mailer:
+          invitation_instructions:
+            accept_until_format: "%B %d, %Y %I:%M %p"
