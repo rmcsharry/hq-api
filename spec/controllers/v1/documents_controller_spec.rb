@@ -17,7 +17,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
 
     context 'authenticated as user' do
       it 'fetches the documents' do
-        get(DOCUMENTS_ENDPOINT, headers: auth_headers)
+        get(DOCUMENTS_ENDPOINT, params: {}, headers: auth_headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
@@ -39,7 +39,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
 
     context 'authenticated as user' do
       it 'fetches the documents' do
-        get(Rails.application.routes.url_helpers.rails_blob_url(document.file), headers: auth_headers)
+        get(Rails.application.routes.url_helpers.rails_blob_url(document.file), params: {}, headers: auth_headers)
         expect(response).to have_http_status(200)
         expect(Base64.encode64(response.body)).to eq(
           Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
@@ -94,7 +94,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
   end
 
   describe 'DELETE /v1/documents' do
-    subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", headers: auth_headers) } }
+    subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", params: {}, headers: auth_headers) } }
 
     context 'with valid payload' do
       let!(:document) { create(:document) }

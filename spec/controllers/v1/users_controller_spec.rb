@@ -114,7 +114,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
     context 'with correct invitation token' do
       it 'returns the invited user\'s email' do
-        get("#{USERS_ENDPOINT}/invitation/#{user.raw_invitation_token}", headers: headers)
+        get("#{USERS_ENDPOINT}/invitation/#{user.raw_invitation_token}", params: {}, headers: headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data'
@@ -128,7 +128,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       end
 
       it 'returns an error' do
-        get("#{USERS_ENDPOINT}/invitation/#{user.raw_invitation_token}", headers: headers)
+        get("#{USERS_ENDPOINT}/invitation/#{user.raw_invitation_token}", params: {}, headers: headers)
         expect(response).to have_http_status(404)
         body = JSON.parse(response.body)
         expect(body['errors'].first['title']).to eq 'Record not found'
@@ -140,7 +140,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
     context 'with incorrect invitation token' do
       it 'returns an error' do
-        get("#{USERS_ENDPOINT}/invitation/asdf", headers: headers)
+        get("#{USERS_ENDPOINT}/invitation/asdf", params: {}, headers: headers)
         expect(response).to have_http_status(404)
         body = JSON.parse(response.body)
         expect(body['errors'].first['title']).to eq 'Record not found'
@@ -210,7 +210,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
     it 'gets a single user without updating sign in count' do
       expect(user.sign_in_count).to eq 0
-      get("#{USERS_ENDPOINT}/#{user.id}", headers: auth_headers)
+      get("#{USERS_ENDPOINT}/#{user.id}", params: {}, headers: auth_headers)
       expect(user.reload.sign_in_count).to eq 0
       expect(response).to have_http_status(200)
       body = JSON.parse(response.body)

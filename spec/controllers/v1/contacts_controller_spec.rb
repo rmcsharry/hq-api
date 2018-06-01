@@ -126,7 +126,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
 
     context 'authenticated as user' do
       it 'fetches the contacts' do
-        get(CONTACTS_ENDPOINT, headers: auth_headers)
+        get(CONTACTS_ENDPOINT, params: {}, headers: auth_headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta'

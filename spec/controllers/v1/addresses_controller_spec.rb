@@ -89,7 +89,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
   end
 
   describe 'DELETE /v1/addresses' do
-    subject { -> { delete("#{ADDRESSES_ENDPOINT}/#{address.id}", headers: auth_headers) } }
+    subject { -> { delete("#{ADDRESSES_ENDPOINT}/#{address.id}", params: {}, headers: auth_headers) } }
 
     context 'with valid payload' do
       let!(:address) { create(:address) }

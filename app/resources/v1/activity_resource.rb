@@ -57,6 +57,10 @@ module V1
       records.joins(:mandates).where('mandates.id = ?', value[0])
     }
 
+    filter :mandate_group_id, apply: lambda { |records, value, _options|
+      records.joins(mandates: [:mandate_groups]).where('mandate_groups.id = ?', value[0])
+    }
+
     class << self
       def create(context)
         new(create_model(context), context)

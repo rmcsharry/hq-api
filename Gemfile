@@ -35,7 +35,7 @@ gem 'carmen'                                                        # A reposito
 gem 'draper'                                                        # Decorate models
 gem 'email_validator'                                               # Validates Emails
 gem 'enumerize'                                                     # Advanced Enum handling
-gem 'faker'                                                         # A library for generating fake data such as names, addresses, and phone numbers.
+gem 'faker', github: 'stympy/faker', branch: 'master'               # A library for generating fake data such as names, addresses, and phone numbers.
 gem 'ibanizator'                                                    # Validates IBAN
 gem 'money'                                                         # List of Currency
 gem 'phony_rails'                                                   # Validates, displays and saves phone numbers

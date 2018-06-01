@@ -11,7 +11,7 @@ module ActiveStorage
       attr_reader :resource, :bucket, :upload_options, :encryption_client, :decryption_client
 
       def initialize(bucket:, upload: {}, encryption: {}, **options)
-        @resource = Aws::S3::Resource.new(**options)
+        @resource = Aws::S3::Resource.new(options)
         client = resource.client
         @bucket = bucket
         encryption_key = OpenSSL::PKey::RSA.new(encryption[:public_key].gsub('\\n', "\n"))
