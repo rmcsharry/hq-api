@@ -10,6 +10,59 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
+  describe 'GET /v1/activities' do
+    let!(:mandate) { create(:mandate) }
+    let!(:activities) { create_list(:activity_call, 6, mandates: [mandate]) }
+    let!(:more_activities) { create_list(:activity_call, 2) }
+
+    context 'authenticated as user' do
+      it 'fetches the activities' do
+        get(ACTIVITIES_ENDPOINT, params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+      end
+    end
+
+    context 'filtered by mandate' do
+      let!(:params) { { filter: { mandate_id: mandate.id } } }
+
+      it 'fetches only mandate related activities' do
+        get(ACTIVITIES_ENDPOINT, params: params, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(body['meta']['record-count']).to eq 6
+      end
+
+      context 'with includes' do
+        let(:include_params) { params.merge(include: 'documents,creator.contact,contacts,mandates') }
+        let(:ordered_activity_ids) { activities.map(&:id).sort }
+
+        it 'fetches the activities on page 1' do
+          merged_params = include_params.merge(page: { number: 1, size: 5 })
+          get(ACTIVITIES_ENDPOINT, params: merged_params, headers: auth_headers)
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'included', 'links'
+          expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids.slice(0, 5)
+          expect(body['meta']['record-count']).to eq 6
+        end
+
+        it 'fetches the activities on page 2' do
+          merged_params = include_params.merge(page: { number: 2, size: 5 })
+          get(ACTIVITIES_ENDPOINT, params: merged_params, headers: auth_headers)
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'included', 'links'
+          expect(body['data'].length).to eq 1
+          expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids.slice(5, 1)
+          expect(body['meta']['record-count']).to eq 6
+        end
+      end
+    end
+  end
+
   describe 'POST /v1/activities' do
     subject { -> { post(ACTIVITIES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
