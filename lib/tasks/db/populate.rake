@@ -251,10 +251,10 @@ namespace :db do
     task activities: :environment do
       participants = { contacts: Contact.all, mandates: Mandate.all }
       users = User.all
-      activities = Array.new(432) do
+      432.times do
         participant_class = rand > 0.5 ? :contacts : :mandates
         started_at = Faker::Time.between(5.years.ago, Time.zone.today, :day)
-        [Activity::Call, Activity::Email, Activity::Meeting, Activity::Note].sample.new(
+        [Activity::Call, Activity::Email, Activity::Meeting, Activity::Note].sample.create(
           started_at: started_at,
           ended_at: started_at + 1.hour,
           title: Faker::Company.catch_phrase,
@@ -263,7 +263,6 @@ namespace :db do
           participant_class => participants[participant_class].sample(Faker::Number.between(1, 5))
         )
       end
-      Activity.import!(activities)
     end
 
     task documents: :environment do
