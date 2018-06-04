@@ -8,4 +8,4 @@ time bundle exec rake db:create
 time bundle exec rake db:migrate
 time bundle exec rake db:seed
 
-time bundle exec rspec $2
+time bundle exec rspec $2 --order rand
