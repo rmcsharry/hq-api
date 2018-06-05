@@ -148,6 +148,18 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(body['meta']['total-record-count']).to eq 11
       end
     end
+
+    context 'with no pagination params' do
+      let!(:additional_contacts) { create_list(:contact_person, 12) }
+
+      it 'fetches all the records' do
+        get(CONTACTS_ENDPOINT, params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body['data'].length).to eq 20
+        expect(body['meta']['page-count']).to eq 2
+      end
+    end
   end
 
   describe 'DELETE /v1/contacts/<contact_id>/relationships/contact-members' do
