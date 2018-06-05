@@ -7,10 +7,10 @@ USERS_ENDPOINT = '/v1/users'
 
 RSpec.describe USERS_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let!(:user) { create(:user) }
+  let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'POST /v1/users/invite' do
-    let!(:user) { create(:user) }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     let(:email) { 'test@hqfinanz.de' }
     let(:user_group1) { create(:user_group) }
     let(:user_group2) { create(:user_group) }
@@ -288,6 +288,97 @@ RSpec.describe USERS_ENDPOINT, type: :request do
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
           'http://evil-domain.com/phish-password is not a valid value for reset_password_url.'
         )
+      end
+    end
+  end
+
+  describe 'POST /v1/users/set-password' do
+    let(:payload) do
+      {
+        data: {
+          type: 'users',
+          attributes: {
+            password: password
+          }
+        }
+      }
+    end
+
+    context 'with a valid password' do
+      let(:password) { 'testmctest2A!' }
+      it 'responds with 202 and updates the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password", params: payload.to_json, headers: auth_headers)
+        expect(response).to have_http_status(202)
+        expect(response.body).to eq '{}'
+        expect(user.reload.encrypted_password).to_not eq old_password
+      end
+    end
+
+    context 'with an invalid password' do
+      let(:password) { 'testmctest' }
+      it 'responds with 400 and does not update the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password", params: payload.to_json, headers: auth_headers)
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'password - Ihr Passwort ist nicht sicher genug. Bitte verwenden Sie mindestens ein Sonderzeichen, eine ' \
+          'Zahl sowie Groß- und Kleinbuchstaben. Das Passwort muss eine Gesamtlämnge von mindestens 10 Zeichen haben.'
+        )
+        expect(user.reload.encrypted_password).to eq old_password
+      end
+    end
+  end
+
+  describe 'POST /v1/users/set-password/<reset_password_token>' do
+    let(:token) { user.send(:set_reset_password_token) }
+    let(:password) { 'testmctest2A!' }
+    let(:payload) do
+      {
+        data: {
+          type: 'users',
+          attributes: {
+            password: password
+          }
+        }
+      }
+    end
+
+    context 'with a valid password' do
+      it 'responds with 202 and updates the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password/#{token}", params: payload.to_json, headers: headers)
+        expect(response).to have_http_status(200)
+        expect(response.body).to eq '{}'
+        expect(user.reload.encrypted_password).to_not eq old_password
+      end
+    end
+
+    context 'with an invalid token' do
+      it 'responds with 202 and updates the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password/asdf", params: payload.to_json, headers: headers)
+        expect(response).to have_http_status(404)
+        body = JSON.parse(response.body)
+        expect(body['errors'].first['title']).to eq 'Record not found'
+        expect(body['errors'].first['detail']).to eq(
+          'The record identified by asdf could not be found.'
+        )
+        expect(user.reload.encrypted_password).to eq old_password
+      end
+    end
+
+    context 'with an invalid password' do
+      let(:password) { 'testmctest' }
+      it 'responds with 400 and does not update the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password/#{token}", params: payload.to_json, headers: headers)
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'password - Ihr Passwort ist nicht sicher genug. Bitte verwenden Sie mindestens ein Sonderzeichen, eine ' \
+          'Zahl sowie Groß- und Kleinbuchstaben. Das Passwort muss eine Gesamtlämnge von mindestens 10 Zeichen haben.'
+        )
+        expect(user.reload.encrypted_password).to eq old_password
       end
     end
   end

@@ -67,6 +67,9 @@ class User < ApplicationRecord
 
   before_save :downcase_email
 
+  PASSWORD_REGEX = /\A(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\p{Alpha}\d]).{10,128}\z/
+  validates :password, format: { with: PASSWORD_REGEX, message: :password_complexity }, if: :password_present?
+
   scope :with_user_group_count, lambda {
     from(
       '(SELECT u.*, ugc.user_group_count FROM users u LEFT JOIN (SELECT ugu.user_id AS ' \
@@ -84,7 +87,6 @@ class User < ApplicationRecord
   def send_reset_password_instructions(reset_password_url:)
     token = set_reset_password_token
     send_reset_password_instructions_notification(token: token, reset_password_url: reset_password_url)
-
     token
   end
 
@@ -98,5 +100,9 @@ class User < ApplicationRecord
 
   def downcase_email
     self.email = email.downcase
+  end
+
+  def password_present?
+    password.present?
   end
 end

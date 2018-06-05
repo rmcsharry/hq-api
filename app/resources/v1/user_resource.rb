@@ -2,11 +2,13 @@
 
 module V1
   # Defines the User resource for the API
+  # rubocop:disable Metrics/ClassLength
   class UserResource < JSONAPI::Resource
     include WhitelistedUrl
 
     custom_action :invite, type: :post, level: :collection
     custom_action :reset_password, type: :post, level: :collection
+    custom_action :set_password, method: :change_password, type: :post, level: :collection
 
     attributes(
       :comment,
@@ -99,6 +101,14 @@ module V1
       User.send_reset_password_instructions(email: email, reset_password_url: reset_password_url)
     end
 
+    def change_password(data)
+      user = context[:current_user]
+      user.password = data.require(:attributes).require(:password)
+      user.save!
+    rescue ActiveRecord::RecordInvalid
+      raise JSONAPI::Exceptions::ValidationErrors, self.class.new(user, {})
+    end
+
     class << self
       def records(_options)
         super.with_user_group_count
@@ -124,4 +134,5 @@ module V1
       )
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

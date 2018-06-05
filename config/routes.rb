@@ -23,6 +23,7 @@ Rails.application.routes.draw do
 
     get 'users/invitation/:invitation_token', to: 'users#read_invitation'
     post 'users/invitation/:invitation_token', to: 'users#accept_invitation'
+    post 'users/set-password/:reset_password_token', to: 'users#reset_password'
   end
 
   root to: 'v1/users#index'
