@@ -93,7 +93,7 @@ module V1
 
     def reset_password(data)
       sleep(rand * 0.5 + 0.5) # Random delay between 0.5 and 1.0 seconds to obscure if the email exists
-      email = data.require(:attributes).require(:email)
+      email = data.require(:attributes).require(:email).downcase
       reset_password_url = data.require(:attributes).require(:reset_password_url)
       check_whitelisted_url!(key: 'reset_password_url', url: reset_password_url)
       User.send_reset_password_instructions(email: email, reset_password_url: reset_password_url)

@@ -77,4 +77,15 @@ RSpec.describe User, type: :model do
       expect(User.with_user_group_count.where(id: subject.id).first.user_group_count).to eq 3
     end
   end
+
+  describe '#email' do
+    subject { create(:user, email: 'USER@hqfinanz.de') }
+
+    it 'saves email downcased' do
+      expect(subject.email).to eq 'user@hqfinanz.de'
+    end
+
+    it { should validate_uniqueness_of(:email).case_insensitive }
+    it { should validate_presence_of(:email) }
+  end
 end

@@ -21,6 +21,7 @@ gem 'puma', '~> 3.7'
 
 # Authentication
 gem 'devise'                                                        # Authentication
+gem 'devise-async'                                                  # Send devise mails in background
 gem 'devise-jwt', '~> 0.5.5'                                        # Authn with JWT for devise
 gem 'devise_invitable'                                              # Invitation management for users based on devise
 

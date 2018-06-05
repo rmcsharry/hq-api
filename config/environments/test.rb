@@ -49,7 +49,7 @@ Rails.application.configure do
   config.active_storage.service = :test
 
   # Configure ActiveJob
-  config.active_job.queue_adapter = :test
+  config.active_job.queue_adapter = :inline
 
   # Enable Bullet for testing
   config.after_initialize do

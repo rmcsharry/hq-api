@@ -219,7 +219,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
     end
   end
 
-  describe 'POST /v1/users/password' do
+  describe 'POST /v1/users/reset-password' do
     let(:email) { 'user@hqfinanz.de' }
     let(:reset_password_url) { 'http://localhost:3001/password/set' }
     let!(:user) { create(:user, email: email) }
@@ -238,6 +238,17 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
     context 'with regular reset password url and email' do
       it 'responds with 202 and triggers a reset' do
+        post("#{USERS_ENDPOINT}/reset-password", params: payload.to_json, headers: headers)
+        expect(response).to have_http_status(202)
+        expect(response.body).to eq '{}'
+        expect(ActionMailer::Base.deliveries.last.header['reset-password-url'].value).to eq reset_password_url
+      end
+    end
+
+    context 'with upcase email that exists' do
+      let(:reset_email) { 'USER@hqfinanz.de' }
+
+      it 'responds with 202' do
         post("#{USERS_ENDPOINT}/reset-password", params: payload.to_json, headers: headers)
         expect(response).to have_http_status(202)
         expect(response.body).to eq '{}'
