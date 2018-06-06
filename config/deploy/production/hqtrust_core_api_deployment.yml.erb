@@ -225,6 +225,7 @@ metadata:
     kubernetes.io/ingress.allow-http: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/client-max-body-size: "100m"
 spec:
   rules:
     - host: "api-core.dev.hqfinanz.de"
