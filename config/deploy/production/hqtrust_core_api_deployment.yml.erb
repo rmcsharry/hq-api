@@ -108,28 +108,23 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: aws-s3-encryption-passphrase
-        - name: sidekiq
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hqtrust-core-sidekiq-deployment
+  namespace: hqtrust-core-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hqtrust-core-sidekiq
+    spec:
+      containers:
+        - name: hqtrust-core-sidekiq
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
           args: ["bin/bundle exec sidekiq -C config/sidekiq.yml"]
-          ports:
-            - containerPort: 3000
-              name: api-http
-          livenessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /health
-              port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            failureThreshold: 5
-          readinessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /health
-              port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            failureThreshold: 5
           env:
             - name: RAILS_ENV
               value: "production"
