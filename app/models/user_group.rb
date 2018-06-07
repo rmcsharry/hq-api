@@ -13,8 +13,8 @@
 
 # Defines the User Group
 class UserGroup < ApplicationRecord
-  has_and_belongs_to_many :mandate_groups
-  has_and_belongs_to_many :users
+  has_and_belongs_to_many :mandate_groups, uniq: true
+  has_and_belongs_to_many :users, uniq: true
 
   validates :name, presence: true
 

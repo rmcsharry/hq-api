@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_04_30_152837) do
+ActiveRecord::Schema.define(version: 2018_06_07_112346) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -52,6 +52,7 @@ ActiveRecord::Schema.define(version: 2018_04_30_152837) do
   create_table "activities_contacts", id: false, force: :cascade do |t|
     t.uuid "activity_id"
     t.uuid "contact_id"
+    t.index ["activity_id", "contact_id"], name: "by_activity_and_contact", unique: true
     t.index ["activity_id"], name: "index_activities_contacts_on_activity_id"
     t.index ["contact_id"], name: "index_activities_contacts_on_contact_id"
   end
@@ -59,6 +60,7 @@ ActiveRecord::Schema.define(version: 2018_04_30_152837) do
   create_table "activities_mandates", id: false, force: :cascade do |t|
     t.uuid "activity_id"
     t.uuid "mandate_id"
+    t.index ["activity_id", "mandate_id"], name: "by_activity_and_mandate", unique: true
     t.index ["activity_id"], name: "index_activities_mandates_on_activity_id"
     t.index ["mandate_id"], name: "index_activities_mandates_on_mandate_id"
   end
@@ -176,6 +178,7 @@ ActiveRecord::Schema.define(version: 2018_04_30_152837) do
   create_table "mandate_groups_mandates", id: false, force: :cascade do |t|
     t.uuid "mandate_id"
     t.uuid "mandate_group_id"
+    t.index ["mandate_group_id", "mandate_id"], name: "by_mandate_group_and_mandate", unique: true
     t.index ["mandate_group_id"], name: "index_mandate_groups_mandates_on_mandate_group_id"
     t.index ["mandate_id"], name: "index_mandate_groups_mandates_on_mandate_id"
   end
@@ -183,6 +186,7 @@ ActiveRecord::Schema.define(version: 2018_04_30_152837) do
   create_table "mandate_groups_user_groups", id: false, force: :cascade do |t|
     t.uuid "user_group_id"
     t.uuid "mandate_group_id"
+    t.index ["mandate_group_id", "user_group_id"], name: "by_mandate_group_and_user_group", unique: true
     t.index ["mandate_group_id"], name: "index_mandate_groups_user_groups_on_mandate_group_id"
     t.index ["user_group_id"], name: "index_mandate_groups_user_groups_on_user_group_id"
   end
@@ -262,6 +266,7 @@ ActiveRecord::Schema.define(version: 2018_04_30_152837) do
   create_table "user_groups_users", id: false, force: :cascade do |t|
     t.uuid "user_id"
     t.uuid "user_group_id"
+    t.index ["user_group_id", "user_id"], name: "by_user_group_and_user", unique: true
     t.index ["user_group_id"], name: "index_user_groups_users_on_user_group_id"
     t.index ["user_id"], name: "index_user_groups_users_on_user_id"
   end

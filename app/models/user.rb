@@ -63,7 +63,7 @@ class User < ApplicationRecord
   belongs_to :contact
   has_many :activities, inverse_of: :creator, dependent: :nullify
   has_many :documents, inverse_of: :uploader, dependent: :nullify
-  has_and_belongs_to_many :user_groups
+  has_and_belongs_to_many :user_groups, uniq: true
 
   before_save :downcase_email
 

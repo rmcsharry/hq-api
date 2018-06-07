@@ -18,8 +18,8 @@ class MandateGroup < ApplicationRecord
 
   GROUP_TYPES = %i[family organization].freeze
 
-  has_and_belongs_to_many :mandates
-  has_and_belongs_to_many :user_groups
+  has_and_belongs_to_many :mandates, uniq: true
+  has_and_belongs_to_many :user_groups, uniq: true
 
   validates :name, presence: true
   validates :group_type, presence: true

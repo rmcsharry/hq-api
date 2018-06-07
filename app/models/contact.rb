@@ -64,7 +64,7 @@ class Contact < ApplicationRecord
           -> { where(primary: true) },
           class_name: 'ContactDetail::Phone',
           inverse_of: :contact
-  has_and_belongs_to_many :activities
+  has_and_belongs_to_many :activities, uniq: true
 
   scope :with_name, lambda {
     from(
