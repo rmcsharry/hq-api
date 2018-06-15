@@ -18,17 +18,18 @@ module V1
       :valid_to
     )
 
-    has_many :mandate_members
-    has_many :mandate_groups
-    has_many :documents
     has_many :bank_accounts
-    has_many :owners, class_name: 'MandateMember'
-    has_many :mandate_groups_organizations, class_name: 'MandateGroup'
+    has_many :documents
+    has_many :mandate_groups
     has_many :mandate_groups_families, class_name: 'MandateGroup'
-    has_one :primary_consultant, class_name: 'Contact'
-    has_one :secondary_consultant, class_name: 'Contact'
+    has_many :mandate_groups_organizations, class_name: 'MandateGroup'
+    has_many :mandate_members
+    has_many :owners, class_name: 'MandateMember'
+    has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :assistant, class_name: 'Contact'
     has_one :bookkeeper, class_name: 'Contact'
+    has_one :primary_consultant, class_name: 'Contact'
+    has_one :secondary_consultant, class_name: 'Contact'
 
     def owner_ids=(relationship_key_values)
       relationship_key_values.each do |key|
@@ -135,8 +136,10 @@ module V1
     }
 
     class << self
-      def records(_options)
-        super.includes(:owners).with_owner_name
+      def records(options)
+        records = super
+        records = records.includes(:owners).with_owner_name if options.dig(:context, :controller) == 'v1/mandates'
+        records
       end
 
       def resource_for(model_record, context)

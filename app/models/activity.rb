@@ -30,6 +30,8 @@ class Activity < ApplicationRecord
   has_and_belongs_to_many :mandates, uniq: true
   has_and_belongs_to_many :contacts, uniq: true
 
+  has_paper_trail(skip: SKIPPED_ATTRIBUTES)
+
   validates :type, presence: true
   validates :title, presence: true
   validates :description, presence: true

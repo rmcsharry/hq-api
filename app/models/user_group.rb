@@ -16,6 +16,8 @@ class UserGroup < ApplicationRecord
   has_and_belongs_to_many :mandate_groups, uniq: true
   has_and_belongs_to_many :users, uniq: true
 
+  has_paper_trail(skip: SKIPPED_ATTRIBUTES)
+
   validates :name, presence: true
 
   scope :with_user_count, lambda {

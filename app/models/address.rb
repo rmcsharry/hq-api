@@ -28,6 +28,14 @@ class Address < ApplicationRecord
 
   belongs_to :contact, inverse_of: :addresses
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :contact_id,
+      parent_item_type: 'Contact'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :category, presence: true
   validates :street_and_number, presence: true
   validates :postal_code, presence: true

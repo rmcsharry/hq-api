@@ -26,6 +26,14 @@ class ForeignTaxNumber < ApplicationRecord
 
   belongs_to :tax_detail
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: proc { |foreign_tax_number| foreign_tax_number.tax_detail.contact_id },
+      parent_item_type: 'Contact'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :tax_number, presence: true
   validates :country, presence: true
 

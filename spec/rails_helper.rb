@@ -31,6 +31,9 @@ require 'jsonapi/resources/matchers'
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+# Uncomment if you want to have SQL queries to be logged into STDOUT during specs
+# ActiveRecord::Base.logger = Logger.new(STDOUT) if defined?(ActiveRecord::Base)
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"

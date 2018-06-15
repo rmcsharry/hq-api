@@ -162,6 +162,190 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
     end
   end
 
+  describe 'GET /v1/contacts/<contact_id>/versions' do
+    let(:user2) { create(:user, first_name: 'Norman', last_name: 'Bates') }
+    let(:user3) { create(:user, first_name: 'Shelley', last_name: 'Stewart') }
+
+    context 'with changes to the contact' do
+      let(:updated_first_name) { 'John Lorenz' }
+      let(:updated_last_name) { 'Moser' }
+      let(:updated_date_of_birth) { Date.new(1985, 12, 23) }
+      let(:original_first_name) { 'Kristoffer Jonas' }
+      let(:original_last_name) { 'Klauß' }
+      let(:original_date_of_birth) { Date.new(1988, 6, 29) }
+      let!(:contact) do
+        create(
+          :contact_person,
+          first_name: original_first_name,
+          last_name: original_last_name,
+          date_of_birth: original_date_of_birth
+        )
+      end
+
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        contact.first_name = updated_first_name
+        contact.last_name = updated_last_name
+        contact.save!
+        PaperTrail.request.whodunnit = user3.id
+        contact.date_of_birth = updated_date_of_birth
+        contact.save!
+      end
+
+      it 'fetches the contact versions' do
+        get("#{CONTACTS_ENDPOINT}/#{contact.id}/versions?sort=created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'][-2]['attributes']
+        expect(change1['changed-by']).to eq 'Norman Bates'
+        expect(change1['created-at']).to be_present
+        expect(change1['event']).to eq 'update'
+        expect(change1['item-type']).to eq 'contacts'
+        expect(change1['changes']['first-name']).to eq([original_first_name, updated_first_name])
+        expect(change1['changes']['last-name']).to eq([original_last_name, updated_last_name])
+        expect(change1['changes']['updated-at']).to be_nil
+        change2 = body['data'][-1]['attributes']
+        expect(change2['event']).to eq 'update'
+        expect(change2['changed-by']).to eq 'Shelley Stewart'
+        expect(change2['created-at']).to be_present
+        expect(change2['item-type']).to eq 'contacts'
+        expect(change2['changes']['date-of-birth']).to eq([original_date_of_birth.to_s, updated_date_of_birth.to_s])
+      end
+    end
+
+    context 'with changes to the contact addresses' do
+      let!(:contact) { create(:contact_person, :with_contact_details, street_and_number: original_street_and_number) }
+      let!(:original_primary_contact_address) { contact.primary_contact_address }
+      let!(:original_legal_address) { contact.legal_address }
+      let(:original_street_and_number) { '875 South Bundy Drive' }
+      let(:updated_street_and_number) { '742 Evergreen Terrace' }
+
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        contact.legal_address.street_and_number = updated_street_and_number
+        contact.legal_address.save!
+        PaperTrail.request.whodunnit = user3.id
+        contact.primary_contact_address = create(:address)
+        contact.save!
+        PaperTrail.request.whodunnit = user2.id
+        contact.legal_address = contact.primary_contact_address
+        contact.save!
+      end
+
+      it 'fetches the contact versions' do
+        get("#{CONTACTS_ENDPOINT}/#{contact.id}/versions?sort=created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'][-3]['attributes']
+        expect(change1['changed-by']).to eq 'Norman Bates'
+        expect(change1['created-at']).to be_present
+        expect(change1['event']).to eq 'update'
+        expect(change1['item-type']).to eq 'addresses'
+        expect(change1['changes']['street-and-number']).to eq([original_street_and_number, updated_street_and_number])
+        change2 = body['data'][-2]['attributes']
+        expect(change2['changed-by']).to eq 'Shelley Stewart'
+        expect(change2['created-at']).to be_present
+        expect(change2['event']).to eq 'update'
+        expect(change2['item-type']).to eq 'contacts'
+        expect(change2['changes']['primary-contact-address-id']).to eq(
+          [original_primary_contact_address.id, contact.primary_contact_address.id]
+        )
+        change3 = body['data'][-1]['attributes']
+        expect(change3['changed-by']).to eq 'Norman Bates'
+        expect(change3['created-at']).to be_present
+        expect(change3['event']).to eq 'update'
+        expect(change3['item-type']).to eq 'contacts'
+        expect(change3['changes']['legal-address-id']).to eq(
+          [original_legal_address.id, contact.primary_contact_address.id]
+        )
+      end
+    end
+
+    context 'with changes to the foreign tax number' do
+      let!(:contact) { create(:contact_organization) }
+      let(:original_tax_number) { '1234567890' }
+      let(:updated_tax_number) { '0987654321' }
+
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        tax_detail = create(:tax_detail, :organization, contact: contact)
+        foreign_tax_number = create(:foreign_tax_number, tax_detail: tax_detail, tax_number: original_tax_number)
+        PaperTrail.request.whodunnit = user3.id
+        foreign_tax_number.tax_number = updated_tax_number
+        foreign_tax_number.save!
+      end
+
+      it 'fetches the contact versions' do
+        get("#{CONTACTS_ENDPOINT}/#{contact.id}/versions?sort=-created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'].first['attributes']
+        expect(change1['changed-by']).to eq 'Shelley Stewart'
+        expect(change1['created-at']).to be_present
+        expect(change1['event']).to eq 'update'
+        expect(change1['item-type']).to eq 'foreign-tax-numbers'
+        expect(change1['changes']['tax-number']).to eq [original_tax_number, updated_tax_number]
+        change2 = body['data'].second['attributes']
+        expect(change2['changed-by']).to eq 'Norman Bates'
+        expect(change2['created-at']).to be_present
+        expect(change2['event']).to eq 'create'
+        expect(change2['item-type']).to eq 'foreign-tax-numbers'
+        expect(change2['changes']['tax-number']).to eq [nil, original_tax_number]
+        change3 = body['data'].third['attributes']
+        expect(change3['changed-by']).to eq 'Norman Bates'
+        expect(change3['created-at']).to be_present
+        expect(change3['event']).to eq 'create'
+        expect(change3['item-type']).to eq 'tax-details'
+        expect(change3['changes']['contact-id']).to eq [nil, contact.id]
+      end
+    end
+
+    context 'with changes to the primary phone number' do
+      let!(:contact) { create(:contact_person, :with_contact_details, phone: original_phone) }
+      let(:original_phone) { '+49301234567' }
+      let(:updated_phone) { '+49301234568' }
+
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        current_primary_phone = contact.primary_phone
+        current_primary_phone.value = updated_phone
+        current_primary_phone.save!
+        PaperTrail.request.whodunnit = user3.id
+        current_primary_phone.primary = false
+        current_primary_phone.save!
+        create(:phone, :primary, contact: contact, value: original_phone)
+      end
+
+      it 'fetches the contact versions' do
+        get("#{CONTACTS_ENDPOINT}/#{contact.id}/versions?sort=-created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'].first['attributes']
+        expect(change1['changed-by']).to eq 'Shelley Stewart'
+        expect(change1['created-at']).to be_present
+        expect(change1['event']).to eq 'create'
+        expect(change1['item-type']).to eq 'contact-details'
+        expect(change1['changes']['value']).to eq [nil, original_phone]
+        change2 = body['data'].second['attributes']
+        expect(change2['changed-by']).to eq 'Shelley Stewart'
+        expect(change2['created-at']).to be_present
+        expect(change2['event']).to eq 'update'
+        expect(change2['item-type']).to eq 'contact-details'
+        expect(change2['changes']['primary']).to eq [true, false]
+        change3 = body['data'].third['attributes']
+        expect(change3['changed-by']).to eq 'Norman Bates'
+        expect(change3['created-at']).to be_present
+        expect(change3['event']).to eq 'update'
+        expect(change3['item-type']).to eq 'contact-details'
+        expect(change3['changes']['value']).to eq [original_phone, updated_phone]
+      end
+    end
+  end
+
   describe 'DELETE /v1/contacts/<contact_id>/relationships/contact-members' do
     subject do
       lambda do

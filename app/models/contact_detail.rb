@@ -30,6 +30,14 @@ class ContactDetail < ApplicationRecord
 
   belongs_to :contact
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :contact_id,
+      parent_item_type: 'Contact'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :type, presence: true
   validates :category, presence: true
   validates :value, presence: true

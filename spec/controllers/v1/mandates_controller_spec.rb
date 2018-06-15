@@ -93,4 +93,95 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'GET /v1/mandates/<mandate_id>/versions' do
+    let(:user2) { create(:user, first_name: 'Norman', last_name: 'Bates') }
+    let(:user3) { create(:user, first_name: 'Shelley', last_name: 'Stewart') }
+    let(:original_comment) { 'Test Comment 1' }
+    let(:original_mandate_number) { '001' }
+    let(:original_state) { 'prospect' }
+    let(:updated_comment) { 'Test Comment 2' }
+    let(:updated_mandate_number) { '002' }
+    let(:updated_state) { 'client' }
+    let!(:mandate) do
+      create(
+        :mandate,
+        comment: original_comment,
+        mandate_number: original_mandate_number,
+        state: original_state
+      )
+    end
+
+    context 'authenticated as user' do
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        mandate.comment = updated_comment
+        mandate.mandate_number = updated_mandate_number
+        mandate.save!
+        PaperTrail.request.whodunnit = user3.id
+        mandate.become_client!
+      end
+
+      it 'fetches the mandate versions' do
+        get("#{MANDATES_ENDPOINT}/#{mandate.id}/versions?sort=-created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'].first['attributes']
+        expect(change1['created-at']).to be_present
+        expect(change1['changed-by']).to eq 'Shelley Stewart'
+        expect(change1['event']).to eq 'update'
+        expect(change1['item-type']).to eq 'mandates'
+        expect(change1['changes']['aasm-state']).to eq([original_state, updated_state])
+        change2 = body['data'].second['attributes']
+        expect(change2['created-at']).to be_present
+        expect(change2['changed-by']).to eq 'Norman Bates'
+        expect(change2['event']).to eq 'update'
+        expect(change2['item-type']).to eq 'mandates'
+        expect(change2['changes']['comment']).to eq [original_comment, updated_comment]
+        expect(change2['changes']['mandate-number']).to eq [original_mandate_number, updated_mandate_number]
+      end
+    end
+
+    context 'with changes to the bank accounts' do
+      let(:bank_account) { create(:bank_account, mandate: mandate, iban: original_iban) }
+      let(:original_iban) { 'DE12500105170648489890' }
+      let(:updated_iban) { 'DE28500105170648489893' }
+
+      before do
+        PaperTrail.request.whodunnit = user2.id
+        bank_account.save!
+        PaperTrail.request.whodunnit = user3.id
+        bank_account.iban = updated_iban
+        bank_account.save!
+        PaperTrail.request.whodunnit = user2.id
+        bank_account.destroy!
+      end
+
+      it 'fetches the mandate versions' do
+        get("#{MANDATES_ENDPOINT}/#{mandate.id}/versions?sort=-created-at", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        change1 = body['data'].first['attributes']
+        expect(change1['changed-by']).to eq 'Norman Bates'
+        expect(change1['created-at']).to be_present
+        expect(change1['event']).to eq 'destroy'
+        expect(change1['item-type']).to eq 'bank-accounts'
+        expect(change1['changes']).to be_empty
+        change2 = body['data'].second['attributes']
+        expect(change2['changed-by']).to eq 'Shelley Stewart'
+        expect(change2['created-at']).to be_present
+        expect(change2['event']).to eq 'update'
+        expect(change2['item-type']).to eq 'bank-accounts'
+        expect(change2['changes']['iban']).to eq [original_iban, updated_iban]
+        change3 = body['data'].third['attributes']
+        expect(change3['changed-by']).to eq 'Norman Bates'
+        expect(change3['created-at']).to be_present
+        expect(change3['event']).to eq 'create'
+        expect(change3['item-type']).to eq 'bank-accounts'
+        expect(change3['changes']['iban']).to eq [nil, original_iban]
+      end
+    end
+  end
 end

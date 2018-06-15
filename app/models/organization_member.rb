@@ -26,5 +26,13 @@ class OrganizationMember < ApplicationRecord
   belongs_to :organization, class_name: 'Contact::Organization', inverse_of: :contact_members
   belongs_to :contact, inverse_of: :organization_members
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :contact_id,
+      parent_item_type: 'Contact'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :role, presence: true
 end

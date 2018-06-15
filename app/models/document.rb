@@ -38,6 +38,8 @@ class Document < ApplicationRecord
   belongs_to :owner, polymorphic: true, inverse_of: :documents
   has_one_attached :file
 
+  has_paper_trail(skip: SKIPPED_ATTRIBUTES)
+
   validates :name, presence: true
   validates :category, presence: true
   validate :valid_to_greater_or_equal_valid_from

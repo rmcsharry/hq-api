@@ -38,6 +38,14 @@ class BankAccount < ApplicationRecord
   belongs_to :mandate
   belongs_to :bank, class_name: 'Contact::Organization', inverse_of: :bank_accounts
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :mandate_id,
+      parent_item_type: 'Mandate'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :account_type, presence: true
   validates :owner, presence: true
   validates :currency, presence: true

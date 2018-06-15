@@ -51,6 +51,7 @@ gem 'aws-sdk-s3'                                                    # Interact w
 
 # Database, Storage & Job Handling
 gem 'activerecord-import'                                           # Bulk import object into the database
+gem 'paper_trail'                                                   # Track changes of models for auditing
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 gem 'sidekiq'                                                       # Handle background jobs with sidekiq
 

@@ -39,6 +39,7 @@ module V1
     has_many :mandate_members
     has_many :organization_members
     has_many :organizations, class_name: 'Contact'
+    has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :compliance_detail
     has_one :tax_detail
     has_one :primary_contact_address, class_name: 'Address'
@@ -153,7 +154,10 @@ module V1
     class << self
       def records(options)
         records = super.with_name
-        unless options.dig(:context, :request_method) == 'DELETE'
+        if (
+          options.dig(:context, :controller) == 'v1/contacts' &&
+           options.dig(:context, :request_method) != 'DELETE') ||
+           options.dig(:context, :includes)&.include?(:contacts)
           records = records.includes(:legal_address, :primary_contact_address)
         end
         records

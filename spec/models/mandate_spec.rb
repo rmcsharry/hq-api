@@ -64,6 +64,7 @@ RSpec.describe Mandate, type: :model do
     it { is_expected.to have_and_belong_to_many(:mandate_groups_organizations) }
 
     it 'filters as expected' do
+      subject.reload
       expect(subject.mandate_groups).to include(family, organization)
       expect(subject.mandate_groups_families).to include(family)
       expect(subject.mandate_groups_families).to_not include(organization)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_07_112346) do
+ActiveRecord::Schema.define(version: 2018_06_08_084101) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -310,6 +310,19 @@ ActiveRecord::Schema.define(version: 2018_06_07_112346) do
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by_type_and_invited_by_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
+  end
+
+  create_table "versions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "item_type", null: false
+    t.uuid "item_id", null: false
+    t.string "event", null: false
+    t.uuid "whodunnit"
+    t.jsonb "object"
+    t.jsonb "object_changes"
+    t.string "parent_item_type"
+    t.uuid "parent_item_id"
+    t.datetime "created_at"
+    t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
   add_foreign_key "activities", "users", column: "creator_id"

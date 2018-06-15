@@ -21,6 +21,8 @@ class MandateGroup < ApplicationRecord
   has_and_belongs_to_many :mandates, uniq: true
   has_and_belongs_to_many :user_groups, uniq: true
 
+  has_paper_trail(skip: SKIPPED_ATTRIBUTES)
+
   validates :name, presence: true
   validates :group_type, presence: true
 

@@ -37,6 +37,14 @@ class ComplianceDetail < ApplicationRecord
 
   belongs_to :contact
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :contact_id,
+      parent_item_type: 'Contact'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :contact_id, uniqueness: { case_sensitive: false }
   validates :wphg_classification, presence: true
   validates :kagb_classification, presence: true

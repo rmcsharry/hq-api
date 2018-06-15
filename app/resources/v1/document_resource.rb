@@ -50,8 +50,10 @@ module V1
     end
 
     class << self
-      def records(_options)
-        super.with_attached_file
+      def records(options)
+        records = super
+        records = records.with_attached_file unless options.dig(:context, :request_method) == 'DELETE'
+        records
       end
 
       def create(context)
