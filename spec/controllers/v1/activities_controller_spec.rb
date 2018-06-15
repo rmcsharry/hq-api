@@ -11,9 +11,12 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'GET /v1/activities' do
-    let!(:mandate) { create(:mandate) }
-    let!(:activities) { create_list(:activity_call, 6, mandates: [mandate]) }
+    let(:mandate_group) { create(:mandate_group) }
+    let!(:mandate) { create(:mandate, mandate_groups: [mandate_group]) }
+    let(:mandate2) { create(:mandate, mandate_groups: [mandate_group]) }
+    let!(:activities) { create_list(:activity_call, 3, mandates: [mandate, mandate2]) }
     let!(:more_activities) { create_list(:activity_call, 2) }
+    let!(:even_more_activities) { create_list(:activity_call, 3, mandates: [mandate]) }
 
     context 'authenticated as user' do
       it 'fetches the activities' do
@@ -24,20 +27,36 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
       end
     end
 
-    context 'filtered by mandate' do
-      let!(:params) { { filter: { mandate_id: mandate.id } } }
+    context 'filtered by mandate group' do
+      let!(:params) do
+        { page: { number: 1, size: 5 }, filter: { mandate_group_id: mandate_group.id }, sort: '-createdAt' }
+      end
 
       it 'fetches only mandate related activities' do
         get(ACTIVITIES_ENDPOINT, params: params, headers: auth_headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta'
+        expect(body['data'].count).to eq 5
+        expect(body['meta']['record-count']).to eq 6
+      end
+    end
+
+    context 'filtered by mandate' do
+      let!(:params) { { page: { number: 1, size: 5 }, filter: { mandate_id: mandate.id } } }
+
+      it 'fetches only mandate related activities' do
+        get(ACTIVITIES_ENDPOINT, params: params, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(body['data'].count).to eq 5
         expect(body['meta']['record-count']).to eq 6
       end
 
       context 'with includes' do
         let(:include_params) { params.merge(include: 'documents,creator.contact,contacts,mandates') }
-        let(:ordered_activity_ids) { activities.map(&:id).sort }
+        let(:ordered_activity_ids) { (activities + even_more_activities).map(&:id).sort }
 
         it 'fetches the activities on page 1' do
           merged_params = include_params.merge(page: { number: 1, size: 5 })

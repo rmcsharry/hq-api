@@ -58,7 +58,7 @@ module V1
     }
 
     filter :mandate_group_id, apply: lambda { |records, value, _options|
-      records.joins(mandates: [:mandate_groups]).where('mandate_groups.id = ?', value[0])
+      records.where(id: Activity.joins(mandates: [:mandate_groups]).where('mandate_groups.id = ?', value[0]))
     }
 
     class << self
