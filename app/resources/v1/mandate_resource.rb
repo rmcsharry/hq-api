@@ -138,7 +138,9 @@ module V1
     class << self
       def records(options)
         records = super
-        records = records.includes(:owners).with_owner_name if options.dig(:context, :controller) == 'v1/mandates'
+        if ['v1/mandates', 'v1/activities'].include? options.dig(:context, :controller)
+          records = records.includes(:owners).with_owner_name
+        end
         records
       end
 
