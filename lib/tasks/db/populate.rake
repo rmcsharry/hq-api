@@ -231,6 +231,13 @@ namespace :db do
           name: Faker::Company.name
         )
       end
+      # Create one big family for e2e tests
+      MandateGroup.create(
+        comment: Faker::SiliconValley.quote,
+        group_type: :family,
+        mandates: mandates.sample(42),
+        name: Faker::GameOfThrones.house
+      )
     end
 
     task user_groups: :environment do
