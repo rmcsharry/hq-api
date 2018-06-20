@@ -234,17 +234,22 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
 
       it 'fetches the contact versions' do
-        get("#{CONTACTS_ENDPOINT}/#{contact.id}/versions?sort=created-at", params: {}, headers: auth_headers)
+        get(
+          "#{CONTACTS_ENDPOINT}/#{contact.id}/versions",
+          params: { sort: '-created-at', page: { number: 1, size: 5 } },
+          headers: auth_headers
+        )
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
-        change1 = body['data'][-3]['attributes']
+        expect(body['data'].count).to eq 5
+        change1 = body['data'].third['attributes']
         expect(change1['changed-by']).to eq 'Norman Bates'
         expect(change1['created-at']).to be_present
         expect(change1['event']).to eq 'update'
         expect(change1['item-type']).to eq 'addresses'
         expect(change1['changes']['street-and-number']).to eq([original_street_and_number, updated_street_and_number])
-        change2 = body['data'][-2]['attributes']
+        change2 = body['data'].second['attributes']
         expect(change2['changed-by']).to eq 'Shelley Stewart'
         expect(change2['created-at']).to be_present
         expect(change2['event']).to eq 'update'
@@ -252,7 +257,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(change2['changes']['primary-contact-address-id']).to eq(
           [original_primary_contact_address.id, contact.primary_contact_address.id]
         )
-        change3 = body['data'][-1]['attributes']
+        change3 = body['data'].first['attributes']
         expect(change3['changed-by']).to eq 'Norman Bates'
         expect(change3['created-at']).to be_present
         expect(change3['event']).to eq 'update'

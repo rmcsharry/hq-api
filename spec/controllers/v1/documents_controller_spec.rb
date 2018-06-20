@@ -11,9 +11,10 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
   let!(:user) { create(:user) }
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+  let(:mandate) { create(:mandate) }
 
   describe 'GET /v1/documents' do
-    let!(:documents) { create_list(:document, 10) }
+    let!(:documents) { create_list(:document, 10, owner: mandate) }
 
     context 'authenticated as user' do
       it 'fetches the documents' do
@@ -23,6 +24,15 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
         expect(body.keys).to include 'data', 'meta', 'links'
         expect(body['data'].first['attributes']).to include 'file-url'
         expect(body['meta']['total-record-count']).to eq 10
+      end
+
+      it 'fetches only mandate related documents' do
+        get("/v1/mandates/#{mandate.id}/documents", params: { page: { number: 1, size: 5 } }, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(body['data'].count).to eq 5
+        expect(body['meta']['record-count']).to eq 10
       end
     end
   end
