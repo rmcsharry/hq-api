@@ -2,7 +2,7 @@
 
 module V1
   # Defines the User Group resource for the API
-  class UserGroupResource < JSONAPI::Resource
+  class UserGroupResource < BaseResource
     attributes(
       :comment,
       :name,
@@ -21,14 +21,6 @@ module V1
     filter :name, apply: lambda { |records, value, _options|
       records.where('user_groups.name ILIKE ?', "%#{value[0]}%")
     }
-
-    def roles
-      %i[admin mandate_read mandate_write]
-    end
-
-    def roles=(_params)
-      # TODO: Set roles
-    end
 
     class << self
       def records(_options)

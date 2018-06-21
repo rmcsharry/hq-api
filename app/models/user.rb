@@ -84,6 +84,12 @@ class User < ApplicationRecord
     )
   }
 
+  def jwt_payload
+    {
+      roles: user_groups.map(&:roles).flatten.uniq
+    }
+  end
+
   def self.send_reset_password_instructions(email:, reset_password_url:)
     user = User.find_by(email: email)
     user.send_reset_password_instructions(reset_password_url: reset_password_url) if user&.persisted?

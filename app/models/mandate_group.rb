@@ -18,6 +18,7 @@ class MandateGroup < ApplicationRecord
 
   GROUP_TYPES = %i[family organization].freeze
 
+  has_many :mandate_groups_mandates, dependent: :destroy
   has_and_belongs_to_many :mandates, uniq: true
   has_and_belongs_to_many :user_groups, uniq: true
 
@@ -31,11 +32,8 @@ class MandateGroup < ApplicationRecord
   scope :families, -> { where(group_type: 'family') }
   scope :organizations, -> { where(group_type: 'organization') }
 
-  scope :with_mandate_count, lambda {
-    from(
-      '(SELECT mg.*, mgc.mandate_count FROM mandate_groups mg LEFT JOIN (SELECT mgm.mandate_group_id AS ' \
-      'mandate_group_id, COUNT(*) AS mandate_count FROM mandate_groups_mandates mgm GROUP BY mgm.mandate_group_id) ' \
-      'mgc ON mg.id = mgc.mandate_group_id) mandate_groups'
-    )
-  }
+  def mandate_count
+    return mandate_groups_mandates.to_a.size if mandate_groups_mandates.loaded?
+    mandate_groups_mandates.count
+  end
 end

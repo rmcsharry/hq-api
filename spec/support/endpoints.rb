@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+ACTIVITIES_ENDPOINT = '/v1/activities'
+ADDRESSES_ENDPOINT = '/v1/addresses'
+BANK_ACCOUNTS_ENDPOINT = '/v1/bank-accounts'
+CONTACTS_ENDPOINT = '/v1/contacts'
+CONTACT_DETAILS_ENDPOINT = '/v1/contact-details'
+DOCUMENTS_ENDPOINT = '/v1/documents'
+FOREIGN_TAX_NUMBERS_ENDPOINT = '/v1/foreign-tax-numbers'
+MANDATES_ENDPOINT = '/v1/mandates'
+MANDATE_GROUPS_ENDPOINT = '/v1/mandate-groups'
+MANDATE_MEMBERS_ENDPOINT = '/v1/mandate-members'
+ORGANIZATION_MEMBERS_ENDPOINT = '/v1/organization-members'
+TAX_DETAILS_ENDPOINT = '/v1/tax-details'
+USERS_ENDPOINT = '/v1/users'
+USER_GROUPS_ENDPOINT = '/v1/user-groups'

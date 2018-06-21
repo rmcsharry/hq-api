@@ -52,8 +52,20 @@ RSpec.describe MandateGroup, type: :model do
     subject { create(:mandate_group) }
     let!(:mandates) { create_list(:mandate, 3, mandate_groups: [subject]) }
 
-    it 'counts 3 mandates' do
-      expect(MandateGroup.with_mandate_count.where(id: subject.id).first.mandate_count).to eq 3
+    describe 'with loaded mandate_groups_mandate relation' do
+      it 'counts 3 mandates' do
+        ActiveRecord::Base.connection.query_cache.clear
+        expect(subject.mandate_groups_mandates.loaded?).to be false
+        expect(MandateGroup.find(subject.id).mandate_count).to eq 3
+      end
+    end
+
+    describe 'without loaded mandate_groups_mandate relation' do
+      it 'counts 3 mandates' do
+        mandate_group = MandateGroup.includes(:mandate_groups_mandates).where(id: subject.id).first
+        expect(mandate_group.mandate_groups_mandates.loaded?).to be true
+        expect(mandate_group.mandate_count).to eq 3
+      end
     end
   end
 end

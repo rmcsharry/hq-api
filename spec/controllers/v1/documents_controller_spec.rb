@@ -3,12 +3,17 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-DOCUMENTS_ENDPOINT = '/v1/documents'
-
 RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
   include ActiveJob::TestHelper
 
-  let!(:user) { create(:user) }
+  let!(:mandate) { create(:mandate) }
+  let!(:user) do
+    create(
+      :user,
+      roles: %i[contacts_read contacts_write contacts_destroy mandates_read mandates_write],
+      permitted_mandates: [mandate]
+    )
+  end
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
   let(:mandate) { create(:mandate) }
@@ -62,7 +67,6 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
     subject { -> { post(DOCUMENTS_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
     context 'with valid payload' do
-      let(:mandate) { create(:mandate) }
       let(:payload) do
         {
           data: {
@@ -86,7 +90,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
         }
       end
 
-      it 'creates a new contact' do
+      it 'creates a new document' do
         is_expected.to change(Document, :count).by(1)
         expect(response).to have_http_status(201)
         document = Document.find(JSON.parse(response.body)['data']['id'])

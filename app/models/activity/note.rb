@@ -26,6 +26,10 @@
 class Activity
   # Defines the Activity model for Notes
   class Note < Activity
+    def self.policy_class
+      ActivityPolicy
+    end
+
     validates :started_at, absence: true
     validates :ended_at, absence: true
 

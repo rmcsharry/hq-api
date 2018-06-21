@@ -9,6 +9,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  comment    :text
+#  roles      :string           default([]), is an Array
 #
 
 # Defines the User Group
@@ -19,6 +20,20 @@ class UserGroup < ApplicationRecord
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 
   validates :name, presence: true
+  validates :roles, role: true
+
+  AVAILABLE_ROLES = %i[
+    admin
+    contacts_destroy
+    contacts_read
+    contacts_write
+    families_destroy
+    families_read
+    families_write
+    mandates_destroy
+    mandates_read
+    mandates_write
+  ].freeze
 
   scope :with_user_count, lambda {
     from(

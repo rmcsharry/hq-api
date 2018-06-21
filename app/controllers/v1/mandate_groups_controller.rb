@@ -6,15 +6,18 @@ module V1
     before_action :authenticate_user!
 
     def base_response_meta
-      type_filter = params.dig(:filter, :group_type)
-      total_record_count = if type_filter.present?
-                             type_filter == 'family' ? MandateGroup.families.count : MandateGroup.organizations.count
-                           else
-                             MandateGroup.count
-                           end
       {
         total_record_count: total_record_count
       }
+    end
+
+    private
+
+    def total_record_count
+      type_filter = params.dig(:filter, :group_type)
+      return scoped_resource.count if type_filter.blank?
+      return scoped_resource.families.count if type_filter == 'family'
+      scoped_resource.organizations.count
     end
   end
 end

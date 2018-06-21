@@ -26,6 +26,10 @@
 class Activity
   # Defines the Activity model for Emails
   class Email < Activity
+    def self.policy_class
+      ActivityPolicy
+    end
+
     validates :started_at, presence: true
   end
 end

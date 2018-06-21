@@ -3,12 +3,162 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-USERS_ENDPOINT = '/v1/users'
-
 RSpec.describe USERS_ENDPOINT, type: :request do
-  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:headers) { { 'Accept' => 'application/vnd.api+json', 'Content-Type' => 'application/vnd.api+json' } }
   let!(:user) { create(:user) }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+  let(:roles) do
+    [
+      { 'key' => 'admin' },
+      { 'key' => 'contacts_read' },
+      { 'key' => 'mandates_read', 'mandate_groups' => [mandate_group1.id, mandate_group2.id] },
+      { 'key' => 'mandates_write', 'mandate_groups' => [mandate_group1.id] }
+    ]
+  end
+
+  describe 'POST /v1/users/sign-in' do
+    let(:email) { 'test@hqfinanz.de' }
+    let(:password) { 'testmctest1A!' }
+    let(:first_name) { 'Kristoffer Jonas' }
+    let(:sign_in_email) { email }
+    let(:sign_in_password) { password }
+    let!(:user) { create(:user, email: email, password: password, first_name: first_name) }
+    let(:mandate_group1) { create(:mandate_group) }
+    let(:mandate_group2) { create(:mandate_group) }
+    let!(:user_group1) do
+      create(
+        :user_group, users: [user], mandate_groups: [mandate_group1],
+                     roles: %w[admin contacts_read mandates_read mandates_write]
+      )
+    end
+    let!(:user_group2) do
+      create(:user_group, users: [user], mandate_groups: [mandate_group2], roles: %w[mandates_read])
+    end
+    let(:payload) do
+      {
+        data: {
+          attributes: {
+            email: sign_in_email,
+            password: password
+          }
+        }
+      }
+    end
+
+    it 'signs in the user and updates the sign in count' do
+      expect(user.sign_in_count).to eq 0
+      post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+      expect(user.reload.sign_in_count).to eq 1
+      expect(response).to have_http_status(200)
+      expect(response.headers['Authorization']).to start_with 'Bearer'
+      body = JSON.parse(response.body)
+      expect(body.keys).to include 'data', 'meta', 'included'
+      expect(body['data']['attributes']['email']).to eq email
+      expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
+      expect(body['included'].first['type']).to eq 'contacts'
+      expect(body['included'].first['attributes']['first-name']).to eq first_name
+    end
+
+    context 'with upcase email' do
+      let(:sign_in_email) { 'TEST@hqfinanz.de' }
+
+      it 'signs in the user and updates the sign in count' do
+        expect(user.sign_in_count).to eq 0
+        post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+        expect(user.reload.sign_in_count).to eq 1
+        expect(response).to have_http_status(200)
+        expect(response.headers['Authorization']).to start_with 'Bearer'
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(body['data']['attributes']['email']).to eq email
+        expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
+      end
+    end
+
+    context 'with wrong email' do
+      let(:sign_in_email) { 'non-existing@hqfinanz.de' }
+
+      it 'signs in the user and updates the sign in count' do
+        post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+        expect(response).to have_http_status(401)
+        expect(response.headers['Authorization']).to be_nil
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'errors'
+        expect(body['errors'].first['title']).to eq 'Unauthorized'
+        expect(body['errors'].first['detail']).to eq 'Access not authorized'
+      end
+
+      context 'with wrong password' do
+        let(:sign_in_password) { 'wrong-password!' }
+
+        it 'signs in the user and updates the sign in count' do
+          post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+          expect(response).to have_http_status(401)
+          expect(response.headers['Authorization']).to be_nil
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'errors'
+          expect(body['errors'].first['title']).to eq 'Unauthorized'
+          expect(body['errors'].first['detail']).to eq 'Access not authorized'
+        end
+      end
+    end
+  end
+
+  describe 'POST /v1/users/validate-token' do
+    context 'with a valid token' do
+      let(:user) { create(:user, first_name: first_name) }
+      let(:first_name) { 'Kristoffer Jonas' }
+      let(:mandate_group1) { create(:mandate_group) }
+      let(:mandate_group2) { create(:mandate_group) }
+      let!(:user_group1) do
+        create(
+          :user_group, users: [user], mandate_groups: [mandate_group1],
+                       roles: %w[admin contacts_read mandates_read mandates_write]
+        )
+      end
+      let!(:user_group2) do
+        create(:user_group, users: [user], mandate_groups: [mandate_group2], roles: %w[mandates_read])
+      end
+
+      it 'validates the token and responds with a new one' do
+        expect(user.sign_in_count).to eq 0
+        get("#{USERS_ENDPOINT}/validate-token", params: {}, headers: auth_headers)
+        expect(user.reload.sign_in_count).to eq 0
+        expect(response).to have_http_status(200)
+        expect(response.headers['Authorization']).to start_with 'Bearer'
+        expect(response.headers['Authorization']).to_not eq auth_headers['Authorization']
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'included'
+        expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
+        expect(body['included'].first['type']).to eq 'contacts'
+        expect(body['included'].first['attributes']['first-name']).to eq first_name
+      end
+    end
+
+    context 'with an expired token' do
+      let(:auth_headers) do
+        Timecop.freeze(61.minutes.ago) do
+          Devise::JWT::TestHelpers.auth_headers(headers, user)
+        end
+      end
+
+      it 'returns an error message' do
+        get("#{USERS_ENDPOINT}/validate-token", params: {}, headers: auth_headers)
+        expect(response).to have_http_status 401
+        expect(response.body).to eq 'Signature has expired'
+        expect(response.headers['Authorization']).to be_nil
+      end
+    end
+
+    context 'with no auth header' do
+      it 'returns an error message' do
+        get("#{USERS_ENDPOINT}/validate-token", params: {}, headers: headers)
+        expect(response).to have_http_status 401
+        expect(response.body).to eq 'Sie müssen sich anmelden oder registrieren, bevor Sie fortfahren können.'
+        expect(response.headers['Authorization']).to be_nil
+      end
+    end
+  end
 
   describe 'POST /v1/users/invite' do
     let(:email) { 'test@hqfinanz.de' }
@@ -205,8 +355,18 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
   describe 'GET /v1/users/<user_id>' do
     let!(:user) { create(:user, email: email) }
-    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     let(:email) { 'test@hqfinanz.de' }
+    let(:mandate_group1) { create(:mandate_group) }
+    let(:mandate_group2) { create(:mandate_group) }
+    let!(:user_group1) do
+      create(
+        :user_group, users: [user], mandate_groups: [mandate_group1],
+                     roles: %w[admin contacts_read mandates_read mandates_write]
+      )
+    end
+    let!(:user_group2) do
+      create(:user_group, users: [user], mandate_groups: [mandate_group2], roles: %w[mandates_read])
+    end
 
     it 'gets a single user without updating sign in count' do
       expect(user.sign_in_count).to eq 0
@@ -216,6 +376,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       body = JSON.parse(response.body)
       expect(body.keys).to include 'data', 'meta'
       expect(body['data']['attributes']['email']).to eq email
+      expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
     end
   end
 

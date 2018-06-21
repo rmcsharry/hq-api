@@ -9,6 +9,7 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  comment    :text
+#  roles      :string           default([]), is an Array
 #
 
 require 'rails_helper'
@@ -36,6 +37,26 @@ RSpec.describe UserGroup, type: :model do
 
     it 'counts 3 user' do
       expect(UserGroup.with_user_count.where(id: subject.id).first.user_count).to eq 3
+    end
+  end
+
+  describe '#roles' do
+    let(:user_group) { create(:user_group) }
+
+    describe 'available roles' do
+      UserGroup::AVAILABLE_ROLES.each do |valid_role|
+        it "accepts '#{valid_role}'" do
+          user_group.roles = [valid_role]
+          expect(user_group.valid?).to be(true)
+        end
+      end
+    end
+
+    describe 'unknown roles' do
+      it "forbids 'unknown'" do
+        user_group.roles = [:unknown]
+        expect(user_group.valid?).to be(false)
+      end
     end
   end
 end

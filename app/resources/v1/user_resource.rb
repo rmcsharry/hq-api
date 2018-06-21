@@ -3,7 +3,7 @@
 module V1
   # Defines the User resource for the API
   # rubocop:disable Metrics/ClassLength
-  class UserResource < JSONAPI::Resource
+  class UserResource < BaseResource
     include WhitelistedUrl
 
     custom_action :invite, type: :post, level: :collection
@@ -16,6 +16,7 @@ module V1
       :created_at,
       :current_sign_in_at,
       :email,
+      :roles,
       :sign_in_count,
       :updated_at,
       :user_group_count
@@ -23,6 +24,18 @@ module V1
 
     has_one :contact
     has_many :user_groups
+
+    def roles
+      roles = {}
+      @model.user_groups.each do |user_group|
+        user_group.roles.each { |r| roles[r] = [roles[r], user_group.mandate_groups.map(&:id)].flatten.compact }
+      end
+      roles.map do |key, value|
+        role = { key: key }
+        role[:mandate_groups] = value if key.start_with? 'mandates'
+        role
+      end
+    end
 
     filters(
       :sign_in_count
@@ -111,11 +124,15 @@ module V1
 
     class << self
       def records(_options)
-        super.with_user_group_count
+        super.with_user_group_count.includes(user_groups: [:mandate_groups])
+      end
+
+      def updatable_fields(context)
+        super(context) - %i[roles]
       end
 
       def sortable_fields(context)
-        super + %i[contact.name]
+        super(context) + %i[contact.name] - %i[roles]
       end
     end
 

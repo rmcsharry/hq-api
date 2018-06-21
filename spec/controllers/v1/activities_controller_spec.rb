@@ -3,20 +3,26 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-ACTIVITIES_ENDPOINT = '/v1/activities'
-
 RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
-  let!(:user) { create(:user) }
+  let!(:mandate_1) { create(:mandate) }
+  let!(:mandate_2) { create(:mandate) }
+  let!(:user) do
+    create(
+      :user,
+      roles: %i[contacts_read contacts_write mandates_read mandates_write],
+      permitted_mandates: [mandate_1, mandate_2]
+    )
+  end
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'GET /v1/activities' do
     let(:mandate_group) { create(:mandate_group) }
-    let!(:mandate) { create(:mandate, mandate_groups: [mandate_group]) }
-    let(:mandate2) { create(:mandate, mandate_groups: [mandate_group]) }
-    let!(:activities) { create_list(:activity_call, 3, mandates: [mandate, mandate2]) }
+    let!(:mandate_1) { create(:mandate, mandate_groups: [mandate_group]) }
+    let(:mandate_2) { create(:mandate, mandate_groups: [mandate_group]) }
+    let!(:activities) { create_list(:activity_call, 3, mandates: [mandate_1, mandate_2]) }
     let!(:more_activities) { create_list(:activity_call, 2) }
-    let!(:even_more_activities) { create_list(:activity_call, 3, mandates: [mandate]) }
+    let!(:even_more_activities) { create_list(:activity_call, 3, mandates: [mandate_1]) }
 
     context 'authenticated as user' do
       it 'fetches the activities' do
@@ -43,7 +49,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
     end
 
     context 'filtered by mandate' do
-      let!(:params) { { page: { number: 1, size: 5 }, filter: { mandate_id: mandate.id } } }
+      let!(:params) { { page: { number: 1, size: 5 }, filter: { mandate_id: mandate_1.id } } }
 
       it 'fetches only mandate related activities' do
         get(ACTIVITIES_ENDPOINT, params: params, headers: auth_headers)
@@ -73,7 +79,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
           get(ACTIVITIES_ENDPOINT, params: merged_params, headers: auth_headers)
           expect(response).to have_http_status(200)
           body = JSON.parse(response.body)
-          expect(body.keys).to include 'data', 'meta', 'included', 'links'
+          expect(body.keys).to include 'data', 'meta', 'links'
           expect(body['data'].length).to eq 1
           expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids.slice(5, 1)
           expect(body['meta']['record-count']).to eq 6
@@ -87,8 +93,6 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
 
     context 'with valid payload' do
       let(:started_at) { 1.day.ago.to_s }
-      let(:mandate_1) { create(:mandate) }
-      let(:mandate_2) { create(:mandate) }
       let(:payload) do
         {
           data: {
@@ -125,8 +129,6 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
     end
 
     context 'with valid payload for a Note' do
-      let(:mandate_1) { create(:mandate) }
-      let(:mandate_2) { create(:mandate) }
       let(:payload) do
         {
           data: {
@@ -241,9 +243,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
 
     context 'changes call to note' do
       let(:started_at) { 1.day.ago.to_s }
-      let!(:activity) { create(:activity_call, started_at: started_at) }
-      let(:mandate_1) { create(:mandate) }
-      let(:mandate_2) { create(:mandate) }
+      let!(:activity) { create(:activity_call, started_at: started_at, mandates: [mandate_1]) }
       let(:payload) do
         {
           data: {

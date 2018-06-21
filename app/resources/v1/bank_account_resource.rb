@@ -2,7 +2,7 @@
 
 module V1
   # Defines the BankAccount resource for the API
-  class BankAccountResource < JSONAPI::Resource
+  class BankAccountResource < BaseResource
     attributes :account_type, :owner, :bank_account_number, :bank_routing_number, :iban, :bic, :currency
 
     has_one :mandate

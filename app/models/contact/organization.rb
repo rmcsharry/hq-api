@@ -41,6 +41,10 @@
 class Contact
   # Defines the Contact model for organizations
   class Organization < Contact
+    def self.policy_class
+      ContactPolicy
+    end
+
     extend Enumerize
 
     ORGANIZATION_TYPES = %i[gmbh ag foreign_ag lp gmbh_co_kg gbr limited llc vvag ev].freeze

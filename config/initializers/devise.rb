@@ -332,5 +332,9 @@ Devise.setup do |config|
   # JWT-based authentication for API by https://github.com/waiting-for-dev/devise-jwt
   config.jwt do |jwt|
     jwt.secret = Rails.application.secrets.devise_jwt_secret_key
+    jwt.dispatch_requests = [
+      ['POST', %r{^/v1/users/sign-in$}],
+      ['GET', %r{^/v1/users/validate-token$}]
+    ]
   end
 end

@@ -2,7 +2,7 @@
 
 module V1
   # Defines the Address resource for the API
-  class AddressResource < JSONAPI::Resource
+  class AddressResource < BaseResource
     attributes(
       :addition,
       :category,

@@ -25,6 +25,10 @@
 class ContactDetail
   # Defines the Website of a Contact
   class Website < ContactDetail
+    def self.policy_class
+      ContactDetailPolicy
+    end
+
     validates :value, url: { no_local: true }
 
     before_validation :normalize_url

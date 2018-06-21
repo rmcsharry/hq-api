@@ -2,7 +2,7 @@
 
 module V1
   # Defines the Organization Member resource for the API
-  class OrganizationMemberResource < JSONAPI::Resource
+  class OrganizationMemberResource < BaseResource
     attributes(:role)
 
     has_one :contact

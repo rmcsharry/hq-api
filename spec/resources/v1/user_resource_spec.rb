@@ -11,6 +11,7 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to have_attribute :created_at }
   it { is_expected.to have_attribute :current_sign_in_at }
   it { is_expected.to have_attribute :email }
+  it { is_expected.to have_attribute :roles }
   it { is_expected.to have_attribute :sign_in_count }
   it { is_expected.to have_attribute :updated_at }
   it { is_expected.to have_attribute :user_group_count }
@@ -32,4 +33,5 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to filter(:user_group_id) }
 
   it { is_expected.to have_sortable_field(:"contact.name") }
+  it { is_expected.to_not have_sortable_field(:roles) }
 end

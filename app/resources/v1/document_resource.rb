@@ -2,7 +2,7 @@
 
 module V1
   # Defines the Document resource for the API
-  class DocumentResource < JSONAPI::Resource
+  class DocumentResource < BaseResource
     attributes(
       :category,
       :created_at,

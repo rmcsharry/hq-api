@@ -2,7 +2,7 @@
 
 module V1
   # Defines the Activity resource for the API
-  class ActivityResource < JSONAPI::Resource
+  class ActivityResource < BaseResource
     model_hint model: Activity::Call, resource: :activity
     model_hint model: Activity::Email, resource: :activity
     model_hint model: Activity::Meeting, resource: :activity

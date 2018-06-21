@@ -2,7 +2,7 @@
 
 module V1
   # Defines the ForeignTaxNumber resource for the API
-  class ForeignTaxNumberResource < JSONAPI::Resource
+  class ForeignTaxNumberResource < BaseResource
     attributes :tax_number, :country
 
     has_one :tax_detail

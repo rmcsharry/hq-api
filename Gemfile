@@ -26,8 +26,9 @@ gem 'devise-jwt', '~> 0.5.5'                                        # Authn with
 gem 'devise_invitable'                                              # Invitation management for users based on devise
 
 # API Handling
-gem 'jsonapi-authorization', '~> 1.0.0.alpha6' # Authz for JSON API
+gem 'jsonapi-authorization', github: 'HQTrust/jsonapi-authorization', branch: 'hqtrust' # Auth for JSON API
 gem 'jsonapi-resources', github: 'HQTrust/jsonapi-resources', branch: 'hqtrust' # JSON API Resource handling
+gem 'pundit', '~> 1.1.0' # Simple authorization layer
 gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # Business Logic & Validation
@@ -79,6 +80,7 @@ end
 group :development do
   gem 'annotate', github: 'ctran/annotate_models', branch: 'develop'  # Use Annotate to add database schema to models
   gem 'get_process_mem'
+  gem 'guard-rspec', require: false
   gem 'listen', '>= 3.0.5', '< 3.2'
   gem 'spring'                                                        # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -88,5 +90,6 @@ group :test do
   gem 'database_cleaner' # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
   gem 'jsonapi-resources-matchers', github: 'GabrielSandoval/jsonapi-resources-matchers', branch: 'ae-rails_5_upgrade_dependencies-155929975', require: false # Test matchers for jsonapi-resources
   gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master' # Collection of testing matchers extracted from Shoulda
+  gem 'timecop' # Provides time travel for tests
 end
 # rubocop:enable Metrics/LineLength

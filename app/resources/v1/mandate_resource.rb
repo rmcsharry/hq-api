@@ -3,7 +3,7 @@
 module V1
   # Defines the Mandate resource for the API
   # rubocop:disable Metrics/ClassLength
-  class MandateResource < JSONAPI::Resource
+  class MandateResource < BaseResource
     attributes(
       :category,
       :comment,
@@ -138,7 +138,8 @@ module V1
     class << self
       def records(options)
         records = super
-        if ['v1/mandates', 'v1/activities'].include? options.dig(:context, :controller)
+        controllers = ['v1/mandates', 'v1/activities']
+        if options.dig(:context, :request_method) == 'GET' && controllers.include?(options.dig(:context, :controller))
           records = records.includes(:owners).with_owner_name
         end
         records

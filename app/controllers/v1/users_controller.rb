@@ -2,10 +2,37 @@
 
 module V1
   # Defines the Users controller
+  # rubocop:disable Metrics/ClassLength
   class UsersController < ApplicationController
-    before_action :authenticate_user!, except: %i[read_invitation accept_invitation], unless: proc {
+    include Devise::Controllers::SignInOut
+
+    before_action :authenticate_user!, except: %i[sign_in_user read_invitation accept_invitation], unless: proc {
       public_action?
     }
+
+    def sign_in_user
+      begin
+        @response_document = create_response_document
+        email = params.require(:data).require(:attributes).require(:email)
+        password = params.require(:data).require(:attributes).require(:password)
+        user = authenticate_user(email: email, password: password)
+        generate_user_response(user: user)
+      rescue JSONAPI::Exceptions::Error => e
+        handle_exceptions(e)
+      end
+      render_response_document
+    end
+
+    def validate_token
+      begin
+        @response_document = create_response_document
+        user = User.where(id: current_user.id).includes(user_groups: [:mandate_groups]).first
+        generate_user_response(user: user)
+      rescue JSONAPI::Exceptions::Error => e
+        handle_exceptions(e)
+      end
+      render_response_document
+    end
 
     def read_invitation
       begin
@@ -59,6 +86,20 @@ module V1
       params.dig(:custom_action, :method) == :change_password
     end
 
+    def authenticate_user(email:, password:)
+      request.env['action_dispatch.request.parameters'] = { user: { email: email, password: password } }
+      request.env['devise.allow_params_authentication'] = true
+      user = nil
+      catch(:warden) do
+        user = warden.authenticate!(scope: :user)
+      end
+      raise(JSONAPI::Exceptions::Unauthorized.new, 'unauthorized') unless user
+      # Reload user to include mandate groups
+      user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
+      sign_in(:user, user)
+      user
+    end
+
     def set_password_by_token(token:, password:)
       user = User.accept_invitation!(invitation_token: token, password: password)
       raise(JSONAPI::Exceptions::RecordNotFound.new(token), 'not found') unless user&.valid?
@@ -86,6 +127,7 @@ module V1
     end
 
     # rubocop:disable Metrics/MethodLength
+    # rubocop:disable Metrics/AbcSize
     def create_resource_set(user:)
       {
         'UserResource' => {
@@ -98,10 +140,16 @@ module V1
                 rids: user.user_groups.map { |ug| JSONAPI::ResourceIdentity.new(UserGroupResource, ug.id) }
               }
             }
+          },
+          user.contact.id => {
+            resource: ContactResource.new(user.contact.decorate, nil),
+            relationships: {}
           }
         }
       }
     end
     # rubocop:enable Metrics/MethodLength
+    # rubocop:enable Metrics/AbcSize
   end
+  # rubocop:enable Metrics/ClassLength
 end

@@ -41,6 +41,10 @@
 class Contact
   # Defines the Contact model for natural persons
   class Person < Contact
+    def self.policy_class
+      ContactPolicy
+    end
+
     extend Enumerize
 
     GENDERS = %i[male female].freeze

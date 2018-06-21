@@ -25,6 +25,10 @@
 class ContactDetail
   # Defines the Email of a Contact
   class Email < ContactDetail
+    def self.policy_class
+      ContactDetailPolicy
+    end
+
     validates :value, email: true
 
     before_validation :normalize_email

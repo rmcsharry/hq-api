@@ -25,6 +25,10 @@
 class ContactDetail
   # Defines the Fax of a Contact
   class Fax < ContactDetail
+    def self.policy_class
+      ContactDetailPolicy
+    end
+
     phony_normalize :value, default_country_code: 'DE'
     validates_plausible_phone :value, presence: true
   end

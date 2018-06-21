@@ -261,6 +261,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "comment"
+    t.string "roles", default: [], array: true
   end
 
   create_table "user_groups_users", id: false, force: :cascade do |t|

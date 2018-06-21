@@ -3,12 +3,11 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-MANDATES_ENDPOINT = '/v1/mandates'
-
 RSpec.describe MANDATES_ENDPOINT, type: :request do
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user, roles: %i[admin contacts_write], permitted_mandates: []) }
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+
   describe 'POST /v1/mandates' do
     subject { -> { post(MANDATES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
@@ -16,6 +15,14 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
       let(:owner) { create(:contact_person) }
       let(:mandate_group1) { create(:mandate_group, group_type: 'organization') }
       let(:mandate_group2) { create(:mandate_group, group_type: 'organization') }
+      let!(:user_group) do
+        create(
+          :user_group,
+          users: [user],
+          mandate_groups: [mandate_group1, mandate_group2],
+          roles: %i[mandates_read mandates_write]
+        )
+      end
       let(:primary_consultant) { create(:contact_person) }
       let(:secondary_consultant) { create(:contact_person) }
       let(:payload) do
@@ -51,7 +58,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         }
       end
 
-      it 'creates a new contact' do
+      it 'creates a new mandate' do
         is_expected.to change(Mandate, :count).by(1)
         is_expected.to change(MandateMember, :count).by(1)
         expect(response).to have_http_status(201)
@@ -66,21 +73,49 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
   end
 
   describe 'GET /v1/mandates' do
-    let(:contact) { create(:contact_person, user: user) }
+    let(:contact) { create(:contact_person) }
     let!(:mandate1) { create(:mandate, primary_consultant: contact) }
     let!(:mandate2) { create(:mandate, secondary_consultant: contact) }
     let!(:mandate3) { create(:mandate, assistant: contact) }
     let!(:mandate4) { create(:mandate, bookkeeper: contact) }
     let!(:mandate5) { create(:mandate) }
+    let!(:user) do
+      create(
+        :user,
+        contact: contact,
+        roles: %i[mandates_read],
+        permitted_mandates: [
+          mandate1,
+          mandate2,
+          mandate3,
+          mandate4
+        ]
+      )
+    end
 
     context 'authenticated as user' do
       it 'fetches the mandates for user\'s user_id' do
-        get(MANDATES_ENDPOINT, params: { filter: { user_id: user.id } }, headers: auth_headers)
+        get(
+          MANDATES_ENDPOINT,
+          params: {
+            filter: { user_id: user.id },
+            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant'
+          },
+          headers: auth_headers
+        )
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
-        expect(body.keys).to include 'data', 'meta', 'links'
+        expect(body.keys).to include 'data', 'meta', 'links', 'included'
         expect(body['meta']['record-count']).to eq 4
-        expect(body['meta']['total-record-count']).to eq 5
+      end
+
+      it 'only counts accessible records for total-record-count' do
+        create_list :mandate, 10
+
+        get(MANDATES_ENDPOINT, params: { filter: { user_id: user.id } }, headers: auth_headers)
+        body = JSON.parse(response.body)
+
+        expect(body['meta']['total-record-count']).to eq 4
       end
 
       it 'fetches 0 mandates for random user_id' do
@@ -89,7 +124,6 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
         expect(body['meta']['record-count']).to eq 0
-        expect(body['meta']['total-record-count']).to eq 5
       end
     end
   end
@@ -109,6 +143,13 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         comment: original_comment,
         mandate_number: original_mandate_number,
         state: original_state
+      )
+    end
+    let!(:user) do
+      create(
+        :user,
+        roles: %i[mandates_read],
+        permitted_mandates: [mandate]
       )
     end
 

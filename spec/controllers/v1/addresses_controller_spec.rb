@@ -3,10 +3,8 @@
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
-ADDRESSES_ENDPOINT = '/v1/addresses'
-
 RSpec.describe ADDRESSES_ENDPOINT, type: :request do
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user, roles: %i[contacts_read contacts_write contacts_destroy]) }
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 

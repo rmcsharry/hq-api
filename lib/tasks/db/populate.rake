@@ -245,12 +245,14 @@ namespace :db do
         comment: Faker::SiliconValley.quote,
         mandate_groups: MandateGroup.organizations.all,
         name: 'Administratoren',
+        roles: UserGroup::AVAILABLE_ROLES,
         users: [User.first]
       )
       UserGroup.create!(
         comment: Faker::SiliconValley.quote,
         mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
         name: 'HQ Trust',
+        roles: %i[admin mandates_read mandates_write],
         users: User.all
       )
     end

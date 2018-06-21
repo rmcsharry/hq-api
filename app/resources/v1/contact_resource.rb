@@ -3,7 +3,7 @@
 module V1
   # Defines the Contact resource for the API
   # rubocop:disable Metrics/ClassLength
-  class ContactResource < JSONAPI::Resource
+  class ContactResource < BaseResource
     model_hint model: Contact::Organization, resource: :contact
     model_hint model: Contact::Person, resource: :contact
 
@@ -154,10 +154,8 @@ module V1
     class << self
       def records(options)
         records = super.with_name
-        if (
-          options.dig(:context, :controller) == 'v1/contacts' &&
-           options.dig(:context, :request_method) != 'DELETE') ||
-           options.dig(:context, :includes)&.include?(:contacts)
+        if options.dig(:context, :request_method) == 'GET' &&
+           options.dig(:context, :controller) != 'v1/versions'
           records = records.includes(:legal_address, :primary_contact_address)
         end
         records

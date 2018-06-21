@@ -8,7 +8,11 @@ require File.expand_path('../config/environment', __dir__)
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
+require 'support/shared_examples/authorization'
+require 'support/shared_examples/simple_crud_authorization'
+require 'support/authorization_helper'
 require 'support/factory_bot'
+require 'support/endpoints'
 require 'shoulda/matchers'
 require 'jsonapi/resources/matchers'
 
@@ -83,12 +87,21 @@ RSpec.configure do |config|
   end
 
   # Bullet configuration
-  if Bullet.enable?
-    config.before(:each) do
-      Bullet.start_request
-    end
 
-    config.after(:each) do
+  config.before(:each, bullet: false) do
+    Bullet.enable = false
+  end
+
+  config.after(:each, bullet: false) do
+    Bullet.enable = true
+  end
+
+  config.before(:each) do
+    Bullet.start_request if Bullet.enable?
+  end
+
+  config.after(:each) do
+    if Bullet.enable?
       Bullet.perform_out_of_channel_notifications if Bullet.notification?
       Bullet.end_request
     end
