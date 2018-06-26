@@ -246,7 +246,7 @@ namespace :db do
         mandate_groups: MandateGroup.organizations.all,
         name: 'Administratoren',
         roles: UserGroup::AVAILABLE_ROLES,
-        users: [User.first]
+        users: [User.find_by(email: 'admin@hqfinanz.de')]
       )
       UserGroup.create!(
         comment: Faker::SiliconValley.quote,
