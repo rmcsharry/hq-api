@@ -9,7 +9,8 @@ module V1
       :created_at,
       :event,
       :item_id,
-      :item_type
+      :item_type,
+      :parent_item_id
     )
 
     def changed_by
@@ -33,6 +34,10 @@ module V1
     class << self
       def records(_options)
         super.includes(:item, user: :contact)
+      end
+
+      def updatable_fields(_context)
+        []
       end
     end
   end

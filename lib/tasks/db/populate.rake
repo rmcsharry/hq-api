@@ -106,15 +106,24 @@ namespace :db do
     task users: :environment do
       password = 'testmctest1A!'
       User.create!(
-        email: 'admin@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        email: 'admin@hqfinanz.de',
+        password: password,
+        confirmed_at: 1.day.ago,
+        contact: Contact.where(type: 'Contact::Person').sample,
         comment: Faker::SiliconValley.quote
       )
       User.create!(
-        email: 'sales@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        email: 'sales@hqfinanz.de',
+        password: password,
+        confirmed_at: 1.day.ago,
+        contact: Contact.where(type: 'Contact::Person').sample,
         comment: Faker::SiliconValley.quote
       )
       User.create!(
-        email: 'bookkeeper@hqfinanz.de', password: password, confirmed_at: 1.day.ago, contact: Contact.all.sample,
+        email: 'bookkeeper@hqfinanz.de',
+        password: password,
+        confirmed_at: 1.day.ago,
+        contact: Contact.where(type: 'Contact::Person').sample,
         comment: Faker::SiliconValley.quote
       )
     end
