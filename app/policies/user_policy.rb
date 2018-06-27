@@ -9,4 +9,8 @@ class UserPolicy < ApplicationPolicy
   def show?
     role?(:admin) || user.id == record.id
   end
+
+  def update?
+    role?(:admin) || user.id == record.id
+  end
 end
