@@ -9,5 +9,5 @@ kubectl config current-context
 echo "Deploying commit-$CI_COMMIT_ID"
 echo "Whitelisting IPs: $WHITELISTED_IPS"
 whitelisted_ips_base64=$(echo $WHITELISTED_IPS | base64)
-REVISION=$CI_COMMIT_ID ENVIRONMENT=production kubernetes-deploy $NAMESPACE $CLUSTER_NAME \
+REVISION=$CI_COMMIT_ID ENVIRONMENT=$ENV kubernetes-deploy $NAMESPACE $CLUSTER_NAME \
   --bindings=whitelisted_ips=$whitelisted_ips_base64

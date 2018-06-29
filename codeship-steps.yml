@@ -7,14 +7,18 @@
     service: api
     command: rubocop
 - name: Push to AWS ECR
-  tag: ^master$
+  tag: ^dev|master$
   service: api
   type: push
   image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
   image_tag: "commit-{{.CommitID}}"
   registry: 457201446358.dkr.ecr.eu-central-1.amazonaws.com
   dockercfg_service: dockercfg_generator
-- name: Deploy to Kubernetes cluster
+- name: Deploy to dev Kubernetes cluster
+  tag: ^dev$
+  service: deploy_dev
+  command: ENV=dev bin/deploy
+- name: Deploy to prod Kubernetes cluster
   tag: ^master$
-  service: deploy
-  command: bin/deploy
+  service: deploy_prod
+  command: ENV=prod bin/deploy
