@@ -5,10 +5,18 @@ api:
   depends_on:
     - db
   cached: true
-deploy:
+deploy_prod:
   build:
     dockerfile_path: Dockerfile-deploy
-  encrypted_env_file: deployment-k8s.env.encrypted
+  encrypted_env_file: deployment-k8s-prod.env.encrypted
+  environment:
+    - KUBECONFIG=/config/.kube/config
+    - NAMESPACE=hqtrust-core-api
+    - CLUSTER_USER=codeship
+deploy_dev:
+  build:
+    dockerfile_path: Dockerfile-deploy
+  encrypted_env_file: deployment-k8s-dev.env.encrypted
   environment:
     - KUBECONFIG=/config/.kube/config
     - NAMESPACE=hqtrust-core-api
