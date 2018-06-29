@@ -5,6 +5,9 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe 'authorization for', type: :request do
   context 'mandate-groups' do
+    let!(:user) { create(:user) }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     let!(:organization) { create(:mandate_group, group_type: 'organization') }
     let!(:family) { create(:mandate_group, group_type: 'family') }
 
@@ -28,9 +31,6 @@ RSpec.describe 'authorization for', type: :request do
       end
 
       describe 'organization in assigned user_groups' do
-        let!(:user) { create(:user) }
-        let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-        let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
         let!(:user_group) do
           create(
             :user_group,
@@ -60,9 +60,6 @@ RSpec.describe 'authorization for', type: :request do
         permit :admin
 
         describe 'with families_read permission' do
-          let!(:user) { create(:user) }
-          let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
-          let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
           let!(:user_group) do
             create(
               :user_group,
@@ -154,6 +151,40 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :families_write
+
+        describe 'mandates relationship' do
+          let(:endpoint) do
+            lambda do |auth_headers|
+              post "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}/relationships/mandates",
+                   params: payload.to_json,
+                   headers: auth_headers
+            end
+          end
+          let(:mandate) { create :mandate }
+          let(:mandate_group) { create :mandate_group, mandates: [mandate] }
+          let!(:user_group) do
+            create :user_group,
+                   users: [user],
+                   mandate_groups: [mandate_group],
+                   roles: %i[families_write mandates_write]
+          end
+          let(:payload) do
+            {
+              data: [
+                {
+                  id: mandate.id,
+                  type: 'mandates'
+                }
+              ]
+            }
+          end
+
+          it 'is possible to attach mandates' do
+            endpoint.call(auth_headers)
+
+            expect(response).to have_http_status(204)
+          end
+        end
       end
 
       describe '#destroy' do

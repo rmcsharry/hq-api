@@ -30,7 +30,7 @@ class PolicyWithRoles
   def conditional_role?(role, record: {}, request: {})
     role?(role) &&
       record_conditions_fulfilled?(record) &&
-      request_conditions_fulfilled?(request)
+      (relationship_update? || request_conditions_fulfilled?(request))
   end
 
   def request_conditions_fulfilled?(request_conditions)
@@ -47,5 +47,9 @@ class PolicyWithRoles
     record_conditions.all? do |key, value|
       record.send(key) == value
     end
+  end
+
+  def relationship_update?
+    request.params.dig('relationship').present?
   end
 end
