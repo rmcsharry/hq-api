@@ -5,7 +5,7 @@ api:
   depends_on:
     - db
   cached: true
-deploy_prod:
+deploy-prod:
   build:
     dockerfile_path: Dockerfile-deploy
   encrypted_env_file: deployment-k8s-prod.env.encrypted
@@ -14,7 +14,7 @@ deploy_prod:
     - NAMESPACE=hqtrust-core-api
     - CLUSTER_USER=codeship
     - ENVIRONMENT=prod
-deploy_dev:
+deploy-dev:
   build:
     dockerfile_path: Dockerfile-deploy
   encrypted_env_file: deployment-k8s-dev.env.encrypted
@@ -28,7 +28,7 @@ db:
   environment:
     POSTGRES_USER: hqtrust_core_api
     POSTGRES_DB: 86RRfQkPw93NYDyX
-dockercfg_generator:
+dockercfg-generator:
   image: codeship/aws-ecr-dockercfg-generator
   add_docker: true
   encrypted_env_file: deployment-ecr.env.encrypted
