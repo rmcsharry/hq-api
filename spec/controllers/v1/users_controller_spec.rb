@@ -141,7 +141,13 @@ RSpec.describe USERS_ENDPOINT, type: :request do
         expect(response.headers['Authorization']).to_not eq auth_headers['Authorization']
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'included'
-        expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
+        expect(body['data']['attributes']['roles'].map { |r| r['key'] }.sort).to eq roles.map { |r| r['key'] }.sort
+        expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_read' }['mandate_groups']).to(
+          contain_exactly(mandate_group1.id, mandate_group2.id)
+        )
+        expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_write' }['mandate_groups']).to(
+          contain_exactly(mandate_group1.id)
+        )
         expect(body['included'].first['type']).to eq 'contacts'
         expect(body['included'].first['attributes']['first-name']).to eq first_name
       end
@@ -388,7 +394,13 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       body = JSON.parse(response.body)
       expect(body.keys).to include 'data', 'meta'
       expect(body['data']['attributes']['email']).to eq email
-      expect(body['data']['attributes']['roles'].sort_by { |role| role['key'] }).to eq roles
+      expect(body['data']['attributes']['roles'].map { |r| r['key'] }.sort).to eq roles.map { |r| r['key'] }.sort
+      expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_read' }['mandate_groups']).to(
+        contain_exactly(mandate_group1.id, mandate_group2.id)
+      )
+      expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_write' }['mandate_groups']).to(
+        contain_exactly(mandate_group1.id)
+      )
     end
   end
 
