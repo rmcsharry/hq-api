@@ -17,8 +17,8 @@
 - name: Deploy to dev Kubernetes cluster
   tag: ^dev$
   service: deploy_dev
-  command: ENV=dev bin/deploy
+  command: bin/deploy
 - name: Deploy to prod Kubernetes cluster
   tag: ^master$
   service: deploy_prod
-  command: ENV=prod bin/deploy
+  command: bin/deploy

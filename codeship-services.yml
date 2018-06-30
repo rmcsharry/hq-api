@@ -13,6 +13,7 @@ deploy_prod:
     - KUBECONFIG=/config/.kube/config
     - NAMESPACE=hqtrust-core-api
     - CLUSTER_USER=codeship
+    - ENVIRONMENT=prod
 deploy_dev:
   build:
     dockerfile_path: Dockerfile-deploy
@@ -21,6 +22,7 @@ deploy_dev:
     - KUBECONFIG=/config/.kube/config
     - NAMESPACE=hqtrust-core-api
     - CLUSTER_USER=codeship
+    - ENVIRONMENT=dev
 db:
   image: healthcheck/postgres:alpine
   environment:
