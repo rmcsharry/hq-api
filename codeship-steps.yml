@@ -7,22 +7,22 @@
     service: api
     command: rubocop
 - name: Push to AWS ECR
-  type:
-    - serial
-    - push
-  tag: ^dev|master$
-  image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
+  type: serial
+  service: api
   registry: 457201446358.dkr.ecr.eu-central-1.amazonaws.com
   dockercfg_service: dockercfg-generator
   steps:
-    - service: api
-      tag: ^dev|master$
+    - tag: ^dev|master$
+      type: push
+      image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
       image_tag: "commit-{{.CommitID}}"
-    - service: api
-      tag: ^dev$
+    - tag: ^dev$
+      type: push
+      image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
       image_tag: "dev"
-    - service: api
-      tag: ^master$
+    - tag: ^master$
+      type: push
+      image_name: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api
       image_tag: "master"
 - name: Deploy to dev Kubernetes cluster
   tag: ^dev$
