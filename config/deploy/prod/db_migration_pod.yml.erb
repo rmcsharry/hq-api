@@ -16,8 +16,7 @@ spec:
     - name: hqtrust-core-api
       image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
       imagePullPolicy: IfNotPresent
-      command: ["/bin/sh"]
-      args: ["-c", "rake db:create db:migrate > /dev/termination-log"]
+      command: ["sh", "-c", "rake db:migrate"]
       env:
         - name: RAILS_ENV
           value: "production"
