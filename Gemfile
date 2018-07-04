@@ -64,6 +64,7 @@ gem 'terminal-table'
 # Logging & Issue Management
 gem 'r7insight'                                                     # Logging with Logentries (Rapid7 Insight)
 gem 'sentry-raven'                                                  # Issue Management with Sentry
+gem 'skylight'                                                      # Performance Management with Skylight.io
 
 group :development, :test do
   gem 'awesome_print'
