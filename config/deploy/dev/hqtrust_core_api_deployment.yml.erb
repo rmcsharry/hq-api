@@ -108,6 +108,11 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: aws-s3-encryption-passphrase
+            - name: SKYLIGHT_AUTHENTICATION
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: skylight-authentication
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -200,6 +205,11 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: aws-s3-encryption-passphrase
+            - name: SKYLIGHT_AUTHENTICATION
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: skylight-authentication
 ---
 kind: Service
 apiVersion: v1
