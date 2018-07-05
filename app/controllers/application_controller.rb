@@ -10,6 +10,7 @@ class ApplicationController < JSONAPI::ResourceController
   # rubocop:disable Metrics/AbcSize
   def context
     logger.debug "Origin: #{request.origin}"
+    logger.debug "Origin-Header: #{request.headers['origin']}"
     super.merge(
       controller: params['controller'],
       current_user: current_user,
