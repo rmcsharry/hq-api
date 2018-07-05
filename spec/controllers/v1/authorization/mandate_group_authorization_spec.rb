@@ -181,7 +181,6 @@ RSpec.describe 'authorization for', type: :request do
 
           it 'is possible to attach mandates' do
             endpoint.call(auth_headers)
-
             expect(response).to have_http_status(204)
           end
         end
