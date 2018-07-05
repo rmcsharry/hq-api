@@ -8,6 +8,7 @@ class ApplicationController < JSONAPI::ResourceController
   respond_to :json
 
   def context
+    p "Origin: #{request.origin}"
     super.merge(
       controller: params['controller'],
       current_user: current_user,
