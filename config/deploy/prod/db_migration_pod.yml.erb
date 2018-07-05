@@ -2,6 +2,7 @@
   partial(
     'db_migration_pod',
     host_url: 'https://api-core.prod.hqfinanz.de',
-    aws_s3_bucket_name: 'hqfinanz-prod-file-store'
+    aws_s3_bucket_name: 'hqfinanz-prod-file-store',
+    allowed_origins: 'app.prod.hqfinanz.de'
   )
 %>

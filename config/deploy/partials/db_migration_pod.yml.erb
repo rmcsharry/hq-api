@@ -20,6 +20,8 @@ spec:
       env:
         - name: RAILS_ENV
           value: "production"
+        - name: ALLOWED_ORIGINS
+          value: <%= allowed_origins %>
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
