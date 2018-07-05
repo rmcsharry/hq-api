@@ -7,8 +7,9 @@ class ApplicationController < JSONAPI::ResourceController
 
   respond_to :json
 
+  # rubocop:disable Metrics/AbcSize
   def context
-    p "Origin: #{request.origin}"
+    logger.debug "Origin: #{request.origin}"
     super.merge(
       controller: params['controller'],
       current_user: current_user,
@@ -17,6 +18,7 @@ class ApplicationController < JSONAPI::ResourceController
       request_method: request.request_method
     )
   end
+  # rubocop:enable Metrics/AbcSize
 
   def base_response_meta
     {
