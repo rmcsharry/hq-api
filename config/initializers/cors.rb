@@ -9,7 +9,6 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    Rails.logger.debug "CORS: #{ENV.fetch('ALLOWED_ORIGINS').split(',')}"
     origins ENV.fetch('ALLOWED_ORIGINS').split(',')
 
     resource '*',
