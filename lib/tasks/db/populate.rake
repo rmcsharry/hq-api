@@ -185,6 +185,7 @@ namespace :db do
 
     task mandates: :environment do
       contacts = Contact::Person.all
+      admin_user = User.find_by(email: 'admin@hqfinanz.de')
       mandates = Array.new(48) do
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
         Mandate.new(
@@ -198,7 +199,7 @@ namespace :db do
           psplus_id: Faker::Number.number(10),
           mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
           primary_consultant: contacts.sample,
-          secondary_consultant: contacts.sample,
+          secondary_consultant: admin_user.contact,
           assistant: contacts.sample,
           bookkeeper: contacts.sample
         )
