@@ -62,6 +62,7 @@ RSpec.describe Mandate, type: :model do
     it { is_expected.to have_and_belong_to_many(:mandate_groups) }
     it { is_expected.to have_and_belong_to_many(:mandate_groups_families) }
     it { is_expected.to have_and_belong_to_many(:mandate_groups_organizations) }
+    it { is_expected.to validate_presence_of(:mandate_groups_organizations) }
 
     it 'filters as expected' do
       subject.reload
