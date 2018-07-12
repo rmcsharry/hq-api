@@ -184,19 +184,19 @@ namespace :db do
     end
 
     task mandate_groups: :environment do
-      mandates_groups_families = Array.new(32) do
+      mandates_groups_families = Array.new(32) do |i|
         MandateGroup.new(
           comment: Faker::SiliconValley.quote,
           group_type: :family,
-          name: Faker::GameOfThrones.house
+          name: "#{Faker::GameOfThrones.house} ##{i}" # Uniqueness of names is needed for e2e tests
         )
       end
       MandateGroup.import!(mandates_groups_families)
-      mandate_groups_organizations = Array.new(12) do
+      mandate_groups_organizations = Array.new(12) do |i|
         MandateGroup.new(
           comment: Faker::SiliconValley.quote,
           group_type: :organization,
-          name: Faker::Company.name
+          name: "#{Faker::Company.name} ##{i}" # Uniqueness of names is needed for e2e tests
         )
       end
       MandateGroup.import!(mandate_groups_organizations)
