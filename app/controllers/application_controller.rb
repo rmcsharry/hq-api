@@ -4,6 +4,7 @@
 class ApplicationController < JSONAPI::ResourceController
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   before_action :set_paper_trail_whodunnit
+  after_action :log_response
 
   respond_to :json
 
@@ -25,6 +26,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def not_authorized
     head :forbidden
+  end
+
+  def log_response
+    Rails.logger.debug response.body
   end
 
   protected
