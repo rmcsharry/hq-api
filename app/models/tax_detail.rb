@@ -53,8 +53,8 @@ class TaxDetail < ApplicationRecord
   )
 
   validates :contact_id, uniqueness: { case_sensitive: false }
-  validates :de_tax_number, de_tax_number: true
-  validates :de_tax_id, de_tax_id: true
+  validates :de_tax_number, de_tax_number: true, if: -> { de_tax_number.present? }
+  validates :de_tax_id, de_tax_id: true, if: -> { de_tax_id.present? }
   validates :de_retirement_insurance, absence: true, if: -> { belongs_to_organization? }
   validates :de_retirement_insurance, inclusion: { in: [true, false] }
   validates :de_unemployment_insurance, absence: true, if: -> { belongs_to_organization? }

@@ -8,6 +8,31 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
+  let(:compliance_detail_payload) do
+    {
+      'kagb-classification': 'private',
+      'occupation-role': 'worker',
+      'occupation-title': 'CMO',
+      'politically-exposed': false,
+      'wphg-classification': 'born_professional'
+    }
+  end
+
+  let(:tax_detail_payload) do
+    {
+      'de-church-tax': true,
+      'de-health-insurace': false,
+      'de-retirement-insurace': false,
+      'de-tax-id': '12345678911',
+      'de-tax-number': '21/815/08150',
+      'de-tax-office': 'Amtsgericht Oberursel',
+      'de-unemployment-insurance': true,
+      'us-fatca-status': 'participation_ffi',
+      'us-tax-form': 'w_8ben',
+      'us-tax-number': '123456789'
+    }
+  end
+
   describe 'POST /v1/contacts' do
     subject { -> { post(CONTACTS_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
@@ -87,6 +112,86 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
     end
 
+    context 'with legal address and primary contact address' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            attributes: {
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              'legal-address': {
+                addition: 'Gartenhaus',
+                category: 'home',
+                city: 'Berlin',
+                country: 'DE',
+                'postal-code': '12345',
+                state: 'Berlin',
+                'street-and-number': 'Wohnstraße 13'
+              },
+              'primary-contact-address': {
+                category: 'work',
+                city: 'Hamburg',
+                country: 'DE',
+                'postal-code': '54321',
+                state: 'Hamburg',
+                'street-and-number': 'Arbeitsstraße 15'
+              }
+            }
+          }
+        }
+      end
+
+      it 'creates a new contact' do
+        is_expected.to change(Contact, :count).by(1)
+        is_expected.to change(Address, :count).by(2)
+        expect(response).to have_http_status(201)
+        contact = Contact.find(JSON.parse(response.body)['data']['id'])
+        expect(contact.first_name).to eq 'Max'
+        expect(contact.last_name).to eq 'Mustermann'
+        expect(contact.legal_address.street_and_number).to eq 'Wohnstraße 13'
+        expect(contact.primary_contact_address.street_and_number).to eq 'Arbeitsstraße 15'
+      end
+    end
+
+    context 'with legal address, compliance detail and tax detail' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            attributes: {
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              'legal-address': {
+                addition: 'Gartenhaus',
+                category: 'home',
+                city: 'Berlin',
+                country: 'DE',
+                'postal-code': '12345',
+                state: 'Berlin',
+                'street-and-number': 'Wohnstraße 13'
+              },
+              'compliance-detail': compliance_detail_payload,
+              'tax-detail': tax_detail_payload
+            }
+          }
+        }
+      end
+
+      it 'creates a new contact', bullet: false do
+        is_expected.to change(Contact, :count).by(1)
+        is_expected.to change(ComplianceDetail, :count).by(1)
+        is_expected.to change(TaxDetail, :count).by(1)
+        is_expected.to change(Address, :count).by(1)
+        expect(response).to have_http_status(201)
+        contact = Contact.find(JSON.parse(response.body)['data']['id'])
+        expect(contact.first_name).to eq 'Max'
+        expect(contact.last_name).to eq 'Mustermann'
+        expect(contact.compliance_detail.wphg_classification).to eq 'born_professional'
+        expect(contact.tax_detail.de_tax_number).to eq '21/815/08150'
+      end
+    end
+
     context 'with invalid address' do
       let(:payload) do
         {
@@ -113,7 +218,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         is_expected.to change(Address, :count).by(0)
         expect(response).to have_http_status(422)
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
-          'legal-address - ist nicht gültig'
+          'legal-address.postal-code - muss ausgefüllt werden'
         )
       end
     end
@@ -411,6 +516,38 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       it 'deletes an organization member' do
         is_expected.to change(OrganizationMember, :count).by(-1)
         expect(response).to have_http_status(204)
+      end
+    end
+  end
+
+  describe 'PATCH /v1/contacts' do
+    subject { -> { patch("#{CONTACTS_ENDPOINT}/#{contact.id}", params: payload.to_json, headers: auth_headers) } }
+    let(:contact) { create(:contact_person) }
+
+    context 'with compliance detail and tax detail' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            id: contact.id,
+            attributes: {
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              'compliance-detail': compliance_detail_payload,
+              'tax-detail': tax_detail_payload
+            }
+          }
+        }
+      end
+
+      it 'updates the contact' do
+        subject.call
+        expect(response).to have_http_status(200)
+        contact.reload
+        expect(contact.first_name).to eq 'Max'
+        expect(contact.last_name).to eq 'Mustermann'
+        expect(contact.compliance_detail.wphg_classification).to eq 'born_professional'
+        expect(contact.tax_detail.de_tax_number).to eq '21/815/08150'
       end
     end
   end
