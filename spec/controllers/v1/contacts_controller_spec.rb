@@ -300,7 +300,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
-        change1 = body['data'][-2]['attributes']
+        change1 = body['data'][-3]['attributes']
         expect(change1['changed-by']).to eq 'Norman Bates'
         expect(change1['created-at']).to be_present
         expect(change1['event']).to eq 'update'
@@ -308,12 +308,15 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(change1['changes']['first-name']).to eq([original_first_name, updated_first_name])
         expect(change1['changes']['last-name']).to eq([original_last_name, updated_last_name])
         expect(change1['changes']['updated-at']).to be_nil
-        change2 = body['data'][-1]['attributes']
-        expect(change2['event']).to eq 'update'
-        expect(change2['changed-by']).to eq 'Shelley Stewart'
-        expect(change2['created-at']).to be_present
-        expect(change2['item-type']).to eq 'contacts'
-        expect(change2['changes']['date-of-birth']).to eq([original_date_of_birth.to_s, updated_date_of_birth.to_s])
+        change2 = body['data'][-2]['attributes']
+        expect(change2['event']).to eq 'create'
+        expect(change2['item-type']).to eq 'tax-details'
+        change3 = body['data'][-1]['attributes']
+        expect(change3['event']).to eq 'update'
+        expect(change3['changed-by']).to eq 'Shelley Stewart'
+        expect(change3['created-at']).to be_present
+        expect(change3['item-type']).to eq 'contacts'
+        expect(change3['changes']['date-of-birth']).to eq([original_date_of_birth.to_s, updated_date_of_birth.to_s])
       end
     end
 

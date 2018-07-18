@@ -81,6 +81,7 @@ class Contact < ApplicationRecord
     )
   }
 
+  after_create :add_tax_detail
   before_validation :assign_primary_contact_address
 
   validates_associated :legal_address, :primary_contact_address, :compliance_detail, :tax_detail
@@ -94,6 +95,10 @@ class Contact < ApplicationRecord
   end
 
   private
+
+  def add_tax_detail
+    build_tax_detail unless tax_detail
+  end
 
   def assign_primary_contact_address
     self.primary_contact_address = legal_address unless primary_contact_address
