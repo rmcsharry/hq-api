@@ -47,7 +47,10 @@ class Contact
 
     extend Enumerize
 
-    ORGANIZATION_TYPES = %i[gmbh ag foreign_ag lp gmbh_co_kg gbr limited llc vvag ev].freeze
+    ORGANIZATION_TYPES = %i[
+      ag church eg ev foreign_ag foreign_gmbh foundation fund gbr gmbh gmbh_co_kg kg limited
+      llc lp other partg statutory_corporation statutory_institution trust vvag
+    ].freeze
 
     has_many :bank_accounts, foreign_key: :bank, dependent: :nullify, inverse_of: :bank
     has_many(
