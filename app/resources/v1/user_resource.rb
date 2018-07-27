@@ -27,12 +27,12 @@ module V1
 
     def roles
       roles = {}
-      @model.user_groups.each do |user_group|
+      @model.user_groups.includes(:mandate_groups).each do |user_group|
         user_group.roles.each { |r| roles[r] = [roles[r], user_group.mandate_groups.map(&:id)].flatten.compact }
       end
       roles.map do |key, value|
         role = { key: key }
-        role[:mandate_groups] = value if key.start_with? 'mandates'
+        role[:mandate_groups] = value.uniq if key.start_with? 'mandates'
         role
       end
     end
@@ -124,7 +124,7 @@ module V1
 
     class << self
       def records(_options)
-        super.with_user_group_count.includes(user_groups: [:mandate_groups])
+        super.with_user_group_count
       end
 
       def updatable_fields(context)

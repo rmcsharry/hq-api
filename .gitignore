@@ -27,3 +27,4 @@ config/kubernetes_config_ingress_setup.yml
 config/kubernetes_config_codeship_role.yml
 config/kubernetes_config_secrets.yml
 storage/*
+db/import/*

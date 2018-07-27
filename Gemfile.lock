@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: https://github.com/HQTrust/jsonapi-resources.git
-  revision: 9283e4a621cddf6eecc1a02b6e899fe2fa3e8a79
+  revision: adb475bbf6a2c6b9b5cd75fdfa12b754690e58b7
   branch: hqtrust
   specs:
     jsonapi-resources (0.10.0.pre)

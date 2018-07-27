@@ -23,6 +23,9 @@ namespace :db do
       puts 'Creating contact details'
       Rake::Task['db:populate:contact_details'].invoke
 
+      puts 'Creating mandate groups'
+      Rake::Task['db:populate:mandate_groups'].invoke
+
       puts 'Creating mandates'
       Rake::Task['db:populate:mandates'].invoke
 
@@ -31,9 +34,6 @@ namespace :db do
 
       puts 'Creating organization members'
       Rake::Task['db:populate:organization_members'].invoke
-
-      puts 'Creating mandate groups'
-      Rake::Task['db:populate:mandate_groups'].invoke
 
       puts 'Creating user groups'
       Rake::Task['db:populate:user_groups'].invoke
@@ -183,11 +183,34 @@ namespace :db do
       ContactDetail.import!(contact_details.flatten)
     end
 
+    task mandate_groups: :environment do
+      mandates_groups_families = Array.new(32) do |i|
+        MandateGroup.new(
+          comment: Faker::SiliconValley.quote,
+          group_type: :family,
+          name: "#{Faker::GameOfThrones.house} ##{i}" # Uniqueness of names is needed for e2e tests
+        )
+      end
+      MandateGroup.import!(mandates_groups_families)
+      mandate_groups_organizations = Array.new(12) do |i|
+        MandateGroup.new(
+          comment: Faker::SiliconValley.quote,
+          group_type: :organization,
+          name: "#{Faker::Company.name} ##{i}" # Uniqueness of names is needed for e2e tests
+        )
+      end
+      MandateGroup.import!(mandate_groups_organizations)
+    end
+
     task mandates: :environment do
       contacts = Contact::Person.all
-      mandates = Array.new(48) do
+      admin_user = User.find_by(email: 'admin@hqfinanz.de')
+      mandate_groups_organizations = MandateGroup.organizations
+      mandate_groups_families = MandateGroup.families
+      special_family = mandate_groups_families.first
+      48.times do
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
-        Mandate.new(
+        Mandate.create(
           aasm_state: %i[prospect client cancelled].sample,
           category: Mandate::CATEGORIES.sample,
           comment: Faker::SiliconValley.quote,
@@ -198,12 +221,13 @@ namespace :db do
           psplus_id: Faker::Number.number(10),
           mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
           primary_consultant: contacts.sample,
-          secondary_consultant: contacts.sample,
+          secondary_consultant: admin_user.contact,
           assistant: contacts.sample,
-          bookkeeper: contacts.sample
+          bookkeeper: contacts.sample,
+          mandate_groups_organizations: mandate_groups_organizations.sample(Faker::Number.between(1, 4)),
+          mandate_groups_families: [special_family] | mandate_groups_families.sample(Faker::Number.between(1, 4))
         )
       end
-      Mandate.import!(mandates)
     end
 
     task mandate_members: :environment do
@@ -220,33 +244,6 @@ namespace :db do
         generate_organization_members(organization: organization, contacts: contacts)
       end
       OrganizationMember.import!(organization_members.flatten)
-    end
-
-    task mandate_groups: :environment do
-      mandates = Mandate.all
-      32.times do
-        MandateGroup.create(
-          comment: Faker::SiliconValley.quote,
-          group_type: :family,
-          mandates: mandates.sample(Faker::Number.between(2, 12)),
-          name: Faker::GameOfThrones.house
-        )
-      end
-      12.times do
-        MandateGroup.create(
-          comment: Faker::SiliconValley.quote,
-          group_type: :organization,
-          mandates: mandates.sample(Faker::Number.between(5, 34)),
-          name: Faker::Company.name
-        )
-      end
-      # Create one big family for e2e tests
-      MandateGroup.create(
-        comment: Faker::SiliconValley.quote,
-        group_type: :family,
-        mandates: mandates.sample(42),
-        name: Faker::GameOfThrones.house
-      )
     end
 
     task user_groups: :environment do

@@ -49,6 +49,13 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:mandate_number) }
   it { is_expected.to respond_to(:psplus_id) }
 
+  describe '#psplus_id' do
+    it { is_expected.to respond_to(:psplus_id) }
+    it { is_expected.to allow_value('123456789').for(:psplus_id) }
+    it { is_expected.to_not allow_value('12345678A').for(:psplus_id) }
+    it { is_expected.to_not allow_value('1234567890').for(:psplus_id) }
+  end
+
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }
@@ -62,6 +69,7 @@ RSpec.describe Mandate, type: :model do
     it { is_expected.to have_and_belong_to_many(:mandate_groups) }
     it { is_expected.to have_and_belong_to_many(:mandate_groups_families) }
     it { is_expected.to have_and_belong_to_many(:mandate_groups_organizations) }
+    it { is_expected.to validate_presence_of(:mandate_groups_organizations) }
 
     it 'filters as expected' do
       subject.reload

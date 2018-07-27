@@ -45,11 +45,15 @@ class Address < ApplicationRecord
   enumerize :country, in: COUNTRIES
   enumerize :category, in: CATEGORIES
 
+  after_initialize :set_defaults
+
   before_save :set_primary_contact_address
   before_save :set_legal_address
 
   before_destroy :check_primary_contact_address
   before_destroy :check_legal_address
+
+  private
 
   def set_primary_contact_address
     return unless primary_contact_address
@@ -73,5 +77,9 @@ class Address < ApplicationRecord
     return unless contact.legal_address == self
     errors[:base] << 'Cannot delete address while it is the legal address.'
     throw :abort
+  end
+
+  def set_defaults
+    self.category = 'home' unless category
   end
 end

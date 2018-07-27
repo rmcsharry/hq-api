@@ -11,6 +11,7 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
+      :compliance_detail,
       :contact_type,
       :date_of_birth,
       :date_of_death,
@@ -28,6 +29,7 @@ module V1
       :organization_type,
       :primary_contact_address,
       :professional_title,
+      :tax_detail,
       :updated_at
     )
 
@@ -47,33 +49,32 @@ module V1
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
 
-    # rubocop:disable Metrics/MethodLength
-    def legal_address=(params)
-      @model.build_legal_address(
-        addition: params[:addition],
-        category: params[:category] || 'home',
-        city: params[:city],
-        contact: @model,
-        country: params[:country],
-        postal_code: params[:'postal-code'],
-        state: params[:state],
-        street_and_number: params[:'street-and-number']
-      )
-      @model.primary_contact_address = @model.legal_address if @model.primary_contact_address.blank?
+    def compliance_detail=(params)
+      @model.build_compliance_detail unless @model.compliance_detail
+      sanitized_params = sanitize_params(params, V1::ComplianceDetailResource)
+      @model.compliance_detail.assign_attributes(sanitized_params)
+      @save_needed = true
     end
-    # rubocop:enable Metrics/MethodLength
+
+    def tax_detail=(params)
+      @model.build_tax_detail unless @model.tax_detail
+      sanitized_params = sanitize_params(params, V1::TaxDetailResource)
+      @model.tax_detail.assign_attributes(sanitized_params)
+      @save_needed = true
+    end
+
+    def legal_address=(params)
+      @model.build_legal_address(contact: @model) unless @model.legal_address
+      sanitized_params = sanitize_params(params, V1::AddressResource)
+      @model.legal_address.assign_attributes(sanitized_params)
+      @save_needed = true
+    end
 
     def primary_contact_address=(params)
-      @model.build_primary_contact_address(
-        addition: params[:addition],
-        category: params[:category],
-        city: params[:city],
-        contact: @model,
-        country: params[:country],
-        postal_code: params[:'postal-code'],
-        state: params[:state],
-        street_and_number: params[:'street-and-number']
-      )
+      @model.build_primary_contact_address(contact: @model) unless @model.primary_contact_address
+      sanitized_params = sanitize_params(params, V1::AddressResource)
+      @model.primary_contact_address.assign_attributes(sanitized_params)
+      @save_needed = true
     end
 
     filters(
@@ -156,7 +157,7 @@ module V1
         records = super.with_name
         if options.dig(:context, :request_method) == 'GET' &&
            options.dig(:context, :controller) != 'v1/versions'
-          records = records.includes(:legal_address, :primary_contact_address)
+          records = records.includes(:legal_address, :primary_contact_address, :compliance_detail, :tax_detail)
         end
         records
       end

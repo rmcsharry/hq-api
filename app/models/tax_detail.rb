@@ -36,9 +36,9 @@
 class TaxDetail < ApplicationRecord
   extend Enumerize
 
-  US_TAX_FORMS = %i[w_8ben w_8ben_e w_8imy w_8eci w_8exp].freeze
+  US_TAX_FORMS = %i[none w_8ben w_8ben_e w_8imy w_8eci w_8exp].freeze
   US_FATCA_STATUSES = %i[
-    participation_ffi reporting_ffi nonreporting_ffi owner_documented_ffi active_nffe passive_nffe
+    none participation_ffi reporting_ffi nonreporting_ffi owner_documented_ffi active_nffe passive_nffe
   ].freeze
 
   belongs_to :contact
@@ -53,8 +53,8 @@ class TaxDetail < ApplicationRecord
   )
 
   validates :contact_id, uniqueness: { case_sensitive: false }
-  validates :de_tax_number, de_tax_number: true
-  validates :de_tax_id, de_tax_id: true
+  validates :de_tax_number, de_tax_number: true, if: -> { de_tax_number.present? }
+  validates :de_tax_id, de_tax_id: true, if: -> { de_tax_id.present? }
   validates :de_retirement_insurance, absence: true, if: -> { belongs_to_organization? }
   validates :de_retirement_insurance, inclusion: { in: [true, false] }
   validates :de_unemployment_insurance, absence: true, if: -> { belongs_to_organization? }

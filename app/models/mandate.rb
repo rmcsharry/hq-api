@@ -43,7 +43,7 @@ class Mandate < ApplicationRecord
 
   CATEGORIES = %i[
     family_office_with_investment_advice family_office_without_investment_advice wealth_management investment_advice
-    alternative_investments institutional reporting
+    alternative_investments institutional reporting other
   ].freeze
 
   belongs_to :primary_consultant, class_name: 'Contact', optional: true, inverse_of: :primary_consultant_mandates
@@ -108,6 +108,8 @@ class Mandate < ApplicationRecord
   validates :category, presence: true
   validates :primary_consultant, presence: true, if: :client?
   validates :secondary_consultant, presence: true, if: :client?
+  validates :mandate_groups_organizations, presence: true
+  validates :psplus_id, format: /\A(\d{9})\Z/i, if: :psplus_id
   validate :valid_to_greater_or_equal_valid_from
 
   enumerize :category, in: CATEGORIES, scope: true

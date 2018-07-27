@@ -84,4 +84,71 @@ RSpec.describe MANDATE_GROUPS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'POST /v1/mandate-groups' do
+    let(:family) { create(:mandate_group, group_type: 'family') }
+    let(:mandate) { create :mandate }
+    let(:user) { create :user }
+    let(:mandate_group) { create :mandate_group, mandates: [mandate] }
+    let!(:user_group) do
+      create(
+        :user_group,
+        users: [user],
+        mandate_groups: [mandate_group],
+        roles: %i[families_write mandates_write]
+      )
+    end
+    let(:payload) do
+      {
+        data: [
+          { id: mandate.id, type: 'mandates' }
+        ]
+      }
+    end
+    let(:endpoint) do
+      lambda do |auth_headers|
+        post "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}/relationships/mandates",
+             params: payload.to_json,
+             headers: auth_headers
+      end
+    end
+
+    context 'mandate is not in the family yet' do
+      it 'successfully adds the mandate to the mandate group' do
+        endpoint.call(auth_headers)
+        expect(response).to have_http_status(204)
+        expect(mandate_group.mandates).to eq [mandate]
+      end
+    end
+
+    context 'mandate is in the family already' do
+      let(:family) { create(:mandate_group, mandates: [mandate], group_type: 'family') }
+
+      it 'successfully adds the mandate to the mandate group' do
+        endpoint.call(auth_headers)
+        expect(response).to have_http_status(204)
+        expect(mandate_group.mandates).to eq [mandate]
+      end
+    end
+
+    context 'add two mandates, one of which is in the family already' do
+      let(:family) { create(:mandate_group, mandates: [mandate], group_type: 'family') }
+      let(:mandate_group) { create :mandate_group, mandates: [mandate, mandate2] }
+      let(:mandate2) { create :mandate }
+      let(:payload) do
+        {
+          data: [
+            { id: mandate.id, type: 'mandates' },
+            { id: mandate2.id, type: 'mandates' }
+          ]
+        }
+      end
+
+      it 'successfully adds the mandate to the mandate group' do
+        endpoint.call(auth_headers)
+        expect(response).to have_http_status(204)
+        expect(mandate_group.mandates).to contain_exactly mandate, mandate2
+      end
+    end
+  end
 end

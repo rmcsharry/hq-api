@@ -42,6 +42,8 @@ spec:
               value: "6379"
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
+            - name: ALLOWED_ORIGINS
+              value: <%= allowed_origins %>
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -139,6 +141,8 @@ spec:
               value: "6379"
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
+            - name: ALLOWED_ORIGINS
+              value: <%= allowed_origins %>
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -282,3 +286,67 @@ spec:
         image: redis:4.0-alpine
         ports:
         - containerPort: 6379
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hqtrust-core-sidekiq-monitor-deployment
+  namespace: hqtrust-core-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: hqtrust-core-sidekiq-monitor
+    spec:
+      containers:
+        - name: hqtrust-core-sidekiq-monitor
+          image: clok/standalone-sidekiq-web
+          env:
+            - name: REDIS_URL
+              value: "redis://redis:6379"
+            - name: SIDEKIQ_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: sidekiq-username
+            - name: SIDEKIQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: sidekiq-password
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: hqtrust-core-sidekiq-monitor-service
+  namespace: hqtrust-core-api
+spec:
+  selector:
+    app: hqtrust-core-sidekiq-monitor
+  type: NodePort
+  ports:
+    - port: 9292
+      targetPort: 9292
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: hqtrust-core-sidekiq-monitor-ingress
+  namespace: hqtrust-core-api
+  annotations:
+    ingress.kubernetes.io/secure-backends: "true"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/whitelist-source-range: <%= ENV.fetch('WHITELISTED_IPS') %>
+spec:
+  rules:
+    - host: <%= sidekiq_monitor_host %>
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: hqtrust-core-sidekiq-monitor-service
+              servicePort: 9292

@@ -376,30 +376,35 @@ RSpec.describe USERS_ENDPOINT, type: :request do
     let(:email) { 'test@hqfinanz.de' }
     let(:mandate_group1) { create(:mandate_group) }
     let(:mandate_group2) { create(:mandate_group) }
+    let(:mandate_group3) { create(:mandate_group) }
     let!(:user_group1) do
       create(
-        :user_group, users: [user], mandate_groups: [mandate_group1],
+        :user_group, users: [user], mandate_groups: [mandate_group1, mandate_group3],
                      roles: %w[admin contacts_read mandates_read mandates_write]
       )
     end
     let!(:user_group2) do
-      create(:user_group, users: [user], mandate_groups: [mandate_group2], roles: %w[mandates_read])
+      create(
+        :user_group, users: [user], mandate_groups: [mandate_group2, mandate_group3],
+                     roles: %w[mandates_read]
+      )
     end
 
     it 'gets a single user without updating sign in count' do
       expect(user.sign_in_count).to eq 0
-      get("#{USERS_ENDPOINT}/#{user.id}", params: {}, headers: auth_headers)
+      get("#{USERS_ENDPOINT}/#{user.id}", params: { include: 'contact,user-groups' }, headers: auth_headers)
       expect(user.reload.sign_in_count).to eq 0
       expect(response).to have_http_status(200)
       body = JSON.parse(response.body)
       expect(body.keys).to include 'data', 'meta'
       expect(body['data']['attributes']['email']).to eq email
+      expect(body['data']['relationships']['user-groups']['data'].length).to eq 2
       expect(body['data']['attributes']['roles'].map { |r| r['key'] }.sort).to eq roles.map { |r| r['key'] }.sort
       expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_read' }['mandate_groups']).to(
-        contain_exactly(mandate_group1.id, mandate_group2.id)
+        contain_exactly(mandate_group1.id, mandate_group2.id, mandate_group3.id)
       )
       expect(body['data']['attributes']['roles'].find { |r| r['key'] == 'mandates_write' }['mandate_groups']).to(
-        contain_exactly(mandate_group1.id)
+        contain_exactly(mandate_group1.id, mandate_group3.id)
       )
     end
   end

@@ -56,4 +56,7 @@ Rails.application.configure do
 
   # Configure ActiveJob
   config.active_job.queue_adapter = :sidekiq
+
+  # Log to STDOUT in development
+  config.logger = Logger.new(STDOUT)
 end
