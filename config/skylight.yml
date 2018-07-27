@@ -1,2 +1,4 @@
 production:
   authentication: <%= ENV["SKYLIGHT_AUTHENTICATION"] %>
+ignored_endpoints:
+  - HealthcheckController#health

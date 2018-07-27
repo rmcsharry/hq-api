@@ -33,6 +33,6 @@ Rails.application.routes.draw do
 
   root to: 'v1/users#index'
 
-  get 'health', to: proc { [200, {}, ['']] }
+  get 'health', to: 'healthcheck#health'
 end
 # rubocop:enable Metrics/BlockLength
