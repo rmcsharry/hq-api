@@ -450,7 +450,9 @@ DEPENDENCIES
   jsonapi-authorization!
   jsonapi-resources!
   jsonapi-resources-matchers!
+  jwt
   listen (>= 3.0.5, < 3.2)
+  mail
   money
   paper_trail
   pg (~> 0.18)
@@ -466,6 +468,7 @@ DEPENDENCIES
   rspec-rails
   rubocop
   rubocop-rspec
+  savon
   sentry-raven
   shoulda-matchers!
   sidekiq

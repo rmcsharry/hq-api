@@ -34,6 +34,7 @@
 #  invitations_count      :integer          default(0)
 #  comment                :text
 #  contact_id             :uuid
+#  ews_user_id            :string
 #
 # Indexes
 #

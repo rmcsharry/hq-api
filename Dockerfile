@@ -13,6 +13,7 @@ RUN apk del build-base
 
 COPY . /app/
 
+EXPOSE 2999
 EXPOSE 3000
 
 ENTRYPOINT ["bin/docker-entrypoint.sh"]

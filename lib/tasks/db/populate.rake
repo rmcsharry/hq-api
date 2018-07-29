@@ -110,7 +110,8 @@ namespace :db do
         password: password,
         confirmed_at: 1.day.ago,
         contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::SiliconValley.quote
+        comment: Faker::SiliconValley.quote,
+        ews_user_id: '008c2269-2676-42a2-9f5d-d2e60ed85b28' # user id of test.sherpas@hqtrust.de in verticals EWS
       )
       User.create!(
         email: 'sales@hqfinanz.de',

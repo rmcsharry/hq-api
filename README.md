@@ -5,6 +5,18 @@
 ### Prerequisites
 * A running Docker environment
 
+#### Certificates
+The HQTrust [outlook add-in](https://github.com/HQTrust/hq-outlook-addin) requires the api to be exposed via ssl also when running in development. That is because the add-in runs as an `iframe` in context of the [outlook web app](https://outlook.live.com), which is of course enforcing https.
+
+You can use mkcert in order to create such certificate on your system:
+
+  1. Use mkcert:
+    1. [Install mkcert](https://github.com/FiloSottile/mkcert#installation) on your system
+    1. Run `CAROOT="$(pwd)/cert" mkcert -install` in this projects root to create and trust a ca certificate
+    1. Run `mkdir cert`
+    1. Run `cd cert`
+    1. Run `CAROOT="$(pwd)/cert" mkcert localhost` in this projects root create a certificate for localhost, signed by above ca certificate
+
 ### Install
 After cloning the project locally, run
 ```

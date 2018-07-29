@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_08_084101) do
+ActiveRecord::Schema.define(version: 2018_07_27_150252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.uuid "creator_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ews_id"
     t.index ["creator_id"], name: "index_activities_on_creator_id"
   end
 
@@ -302,6 +303,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.integer "invitations_count", default: 0
     t.text "comment"
     t.uuid "contact_id"
+    t.string "ews_user_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true

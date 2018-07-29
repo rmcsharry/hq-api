@@ -7,6 +7,7 @@ api:
   cached: true
   environment:
     ALLOWED_ORIGINS: 'localhost:3001'
+    OUTLOOK_ORIGINS: 'localhost:3002'
 deploy-prod:
   build:
     dockerfile_path: Dockerfile-deploy

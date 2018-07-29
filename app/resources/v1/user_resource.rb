@@ -16,6 +16,7 @@ module V1
       :created_at,
       :current_sign_in_at,
       :email,
+      :ews_user_id,
       :roles,
       :sign_in_count,
       :updated_at,
