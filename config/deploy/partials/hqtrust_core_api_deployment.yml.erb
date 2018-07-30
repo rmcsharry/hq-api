@@ -150,6 +150,8 @@ spec:
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
               value: <%= allowed_origins %>
+            - name: OUTLOOK_ORIGINS
+              value: <%= outlook_origins %>
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
