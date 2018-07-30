@@ -17,7 +17,7 @@ module V1
 
       activity_id = @response_document.contents['data']['id']
 
-      logger.info "Approaching to fetch email with id '#{ews_id}' from EWS."
+      logger.info "Scheduling to fetch email with id '#{ews_id}' from EWS."
       FetchEmailJob.perform_later(activity_id, id: ews_id, token: attributes['ews-token'], url: attributes['ews-url'])
     end
   end

@@ -24,7 +24,7 @@ class AuthenticateEWSIdTokenService < ApplicationService
     end
 
     def public_key
-      @public_key = OpenSSL::PKey::RSA.new ENV['EWS_AUTH_PUBLIC_KEY']
+      @public_key = OpenSSL::PKey::RSA.new ENV['EWS_AUTH_PUBLIC_KEY'].gsub('\\n', "\n")
     end
   end
 end
