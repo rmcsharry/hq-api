@@ -219,7 +219,7 @@ namespace :db do
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
           datev_creditor_id: Faker::Number.number(10),
           datev_debitor_id: Faker::Number.number(10),
-          psplus_id: Faker::Number.number(10),
+          psplus_id: Faker::Number.number(9),
           mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
           primary_consultant: contacts.sample,
           secondary_consultant: admin_user.contact,
