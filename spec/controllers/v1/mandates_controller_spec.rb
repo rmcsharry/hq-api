@@ -182,6 +182,51 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(change2['changes']['comment']).to eq [original_comment, updated_comment]
         expect(change2['changes']['mandate-number']).to eq [original_mandate_number, updated_mandate_number]
       end
+
+      context 'when trying to delete the relationship' do
+        let(:payload) do
+          {
+            data: [{ type: 'versions', id: mandate.versions.first.id }]
+          }
+        end
+
+        it 'is not allowed', bullet: false do
+          delete(
+            "#{MANDATES_ENDPOINT}/#{mandate.id}/relationships/versions", params: payload.to_json, headers: auth_headers
+          )
+          expect(response).to have_http_status(403)
+        end
+      end
+
+      context 'when trying to update the relationship' do
+        let(:payload) do
+          {
+            data: []
+          }
+        end
+
+        it 'is not allowed' do
+          put(
+            "#{MANDATES_ENDPOINT}/#{mandate.id}/relationships/versions", params: payload.to_json, headers: auth_headers
+          )
+          expect(response).to have_http_status(403)
+        end
+      end
+
+      context 'when trying to add a relationship' do
+        let(:payload) do
+          {
+            data: [{ type: 'versions', id: user.versions.first.id }]
+          }
+        end
+
+        it 'is not allowed' do
+          post(
+            "#{MANDATES_ENDPOINT}/#{mandate.id}/relationships/versions", params: payload.to_json, headers: auth_headers
+          )
+          expect(response).to have_http_status(403)
+        end
+      end
     end
 
     context 'with changes to the bank accounts' do
