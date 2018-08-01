@@ -37,4 +37,35 @@ RSpec.describe ContactDetail, type: :model do
   describe '#value' do
     it { is_expected.to validate_presence_of(:value) }
   end
+
+  describe '#primary' do
+    let(:contact) { create(:contact_person) }
+    let!(:old_email) { create(:email, primary: true, contact: contact) }
+    let!(:old_phone) { create(:phone, primary: true, contact: contact) }
+
+    context 'when primary contact detail is created' do
+      subject { build(:email, primary: true, contact: contact) }
+
+      it 'marks others as non-primary' do
+        expect(old_email.primary).to be true
+        subject.save!
+        expect(old_email.reload.primary).to be false
+        expect(subject.reload.primary).to be true
+        expect(old_phone.reload.primary).to be true
+      end
+    end
+
+    context 'when primary contact detail is updated' do
+      subject { create(:email, primary: false, contact: contact) }
+
+      it 'marks others as non-primary' do
+        expect(old_email.primary).to be true
+        subject.primary = true
+        subject.save!
+        expect(old_email.reload.primary).to be false
+        expect(subject.reload.primary).to be true
+        expect(old_phone.reload.primary).to be true
+      end
+    end
+  end
 end
