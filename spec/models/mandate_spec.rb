@@ -51,9 +51,7 @@ RSpec.describe Mandate, type: :model do
 
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
-    it { is_expected.to allow_value('123456789').for(:psplus_id) }
-    it { is_expected.to_not allow_value('12345678A').for(:psplus_id) }
-    it { is_expected.to_not allow_value('1234567890').for(:psplus_id) }
+    it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
   end
 
   describe '#category' do

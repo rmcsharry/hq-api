@@ -109,7 +109,7 @@ class Mandate < ApplicationRecord
   validates :primary_consultant, presence: true, if: :client?
   validates :secondary_consultant, presence: true, if: :client?
   validates :mandate_groups_organizations, presence: true
-  validates :psplus_id, format: /\A(\d{9})\Z/i, if: :psplus_id
+  validates :psplus_id, length: { maximum: 15 }
   validate :valid_to_greater_or_equal_valid_from
 
   enumerize :category, in: CATEGORIES, scope: true
