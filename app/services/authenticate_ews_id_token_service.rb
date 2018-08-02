@@ -18,6 +18,7 @@ class AuthenticateEWSIdTokenService < ApplicationService
         id_token,
         public_key,
         true,
+        nbf_leeway: 60,
         algorithm: 'RS256',
         typ: 'JWT'
       ).first
