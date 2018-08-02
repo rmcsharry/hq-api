@@ -93,4 +93,52 @@ RSpec.describe Document, type: :model do
       end
     end
   end
+
+  describe 'prevent deletion after 24 hours' do
+    context 'not older than 24 hours' do
+      subject { create(:document, created_at: 23.hours.ago) }
+
+      it 'can be deleted' do
+        expect(subject.destroy!).to be_truthy
+      end
+    end
+
+    context 'older than 24 hours' do
+      subject do
+        Timecop.freeze(1.day.ago) do
+          create(:document, created_at: 1.day.ago)
+        end
+      end
+
+      it 'cannot be deleted' do
+        expect { subject.destroy! }.to raise_error(ActiveRecord::ReadOnlyRecord)
+      end
+    end
+  end
+
+  describe 'prevent update after 24 hours' do
+    context 'not older than 24 hours' do
+      subject { create(:document, created_at: 23.hours.ago) }
+
+      it 'can be changed' do
+        subject.name = 'New document'
+        subject.category = :kyc
+        expect(subject.save).to be_truthy
+      end
+    end
+
+    context 'older than 24 hours' do
+      subject do
+        Timecop.freeze(1.day.ago) do
+          create(:document, created_at: 1.day.ago)
+        end
+      end
+
+      it 'cannot be changed' do
+        subject.name = 'New document'
+        subject.category = :kyc
+        expect { subject.save }.to raise_error(ActiveRecord::ReadOnlyRecord)
+      end
+    end
+  end
 end

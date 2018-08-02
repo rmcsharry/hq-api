@@ -28,6 +28,7 @@
 # Defines the Document model
 class Document < ApplicationRecord
   extend Enumerize
+  include Lockable
 
   CATEGORIES = %i[
     contract_hq contract_general invoice performance_report bank_reports commercial_register tax insurance
