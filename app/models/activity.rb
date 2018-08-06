@@ -38,7 +38,7 @@ class Activity < ApplicationRecord
   validates :type, presence: true
   validates :title, presence: true
   validates :description, presence: true
-  validate :ended_at_greater_started_at
+  validate :ended_at_greater_or_equal_started_at
 
   alias_attribute :activity_type, :type
 
@@ -46,8 +46,8 @@ class Activity < ApplicationRecord
 
   # Validates if started_at timestamp is before ended_at if ended_at is set
   # @return [void]
-  def ended_at_greater_started_at
-    return if ended_at.blank? || started_at.blank? || ended_at > started_at
-    errors.add(:ended_at, 'has to be after started_at')
+  def ended_at_greater_or_equal_started_at
+    return if ended_at.blank? || started_at.blank? || ended_at >= started_at
+    errors.add(:ended_at, 'has to be after or at started_at')
   end
 end

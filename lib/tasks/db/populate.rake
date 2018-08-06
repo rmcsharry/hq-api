@@ -165,7 +165,7 @@ namespace :db do
             contact: contact,
             category: categories.sample,
             value: Faker::Internet.email,
-            primary: true
+            primary: !contact.user
           ),
           ContactDetail::Email.new(
             contact: contact,
@@ -180,6 +180,9 @@ namespace :db do
             primary: false
           )
         ]
+      end
+      contact_details << User.all.map do |user|
+        ContactDetail::Email.new(contact: user.contact, category: :work, value: user.email, primary: true)
       end
       ContactDetail.import!(contact_details.flatten)
     end

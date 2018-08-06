@@ -47,7 +47,7 @@ RSpec.describe Activity, type: :model do
     it { is_expected.to validate_presence_of(:description) }
   end
 
-  describe '#ended_at_greater_started_at' do
+  describe '#ended_at_greater_or_equal_started_at' do
     subject { build(:activity_call, started_at: started_at, ended_at: ended_at) }
     let(:started_at) { 1.day.ago }
 
@@ -56,7 +56,7 @@ RSpec.describe Activity, type: :model do
 
       it 'is invalid' do
         expect(subject).not_to be_valid
-        expect(subject.errors.messages[:ended_at]).to include('has to be after started_at')
+        expect(subject.errors.messages[:ended_at]).to include('has to be after or at started_at')
       end
     end
 
