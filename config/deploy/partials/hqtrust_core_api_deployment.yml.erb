@@ -4,6 +4,9 @@ metadata:
   name: hqtrust-core-api-deployment
   namespace: hqtrust-core-api
 spec:
+  selector:
+    matchLabels:
+      app: hqtrust-core-api
   replicas: <%= replicas %>
   template:
     metadata:
@@ -139,6 +142,9 @@ metadata:
   name: hqtrust-core-sidekiq-deployment
   namespace: hqtrust-core-api
 spec:
+  selector:
+    matchLabels:
+      app: hqtrust-core-sidekiq
   replicas: <%= replicas %>
   template:
     metadata:
@@ -322,6 +328,9 @@ metadata:
   name: hqtrust-core-sidekiq-monitor-deployment
   namespace: hqtrust-core-api
 spec:
+  selector:
+    matchLabels:
+      app: hqtrust-core-sidekiq-monitor
   replicas: <%= replicas %>
   template:
     metadata:
