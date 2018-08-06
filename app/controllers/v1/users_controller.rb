@@ -6,9 +6,21 @@ module V1
   class UsersController < ApplicationController
     include Devise::Controllers::SignInOut
 
-    before_action :authenticate_user!, except: %i[sign_in_user read_invitation accept_invitation], unless: proc {
-      public_action?
-    }
+    before_action :authenticate_user!,
+                  except: %i[sign_in_ews_id sign_in_user read_invitation accept_invitation],
+                  unless: proc { public_action? }
+
+    def sign_in_ews_id
+      begin
+        @response_document = create_response_document
+        id_token = request.headers['Authorization'].split(' ').last
+        user = authenticate_ews_id(id_token)
+        generate_user_response(user: user)
+      rescue JSONAPI::Exceptions::Error => e
+        handle_exceptions(e)
+      end
+      render_response_document
+    end
 
     def sign_in_user
       begin
@@ -83,7 +95,7 @@ module V1
     end
 
     def anonymous_action?
-      params.dig(:custom_action, :method) == :change_password
+      params.dig(:custom_action, :method) == :change_password || params[:action].to_sym == :sign_in_ews_id
     end
 
     def authenticate_user(email:, password:)
@@ -97,6 +109,14 @@ module V1
       # Reload user to include mandate groups
       user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
       sign_in(:user, user)
+      user
+    end
+
+    def authenticate_ews_id(id_token)
+      user = AuthenticateEWSIdTokenService.call id_token
+      raise(JSONAPI::Exceptions::Unauthorized.new, 'unauthorized') unless user
+      user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
+      sign_in :user, user
       user
     end
 

@@ -26,6 +26,7 @@
 #  commercial_register_office :string
 #  legal_address_id           :uuid
 #  primary_contact_address_id :uuid
+#  import_id                  :integer
 #
 # Indexes
 #

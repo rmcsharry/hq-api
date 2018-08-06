@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     jsonapi_resources :users
 
     post 'users/sign-in',                             to: 'users#sign_in_user'
+    post 'users/sign-in-ews-id',                      to: 'users#sign_in_ews_id'
     get  'users/validate-token',                      to: 'users#validate_token'
     get  'users/invitation/:invitation_token',        to: 'users#read_invitation'
     post 'users/invitation/:invitation_token',        to: 'users#accept_invitation'

@@ -110,7 +110,8 @@ namespace :db do
         password: password,
         confirmed_at: 1.day.ago,
         contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::SiliconValley.quote
+        comment: Faker::SiliconValley.quote,
+        ews_user_id: '008c2269-2676-42a2-9f5d-d2e60ed85b28' # user id of test.sherpas@hqtrust.de in verticals EWS
       )
       User.create!(
         email: 'sales@hqfinanz.de',
@@ -164,7 +165,7 @@ namespace :db do
             contact: contact,
             category: categories.sample,
             value: Faker::Internet.email,
-            primary: true
+            primary: !contact.user
           ),
           ContactDetail::Email.new(
             contact: contact,
@@ -179,6 +180,9 @@ namespace :db do
             primary: false
           )
         ]
+      end
+      contact_details << User.all.map do |user|
+        ContactDetail::Email.new(contact: user.contact, category: :work, value: user.email, primary: true)
       end
       ContactDetail.import!(contact_details.flatten)
     end
@@ -218,7 +222,7 @@ namespace :db do
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
           datev_creditor_id: Faker::Number.number(10),
           datev_debitor_id: Faker::Number.number(10),
-          psplus_id: Faker::Number.number(10),
+          psplus_id: Faker::Number.number(9),
           mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
           primary_consultant: contacts.sample,
           secondary_consultant: admin_user.contact,

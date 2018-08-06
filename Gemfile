@@ -39,6 +39,8 @@ gem 'email_validator'                                               # Validates 
 gem 'enumerize'                                                     # Advanced Enum handling
 gem 'faker', github: 'stympy/faker', branch: 'master'               # A library for generating fake data such as names, addresses, and phone numbers.
 gem 'ibanizator'                                                    # Validates IBAN
+gem 'jwt'                                                           # Interact with Json-Web-Tokens
+gem 'mail'                                                          # Parse, generate or send emails
 gem 'money'                                                         # List of Currency
 gem 'phony_rails'                                                   # Validates, displays and saves phone numbers
 gem 'steuernummer'                                                  # Validates German tax numbers
@@ -49,6 +51,7 @@ gem 'valvat'                                                        # Validates 
 # Cloud Resources
 gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
 gem 'aws-sdk-s3'                                                    # Interact with AWS S3
+gem 'savon'                                                         # Interact with SOAP services
 
 # Database, Storage & Job Handling
 gem 'activerecord-import'                                           # Bulk import object into the database

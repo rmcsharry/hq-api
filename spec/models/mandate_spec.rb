@@ -20,6 +20,7 @@
 #  secondary_consultant_id :uuid
 #  assistant_id            :uuid
 #  bookkeeper_id           :uuid
+#  import_id               :integer
 #
 # Indexes
 #
@@ -39,6 +40,7 @@
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
+  it { is_expected.to belong_to(:secondary_consultant).optional }
   it { is_expected.to belong_to(:assistant).optional }
   it { is_expected.to belong_to(:bookkeeper).optional }
   it { is_expected.to have_many(:mandate_members) }
@@ -51,9 +53,7 @@ RSpec.describe Mandate, type: :model do
 
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
-    it { is_expected.to allow_value('123456789').for(:psplus_id) }
-    it { is_expected.to_not allow_value('12345678A').for(:psplus_id) }
-    it { is_expected.to_not allow_value('1234567890').for(:psplus_id) }
+    it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
   end
 
   describe '#category' do
@@ -100,26 +100,6 @@ RSpec.describe Mandate, type: :model do
       end
       it 'can be converted to client if primary consultant is set' do
         subject.primary_consultant = build(:contact_person)
-        expect(subject.may_become_client?).to be_truthy
-      end
-    end
-  end
-
-  describe '#secondary_consultant' do
-    context 'for client' do
-      subject { build(:mandate, aasm_state: :client) }
-      it 'is required' do
-        expect(subject).to validate_presence_of(:secondary_consultant)
-      end
-    end
-
-    context 'for prospect' do
-      subject { build(:mandate, aasm_state: :prospect, secondary_consultant: nil) }
-      it 'is optional' do
-        expect(subject).to belong_to(:secondary_consultant).optional
-      end
-      it 'can be converted to client if secondary consultant is set' do
-        subject.secondary_consultant = build(:contact_person)
         expect(subject.may_become_client?).to be_truthy
       end
     end

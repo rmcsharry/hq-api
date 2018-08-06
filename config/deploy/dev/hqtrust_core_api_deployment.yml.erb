@@ -1,11 +1,13 @@
 <%=
   partial(
     'hqtrust_core_api_deployment',
-    allowed_origins: 'app.dev.hqfinanz.de',
     aws_s3_bucket_name: 'hqfinanz-dev-file-store',
     host: 'api-core.dev.hqfinanz.de',
     host_url: 'https://api-core.dev.hqfinanz.de',
     sidekiq_monitor_host: 'sidekiq-monitor.dev.hqfinanz.de',
     whitelisted_urls: 'https://app.dev.hqfinanz.de',
+    allowed_origins: 'app.dev.hqfinanz.de',
+    outlook_origins: 'outlook-addin.dev.hqfinanz.de',
+    replicas: 2
   )
 %>

@@ -234,6 +234,9 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta'
         expect(body['meta']['total-record-count']).to eq 11
+        expect(response.headers['authorization']).to_not eq auth_headers['Authorization']
+        expect(response.headers['authorization']).to_not be_nil
+        expect(auth_headers['Authorization']).to_not be_nil
       end
     end
 

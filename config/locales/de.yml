@@ -259,9 +259,9 @@ de:
       two_words_connector: " und "
       last_word_connector: " und "
   enumerize:
-    contact:
+    contact/person:
       gender:
-        male: "Herr"
+        male: "Mann"
         female: "Frau"
       nobility_title:
         baron: "Freiherr"
@@ -272,7 +272,8 @@ de:
         doctor: "Dr."
         professor: "Prof."
         professor_doctor: "Prof. Dr."
-      organziation_type:
+    contact/organization:
+      organization_type:
         ag: "AG"
         church: "Kirche"
         eg: "eG"
@@ -344,7 +345,7 @@ de:
         institutional: "Institutionell"
         investment_advice: "Anlageberatung"
         other: "Sonstige Veträge"
-        reporting: "HQ AS Reporting"
+        reporting: "Reporting"
         wealth_management: "Vermögensverwaltung"
     mandate_member:
       member_type:

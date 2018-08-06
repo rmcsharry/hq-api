@@ -45,4 +45,14 @@ class ContactDetail < ApplicationRecord
   enumerize :category, in: CATEGORIES, scope: true
 
   alias_attribute :contact_detail_type, :type
+
+  after_save :remove_primary_from_others, if: :primary
+
+  private
+
+  def remove_primary_from_others
+    # rubocop:disable Rails/SkipsModelValidations
+    ContactDetail.where(contact: contact, type: type).where.not(id: id).update_all(primary: false)
+    # rubocop:enable Rails/SkipsModelValidations
+  end
 end

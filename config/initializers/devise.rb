@@ -335,8 +335,10 @@ Devise.setup do |config|
   config.jwt do |jwt|
     jwt.secret = Rails.application.secrets.devise_jwt_secret_key
     jwt.dispatch_requests = [
-      ['POST', %r{^/v1/users/sign-in$}],
-      ['GET', %r{^/v1/users/validate-token$}]
+      ['POST', %r{^/v1/.*$}],
+      ['PUT', %r{^/v1/.*$}],
+      ['GET', %r{^/v1/.*$}],
+      ['DELETE', %r{^/v1/.*$}]
     ]
   end
 end

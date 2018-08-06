@@ -16,6 +16,7 @@ module V1
       :created_at,
       :current_sign_in_at,
       :email,
+      :ews_user_id,
       :roles,
       :sign_in_count,
       :updated_at,
@@ -87,6 +88,10 @@ module V1
       records.where('users.updated_at <= ?', Date.parse(value[0]))
     }
 
+    filter :ews_user_id, apply: lambda { |records, value, _options|
+      records.where('users.ews_user_id ILIKE ?', "%#{value[0]}%")
+    }
+
     sort :"contact.name", apply: lambda { |records, direction, _context|
       records.joins(:contact)
              .order(
@@ -99,6 +104,7 @@ module V1
       user_group_ids = data.require(:relationships).require(:user_groups).require(:data).map { |ug| ug.require(:id) }
       invite_user!(
         email: data.require(:attributes).require(:email),
+        ews_user_id: data.require(:attributes)[:ews_user_id],
         contact: Contact.find(data.require(:relationships).require(:contact).require(:data).require(:id)),
         user_groups: UserGroup.find(user_group_ids),
         set_password_url: data.require(:attributes).require(:set_password_url)
@@ -138,18 +144,21 @@ module V1
 
     private
 
-    def invite_user!(email:, contact:, user_groups:, set_password_url:)
+    # rubocop:disable Metrics/MethodLength
+    def invite_user!(email:, contact:, user_groups:, set_password_url:, ews_user_id:)
       check_whitelisted_url!(key: 'set_password_url', url: set_password_url)
       User.invite!(
         {
           email: email,
           contact: contact,
-          user_groups: user_groups
+          user_groups: user_groups,
+          ews_user_id: ews_user_id
         },
         nil,
         set_password_url: set_password_url
       )
     end
+    # rubocop:enable Metrics/MethodLength
   end
   # rubocop:enable Metrics/ClassLength
 end

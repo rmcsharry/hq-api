@@ -14,6 +14,9 @@ module V1
       :description,
       :documents,
       :ended_at,
+      :ews_id,
+      :ews_token,
+      :ews_url,
       :started_at,
       :title,
       :updated_at
@@ -45,6 +48,10 @@ module V1
       @model = @model.becomes(@model.type.constantize)
     end
 
+    def ews_token=(_ews_token) end
+
+    def ews_url=(_ews_url) end
+
     filters(
       :activity_type
     )
@@ -61,6 +68,10 @@ module V1
       records.where(id: Activity.joins(mandates: [:mandate_groups]).where('mandate_groups.id = ?', value[0]))
     }
 
+    def fetchable_fields
+      super - %i[ews_id ews_token ews_url]
+    end
+
     class << self
       def create(context)
         new(create_model(context), context)
@@ -71,11 +82,11 @@ module V1
       end
 
       def updatable_fields(context)
-        super(context) - [:creator]
+        super(context) - %i[creator ews_id ews_token ews_url]
       end
 
       def sortable_fields(context)
-        super(context) - [:creator]
+        super(context) - %i[creator ews_id ews_token ews_url]
       end
     end
   end

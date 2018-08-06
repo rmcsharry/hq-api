@@ -26,6 +26,7 @@
 #  commercial_register_office :string
 #  legal_address_id           :uuid
 #  primary_contact_address_id :uuid
+#  import_id                  :integer
 #
 # Indexes
 #
@@ -43,8 +44,6 @@ class Contact < ApplicationRecord
   belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :contact, autosave: true
   belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :contact, autosave: true
   has_many :addresses, dependent: :destroy
-  has_many :assistant_mandates, class_name: 'Mandate', inverse_of: :assistant, dependent: :nullify
-  has_many :bookkeeper_mandates, class_name: 'Mandate', inverse_of: :bookkeeper, dependent: :nullify
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contact_details, dependent: :destroy
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
@@ -52,8 +51,21 @@ class Contact < ApplicationRecord
   has_many :mandates, through: :mandate_members
   has_many :organization_members, dependent: :destroy, inverse_of: :contact
   has_many :organizations, through: :organization_members
-  has_many :primary_consultant_mandates, class_name: 'Mandate', inverse_of: :primary_consultant, dependent: :nullify
-  has_many :secondary_consultant_mandates, class_name: 'Mandate', inverse_of: :secondary_consultant, dependent: :nullify
+  has_many(
+    :primary_consultant_mandates, class_name: 'Mandate', foreign_key: :primary_consultant_id,
+                                  inverse_of: :primary_consultant, dependent: :nullify
+  )
+  has_many(
+    :secondary_consultant_mandates, class_name: 'Mandate', foreign_key: :secondary_consultant_id,
+                                    inverse_of: :secondary_consultant, dependent: :nullify
+  )
+  has_many(
+    :assistant_mandates, class_name: 'Mandate', foreign_key: :assistant_id, inverse_of: :assistant, dependent: :nullify
+  )
+  has_many(
+    :bookkeeper_mandates, class_name: 'Mandate', foreign_key: :bookkeeper_id, inverse_of: :bookkeeper,
+                          dependent: :nullify
+  )
   has_one :compliance_detail, dependent: :destroy, autosave: true
   has_one :tax_detail, dependent: :destroy, autosave: true
   has_one :user, dependent: :destroy

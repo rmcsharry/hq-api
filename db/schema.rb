@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_06_08_084101) do
+ActiveRecord::Schema.define(version: 2018_07_27_150252) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -46,6 +46,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.uuid "creator_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "ews_id"
     t.index ["creator_id"], name: "index_activities_on_creator_id"
   end
 
@@ -140,6 +141,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.string "commercial_register_office"
     t.uuid "legal_address_id"
     t.uuid "primary_contact_address_id"
+    t.integer "import_id"
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_contacts_on_primary_contact_address_id"
   end
@@ -219,6 +221,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.uuid "secondary_consultant_id"
     t.uuid "assistant_id"
     t.uuid "bookkeeper_id"
+    t.integer "import_id"
     t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
     t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
     t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"
@@ -302,6 +305,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_084101) do
     t.integer "invitations_count", default: 0
     t.text "comment"
     t.uuid "contact_id"
+    t.string "ews_user_id"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true

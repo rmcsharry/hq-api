@@ -27,6 +27,14 @@ class Address < ApplicationRecord
   attr_accessor :primary_contact_address, :legal_address
 
   belongs_to :contact, inverse_of: :addresses
+  has_one(
+    :contact_primary_contact_address, class_name: 'Contact', foreign_key: :primary_contact_address_id,
+                                      inverse_of: :primary_contact_address, dependent: :nullify
+  )
+  has_one(
+    :contact_legal_address, class_name: 'Contact', foreign_key: :legal_address_id, inverse_of: :legal_address,
+                            dependent: :nullify
+  )
 
   has_paper_trail(
     meta: {
@@ -68,13 +76,13 @@ class Address < ApplicationRecord
   end
 
   def check_primary_contact_address
-    return unless contact.primary_contact_address == self
+    return if contact.primary_contact_address != self || destroyed_by_association
     errors[:base] << 'Cannot delete address while it is the primary contact address.'
     throw :abort
   end
 
   def check_legal_address
-    return unless contact.legal_address == self
+    return if contact.legal_address != self || destroyed_by_association
     errors[:base] << 'Cannot delete address while it is the legal address.'
     throw :abort
   end

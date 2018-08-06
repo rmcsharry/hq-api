@@ -4,7 +4,7 @@ metadata:
   name: hqtrust-core-api-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
@@ -44,6 +44,8 @@ spec:
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
               value: <%= allowed_origins %>
+            - name: OUTLOOK_ORIGINS
+              value: <%= outlook_origins %>
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -115,6 +117,11 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: skylight-authentication
+            - name: EWS_AUTH_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: ews-auth-public-key
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -122,12 +129,25 @@ metadata:
   name: hqtrust-core-sidekiq-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  selector:
+    matchLabels:
+      app: hqtrust-core-sidekiq
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
         app: hqtrust-core-sidekiq
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - hqtrust-core-sidekiq
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: hqtrust-core-sidekiq
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
@@ -143,6 +163,8 @@ spec:
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
               value: <%= allowed_origins %>
+            - name: OUTLOOK_ORIGINS
+              value: <%= outlook_origins %>
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
@@ -270,7 +292,7 @@ metadata:
   name: redis
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   selector:
     app: hqtrust-core-api
     tier: redis
@@ -293,12 +315,25 @@ metadata:
   name: hqtrust-core-sidekiq-monitor-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  selector:
+    matchLabels:
+      app: hqtrust-core-sidekiq-monitor
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
         app: hqtrust-core-sidekiq-monitor
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - hqtrust-core-sidekiq-monitor
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: hqtrust-core-sidekiq-monitor
           image: clok/standalone-sidekiq-web
