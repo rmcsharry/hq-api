@@ -129,25 +129,12 @@ metadata:
   name: hqtrust-core-sidekiq-deployment
   namespace: hqtrust-core-api
 spec:
-  selector:
-    matchLabels:
-      app: hqtrust-core-sidekiq
   replicas: <%= replicas %>
   template:
     metadata:
       labels:
         app: hqtrust-core-sidekiq
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - hqtrust-core-sidekiq
-              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: hqtrust-core-sidekiq
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
@@ -315,25 +302,12 @@ metadata:
   name: hqtrust-core-sidekiq-monitor-deployment
   namespace: hqtrust-core-api
 spec:
-  selector:
-    matchLabels:
-      app: hqtrust-core-sidekiq-monitor
   replicas: <%= replicas %>
   template:
     metadata:
       labels:
         app: hqtrust-core-sidekiq-monitor
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - hqtrust-core-sidekiq-monitor
-              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: hqtrust-core-sidekiq-monitor
           image: clok/standalone-sidekiq-web
