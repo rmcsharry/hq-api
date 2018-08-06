@@ -4,7 +4,7 @@ metadata:
   name: hqtrust-core-api-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
@@ -129,7 +129,7 @@ metadata:
   name: hqtrust-core-sidekiq-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
@@ -279,7 +279,7 @@ metadata:
   name: redis
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   selector:
     app: hqtrust-core-api
     tier: redis
@@ -302,7 +302,7 @@ metadata:
   name: hqtrust-core-sidekiq-monitor-deployment
   namespace: hqtrust-core-api
 spec:
-  replicas: 1
+  replicas: <%= replicas %>
   template:
     metadata:
       labels:
