@@ -134,24 +134,24 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hqtrust-core-sidekiq-deployment
+  name: hqtrust-core-sidekiq-server-deployment
   namespace: hqtrust-core-api
 spec:
   replicas: <%= replicas %>
   template:
     metadata:
       labels:
-        app: hqtrust-core-sidekiq
+        app: hqtrust-core-sidekiq-server
     spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchLabels:
-                  app: hqtrust-core-sidekiq
+                  app: hqtrust-core-sidekiq-server
               topologyKey: kubernetes.io/hostname
       containers:
-        - name: hqtrust-core-sidekiq
+        - name: hqtrust-core-sidekiq-server
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
           args: ["bin/bundle exec sidekiq -C config/sidekiq.yml"]
           env:
