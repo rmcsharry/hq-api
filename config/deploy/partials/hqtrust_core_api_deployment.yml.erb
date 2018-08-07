@@ -10,6 +10,13 @@ spec:
       labels:
         app: hqtrust-core-api
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: hqtrust-core-api
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: hqtrust-core-api
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
