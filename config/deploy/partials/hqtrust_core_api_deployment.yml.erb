@@ -10,6 +10,13 @@ spec:
       labels:
         app: hqtrust-core-api
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: hqtrust-core-api
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: hqtrust-core-api
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
@@ -37,9 +44,10 @@ spec:
             - name: RAILS_ENV
               value: "production"
             - name: REDIS_URL
-              value: "redis://redis"
-            - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
@@ -126,39 +134,34 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: hqtrust-core-sidekiq-deployment
+  name: hqtrust-core-sidekiq-server-deployment
   namespace: hqtrust-core-api
 spec:
-  selector:
-    matchLabels:
-      app: hqtrust-core-sidekiq
   replicas: <%= replicas %>
   template:
     metadata:
       labels:
-        app: hqtrust-core-sidekiq
+        app: hqtrust-core-sidekiq-server
     spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - hqtrust-core-sidekiq
-              topologyKey: "kubernetes.io/hostname"
+                matchLabels:
+                  app: hqtrust-core-sidekiq-server
+              topologyKey: kubernetes.io/hostname
       containers:
-        - name: hqtrust-core-sidekiq
+        - name: hqtrust-core-sidekiq-server
           image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
           args: ["bin/bundle exec sidekiq -C config/sidekiq.yml"]
           env:
             - name: RAILS_ENV
               value: "production"
             - name: REDIS_URL
-              value: "redis://redis"
-            - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
@@ -273,51 +276,12 @@ spec:
               serviceName: hqtrust-core-api-service
               servicePort: 3000
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-  namespace: hqtrust-core-api
-spec:
-  selector:
-    app: hqtrust-core-api
-    tier: redis
-  type: NodePort
-  ports:
-    - port: 6379
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: redis
-  namespace: hqtrust-core-api
-spec:
-  replicas: <%= replicas %>
-  selector:
-    app: hqtrust-core-api
-    tier: redis
-  template:
-    metadata:
-      name: redis
-      labels:
-        app: hqtrust-core-api
-        tier: redis
-    spec:
-      containers:
-      - name: redis
-        image: redis:4.0-alpine
-        ports:
-        - containerPort: 6379
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   name: hqtrust-core-sidekiq-monitor-deployment
   namespace: hqtrust-core-api
 spec:
-  selector:
-    matchLabels:
-      app: hqtrust-core-sidekiq-monitor
   replicas: <%= replicas %>
   template:
     metadata:
@@ -328,18 +292,18 @@ spec:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                    - hqtrust-core-sidekiq-monitor
-              topologyKey: "kubernetes.io/hostname"
+                matchLabels:
+                  app: hqtrust-core-sidekiq-monitor
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: hqtrust-core-sidekiq-monitor
           image: clok/standalone-sidekiq-web
           env:
             - name: REDIS_URL
-              value: "redis://redis:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: SIDEKIQ_USERNAME
               valueFrom:
                 secretKeyRef:

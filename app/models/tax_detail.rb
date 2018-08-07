@@ -65,7 +65,7 @@ class TaxDetail < ApplicationRecord
   validates :de_church_tax, inclusion: { in: [true, false] }
   validates :common_reporting_standard, inclusion: { in: [true, false] }
   validates :eu_vat_number, absence: true, unless: -> { belongs_to_organization? }
-  validates :eu_vat_number, valvat: true, if: -> { belongs_to_organization? }
+  validates :eu_vat_number, valvat: true, if: -> { belongs_to_organization? && eu_vat_number.present? }
   validates :legal_entity_identifier, absence: true, unless: -> { belongs_to_organization? }
   validates :transparency_register, absence: true, unless: -> { belongs_to_organization? }
 

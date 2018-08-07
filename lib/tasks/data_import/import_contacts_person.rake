@@ -48,15 +48,16 @@ namespace :data_import do
         )
         TaxDetail.create!(
           contact: contact,
-          de_tax_number: row['de_tax_number'],
-          de_tax_id: row['de_tax_id']&.gsub(/\s+/, ''),
-          de_retirement_insurance: row['de_retirement_insurance'] == 'Ja',
-          de_unemployment_insurance: row['de_unemployment_insurance'] == 'Ja',
-          de_health_insurance: row['de_health_insurance'] == 'Ja',
-          de_church_tax: row['de_church_tax'] == 'Ja',
           common_reporting_standard: row['common_reporting_standard'] == 'Ja',
+          de_church_tax: row['de_church_tax'] == 'Ja',
+          de_health_insurance: row['de_health_insurance'] == 'Ja',
+          de_retirement_insurance: row['de_retirement_insurance'] == 'Ja',
+          de_tax_id: row['de_tax_id']&.gsub(/\s+/, ''),
+          de_tax_number: row['de_tax_number'],
+          de_unemployment_insurance: row['de_unemployment_insurance'] == 'Ja',
+          us_fatca_status: us_fatca_statuses[row['us_fatca_status']],
           us_tax_form: us_tax_forms[row['us_tax_form']],
-          us_fatca_status: us_fatca_statuses[row['us_fatca_status']]
+          us_tax_number: row['us_tax_number']
         )
         row['foreign_tax_ids']&.split(',')&.each do |foreign_tax_id|
           contact.tax_detail.foreign_tax_numbers.create!(

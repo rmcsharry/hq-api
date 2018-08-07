@@ -38,14 +38,15 @@ namespace :data_import do
         ).save(validate: false)
         TaxDetail.new(
           contact: contact,
-          de_tax_number: row['de_tax_number'],
+          common_reporting_standard: row['common_reporting_standard'] == 'Ja',
           de_tax_id: row['de_tax_id'],
+          de_tax_number: row['de_tax_number'],
           eu_vat_number: row['eu_vat_number'],
           legal_entity_identifier: row['legal_entity_identifier'],
           transparency_register: row['transparency_register'] == 'Ja',
-          common_reporting_standard: row['common_reporting_standard'] == 'Ja',
+          us_fatca_status: us_fatca_statuses[row['us_fatca_status']],
           us_tax_form: us_tax_forms[row['us_tax_form']],
-          us_fatca_status: us_fatca_statuses[row['us_fatca_status']]
+          us_tax_number: row['us_tax_number']
         ).save(validate: false)
         row['foreign_tax_ids']&.split(',')&.each do |foreign_tax_id|
           contact.tax_detail.foreign_tax_numbers.create!(
