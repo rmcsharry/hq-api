@@ -340,8 +340,8 @@ de:
     mandate:
       category:
         alternative_investments: "Alternative Investments"
-        family_office_with_investment_advice: "Family Office mit Anlageberatung"
-        family_office_without_investment_advice: "Family Office ohne Anlageberatung"
+        family_office_with_investment_advice: "Family Office mit AB"
+        family_office_without_investment_advice: "Family Office ohne AB"
         institutional: "Institutionell"
         investment_advice: "Anlageberatung"
         other: "Sonstige Veträge"
