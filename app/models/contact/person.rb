@@ -49,8 +49,51 @@ class Contact
     extend Enumerize
 
     GENDERS = %i[male female].freeze
-    NOBILITY_TITLES = %i[baron baroness count countess].freeze
-    PROFESSIONAL_TITLES = %i[doctor professor professor_doctor].freeze
+    NOBILITY_TITLES = %i[baron baroness count countess prince princess].freeze
+    PROFESSIONAL_TITLES = %i[
+      assessor_jur_dipl
+      betriebswirt_vwa
+      dipl
+      dipl_betriebsw
+      dipl_finw
+      dipl_inf
+      dipl_ing
+      dipl_ing_fh
+      dipl_kffr
+      dipl_kfm
+      dipl_math_oec
+      dipl_oec
+      dipl_volksw
+      dipl_wirtsch_ing
+      dr
+      dr_dipl_kfm
+      dr_dipl_oec
+      dr_dipl_volksw
+      dr_dr
+      dr_dr_hc
+      dr_hc
+      dr_iur
+      dr_med_dr_rer_nat
+      dr_oec
+      dr_phil
+      dr_rer_nat_hc
+      dr_rer_oec
+      dr_rer_pol
+      dr_sc_techn
+      dr_ing
+      dr_ing_eh
+      ing
+      mag
+      prof
+      prof_dipl_ing
+      prof_dr
+      prof_dr_hc_mult
+      prod_dr_jur
+      prof_dr_ing_eh
+      prof_dr_ing_eh_dipl_kfm
+      prof_hc_dipl_ing
+      senator_assoz_prof
+    ].freeze
 
     validates :first_name, presence: true
     validates :last_name, presence: true
