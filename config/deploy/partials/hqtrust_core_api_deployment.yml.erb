@@ -37,9 +37,10 @@ spec:
             - name: RAILS_ENV
               value: "production"
             - name: REDIS_URL
-              value: "redis://redis"
-            - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
@@ -143,9 +144,10 @@ spec:
             - name: RAILS_ENV
               value: "production"
             - name: REDIS_URL
-              value: "redis://redis"
-            - name: REDIS_PORT
-              value: "6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: WHITELISTED_URLS
               value: <%= whitelisted_urls %>
             - name: ALLOWED_ORIGINS
@@ -260,42 +262,6 @@ spec:
               serviceName: hqtrust-core-api-service
               servicePort: 3000
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: redis
-  namespace: hqtrust-core-api
-spec:
-  selector:
-    app: hqtrust-core-api
-    tier: redis
-  type: NodePort
-  ports:
-    - port: 6379
----
-apiVersion: v1
-kind: ReplicationController
-metadata:
-  name: redis
-  namespace: hqtrust-core-api
-spec:
-  replicas: <%= replicas %>
-  selector:
-    app: hqtrust-core-api
-    tier: redis
-  template:
-    metadata:
-      name: redis
-      labels:
-        app: hqtrust-core-api
-        tier: redis
-    spec:
-      containers:
-      - name: redis
-        image: redis:4.0-alpine
-        ports:
-        - containerPort: 6379
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -313,7 +279,10 @@ spec:
           image: clok/standalone-sidekiq-web
           env:
             - name: REDIS_URL
-              value: "redis://redis:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: redis-url
             - name: SIDEKIQ_USERNAME
               valueFrom:
                 secretKeyRef:
