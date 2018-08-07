@@ -55,7 +55,7 @@ namespace :db do
         Contact::Person.new(
           first_name: Faker::Name.first_name,
           last_name: Faker::Name.last_name,
-          comment: Faker::SiliconValley.quote,
+          comment: Faker::Company.catch_phrase,
           gender: Contact::Person::GENDERS.sample,
           nobility_title: rand > 0.8 ? Contact::Person::NOBILITY_TITLES.sample : nil,
           professional_title: rand > 0.5 ? Contact::Person::PROFESSIONAL_TITLES.sample : nil,
@@ -110,7 +110,7 @@ namespace :db do
         password: password,
         confirmed_at: 1.day.ago,
         contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::SiliconValley.quote,
+        comment: Faker::Company.catch_phrase,
         ews_user_id: '008c2269-2676-42a2-9f5d-d2e60ed85b28' # user id of test.sherpas@hqtrust.de in verticals EWS
       )
       User.create!(
@@ -118,14 +118,16 @@ namespace :db do
         password: password,
         confirmed_at: 1.day.ago,
         contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::SiliconValley.quote
+        comment: Faker::Company.catch_phrase,
+        ews_user_id: '91b499df-2a41-4115-b032-69866c07bc5a'
       )
       User.create!(
         email: 'bookkeeper@hqfinanz.de',
         password: password,
         confirmed_at: 1.day.ago,
         contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::SiliconValley.quote
+        comment: Faker::Company.catch_phrase,
+        ews_user_id: 'e41bb230-d0f7-486a-90be-ef67bd3efd8d'
       )
     end
 
@@ -190,20 +192,22 @@ namespace :db do
     task mandate_groups: :environment do
       mandates_groups_families = Array.new(32) do |i|
         MandateGroup.new(
-          comment: Faker::SiliconValley.quote,
+          comment: Faker::Company.catch_phrase,
           group_type: :family,
-          name: "#{Faker::GameOfThrones.house} ##{i}" # Uniqueness of names is needed for e2e tests
-        )
-      end
-      MandateGroup.import!(mandates_groups_families)
-      mandate_groups_organizations = Array.new(12) do |i|
-        MandateGroup.new(
-          comment: Faker::SiliconValley.quote,
-          group_type: :organization,
           name: "#{Faker::Company.name} ##{i}" # Uniqueness of names is needed for e2e tests
         )
       end
-      MandateGroup.import!(mandate_groups_organizations)
+      MandateGroup.import!(mandates_groups_families)
+      MandateGroup.create!(
+        comment: Faker::Company.catch_phrase,
+        group_type: :organization,
+        name: 'HQ Trust'
+      )
+      MandateGroup.create!(
+        comment: Faker::Company.catch_phrase,
+        group_type: :organization,
+        name: 'HQ Asset Servicing'
+      )
     end
 
     task mandates: :environment do
@@ -217,7 +221,7 @@ namespace :db do
         Mandate.create(
           aasm_state: %i[prospect client cancelled].sample,
           category: Mandate::CATEGORIES.sample,
-          comment: Faker::SiliconValley.quote,
+          comment: Faker::Company.catch_phrase,
           valid_from: valid_from,
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
           datev_creditor_id: Faker::Number.number(10),
@@ -252,14 +256,14 @@ namespace :db do
 
     task user_groups: :environment do
       UserGroup.create!(
-        comment: Faker::SiliconValley.quote,
+        comment: Faker::Company.catch_phrase,
         mandate_groups: MandateGroup.organizations.all,
         name: 'Administratoren',
         roles: UserGroup::AVAILABLE_ROLES,
         users: [User.find_by(email: 'admin@hqfinanz.de')]
       )
       UserGroup.create!(
-        comment: Faker::SiliconValley.quote,
+        comment: Faker::Company.catch_phrase,
         mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
         name: 'HQ Trust',
         roles: %i[admin mandates_read mandates_write],
