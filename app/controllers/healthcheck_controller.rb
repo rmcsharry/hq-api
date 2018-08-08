@@ -3,6 +3,6 @@
 # Healthcheck of the application
 class HealthcheckController < ApplicationController
   def health
-    render json: { ok: true }
+    render json: { ok: true, test: 'new' }
   end
 end
