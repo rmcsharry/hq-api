@@ -29,17 +29,17 @@ spec:
               scheme: HTTP
               path: /health
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            failureThreshold: 5
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               scheme: HTTP
               path: /health
               port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            failureThreshold: 5
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            failureThreshold: 10
           env:
             - name: RAILS_ENV
               value: "production"
