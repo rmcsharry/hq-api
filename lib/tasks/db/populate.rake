@@ -129,6 +129,20 @@ namespace :db do
         comment: Faker::Company.catch_phrase,
         ews_user_id: 'e41bb230-d0f7-486a-90be-ef67bd3efd8d'
       )
+
+      %i[
+        contacts
+        families
+        mandates
+      ].each do |name|
+        User.create!(
+          email: "#{name}@hqfinanz.de",
+          password: password,
+          confirmed_at: 1.day.ago,
+          contact: Contact.where(type: 'Contact::Person').sample,
+          comment: Faker::SiliconValley.quote
+        )
+      end
     end
 
     task tax_details: :environment do
@@ -267,8 +281,22 @@ namespace :db do
         mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
         name: 'HQ Trust',
         roles: %i[admin mandates_read mandates_write],
-        users: User.all
+        users: [User.find_by(email: 'bookkeeper@hqfinanz.de'), User.find_by(email: 'sales@hqfinanz.de')]
       )
+
+      {
+        contacts: %i[contacts_read contacts_write],
+        families: %i[families_read families_write],
+        mandates: %i[mandates_read mandates_write]
+      }.each do |name, roles|
+        UserGroup.create!(
+          comment: Faker::SiliconValley.quote,
+          mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
+          name: "HQ Trust - #{name.capitalize}",
+          roles: roles,
+          users: [User.find_by(email: "#{name}@hqfinanz.de")]
+        )
+      end
     end
 
     task activities: :environment do
