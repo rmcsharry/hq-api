@@ -89,4 +89,46 @@ RSpec.describe User, type: :model do
     it { should validate_uniqueness_of(:email).case_insensitive }
     it { should validate_presence_of(:email) }
   end
+
+  describe '#setup_ews_id' do
+    before do
+      Timecop.freeze(Time.zone.local(2018, 8, 14, 12))
+    end
+
+    after do
+      Timecop.return
+    end
+
+    let(:id_token) do
+      <<~TOKEN
+        eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IklENl9ZMzFzaVhhSnFLOW9QUmpVbUpNQzN5TSJ9.eyJhcHBjdHhzZW5kZXIiOiIwMDAwMDAwMi0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDBAdmVydGljYWwucm9vdCIsImlzYnJvd3Nlcmhvc3RlZGFwcCI6IlRydWUiLCJhcHBjdHgiOiJ7XCJtc2V4Y2h1aWRcIjpcIjAwOGMyMjY5LTI2NzYtNDJhMi05ZjVkLWQyZTYwZWQ4NWIyOFwiLFwidmVyc2lvblwiOlwiRXhJZFRvay5WMVwiLFwiYW11cmxcIjpcImh0dHBzOi8vb3V0bG9vay5vbnZlcnRpY2FsLmNvbTo0NDMvYXV0b2Rpc2NvdmVyL21ldGFkYXRhL2pzb24vMVwifSIsImlzcyI6IjAwMDAwMDAyLTAwMDAtMGZmMS1jZTAwLTAwMDAwMDAwMDAwMEB2ZXJ0aWNhbC5yb290IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6MzAwMi9pbmRleC5odG1sIiwiZXhwIjoxNTM0MjU4NDM4LCJuYmYiOjE1MzQyMjk2Mzh9.no07Bprg24FMxn4zLxhtTE0PXRab9cXenrd9vOOVnCkxq2FPXflOEoDktCXMvM9P9zX-WdXYq2_kyb9Xo9o83UqxsRF-GS18D5GMXYrZazkDLV_5F0gcOv9yx-g5petIrBm-IcQfcB4yg3VtzeSnmDsRBHnCB_Z1EIh53dQ88l2pj2b7hmVR336akHa6j6maY4ubQvebNvWP_Wj3zljX2_4p91TvWb65oBSR2F0du4PpYRqZZ4eK0_EQ10-_TZ27eD4LL__skTTvXYd-OtbCDQM8_mZARVjdyeBVLCLcMSIm_t3yI5nw2DifT6MvM-ttabjW1LkTaaaL4ZSsp3UDUQ
+      TOKEN
+    end
+
+    # The msexchuid encoded in the identity token above
+    let(:msexchuid) { '008c2269-2676-42a2-9f5d-d2e60ed85b28' }
+
+    context 'when ews_user_id exists' do
+      subject { create(:user, ews_user_id: 'not-updated') }
+
+      it 'does not update the ews_user_id' do
+        subject.setup_ews_id id_token
+        expect(subject.ews_user_id).to eq('not-updated')
+      end
+    end
+
+    context 'when ews_user_id does not exist' do
+      subject { create(:user, ews_user_id: nil) }
+
+      it 'sets the ews_user_id if id_token is valid' do
+        subject.setup_ews_id id_token
+        expect(subject.ews_user_id).to eq(msexchuid)
+      end
+
+      it 'does not set the ews_user_id if id_token is invalid' do
+        subject.setup_ews_id 'a.b.c'
+        expect(subject.ews_user_id).to eq(nil)
+      end
+    end
+  end
 end

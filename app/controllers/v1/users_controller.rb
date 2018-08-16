@@ -25,9 +25,9 @@ module V1
     def sign_in_user
       begin
         @response_document = create_response_document
-        email = params.require(:data).require(:attributes).require(:email)
-        password = params.require(:data).require(:attributes).require(:password)
-        user = authenticate_user(email: email, password: password)
+        attributes = params.require(:data).require(:attributes)
+        user = authenticate_user(email: attributes.require(:email), password: attributes.require(:password))
+        user.setup_ews_id(attributes.fetch('identity-token', nil))
         generate_user_response(user: user)
       rescue JSONAPI::Exceptions::Error => e
         handle_exceptions(e)
@@ -114,7 +114,7 @@ module V1
 
     def authenticate_ews_id(id_token)
       user = AuthenticateEWSIdTokenService.call id_token
-      raise(JSONAPI::Exceptions::Unauthorized.new, 'unauthorized') unless user
+      raise(JSONAPI::Exceptions::RecordNotFound.new(id_token), 'not found') unless user
       user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
       sign_in :user, user
       user
