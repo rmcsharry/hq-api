@@ -12,4 +12,9 @@ RSpec.describe 'authorization for', type: :request do
                      read: :contacts_read,
                      write: :contacts_write
                    }
+
+  include_examples 'forbid access for ews authenticated users',
+                   DOCUMENTS_ENDPOINT,
+                   resource: 'documents',
+                   except: []
 end

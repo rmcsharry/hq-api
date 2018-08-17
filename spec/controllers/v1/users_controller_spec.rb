@@ -16,6 +16,31 @@ RSpec.describe USERS_ENDPOINT, type: :request do
     ]
   end
 
+  describe 'POST /v1/users/sign-in-ews-id' do
+    let!(:user) { create(:user, email: 'test@hqfinanz.de') }
+    let(:auth_headers) do
+      headers.merge(
+        'Authorization' => 'Bearer x.y.z'
+      )
+    end
+
+    it 'signs the user in and flags the token for permission constraints' do
+      allow(AuthenticateEWSIdTokenService).to receive(:call) { user }
+      allow_any_instance_of(Warden::JWTAuth::TokenDecoder).to receive(:call) { {} }
+
+      post("#{USERS_ENDPOINT}/sign-in-ews-id", params: {}, headers: auth_headers)
+
+      allow_any_instance_of(Warden::JWTAuth::TokenDecoder).to receive(:call).and_call_original
+
+      expect(response).to have_http_status(200)
+      expect(response.headers['Authorization']).to start_with 'Bearer'
+
+      token = response.headers['Authorization'].split(' ').last
+      payload = Warden::JWTAuth::TokenDecoder.new.call(token)
+      expect(payload['scope']).to eq('ews')
+    end
+  end
+
   describe 'POST /v1/users/sign-in' do
     let(:email) { 'test@hqfinanz.de' }
     let(:password) { 'testmctest1A!' }

@@ -6,10 +6,15 @@ RSpec.describe 'authorization for', type: :request do
   let!(:record) { create(:user_group) }
   include_examples 'simple crud authorization',
                    USER_GROUPS_ENDPOINT,
-                   resource: 'user_groups',
+                   resource: 'user-groups',
                    permissions: {
                      destroy: :admin,
                      read: :admin,
                      write: :admin
                    }
+
+  include_examples 'forbid access for ews authenticated users',
+                   USER_GROUPS_ENDPOINT,
+                   resource: 'user-groups',
+                   except: []
 end

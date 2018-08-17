@@ -266,6 +266,25 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(body['meta']['page-count']).to eq 2
       end
     end
+
+    context 'when authenticated via ews', bullet: false do
+      let!(:user) do
+        user = create(:user, roles: %i[contacts_read])
+        user.authenticated_via_ews = true
+        user
+      end
+
+      it 'can only read names of contacts' do
+        get(CONTACTS_ENDPOINT, params: {}, headers: auth_headers)
+
+        body = JSON.parse(response.body)
+        rendered_attributes = body['data'].map do |contact|
+          contact['attributes'].keys
+        end.flatten.uniq
+
+        expect(rendered_attributes).to eq(%w[name])
+      end
+    end
   end
 
   describe 'GET /v1/contacts/<contact_id>/versions' do

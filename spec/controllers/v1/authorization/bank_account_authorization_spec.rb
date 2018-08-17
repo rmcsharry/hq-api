@@ -4,6 +4,14 @@ require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
   context 'bank_accounts' do
+    let!(:record) { create(:bank_account) }
+    include_examples 'forbid access for ews authenticated users',
+                     BANK_ACCOUNTS_ENDPOINT,
+                     resource: 'bank-accounts',
+                     except: []
+  end
+
+  context 'bank_accounts' do
     let!(:permitted_user) { create(:user) }
     let!(:permitted_mandate) { create(:mandate) }
     let!(:random_mandate) { create(:mandate) }

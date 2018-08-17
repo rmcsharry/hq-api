@@ -126,6 +126,42 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(body['meta']['record-count']).to eq 0
       end
     end
+
+    context 'when authenticated via ews', bullet: false do
+      let!(:user) do
+        user = create(
+          :user,
+          contact: contact,
+          roles: %i[mandates_read],
+          permitted_mandates: [
+            mandate1,
+            mandate2,
+            mandate3,
+            mandate4
+          ]
+        )
+        user.authenticated_via_ews = true
+        user
+      end
+
+      it 'can only read category and owner-name of mandates' do
+        get(
+          MANDATES_ENDPOINT,
+          params: {
+            filter: { user_id: user.id },
+            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant'
+          },
+          headers: auth_headers
+        )
+
+        body = JSON.parse(response.body)
+        rendered_attributes = body['data'].map do |contact|
+          contact['attributes'].keys
+        end.flatten.uniq
+
+        expect(rendered_attributes).to eq(%w[category owner-name])
+      end
+    end
   end
 
   describe 'GET /v1/mandates/<mandate_id>/versions' do

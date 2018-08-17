@@ -11,7 +11,7 @@ module V1
 
     def check_additional_data
       attributes = params[:data][:attributes]
-      ews_id = attributes['ews-id']
+      ews_id = attributes['ews-id'] if attributes
 
       return if ews_id.blank?
 
@@ -19,6 +19,10 @@ module V1
 
       logger.info "Scheduling to fetch email with id '#{ews_id}' from EWS."
       FetchEmailJob.perform_later(activity_id, id: ews_id, token: attributes['ews-token'], url: attributes['ews-url'])
+    end
+
+    def accessible_actions(scope)
+      return [:create] if scope == :ews
     end
   end
 end

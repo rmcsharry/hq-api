@@ -5,6 +5,14 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe 'authorization for', type: :request do
   context 'mandates' do
+    let!(:record) { create(:mandate) }
+    include_examples 'forbid access for ews authenticated users',
+                     MANDATES_ENDPOINT,
+                     resource: 'mandates',
+                     except: [:index]
+  end
+
+  context 'mandates' do
     let!(:permitted_mandate) { create(:mandate, comment: 'permitted') }
     let!(:forbidden_mandate) { create(:mandate, comment: 'forbidden') }
     let!(:permitted_group) { create(:mandate_group, mandates: [permitted_mandate]) }

@@ -10,6 +10,7 @@ require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'support/shared_examples/authorization'
 require 'support/shared_examples/simple_crud_authorization'
+require 'support/shared_examples/forbid_ews_users'
 require 'support/authorization_helper'
 require 'support/factory_bot'
 require 'support/endpoints'

@@ -55,6 +55,8 @@
 
 # Defines the User model used for authentication
 class User < ApplicationRecord
+  attr_accessor :authenticated_via_ews
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :async, :invitable, :registerable, :recoverable, :rememberable, :trackable,
@@ -86,9 +88,9 @@ class User < ApplicationRecord
   }
 
   def jwt_payload
-    {
-      roles: user_groups.map(&:roles).flatten.uniq
-    }
+    payload = { roles: user_groups.map(&:roles).flatten.uniq }
+    payload[:scope] = :ews if authenticated_via_ews
+    payload
   end
 
   def self.send_reset_password_instructions(email:, reset_password_url:)
