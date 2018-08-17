@@ -5,6 +5,14 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe 'authorization for', type: :request do
   context 'mandate-groups' do
+    let!(:record) { create(:mandate_group) }
+    include_examples 'forbid access for ews authenticated users',
+                     MANDATE_GROUPS_ENDPOINT,
+                     resource: 'mandate-groups',
+                     except: []
+  end
+
+  context 'mandate-groups' do
     let!(:user) { create(:user) }
     let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }

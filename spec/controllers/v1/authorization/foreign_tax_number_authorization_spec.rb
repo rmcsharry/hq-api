@@ -12,4 +12,9 @@ RSpec.describe 'authorization for', type: :request do
                      read: :contacts_read,
                      write: :contacts_write
                    }
+
+  include_examples 'forbid access for ews authenticated users',
+                   FOREIGN_TAX_NUMBERS_ENDPOINT,
+                   resource: 'foreign_tax_numbers',
+                   except: []
 end

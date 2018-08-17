@@ -16,6 +16,15 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
+  before(:all) do
+    @queue_adapter = ActiveJob::Base.queue_adapter
+    ActiveJob::Base.queue_adapter = :test
+  end
+
+  after(:all) do
+    ActiveJob::Base.queue_adapter = @queue_adapter
+  end
+
   describe 'GET /v1/activities' do
     let(:mandate_group) { create(:mandate_group) }
     let!(:mandate_1) { create(:mandate, mandate_groups: [mandate_group]) }
@@ -234,6 +243,41 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
           'documents - ist nicht gültig'
         )
+      end
+    end
+
+    context 'from outlook add-in' do
+      let(:payload) do
+        {
+          data: {
+            type: 'activities',
+            attributes: {
+              'activity-type': 'Activity::Email',
+              'ews-id': 'ewsid',
+              'ews-token': 'token',
+              'ews-url': 'https://ews.shr.ps/',
+              'started-at': 1.day.ago.to_s,
+              description: 'Email body',
+              title: 'Email subject'
+            },
+            relationships: {
+              mandates: {
+                data: [
+                  { id: mandate_1.id, type: 'mandates' }
+                ]
+              }
+            }
+          }
+        }
+      end
+
+      it 'triggers job to fetch the mail as .eml file' do
+        allow_any_instance_of(FetchEmailJob).to receive(:fetch_email) {
+          Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'emails', 'call.eml')))
+        }
+        is_expected.to change(Activity, :count).by(1)
+        expect(response).to have_http_status(201)
+        expect(FetchEmailJob).to have_been_enqueued
       end
     end
   end

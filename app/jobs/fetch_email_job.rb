@@ -11,6 +11,8 @@ class FetchEmailJob < ApplicationJob
     mail.attachments.each do |attachment|
       attach_document activity, attachment.filename, attachment.decoded
     end
+
+    process_call!(activity, mail) if voice_call?(mail)
   end
 
   private
@@ -76,5 +78,41 @@ class FetchEmailJob < ApplicationJob
       io: StringIO.new(content),
       filename: filename
     )
+  end
+
+  def voice_call?(mail)
+    mail.header_fields.find do |header|
+      header.name == 'Content-Class' &&
+        header.value == 'voice-uc'
+    end.present?
+  end
+
+  def process_call!(activity, mail)
+    activity.update! type: 'Activity::Call'
+
+    body = decoded_body mail
+    parse_duration!(activity, body)
+  end
+
+  def decoded_body(mail)
+    body_parts = mail.body.parts
+    return mail.body.decoded unless body_parts.size.positive?
+    body_parts.map do |part|
+      part.body.decoded
+    end.join("\n")
+  end
+
+  def parse_duration!(activity, body)
+    duration = body.match(/Dauer: (.*)/).to_s
+    return if duration.empty?
+
+    hours = parse_time_unit(duration, 'stunden').hours
+    minutes = parse_time_unit(duration, 'minuten').minutes
+    seconds = parse_time_unit(duration, 'sekunden').seconds
+    activity.update! ended_at: activity.started_at + hours + minutes + seconds
+  end
+
+  def parse_time_unit(source, unit_name)
+    source.match(/\d*(?= #{unit_name})/i).to_s.to_i
   end
 end

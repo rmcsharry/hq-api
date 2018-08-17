@@ -116,6 +116,7 @@ module V1
       user = AuthenticateEWSIdTokenService.call id_token
       raise(JSONAPI::Exceptions::RecordNotFound.new(id_token), 'not found') unless user
       user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
+      user.authenticated_via_ews = true
       sign_in :user, user
       user
     end

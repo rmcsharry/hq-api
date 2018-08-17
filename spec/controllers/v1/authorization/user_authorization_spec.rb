@@ -5,6 +5,14 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe 'authorization for', type: :request do
   context 'users' do
+    let!(:record) { create(:user) }
+    include_examples 'forbid access for ews authenticated users',
+                     USERS_ENDPOINT,
+                     resource: 'users',
+                     except: []
+  end
+
+  context 'users' do
     let!(:user) { create(:user) }
     let!(:foreign_user) { create(:user) }
     let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
