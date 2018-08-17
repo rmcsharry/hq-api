@@ -130,6 +130,10 @@ module V1
       records.where('contacts.organization_name ILIKE ?', "%#{value[0]}%")
     }
 
+    filter :organization_category, apply: lambda { |records, value, _options|
+      records.where('contacts.organization_category ILIKE ?', "%#{value[0]}%")
+    }
+
     filter :"primary_email.value", apply: lambda { |records, value, _options|
       records.joins(:primary_email).where('contact_details.value ILIKE ?', "%#{value[0]}%")
     }

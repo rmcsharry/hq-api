@@ -103,6 +103,15 @@ class User < ApplicationRecord
     token
   end
 
+  def setup_ews_id(id_token)
+    return if id_token.blank? || ews_user_id.present?
+    decoded_token = DecodeEWSIdTokenService.call id_token
+    appctx = JSON.parse(decoded_token['appctx'])
+    update ews_user_id: appctx['msexchuid']
+  rescue JWT::DecodeError => _
+    nil
+  end
+
   protected
 
   def send_reset_password_instructions_notification(token:, reset_password_url:)

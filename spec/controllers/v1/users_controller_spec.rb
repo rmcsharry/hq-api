@@ -45,6 +45,79 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       }
     end
 
+    context 'with identity-token in payload' do
+      before do
+        Timecop.freeze(Time.zone.local(2018, 8, 14, 12))
+      end
+
+      after do
+        Timecop.return
+      end
+
+      let(:payload) do
+        {
+          data: {
+            attributes: {
+              email: sign_in_email,
+              password: password,
+              'identity-token': <<~TOKEN
+                eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IklENl9ZMzFzaVhhSnFLOW9QUmpVbUpNQzN5TSJ9.eyJhcHBjdHhzZW5kZXIiOiIwMDAwMDAwMi0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDBAdmVydGljYWwucm9vdCIsImlzYnJvd3Nlcmhvc3RlZGFwcCI6IlRydWUiLCJhcHBjdHgiOiJ7XCJtc2V4Y2h1aWRcIjpcIjAwOGMyMjY5LTI2NzYtNDJhMi05ZjVkLWQyZTYwZWQ4NWIyOFwiLFwidmVyc2lvblwiOlwiRXhJZFRvay5WMVwiLFwiYW11cmxcIjpcImh0dHBzOi8vb3V0bG9vay5vbnZlcnRpY2FsLmNvbTo0NDMvYXV0b2Rpc2NvdmVyL21ldGFkYXRhL2pzb24vMVwifSIsImlzcyI6IjAwMDAwMDAyLTAwMDAtMGZmMS1jZTAwLTAwMDAwMDAwMDAwMEB2ZXJ0aWNhbC5yb290IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6MzAwMi9pbmRleC5odG1sIiwiZXhwIjoxNTM0MjU4NDM4LCJuYmYiOjE1MzQyMjk2Mzh9.no07Bprg24FMxn4zLxhtTE0PXRab9cXenrd9vOOVnCkxq2FPXflOEoDktCXMvM9P9zX-WdXYq2_kyb9Xo9o83UqxsRF-GS18D5GMXYrZazkDLV_5F0gcOv9yx-g5petIrBm-IcQfcB4yg3VtzeSnmDsRBHnCB_Z1EIh53dQ88l2pj2b7hmVR336akHa6j6maY4ubQvebNvWP_Wj3zljX2_4p91TvWb65oBSR2F0du4PpYRqZZ4eK0_EQ10-_TZ27eD4LL__skTTvXYd-OtbCDQM8_mZARVjdyeBVLCLcMSIm_t3yI5nw2DifT6MvM-ttabjW1LkTaaaL4ZSsp3UDUQ
+              TOKEN
+            }
+          }
+        }
+      end
+
+      # The msexchuid encoded in the identity token above
+      let(:msexchuid) { '008c2269-2676-42a2-9f5d-d2e60ed85b28' }
+
+      context 'for a user without existing ews_user_id' do
+        let!(:user) { create(:user, email: email, password: password, ews_user_id: nil) }
+
+        it 'signs in the user and updates ews_user_id' do
+          post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+
+          expect(response).to have_http_status(200)
+          expect(response.headers['Authorization']).to start_with 'Bearer'
+          expect(user.reload.ews_user_id).to eq(msexchuid)
+        end
+      end
+
+      context 'for a user with existing ews_user_id' do
+        let!(:user) { create(:user, email: email, password: password, ews_user_id: 'not-updated') }
+
+        it 'signs in the user but does not update the ews_user_id' do
+          post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+
+          expect(response).to have_http_status(200)
+          expect(response.headers['Authorization']).to start_with 'Bearer'
+          expect(user.reload.ews_user_id).to eq('not-updated')
+        end
+      end
+
+      context 'with an invalid identity token' do
+        let!(:user) { create(:user, email: email, password: password, ews_user_id: nil) }
+        let(:payload) do
+          {
+            data: {
+              attributes: {
+                email: sign_in_email,
+                password: password,
+                'identity-token': 'a.b.x'
+              }
+            }
+          }
+        end
+
+        it 'signs in the user in but does not set ews_user_id' do
+          post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
+
+          expect(response).to have_http_status(200)
+          expect(user.reload.ews_user_id).to eq(nil)
+        end
+      end
+    end
+
     it 'signs in the user and updates the sign in count' do
       expect(user.sign_in_count).to eq 0
       post("#{USERS_ENDPOINT}/sign-in", params: payload.to_json, headers: headers)
