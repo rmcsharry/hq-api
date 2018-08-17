@@ -33,7 +33,9 @@ namespace :data_import do
 
   desc 'Invite imported users'
   task :invite_imported_users, :environment do |_task, _args|
-    User.where(confirmed_at: nil).each(&:invite!)
+    User.where(confirmed_at: nil).each do |user|
+      user.invite!(nil, set_password_url: 'https://app.hqfinanz.de/password/set-initial')
+    end
   end
 end
 # rubocop:enable Metrics/BlockLength
