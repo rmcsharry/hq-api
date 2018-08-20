@@ -18,6 +18,12 @@ namespace :data_import do
     us_tax_forms = TaxDetail.us_tax_form.values.map { |v| [v.text, v] }.to_h
     us_fatca_statuses = TaxDetail.us_fatca_status.values.map { |v| [v.text, v] }.to_h
 
+    address_categories = {
+      'Privatadresse' => :home,
+      'Geschäftsadresse' => :work,
+      'Urlaubsadresse' => :vacation
+    }
+
     ActiveRecord::Base.transaction do
       CSV.read(file, headers: CSV.read(file).third)[4..-1].each do |row|
         puts "Parsing contact #{row['id']}"
@@ -56,6 +62,7 @@ namespace :data_import do
         end
         if row['street_and_number_legal']
           legal_address = contact.addresses.create!(
+            category: address_categories[row['category_legal']],
             street_and_number: row['street_and_number_legal'],
             addition: row['addition_legal'],
             postal_code: row['postal_code_legal'],
@@ -67,6 +74,7 @@ namespace :data_import do
         end
         if row['street_and_number_primary']
           primary_address = contact.addresses.create!(
+            category: address_categories[row['category_primary']],
             street_and_number: row['street_and_number_primary'],
             addition: row['addition_primary'],
             postal_code: row['postal_code_primary'],
@@ -78,6 +86,7 @@ namespace :data_import do
         contact.save(validate: false)
         if row['street_and_number_secondary']
           contact.addresses.create!(
+            category: address_categories[row['category_secondary']],
             street_and_number: row['street_and_number_secondary'],
             addition: row['addition_secondary'],
             postal_code: row['postal_code_secondary'],
@@ -87,6 +96,7 @@ namespace :data_import do
         end
         if row['street_and_number_tertiary']
           contact.addresses.create!(
+            category: address_categories[row['category_tertiary']],
             street_and_number: row['street_and_number_tertiary'],
             addition: row['addition_tertiary'],
             postal_code: row['postal_code_tertiary'],

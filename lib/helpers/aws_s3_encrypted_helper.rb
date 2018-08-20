@@ -11,7 +11,8 @@ module AwsS3EncryptedHelper
   end
 
   def download_decrypted_s3_file(s3_key:)
-    private_key = ENV['AWS_S3_ENCRYPTION_PRIVATE_KEY'].gsub('\\n', "\n")
+    # Different environments require different kinds of escaping line breaks
+    private_key = ENV['AWS_S3_ENCRYPTION_PRIVATE_KEY'].gsub('\\\\n', "\n").gsub('\\n', "\n")
     decryption_key = OpenSSL::PKey::RSA.new(private_key, ENV['AWS_S3_ENCRYPTION_PASSPHRASE'])
     enc_client = Aws::S3::Encryption::Client.new(client: s3_resource.client, encryption_key: decryption_key)
 
