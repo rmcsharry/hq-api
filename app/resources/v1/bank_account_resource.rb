@@ -9,5 +9,9 @@ module V1
     has_one :bank, class_name: 'Contact'
 
     filter :mandate_id
+
+    sort :"bank.name", apply: lambda { |records, direction, _context|
+      records.joins(:bank).order("contacts.organization_name #{direction}")
+    }
   end
 end
