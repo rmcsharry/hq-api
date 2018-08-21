@@ -44,11 +44,12 @@ namespace :data_import do
           email_file = decrypted_s3_tempfile(s3_key: "#{args[:file_folder]}/#{row['documents']}.eml")
           mail = Mail.read(email_file.path)
           title = mail.subject.presence || row['title']
-          text_body = mail.text_part.body.decoded
-          text_body = text_body.force_encoding('ISO-8859-1') if text_body.encoding.name == 'ASCII-8BIT'
-          description = text_body.encode('UTF-8').presence || row['description'].presence || title
+          description = text_body(mail: mail).presence || row['description'].presence || title
           started_at = mail.date.to_s
         end
+
+        description = description.gsub("\r\n", "\n").gsub("\n", '\\n').gsub("\"", '\\\"').gsub("\t", " ")
+        description = "{\"ops\":[{\"insert\":\"#{description}\"}]}"
 
         activity = Activity.create!(
           mandates: [mandate].compact,
@@ -66,6 +67,8 @@ namespace :data_import do
         mail.attachments.each do |attachment|
           attach_document(activity: activity, file_name: attachment.filename, content: attachment.decoded)
         end
+        mail = nil
+        email_file.close
       end
     end
   end
@@ -83,3 +86,28 @@ def attach_document(activity:, file_name:, content:)
     filename: file_name
   )
 end
+
+# rubocop:disable Metrics/AbcSize
+def text_body(mail:)
+  if mail.multipart?
+    text_body = text_body(mail: mail.body.parts.first)
+  elsif mail.text_part&.body.present?
+    text_body = mail.text_part.body.decoded
+    text_body = text_body.force_encoding('ISO-8859-1') if text_body.encoding.name == 'ASCII-8BIT'
+  else
+    text_body = parse_html_body(mail_part: mail)
+  end
+  text_body.encode('UTF-8')
+end
+
+def parse_html_body(mail_part:)
+  text_body = if mail_part.charset == 'iso-8859-1'
+                mail_part.body.decoded.force_encoding('ISO-8859-1').encode('UTF-8')
+              elsif mail_part.charset == 'windows-1252'
+                mail_part.body.decoded.force_encoding('windows-1252').encode('UTF-8')
+              else
+                mail_part.body.decoded.force_encoding('ISO-8859-1').force_encoding('UTF-8')
+              end
+  Nokogiri::HTML(Nokogiri::HTML(Nokogiri::HTML(text_body).inner_html).text).text
+end
+# rubocop:enable Metrics/AbcSize
