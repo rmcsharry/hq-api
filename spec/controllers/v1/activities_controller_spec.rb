@@ -317,7 +317,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         expect(response).to have_http_status(200)
         updated_activity = Activity.find(activity.id)
         expect(updated_activity.description).to eq 'Some description of the note'
-        expect(updated_activity.started_at).to be_nil
+        expect(updated_activity.started_at).to eq started_at
         expect(updated_activity.title).to eq 'Note'
         expect(updated_activity.type).to eq 'Activity::Note'
         expect(updated_activity.creator).to_not eq user

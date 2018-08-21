@@ -38,6 +38,7 @@ class Activity < ApplicationRecord
   validates :type, presence: true
   validates :title, presence: true
   validates :description, presence: true
+  validates :started_at, presence: true
   validate :ended_at_greater_or_equal_started_at
 
   alias_attribute :activity_type, :type

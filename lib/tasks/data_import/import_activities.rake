@@ -48,8 +48,12 @@ namespace :data_import do
           started_at = mail.date.to_s
         end
 
+        # rubocop:disable Performance/StringReplacement
+        # rubocop:disable Style/StringLiterals
         description = description.gsub("\r\n", "\n").gsub("\n", '\\n').gsub("\"", '\\\"').gsub("\t", " ")
         description = "{\"ops\":[{\"insert\":\"#{description}\"}]}"
+        # rubocop:enable Performance/StringReplacement
+        # rubocop:enable Style/StringLiterals
 
         activity = Activity.create!(
           mandates: [mandate].compact,
@@ -67,7 +71,7 @@ namespace :data_import do
         mail.attachments.each do |attachment|
           attach_document(activity: activity, file_name: attachment.filename, content: attachment.decoded)
         end
-        mail = nil
+        mail = nil # rubocop:disable Lint/UselessAssignment
         email_file.close
       end
     end

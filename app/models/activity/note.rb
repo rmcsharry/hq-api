@@ -31,11 +31,10 @@ class Activity
       ActivityPolicy
     end
 
-    validates :started_at, absence: true
     validates :ended_at, absence: true
 
     before_validation do |note|
-      note.started_at = nil
+      note.started_at = Time.zone.now unless note.started_at
       note.ended_at = nil
     end
   end
