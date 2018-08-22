@@ -25,5 +25,12 @@ module V1
     filter :user_group_id, apply: lambda { |records, value, _options|
       records.joins(:user_groups).where('user_groups.id = ?', value[0])
     }
+
+    sort :mandate_count, apply: lambda { |records, direction, _context|
+      records
+        .joins(:mandate_groups_mandates)
+        .group(:id)
+        .order("COUNT(mandate_groups.id) #{direction}")
+    }
   end
 end

@@ -50,7 +50,13 @@ module V1
     }
 
     filter :owner_name, apply: lambda { |records, value, _options|
-      records.with_owner_name.where('mandates.owner_name ILIKE ?', "%#{value[0]}%")
+      owner_name, category = value[0].split('–', 2)
+      category = value[1] if value[1].present?
+      records = records.with_owner_name.where('mandates.owner_name ILIKE ?', "%#{owner_name.strip}%")
+      return records unless category
+      categories = Mandate.category.values.map { |v| [v.text, v] }.to_h
+      possible_categories = categories.select { |key| key.downcase.include? category.strip.downcase }.values
+      records.where(category: possible_categories)
     }
 
     filter :mandate_number, apply: lambda { |records, value, _options|

@@ -30,7 +30,5 @@ class Activity
     def self.policy_class
       ActivityPolicy
     end
-
-    validates :started_at, presence: true
   end
 end

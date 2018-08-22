@@ -30,13 +30,24 @@ RSpec.describe Activity::Note, type: :model do
   subject { build(:activity_note) }
 
   describe '#started_at' do
-    before do
-      subject.started_at = 1.day.ago
+    context 'with started_at set' do
+      let(:date) { 1.day.ago }
+
+      before do
+        subject.started_at = date
+      end
+
+      it 'uses started_at' do
+        expect(subject.valid?).to be true
+        expect(subject.started_at).to eq date
+      end
     end
 
-    it 'is set to nil' do
-      expect(subject.valid?).to be true
-      expect(subject.started_at).to be_nil
+    context 'with no started_at set' do
+      it 'uses Time.zone.now' do
+        expect(subject.valid?).to be true
+        expect(subject.started_at).to be_present
+      end
     end
   end
 

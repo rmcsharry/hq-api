@@ -12,5 +12,9 @@ module V1
       :contact_id,
       :organization_id
     )
+
+    sort :"organization.name", apply: lambda { |records, direction, _context|
+      records.joins(:organization).order("contacts.organization_name #{direction}")
+    }
   end
 end
