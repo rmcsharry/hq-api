@@ -125,6 +125,21 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(body.keys).to include 'data', 'meta', 'links'
         expect(body['meta']['record-count']).to eq 0
       end
+
+      it 'fetches the mandates even with empty owner name filter' do
+        get(
+          MANDATES_ENDPOINT,
+          params: {
+            filter: { owner_name: '' },
+            page: { number: 1, size: 5 }
+          },
+          headers: auth_headers
+        )
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'links'
+        expect(body['meta']['record-count']).to eq 0
+      end
     end
 
     context 'when authenticated via ews', bullet: false do

@@ -13,4 +13,8 @@ class UserPolicy < ApplicationPolicy
   def update?
     role?(:admin) || user.id == record.id
   end
+
+  def destroy?
+    role?(:admin) && user.id != record.id
+  end
 end
