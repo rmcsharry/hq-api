@@ -64,8 +64,8 @@ class User < ApplicationRecord
          jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   belongs_to :contact
-  has_many :activities, inverse_of: :creator, dependent: :nullify
-  has_many :documents, inverse_of: :uploader, dependent: :nullify
+  has_many :activities, inverse_of: :creator, foreign_key: :creator_id, dependent: :nullify
+  has_many :documents, inverse_of: :uploader, foreign_key: :uploader_id, dependent: :nullify
   has_many :created_versions, class_name: 'Version', inverse_of: :whodunnit, dependent: :nullify
   has_and_belongs_to_many :user_groups, uniq: true
 
