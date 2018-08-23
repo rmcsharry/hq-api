@@ -388,6 +388,18 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       end
     end
 
+    context 'with auth header being "null"' do
+      let(:null_headers) { headers.merge('HTTP_AUTHORIZATION' => 'null') }
+
+      it 'returns the invited user\'s email' do
+        get("#{USERS_ENDPOINT}/invitation/#{user.raw_invitation_token}", params: {}, headers: null_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data'
+        expect(body['data']['attributes']['email']).to eq email
+      end
+    end
+
     context 'with correct invitation token after the invitation has been accetped' do
       before do
         user.accept_invitation!
