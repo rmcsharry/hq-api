@@ -26,9 +26,8 @@ require 'rails_helper'
 
 RSpec.describe InterPersonRelationship, type: :model do
   describe '#role' do
-    it { is_expected.to respond_to(:role) }
     it { is_expected.to validate_presence_of(:role) }
-    it { is_expected.to validate_inclusion_of(:role).in_array(InterPersonRelationship::AVAILABLE_ROLES) }
+    it { is_expected.to enumerize(:role) }
   end
 
   describe '#target_person' do

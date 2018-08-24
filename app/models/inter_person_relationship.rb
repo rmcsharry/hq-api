@@ -24,6 +24,8 @@
 
 # Defines the inter-person relationships
 class InterPersonRelationship < ApplicationRecord
+  extend Enumerize
+
   belongs_to :target_person, class_name: 'Contact::Person', inverse_of: :passive_person_relationships
   belongs_to :source_person, class_name: 'Contact::Person', inverse_of: :active_person_relationships
 
@@ -35,53 +37,48 @@ class InterPersonRelationship < ApplicationRecord
     skip: SKIPPED_ATTRIBUTES
   )
 
-  AVAILABLE_ROLES = %w[
+  AVAILABLE_ROLES = %i[
     architect
     architect_client
     assistant
-    aunt
+    aunt_uncle
     bank_advisor
     bank_advisor_client
     boss
-    brother
-    daughter
+    brother_sister
+    daughter_son
     debtor
     employee
     employer
     estate_agent
     estate_agent_mandate
-    father
+    father_mother
     financial_auditor
     financial_auditor_mandate
-    granddaughter
-    grandma
-    grandpa
-    grandson
+    granddaughter_grandson
+    grandma_grandpa
+    husband_wife
     insurance_broker
     insurance_broker_client
     landlord
     lawyer
+    lawyer_mandate
     loaner
     mergers_acquisitions_advisor
     mergers_acquisitions_advisor_mandate
-    mother
-    nephew
-    niece
+    nephew_niece
     notary
     notary_mandate
     private_equity_consultant
     private_equity_consultant_mandate
     renter
-    sister
-    son
-    spouse
     tax_advisor
     tax_mandate
-    uncle
     wealth_manager
     wealth_manager_client
-    lawyer_mandate
   ].freeze
 
-  validates :role, presence: true, inclusion: { in: AVAILABLE_ROLES }
+  validates :role, presence: true
+
+  enumerize :role, in: AVAILABLE_ROLES, scope: true
 end
