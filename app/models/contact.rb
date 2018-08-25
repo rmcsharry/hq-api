@@ -52,6 +52,16 @@ class Contact < ApplicationRecord
   has_many :organization_members, dependent: :destroy, inverse_of: :contact
   has_many :organizations, through: :organization_members
   has_many(
+    :active_person_relationships, class_name: 'InterPersonRelationship', dependent: :destroy,
+                                  inverse_of: :source_person, foreign_key: :source_person_id
+  )
+  has_many(
+    :passive_person_relationships, class_name: 'InterPersonRelationship', dependent: :destroy,
+                                   inverse_of: :target_person, foreign_key: :target_person_id
+  )
+  has_many :actively_related_persons, class_name: 'Contact::Person', through: :active_person_relationships
+  has_many :passively_related_persons, class_name: 'Contact::Person', through: :passive_person_relationships
+  has_many(
     :primary_consultant_mandates, class_name: 'Mandate', foreign_key: :primary_consultant_id,
                                   inverse_of: :primary_consultant, dependent: :nullify
   )
