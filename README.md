@@ -42,6 +42,7 @@ To debug, add `binding.pry` to the code to add a breakpoint at that line.
 
 ## Stack
 
+
 ### API
 
 #### Specification
