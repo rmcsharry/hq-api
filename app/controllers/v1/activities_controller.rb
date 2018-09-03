@@ -11,9 +11,10 @@ module V1
 
     def check_additional_data
       attributes = params[:data][:attributes]
-      ews_id = attributes['ews-id'] if attributes
+      return unless attributes
 
-      return if ews_id.blank?
+      ews_id = attributes['ews-id']
+      return unless relevant_for_fetch_email_job(ews_id: ews_id, activity_type: attributes['activity-type'])
 
       activity_id = @response_document.contents['data']['id']
 
@@ -23,6 +24,12 @@ module V1
 
     def accessible_actions(scope)
       return [:create] if scope == :ews
+    end
+
+    private
+
+    def relevant_for_fetch_email_job(ews_id:, activity_type:)
+      ews_id.present? && activity_type == 'Activity::Email'
     end
   end
 end
