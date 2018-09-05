@@ -11,4 +11,5 @@ guard :rspec, cmd: 'bundle exec rspec' do
   watch(%r{^app/controllers/v1/(.+).rb$}) { |m| "spec/controllers/v1/#{m[1]}_spec.rb" }
   watch(%r{^app/models/v1/(.+).rb$}) { |m| "spec/models/v1/#{m[1]}_spec.rb" }
   watch(%r{^app/resources/v1/(.+).rb$}) { |m| "spec/resources/v1/#{m[1]}_spec.rb" }
+  watch(%r{^app/resources/v1/(.+).rb$}) { 'spec/services/format_response_document_service_spec.rb' }
 end

@@ -6,7 +6,8 @@ class MandatePolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if request.params['action'] == 'index'
-        Scope.accessible_records(scope, user, :mandates_read)
+        role = export? ? :mandates_export : :mandates_read
+        Scope.accessible_records(scope, user, role)
       else
         scope
       end
@@ -22,22 +23,27 @@ class MandatePolicy < ApplicationPolicy
   end
 
   def index?
+    return role?(:mandates_export) if export?
     role? :mandates_read
   end
 
   def show?
+    return role?(:mandates_export) if export?
     role_applies_to_mandate?(:mandates_read)
   end
 
   def create?
+    return false if export?
     role? :mandates_write
   end
 
   def update?
+    return false if export?
     role_applies_to_mandate?(:mandates_write)
   end
 
   def destroy?
+    return false if export?
     role_applies_to_mandate?(:mandates_destroy)
   end
 

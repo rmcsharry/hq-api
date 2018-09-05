@@ -38,6 +38,12 @@ RSpec.describe 'authorization for', type: :request do
         end
       end
 
+      describe '(xlsx request)' do
+        let(:endpoint) { ->(h) { get MANDATE_GROUPS_ENDPOINT, headers: xlsx_headers(h) } }
+
+        permit :admin, :families_export
+      end
+
       describe 'organization in assigned user_groups' do
         let!(:user_group) do
           create(
@@ -67,6 +73,14 @@ RSpec.describe 'authorization for', type: :request do
 
         permit :admin
 
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { get "#{MANDATE_GROUPS_ENDPOINT}/#{organization.id}", headers: xlsx_headers(h) }
+          end
+
+          permit :admin
+        end
+
         describe 'with families_read permission' do
           let!(:user_group) do
             create(
@@ -94,6 +108,14 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :admin
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { post MANDATE_GROUPS_ENDPOINT, params: payload.to_json, headers: xlsx_headers(h) }
+          end
+
+          permit # none
+        end
       end
 
       describe '#update' do
@@ -113,6 +135,16 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :admin
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            lambda do |h|
+              patch "#{MANDATE_GROUPS_ENDPOINT}/#{organization.id}", params: payload.to_json, headers: xlsx_headers(h)
+            end
+          end
+
+          permit # none
+        end
       end
 
       describe '#destroy' do
@@ -121,6 +153,14 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :admin
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { delete "#{MANDATE_GROUPS_ENDPOINT}/#{organization.id}", headers: xlsx_headers(h) }
+          end
+
+          permit # none
+        end
       end
     end
 
@@ -129,6 +169,12 @@ RSpec.describe 'authorization for', type: :request do
         let(:endpoint) { ->(auth_headers) { get "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}", headers: auth_headers } }
 
         permit :families_read
+
+        describe '(xlsx request)' do
+          let(:endpoint) { ->(h) { get "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}", headers: xlsx_headers(h) } }
+
+          permit :families_export
+        end
       end
 
       describe '#create' do
@@ -140,6 +186,14 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :families_write
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { post MANDATE_GROUPS_ENDPOINT, params: payload.to_json, headers: xlsx_headers(h) }
+          end
+
+          permit # none
+        end
       end
 
       describe '#update' do
@@ -159,6 +213,16 @@ RSpec.describe 'authorization for', type: :request do
         end
 
         permit :families_write
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            lambda do |h|
+              patch "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}", params: payload.to_json, headers: xlsx_headers(h)
+            end
+          end
+
+          permit # none
+        end
 
         describe 'mandates relationship' do
           let(:endpoint) do
@@ -198,6 +262,12 @@ RSpec.describe 'authorization for', type: :request do
         let(:endpoint) { ->(auth_headers) { delete "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}", headers: auth_headers } }
 
         permit :families_destroy
+
+        describe '(xlsx request)' do
+          let(:endpoint) { ->(h) { delete "#{MANDATE_GROUPS_ENDPOINT}/#{family.id}", headers: xlsx_headers(h) } }
+
+          permit # none
+        end
       end
     end
   end

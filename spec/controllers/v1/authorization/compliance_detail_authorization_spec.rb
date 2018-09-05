@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
-  let!(:record) { create(:phone) }
+  let!(:record) { create(:compliance_detail) }
   include_examples 'simple crud authorization',
-                   CONTACT_DETAILS_ENDPOINT,
-                   resource: 'contact-details',
+                   COMPLIANCE_DETAILS_ENDPOINT,
+                   resource: 'compliance-details',
                    permissions: {
                      destroy: :contacts_destroy,
                      export: :contacts_export,
@@ -15,7 +15,7 @@ RSpec.describe 'authorization for', type: :request do
                    }
 
   include_examples 'forbid access for ews authenticated users',
-                   CONTACT_DETAILS_ENDPOINT,
-                   resource: 'contact-details',
+                   COMPLIANCE_DETAILS_ENDPOINT,
+                   resource: 'compliance-details',
                    except: []
 end

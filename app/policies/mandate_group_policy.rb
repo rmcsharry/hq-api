@@ -6,7 +6,8 @@ class MandateGroupPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if request.params['action'] == 'index'
-        Scope.accessible_records(self, scope, :families_read, :admin)
+        families_role = export? ? :families_export : :families_read
+        Scope.accessible_records(self, scope, families_role, :admin)
       else
         scope
       end
@@ -34,33 +35,37 @@ class MandateGroupPolicy < ApplicationPolicy
   end
 
   def index?
+    return role?(:families_export, :admin) if export?
     user.present?
   end
 
   def show?
-    role?(:families_read, :admin) &&
-      Scope.accessible_records(self, MandateGroup, :families_read, :admin, id: record.id).count.positive?
+    families_role = export? ? :families_export : :families_read
+    role?(families_role, :admin) &&
+      Scope.accessible_records(self, MandateGroup, families_role, :admin, id: record.id).count.positive?
   end
 
   def create?
+    return false if export?
     conditional_role?(:families_write, request: { 'group-type': 'family' }) ||
       conditional_role?(:admin, request: { 'group-type': 'organization' })
   end
 
   def update?
+    return false if export?
     conditional_role?(
       :families_write,
       record: { group_type: 'family' },
       request: { 'group-type': [nil, 'family'] }
-    ) ||
-      conditional_role?(
-        :admin,
-        record: { group_type: 'organization' },
-        request: { 'group-type': [nil, 'organization'] }
-      )
+    ) || conditional_role?(
+      :admin,
+      record: { group_type: 'organization' },
+      request: { 'group-type': [nil, 'organization'] }
+    )
   end
 
   def destroy?
+    return false if export?
     conditional_role?(:families_destroy, record: { group_type: 'family' }) ||
       conditional_role?(:admin, record: { group_type: 'organization' })
   end

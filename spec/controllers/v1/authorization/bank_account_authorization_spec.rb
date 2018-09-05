@@ -46,6 +46,15 @@ RSpec.describe 'authorization for', type: :request do
           expect(response_data.size).to eq(1)
         end
       end
+
+      describe '(xlsx request)' do
+        let!(:user_group) do
+          create(:user_group, users: [permitted_user], mandate_groups: [mandate_group], roles: %i[mandates_export])
+        end
+        let(:endpoint) { ->(h) { get BANK_ACCOUNTS_ENDPOINT, headers: xlsx_headers(h) } }
+
+        permit :mandates_export
+      end
     end
 
     describe '#show' do
@@ -66,6 +75,18 @@ RSpec.describe 'authorization for', type: :request do
         let(:bank_account) { forbidden_bank_account }
 
         permit # no role permits to see the forbidden bank account
+      end
+
+      describe '(xlsx request)' do
+        let(:bank_account) { permitted_bank_account }
+        let!(:user_group) do
+          create(:user_group, users: [permitted_user], mandate_groups: [mandate_group], roles: %i[mandates_export])
+        end
+        let(:endpoint) do
+          ->(h) { get "#{BANK_ACCOUNTS_ENDPOINT}/#{bank_account.id}", headers: xlsx_headers(h) }
+        end
+
+        permit :mandates_export
       end
     end
 
@@ -121,6 +142,15 @@ RSpec.describe 'authorization for', type: :request do
         let(:mandate) { random_mandate }
 
         permit # no role permits to create a bank account for a forbidden mandate
+      end
+
+      describe '(xlsx request)' do
+        let(:mandate) { permitted_mandate }
+        let(:endpoint) do
+          ->(h) { post BANK_ACCOUNTS_ENDPOINT, params: payload.to_json, headers: xlsx_headers(h) }
+        end
+
+        permit # none
       end
     end
 
@@ -187,6 +217,18 @@ RSpec.describe 'authorization for', type: :request do
           permit # no role permits updating a bank account that was assigned to a forbidden mandate
         end
       end
+
+      describe '(xlsx request)' do
+        let(:bank_account) { permitted_bank_account }
+        let(:mandate) { permitted_mandate }
+        let(:endpoint) do
+          lambda do |h|
+            patch "#{BANK_ACCOUNTS_ENDPOINT}/#{bank_account.id}", params: payload.to_json, headers: xlsx_headers(h)
+          end
+        end
+
+        permit # none
+      end
     end
 
     describe '#destroy' do
@@ -207,6 +249,15 @@ RSpec.describe 'authorization for', type: :request do
         let(:bank_account) { forbidden_bank_account }
 
         permit # no role permits deleting a bank account that was assigned to a forbidden mandate
+      end
+
+      describe '(xlsx request)' do
+        let(:bank_account) { permitted_bank_account }
+        let(:endpoint) do
+          ->(h) { delete "#{BANK_ACCOUNTS_ENDPOINT}/#{bank_account.id}", headers: xlsx_headers(h) }
+        end
+
+        permit # none
       end
     end
   end

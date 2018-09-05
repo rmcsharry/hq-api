@@ -6,7 +6,9 @@ class ActivityPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if request.params['action'] == 'index'
-        Scope.accessible_records(self, scope, :contacts_read, :mandates_read)
+        contacts_role = export? ? :contacts_export : :contacts_read
+        mandates_role = export? ? :mandates_export : :mandates_read
+        Scope.accessible_records(self, scope, contacts_role, mandates_role)
       else
         scope
       end
@@ -39,22 +41,27 @@ class ActivityPolicy < ApplicationPolicy
   end
 
   def index?
+    return role?(:contacts_export, :mandates_export) if export?
     role? :contacts_read, :mandates_read
   end
 
   def show?
+    return roles_apply_to_activity?(:contacts_export, :mandates_export) if export?
     roles_apply_to_activity? :contacts_read, :mandates_read
   end
 
   def create?
+    return false if export?
     user.present?
   end
 
   def update?
+    return false if export?
     roles_apply_to_activity? :contacts_write, :mandates_write
   end
 
   def destroy?
+    return false if export?
     roles_apply_to_activity? :contacts_destroy, :mandates_destroy
   end
 

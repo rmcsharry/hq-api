@@ -9,6 +9,7 @@ RSpec.describe 'authorization for', type: :request do
                    resource: 'contacts',
                    permissions: {
                      destroy: :contacts_destroy,
+                     export: :contacts_export,
                      read: :contacts_read,
                      write: :contacts_write
                    }
@@ -17,4 +18,23 @@ RSpec.describe 'authorization for', type: :request do
                    CONTACTS_ENDPOINT,
                    resource: 'contacts',
                    except: [:index]
+
+  describe 'contacts' do
+    describe 'versions' do
+      let!(:contact) { create(:contact_person) }
+      let(:endpoint) do
+        ->(auth_headers) { get "#{CONTACTS_ENDPOINT}/#{contact.id}/versions", headers: auth_headers }
+      end
+
+      permit :contacts_read
+
+      describe '(xlsx request)' do
+        let(:endpoint) do
+          ->(h) { get "#{CONTACTS_ENDPOINT}/#{contact.id}/versions", headers: xlsx_headers(h) }
+        end
+
+        permit :contacts_export
+      end
+    end
+  end
 end

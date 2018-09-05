@@ -33,6 +33,7 @@ gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS
 
 # Business Logic & Validation
 gem 'aasm'                                                          # State machines for Ruby classes
+gem 'axlsx'                                                         # Wrapper for generation of .xlsx documents
 gem 'carmen'                                                        # A repository of geographic regions for Ruby
 gem 'draper'                                                        # Decorate models
 gem 'email_validator'                                               # Validates Emails

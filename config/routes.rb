@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     jsonapi_resources :activities
     jsonapi_resources :addresses
     jsonapi_resources :bank_accounts
+    jsonapi_resources :compliance_details
     jsonapi_resources :contact_details
     jsonapi_resources :contacts
     jsonapi_resources :documents

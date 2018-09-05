@@ -11,14 +11,17 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def create?
+    return false if export?
     role? :admin
   end
 
   def update?
+    return false if export?
     role? :admin
   end
 
   def destroy?
+    return false if export?
     role? :admin
   end
 end

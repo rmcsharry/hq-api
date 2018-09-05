@@ -43,6 +43,16 @@ RSpec.describe 'authorization for', type: :request do
         end
       end
 
+      describe '(xlsx request)' do
+        let!(:user_group) do
+          create(:user_group, users: [permitted_user], mandate_groups: [permitted_group], roles: [:mandates_export])
+        end
+
+        let(:endpoint) { ->(h) { get MANDATES_ENDPOINT, headers: xlsx_headers(h) } }
+
+        permit :mandates_export
+      end
+
       describe 'with included mandate-groups-organizations' do
         let(:endpoint) do
           lambda do |auth_headers|
@@ -72,7 +82,7 @@ RSpec.describe 'authorization for', type: :request do
 
     describe '#show' do
       let(:endpoint) do
-        ->(auth_headers) { get "#{MANDATES_ENDPOINT}/#{permitted_mandate.id}", headers: auth_headers }
+        ->(auth_headers) { get "#{MANDATES_ENDPOINT}/#{mandate.id}", headers: auth_headers }
       end
       let!(:user_group) do
         create(:user_group, users: [permitted_user], mandate_groups: [permitted_group], roles: [:mandates_read])
@@ -80,6 +90,18 @@ RSpec.describe 'authorization for', type: :request do
       # this simulates the read role to be set twice which may not cause any issues
       let!(:user_group_duplicate) do
         create(:user_group, users: [permitted_user], mandate_groups: [permitted_group], roles: [:mandates_read])
+      end
+
+      describe '(xlsx request)' do
+        let(:mandate) { permitted_mandate }
+        let!(:user_group) do
+          create(:user_group, users: [permitted_user], mandate_groups: [permitted_group], roles: [:mandates_export])
+        end
+        let(:endpoint) do
+          ->(h) { get "#{MANDATES_ENDPOINT}/#{mandate.id}", headers: xlsx_headers(h) }
+        end
+
+        permit :mandates_export
       end
 
       describe 'permitted mandate' do
@@ -125,6 +147,14 @@ RSpec.describe 'authorization for', type: :request do
       end
 
       permit :mandates_write
+
+      describe '(xlsx request)' do
+        let(:endpoint) do
+          ->(h) { post MANDATES_ENDPOINT, params: payload.to_json, headers: xlsx_headers(h) }
+        end
+
+        permit # none
+      end
     end
 
     describe '#update' do
@@ -157,6 +187,17 @@ RSpec.describe 'authorization for', type: :request do
 
         permit # no role permits to update the forbidden mandate
       end
+
+      describe '(xlsx request)' do
+        let(:mandate) { permitted_mandate }
+        let(:endpoint) do
+          lambda do |h|
+            patch "#{MANDATES_ENDPOINT}/#{mandate.id}", params: payload.to_json, headers: xlsx_headers(h)
+          end
+        end
+
+        permit # none
+      end
     end
 
     describe '#destroy' do
@@ -175,6 +216,13 @@ RSpec.describe 'authorization for', type: :request do
         let(:mandate) { forbidden_mandate }
 
         permit # no role permits to destroy the forbidden mandate
+      end
+
+      describe '(xlsx request)' do
+        let(:mandate) { permitted_mandate }
+        let(:endpoint) { ->(h) { delete "#{MANDATES_ENDPOINT}/#{mandate.id}", headers: xlsx_headers(h) } }
+
+        permit # none
       end
     end
   end

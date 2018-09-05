@@ -68,4 +68,12 @@ RSpec.describe ContactDetail, type: :model do
       end
     end
   end
+
+  describe '#to_s' do
+    it 'serializes simple record' do
+      contact_detail = create :email, value: 'foo@example.com'
+
+      expect(contact_detail.to_s).to eq('foo@example.com')
+    end
+  end
 end
