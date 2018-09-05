@@ -99,7 +99,8 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           MANDATES_ENDPOINT,
           params: {
             filter: { user_id: user.id },
-            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant'
+            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant',
+            sort: 'ownerName'
           },
           headers: auth_headers
         )

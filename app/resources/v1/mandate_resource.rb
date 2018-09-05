@@ -141,6 +141,10 @@ module V1
       order_by_name_of_contact(records.joins(:bookkeeper), direction)
     }
 
+    sort :owner_name, apply: lambda { |records, direction, _context|
+      records.includes(:owners).with_owner_name.order("mandates.owner_name #{direction}")
+    }
+
     class << self
       def records(options)
         records = super
