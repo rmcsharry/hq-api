@@ -71,6 +71,8 @@ class InterPersonRelationship < ApplicationRecord
     notary_mandate
     private_equity_consultant
     private_equity_consultant_mandate
+    real_estate_manager
+    real_estate_manager_client
     renter
     tax_advisor
     tax_mandate

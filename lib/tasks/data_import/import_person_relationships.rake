@@ -59,6 +59,8 @@ def person_relationship_roles
     'Tochter / Sohn' => :daughter_son,
     'Mitarbeiter' => :employee,
     'Makler (Versicherung)' => :insurance_broker,
+    'Verwalter (Immobilienverwaltung)' => :real_estate_manager,
+    'Kunde (Immobilienverwaltung)' => :real_estate_manager_client,
     'Berater (Bank)' => :bank_advisor,
     'Kunde (Bank)' => :bank_advisor_client,
     'Berater (Immobilien)' => :estate_agent,
