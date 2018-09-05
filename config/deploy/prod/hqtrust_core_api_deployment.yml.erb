@@ -2,6 +2,7 @@
   partial(
     'hqtrust_core_api_deployment',
     aws_s3_bucket_name: 'hqfinanz-prod-file-store',
+    aws_s3_backups_bucket_name: 'hqfinanz-prod-backup-store',
     host: 'api-core.prod.hqfinanz.de',
     host_url: 'https://api-core.prod.hqfinanz.de',
     sidekiq_monitor_host: 'sidekiq-monitor.prod.hqfinanz.de',

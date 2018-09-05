@@ -95,6 +95,8 @@ spec:
               value: "eu-central-1"
             - name: AWS_S3_BUCKET_NAME
               value: <%= aws_s3_bucket_name %>
+            - name: AWS_S3_BACKUPS_BUCKET_NAME
+              value: <%= aws_s3_backups_bucket_name %>
             - name: AWS_S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -209,6 +211,8 @@ spec:
               value: "eu-central-1"
             - name: AWS_S3_BUCKET_NAME
               value: <%= aws_s3_bucket_name %>
+            - name: AWS_S3_BACKUPS_BUCKET_NAME
+              value: <%= aws_s3_backups_bucket_name %>
             - name: AWS_S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -421,6 +425,8 @@ spec:
                   value: "eu-central-1"
                 - name: AWS_S3_BUCKET_NAME
                   value: <%= aws_s3_bucket_name %>
+                - name: AWS_S3_BACKUPS_BUCKET_NAME
+                  value: <%= aws_s3_backups_bucket_name %>
                 - name: AWS_S3_ACCESS_KEY_ID
                   valueFrom:
                     secretKeyRef:
