@@ -14,6 +14,10 @@ module V1
     has_many :mandates
     has_many :user_groups
 
+    def mandate_count
+      MandatePolicy::Scope.accessible_records(@model.mandates, context[:current_user], :mandates_read).count
+    end
+
     filters(
       :group_type
     )

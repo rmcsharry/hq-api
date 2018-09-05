@@ -2,9 +2,10 @@
 
 require 'rails_helper'
 require 'devise/jwt/test_helpers'
-require 'sidekiq/testing'
 
 RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
+  include ActiveJob::TestHelper
+
   let!(:mandate_1) { create(:mandate) }
   let!(:mandate_2) { create(:mandate) }
   let!(:user) do
@@ -273,7 +274,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
       end
 
       before do
-        Sidekiq::Worker.clear_all
+        clear_enqueued_jobs
       end
 
       context 'for activity email' do
