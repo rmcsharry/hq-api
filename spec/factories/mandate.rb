@@ -7,5 +7,14 @@ FactoryBot.define do
     secondary_consultant { build(:contact_person) }
 
     mandate_groups_organizations { [build(:mandate_group, group_type: 'organization')] }
+
+    trait :with_multiple_owners do
+      mandate_members do
+        [
+          create(:mandate_member, mandate: @instance),
+          create(:mandate_member, mandate: @instance)
+        ]
+      end
+    end
   end
 end

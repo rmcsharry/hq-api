@@ -144,10 +144,6 @@ module V1
     class << self
       def records(options)
         records = super
-        controllers = ['v1/mandates', 'v1/activities']
-        if options.dig(:context, :request_method) == 'GET' && controllers.include?(options.dig(:context, :controller))
-          records = records.includes(:owners).with_owner_name
-        end
         if options.dig(:context, :request_method) == 'POST' && options.dig(:context, :controller) == 'v1/activities'
           records = records.includes(:mandate_groups_organizations)
         end

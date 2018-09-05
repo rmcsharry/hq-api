@@ -78,7 +78,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     let!(:mandate2) { create(:mandate, secondary_consultant: contact) }
     let!(:mandate3) { create(:mandate, assistant: contact) }
     let!(:mandate4) { create(:mandate, bookkeeper: contact) }
-    let!(:mandate5) { create(:mandate) }
+    let!(:mandate5) { create(:mandate, :with_multiple_owners) }
     let!(:user) do
       create(
         :user,
@@ -175,6 +175,37 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         end.flatten.uniq
 
         expect(rendered_attributes).to eq(%w[category owner-name])
+      end
+    end
+  end
+
+  describe 'GET /v1/mandates/<mandata_id>' do
+    let(:contact) { create(:contact_person) }
+    let(:mandate_group) { build(:mandate_group, group_type: 'organization') }
+    let!(:mandate) { create(:mandate, :with_multiple_owners, mandate_groups: []) }
+    let!(:user) do
+      create(
+        :user,
+        contact: contact,
+        roles: %i[mandates_read],
+        permitted_mandates: [mandate]
+      )
+    end
+
+    context 'authenticated as user' do
+      it 'fetches the mandate' do
+        get(
+          "#{MANDATES_ENDPOINT}/#{mandate.id}",
+          params: {
+            filter: { user_id: user.id },
+            include: 'mandate-groups-organizations'
+          },
+          headers: auth_headers
+        )
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta', 'included'
+        expect(body['data']['relationships']['mandate-groups-organizations']['data'].count).to eq 1
       end
     end
   end
