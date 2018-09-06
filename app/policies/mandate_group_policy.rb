@@ -57,16 +57,24 @@ class MandateGroupPolicy < ApplicationPolicy
       :families_write,
       record: { group_type: 'family' },
       request: { 'group-type': [nil, 'family'] }
-    ) || conditional_role?(
-      :admin,
-      record: { group_type: 'organization' },
-      request: { 'group-type': [nil, 'organization'] }
-    )
+    ) ||
+      relationship_update_on?(type: 'mandates', relationship: 'mandate-groups-organizations', record_id: record.id) ||
+      admin_organization_update?
   end
 
   def destroy?
     return false if export?
     conditional_role?(:families_destroy, record: { group_type: 'family' }) ||
       conditional_role?(:admin, record: { group_type: 'organization' })
+  end
+
+  private
+
+  def admin_organization_update?
+    conditional_role?(
+      :admin,
+      record: { group_type: 'organization' },
+      request: { 'group-type': [nil, 'organization'] }
+    )
   end
 end
