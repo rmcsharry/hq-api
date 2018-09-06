@@ -38,4 +38,32 @@ RSpec.describe Address, type: :model do
     it { is_expected.to validate_presence_of(:country) }
     it { is_expected.to enumerize(:country) }
   end
+
+  describe '#to_s' do
+    it 'serializes simple record' do
+      address = create(
+        :address,
+        postal_code: 10_999,
+        city: 'Berlin',
+        country: 'DE',
+        addition: nil,
+        street_and_number: 'Oranienstraße 185'
+      )
+
+      expect(address.to_s).to eq('Oranienstraße 185, 10999, Berlin, DE')
+    end
+
+    it 'serializes record with addition' do
+      address = create(
+        :address,
+        postal_code: 10_999,
+        city: 'Berlin',
+        country: 'DE',
+        addition: 'Aufgang 3',
+        street_and_number: 'Oranienstraße 185'
+      )
+
+      expect(address.to_s).to eq('Oranienstraße 185, Aufgang 3, 10999, Berlin, DE')
+    end
+  end
 end

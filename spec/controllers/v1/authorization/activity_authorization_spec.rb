@@ -80,6 +80,16 @@ RSpec.describe 'authorization for', type: :request do
           expect(response_data.size).to eq(2)
         end
       end
+
+      describe '(xlsx request)' do
+        let(:endpoint) { ->(h) { get ACTIVITIES_ENDPOINT, headers: xlsx_headers(h) } }
+
+        let!(:user_group) do
+          create(:user_group, users: [permitted_user], roles: [:contacts_export])
+        end
+
+        permit :contacts_export, :mandates_export
+      end
     end
 
     describe '#show' do
@@ -95,6 +105,17 @@ RSpec.describe 'authorization for', type: :request do
         let(:activity) { mandate_activity }
 
         permit :mandates_read
+
+        describe '(xlsx request)' do
+          let!(:user_group) do
+            create(:user_group, users: [permitted_user], mandate_groups: [mandate_group], roles: [:mandates_export])
+          end
+          let(:endpoint) do
+            ->(h) { get "#{ACTIVITIES_ENDPOINT}/#{activity.id}", headers: xlsx_headers(h) }
+          end
+
+          permit :mandates_export
+        end
       end
 
       describe 'mandate activity without mandate permission' do
@@ -107,6 +128,14 @@ RSpec.describe 'authorization for', type: :request do
         let(:activity) { contact_activity }
 
         permit :contacts_read
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { get "#{ACTIVITIES_ENDPOINT}/#{activity.id}", headers: xlsx_headers(h) }
+          end
+
+          permit :contacts_export
+        end
       end
     end
 
@@ -163,6 +192,16 @@ RSpec.describe 'authorization for', type: :request do
 
         permit :contacts_write
       end
+
+      describe '(xlsx request)' do
+        let(:record) { contact }
+        let(:record_type) { 'contacts' }
+        let(:endpoint) do
+          ->(h) { post ACTIVITIES_ENDPOINT, params: payload.to_json, headers: xlsx_headers(h) }
+        end
+
+        permit # none
+      end
     end
 
     describe '#update', bullet: false do
@@ -192,6 +231,16 @@ RSpec.describe 'authorization for', type: :request do
           let(:activity) { mandate_activity }
 
           permit :mandates_write
+
+          describe '(xlsx request)' do
+            let(:endpoint) do
+              lambda do |h|
+                patch "#{ACTIVITIES_ENDPOINT}/#{activity.id}", params: payload.to_json, headers: xlsx_headers(h)
+              end
+            end
+
+            permit # none
+          end
         end
 
         describe 'mandate without permission' do
@@ -205,6 +254,16 @@ RSpec.describe 'authorization for', type: :request do
         let(:activity) { contact_activity }
 
         permit :contacts_write
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            lambda do |h|
+              patch "#{ACTIVITIES_ENDPOINT}/#{activity.id}", params: payload.to_json, headers: xlsx_headers(h)
+            end
+          end
+
+          permit # none
+        end
       end
     end
 
@@ -220,6 +279,14 @@ RSpec.describe 'authorization for', type: :request do
           let(:activity) { mandate_activity }
 
           permit :mandates_destroy
+
+          describe '(xlsx request)' do
+            let(:endpoint) do
+              ->(h) { delete "#{ACTIVITIES_ENDPOINT}/#{activity.id}", headers: xlsx_headers(h) }
+            end
+
+            permit # none
+          end
         end
 
         describe 'mandate without permission' do
@@ -233,6 +300,14 @@ RSpec.describe 'authorization for', type: :request do
         let(:activity) { contact_activity }
 
         permit :contacts_destroy
+
+        describe '(xlsx request)' do
+          let(:endpoint) do
+            ->(h) { delete "#{ACTIVITIES_ENDPOINT}/#{activity.id}", headers: xlsx_headers(h) }
+          end
+
+          permit # none
+        end
       end
     end
   end

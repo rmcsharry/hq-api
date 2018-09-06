@@ -9,6 +9,7 @@ RSpec.describe 'authorization for', type: :request do
                    resource: 'user-groups',
                    permissions: {
                      destroy: :admin,
+                     export: :admin,
                      read: :admin,
                      write: :admin
                    }

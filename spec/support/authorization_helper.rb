@@ -9,3 +9,7 @@ end
 def permit_all(&block)
   include_examples 'authorization policy', UserGroup::AVAILABLE_ROLES, permitted: true, expectation: block
 end
+
+def xlsx_headers(headers)
+  headers.merge('Accept' => Mime[:xlsx].to_s)
+end

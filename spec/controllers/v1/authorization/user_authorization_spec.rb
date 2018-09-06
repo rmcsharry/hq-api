@@ -22,6 +22,12 @@ RSpec.describe 'authorization for', type: :request do
       let(:endpoint) { ->(auth_headers) { get USERS_ENDPOINT, headers: auth_headers } }
 
       permit :admin
+
+      describe '(xlsx request)' do
+        let(:endpoint) { ->(h) { get USERS_ENDPOINT, headers: xlsx_headers(h) } }
+
+        permit :admin
+      end
     end
 
     describe '#show' do
@@ -41,6 +47,12 @@ RSpec.describe 'authorization for', type: :request do
           endpoint.call(auth_headers)
           expect(response).to have_http_status(403)
         end
+      end
+
+      describe '(xlsx request)' do
+        let(:endpoint) { ->(h) { get "#{USERS_ENDPOINT}/#{user.id}", headers: xlsx_headers(h) } }
+
+        permit :admin
       end
     end
 
@@ -64,6 +76,16 @@ RSpec.describe 'authorization for', type: :request do
       end
 
       permit :admin
+
+      describe '(xlsx request)' do
+        let(:endpoint) do
+          lambda do |h|
+            patch "#{USERS_ENDPOINT}/#{user.id}", params: payload.to_json, headers: xlsx_headers(h)
+          end
+        end
+
+        permit # none
+      end
 
       it 'permits updating themselves regardless of their roles' do
         endpoint.call(auth_headers)

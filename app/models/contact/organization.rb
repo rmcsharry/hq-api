@@ -75,5 +75,9 @@ class Contact
     def organization?
       true
     end
+
+    def to_s
+      "#{organization_name} #{organization_type_text}"
+    end
   end
 end

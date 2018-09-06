@@ -3,6 +3,7 @@
 ACTIVITIES_ENDPOINT = '/v1/activities'
 ADDRESSES_ENDPOINT = '/v1/addresses'
 BANK_ACCOUNTS_ENDPOINT = '/v1/bank-accounts'
+COMPLIANCE_DETAILS_ENDPOINT = '/v1/compliance-details'
 CONTACTS_ENDPOINT = '/v1/contacts'
 CONTACT_DETAILS_ENDPOINT = '/v1/contact-details'
 DOCUMENTS_ENDPOINT = '/v1/documents'

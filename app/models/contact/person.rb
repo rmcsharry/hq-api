@@ -107,6 +107,17 @@ class Contact
     enumerize :professional_title, in: PROFESSIONAL_TITLES, scope: true
     enumerize :nationality, in: Address::COUNTRIES
 
+    def to_s
+      [
+        gender_text,
+        professional_title_text,
+        first_name,
+        nobility_title_text,
+        last_name,
+        maiden_name ? "(#{maiden_name})" : nil
+      ].compact.join(' ')
+    end
+
     private
 
     # Validates if date_of_birth is before or on the same date as date_of_death if date_of_death is set

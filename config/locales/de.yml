@@ -261,7 +261,7 @@ de:
   enumerize:
     contact/person:
       gender:
-        male: "Mann"
+        male: "Herr"
         female: "Frau"
       nobility_title:
         baron: "Freiherr"

@@ -25,12 +25,15 @@ class UserGroup < ApplicationRecord
   AVAILABLE_ROLES = %i[
     admin
     contacts_destroy
+    contacts_export
     contacts_read
     contacts_write
     families_destroy
+    families_export
     families_read
     families_write
     mandates_destroy
+    mandates_export
     mandates_read
     mandates_write
   ].freeze

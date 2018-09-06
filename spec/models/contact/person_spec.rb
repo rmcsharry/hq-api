@@ -74,4 +74,53 @@ RSpec.describe Contact::Person, type: :model do
       end
     end
   end
+
+  describe '#to_s' do
+    it 'serializes simple record' do
+      contact = create(
+        :contact_person,
+        first_name: 'First',
+        last_name: 'Last',
+        gender: 'male'
+      )
+
+      expect(contact.to_s).to eq('Herr First Last')
+    end
+
+    it 'serializes person with nobility_title' do
+      contact = create(
+        :contact_person,
+        first_name: 'First',
+        last_name: 'Last',
+        gender: 'male',
+        nobility_title: 'baron'
+      )
+
+      expect(contact.to_s).to eq('Herr First Freiherr Last')
+    end
+
+    it 'serializes person with professional_title' do
+      contact = create(
+        :contact_person,
+        first_name: 'First',
+        last_name: 'Last',
+        gender: 'male',
+        professional_title: 'prof_dr'
+      )
+
+      expect(contact.to_s).to eq('Herr Prof. Dr. First Last')
+    end
+
+    it 'serializes person with maiden_name' do
+      contact = create(
+        :contact_person,
+        first_name: 'First',
+        last_name: 'Last',
+        maiden_name: 'Maiden',
+        gender: 'male'
+      )
+
+      expect(contact.to_s).to eq('Herr First Last (Maiden)')
+    end
+  end
 end

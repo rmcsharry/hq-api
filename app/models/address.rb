@@ -61,6 +61,16 @@ class Address < ApplicationRecord
   before_destroy :check_primary_contact_address
   before_destroy :check_legal_address
 
+  def to_s
+    [
+      street_and_number,
+      addition,
+      postal_code,
+      city,
+      country
+    ].compact.join(', ')
+  end
+
   private
 
   def set_primary_contact_address

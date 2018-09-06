@@ -31,3 +31,5 @@ config/kubernetes_config_codeship_role.yml
 config/kubernetes_config_secrets.yml
 storage/*
 db/import/*
+db/backups/*
+!db/backups/.gitkeep

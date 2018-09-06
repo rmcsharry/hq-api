@@ -9,6 +9,7 @@ RSpec.describe 'authorization for', type: :request do
                    resource: 'organization-members',
                    permissions: {
                      destroy: :contacts_destroy,
+                     export: :contacts_export,
                      read: :contacts_read,
                      write: :contacts_write
                    }

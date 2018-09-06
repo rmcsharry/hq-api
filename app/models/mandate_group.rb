@@ -31,9 +31,4 @@ class MandateGroup < ApplicationRecord
 
   scope :families, -> { where(group_type: 'family') }
   scope :organizations, -> { where(group_type: 'organization') }
-
-  def mandate_count
-    return mandate_groups_mandates.to_a.size if mandate_groups_mandates.loaded?
-    mandate_groups_mandates.count
-  end
 end

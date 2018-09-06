@@ -48,6 +48,10 @@ class ContactDetail < ApplicationRecord
 
   after_save :remove_primary_from_others, if: :primary
 
+  def to_s
+    value
+  end
+
   private
 
   def remove_primary_from_others

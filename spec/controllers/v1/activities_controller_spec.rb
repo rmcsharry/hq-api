@@ -4,6 +4,8 @@ require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
 RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
+  include ActiveJob::TestHelper
+
   let!(:mandate_1) { create(:mandate) }
   let!(:mandate_2) { create(:mandate) }
   let!(:user) do
@@ -252,7 +254,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
           data: {
             type: 'activities',
             attributes: {
-              'activity-type': 'Activity::Email',
+              'activity-type': activity_type,
               'ews-id': 'ewsid',
               'ews-token': 'token',
               'ews-url': 'https://ews.shr.ps/',
@@ -271,13 +273,31 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         }
       end
 
-      it 'triggers job to fetch the mail as .eml file' do
-        allow_any_instance_of(FetchEmailJob).to receive(:fetch_email) {
-          Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'emails', 'call.eml')))
-        }
-        is_expected.to change(Activity, :count).by(1)
-        expect(response).to have_http_status(201)
-        expect(FetchEmailJob).to have_been_enqueued
+      before do
+        clear_enqueued_jobs
+      end
+
+      context 'for activity email' do
+        let(:activity_type) { 'Activity::Email' }
+
+        it 'triggers job to fetch the mail as .eml file' do
+          allow_any_instance_of(FetchEmailJob).to receive(:fetch_email) {
+            Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'emails', 'call.eml')))
+          }
+          is_expected.to change(Activity, :count).by(1)
+          expect(response).to have_http_status(201)
+          expect(FetchEmailJob).to have_been_enqueued
+        end
+      end
+
+      context 'for activity meeting' do
+        let(:activity_type) { 'Activity::Meeting' }
+
+        it 'does not trigger job to fetch the mail as .eml file' do
+          is_expected.to change(Activity, :count).by(1)
+          expect(response).to have_http_status(201)
+          expect(FetchEmailJob).to_not have_been_enqueued
+        end
       end
     end
   end

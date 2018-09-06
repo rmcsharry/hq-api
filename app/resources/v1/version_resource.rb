@@ -2,7 +2,7 @@
 
 module V1
   # Defines the Version resource for the API
-  class VersionResource < JSONAPI::Resource
+  class VersionResource < BaseResource
     attributes(
       :changed_by,
       :changes,

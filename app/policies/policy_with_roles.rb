@@ -52,4 +52,8 @@ class PolicyWithRoles
   def relationship_update?
     request.params.dig('relationship').present?
   end
+
+  def export?
+    request.format == XLSXExportable::XLSX_MIME_TYPE
+  end
 end

@@ -6,7 +6,8 @@ class BankAccountPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if request.params['action'] == 'index'
-        Scope.accessible_records(scope, user, :mandates_read)
+        role = export? ? :mandates_export : :mandates_read
+        Scope.accessible_records(scope, user, role)
       else
         scope
       end
@@ -21,22 +22,27 @@ class BankAccountPolicy < ApplicationPolicy
   end
 
   def index?
+    return role?(:mandates_export) if export?
     role? :mandates_read
   end
 
   def show?
+    return role_applies_to_bank_account?(:mandates_export) if export?
     role_applies_to_bank_account?(:mandates_read)
   end
 
   def create?
+    return false if export?
     true
   end
 
   def update?
+    return false if export?
     true
   end
 
   def destroy?
+    return false if export?
     role_applies_to_bank_account?(:mandates_destroy)
   end
 

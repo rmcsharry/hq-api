@@ -95,6 +95,8 @@ spec:
               value: "eu-central-1"
             - name: AWS_S3_BUCKET_NAME
               value: <%= aws_s3_bucket_name %>
+            - name: AWS_S3_BACKUPS_BUCKET_NAME
+              value: <%= aws_s3_backups_bucket_name %>
             - name: AWS_S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -209,6 +211,8 @@ spec:
               value: "eu-central-1"
             - name: AWS_S3_BUCKET_NAME
               value: <%= aws_s3_bucket_name %>
+            - name: AWS_S3_BACKUPS_BUCKET_NAME
+              value: <%= aws_s3_backups_bucket_name %>
             - name: AWS_S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -349,3 +353,107 @@ spec:
             backend:
               serviceName: hqtrust-core-sidekiq-monitor-service
               servicePort: 9292
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hqtrust-core-api-backup-job
+  namespace: hqtrust-core-api
+spec:
+  schedule: "0 3 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: hqtrust-core-api-backup
+              image: 457201446358.dkr.ecr.eu-central-1.amazonaws.com/hqtrust-core-api:commit-<%= current_sha %>
+              args: ["rake db:archive_backup"]
+              env:
+                - name: RAILS_ENV
+                  value: "production"
+                - name: REDIS_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: redis-url
+                - name: WHITELISTED_URLS
+                  value: <%= whitelisted_urls %>
+                - name: ALLOWED_ORIGINS
+                  value: <%= allowed_origins %>
+                - name: OUTLOOK_ORIGINS
+                  value: <%= outlook_origins %>
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: database-url
+                - name: SECRET_KEY_BASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: secret-key-base
+                - name: DEVISE_JWT_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: devise-jwt-secret-key
+                - name: SENTRY_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: sentry-url
+                - name: LOGENTRIES_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: logentries-token
+                - name: AWS_SES_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-ses-access-key-id
+                - name: AWS_SES_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-ses-secret-access-key
+                - name: HOST_URL
+                  value: <%= host_url %>
+                - name: AWS_REGION
+                  value: "eu-central-1"
+                - name: AWS_S3_BUCKET_NAME
+                  value: <%= aws_s3_bucket_name %>
+                - name: AWS_S3_BACKUPS_BUCKET_NAME
+                  value: <%= aws_s3_backups_bucket_name %>
+                - name: AWS_S3_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-s3-access-key-id
+                - name: AWS_S3_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-s3-secret-access-key
+                - name: AWS_S3_ENCRYPTION_PUBLIC_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-s3-encryption-public-key
+                - name: AWS_S3_ENCRYPTION_PRIVATE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-s3-encryption-private-key
+                - name: AWS_S3_ENCRYPTION_PASSPHRASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: aws-s3-encryption-passphrase
+                - name: SKYLIGHT_AUTHENTICATION
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: skylight-authentication

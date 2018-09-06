@@ -2,6 +2,8 @@
 
 # General Application controller
 class ApplicationController < JSONAPI::ResourceController
+  include XLSXExportable
+
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   rescue_from JSONAPI::Exceptions::Unauthorized, with: :not_authorized
   before_action :set_paper_trail_whodunnit

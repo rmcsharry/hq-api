@@ -69,4 +69,16 @@ RSpec.describe Contact::Organization, type: :model do
       end
     end
   end
+
+  describe '#to_s' do
+    it 'serializes simple record' do
+      organization = create(
+        :contact_organization,
+        organization_name: 'ACME Corporation',
+        organization_type: 'gmbh'
+      )
+
+      expect(organization.to_s).to eq('ACME Corporation GmbH')
+    end
+  end
 end
