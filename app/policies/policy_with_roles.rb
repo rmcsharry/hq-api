@@ -53,6 +53,14 @@ class PolicyWithRoles
     request.params.dig('relationship').present?
   end
 
+  def relationship_update_on?(type:, relationship:, record_id:)
+    request.params.dig('data').is_a?(Hash) &&
+      request.params.dig('data', 'type') == type &&
+      request.params.dig('data', 'relationships', relationship, 'data').any? do |relation|
+        relation.dig('id') == record_id
+      end
+  end
+
   def export?
     request.format == XLSXExportable::XLSX_MIME_TYPE
   end
