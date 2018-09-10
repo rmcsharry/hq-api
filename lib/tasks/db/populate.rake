@@ -280,7 +280,7 @@ namespace :db do
         comment: Faker::Company.catch_phrase,
         mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
         name: 'HQ Trust',
-        roles: %i[admin mandates_read mandates_write],
+        roles: %i[contacts_read contacts_write mandates_read mandates_write families_read families_write],
         users: [User.find_by(email: 'bookkeeper@hqfinanz.de'), User.find_by(email: 'sales@hqfinanz.de')]
       )
 
