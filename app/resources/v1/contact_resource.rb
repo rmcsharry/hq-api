@@ -156,12 +156,16 @@ module V1
       )
     }
 
+    def fetchable_fields
+      super - %i[compliance_detail tax_detail]
+    end
+
     class << self
       def records(options)
         records = super.with_name
         if options.dig(:context, :request_method) == 'GET' &&
            options.dig(:context, :controller) != 'v1/versions'
-          records = records.includes(:legal_address, :primary_contact_address, :compliance_detail, :tax_detail)
+          records = records.includes(:legal_address, :primary_contact_address)
         end
         records
       end

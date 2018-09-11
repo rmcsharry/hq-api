@@ -57,11 +57,11 @@ module V1
     )
 
     filter :contact_id, apply: lambda { |records, value, _options|
-      records.joins(:contacts).where('contacts.id = ?', value[0])
+      records.where(id: Activity.joins(:contacts).where('contacts.id = ?', value[0]))
     }
 
     filter :mandate_id, apply: lambda { |records, value, _options|
-      records.joins(:mandates).where('mandates.id = ?', value[0])
+      records.where(id: Activity.joins(:mandates).where('mandates.id = ?', value[0]))
     }
 
     filter :mandate_group_id, apply: lambda { |records, value, _options|
