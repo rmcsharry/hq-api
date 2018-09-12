@@ -30,6 +30,7 @@ namespace :data_import do
     ActiveRecord::Base.transaction do
       CSV.read(file, headers: CSV.read(file).third)[4..-1].each do |row|
         puts "Parsing contact #{row['id']}"
+        next if Contact.find_by(import_id: row['id']).present?
         contact = Contact::Person.create!(
           import_id: row['id'],
           gender: genders[row['gender']],

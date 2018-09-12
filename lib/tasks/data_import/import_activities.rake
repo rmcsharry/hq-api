@@ -16,9 +16,18 @@ namespace :data_import do
       CSV.read(file, headers: CSV.read(file).third)[4..-1].each_with_index do |row, index|
         puts "Parsing activity #{index}"
 
-        mandate = Mandate.find_by(import_id: row['mandate_id']) if row['mandate_id']
-        organization = Contact::Organization.find_by(import_id: row['organization']) if row['organization']
+        organization = Contact::Organization.find_by(import_id: row['organization_id']) if row['organization_id']
         person = Contact::Person.find_by(import_id: row['person_id']) if row['person_id']
+
+        mandates = if organization.present?
+                     organization.mandates
+                   else
+                     person.mandates
+                   end
+
+        creator = mandates.first&.primary_consultant&.user.presence || creator if mandates.present?
+        creator = User.find_by(email: row['email_creator']) || creator if row['email_creator'].present?
+        contacts = mandates.present? ? [] : [person, organization].compact
 
         types = {
           'Anrufe' => 'Activity::Call',
@@ -39,7 +48,7 @@ namespace :data_import do
         if type != 'Activity::Email'
           title = row['title'].presence || types_de[type]
           description = row['description'].presence || title
-          started_at = Time.zone.strptime(row['started_at'], '%m/%d/%y %H:%M')
+          started_at = Time.zone.strptime(row['started_at'], '%m/%d/%Y %H:%M')
         else
           email_file = decrypted_s3_tempfile(s3_key: "#{args[:file_folder]}/#{row['documents']}.eml")
           mail = Mail.read(email_file.path)
@@ -56,11 +65,11 @@ namespace :data_import do
         # rubocop:enable Style/StringLiterals
 
         activity = Activity.create!(
-          mandates: [mandate].compact,
-          contacts: [person, organization].compact,
+          mandates: mandates.to_a,
+          contacts: contacts,
           type: type,
           started_at: started_at,
-          ended_at: row['ended_at'] ? Time.zone.strptime(row['ended_at'], '%m/%d/%y %H:%M') : nil,
+          ended_at: row['ended_at'] ? Time.zone.strptime(row['ended_at'], '%m/%d/%Y %H:%M') : nil,
           title: title,
           creator: creator,
           description: description
