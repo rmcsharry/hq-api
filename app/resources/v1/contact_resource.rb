@@ -160,6 +160,10 @@ module V1
       super - %i[compliance_detail tax_detail]
     end
 
+    def fetchable_relationships
+      super + %i[compliance_detail tax_detail]
+    end
+
     class << self
       def records(options)
         records = super.with_name
