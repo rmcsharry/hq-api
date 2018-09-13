@@ -365,7 +365,7 @@ de:
         military_or_civil_service: "Grundwehr-/Zivildienstleistender"
         unemployed: "Ohne Beschäftigung"
     inter_person_relationship:
-      # TODO: add gender dependent role titles from frontent
+      # TODO: add gender dependent role titles from frontend
     tax_detail:
       us_tax_form:
         w_8ben: "W-8BEN"

@@ -57,6 +57,8 @@ class InterPersonRelationship < ApplicationRecord
     financial_auditor_mandate
     granddaughter_grandson
     grandma_grandpa
+    hqt_consultant
+    hqt_contact
     husband_wife
     insurance_broker
     insurance_broker_client

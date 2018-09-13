@@ -34,6 +34,8 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
     let!(:activities) { create_list(:activity_call, 3, mandates: [mandate_1, mandate_2]) }
     let!(:more_activities) { create_list(:activity_call, 2) }
     let!(:even_more_activities) { create_list(:activity_call, 3, mandates: [mandate_1]) }
+    let!(:document_1) { create(:document, owner: activities.first) }
+    let!(:document_2) { create(:document, owner: activities.first) }
 
     context 'authenticated as user' do
       it 'fetches the activities' do
@@ -81,7 +83,6 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
           expect(response).to have_http_status(200)
           body = JSON.parse(response.body)
           expect(body.keys).to include 'data', 'meta', 'included', 'links'
-          expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids.slice(0, 5)
           expect(body['meta']['record-count']).to eq 6
         end
 
@@ -93,6 +94,18 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
           expect(body.keys).to include 'data', 'meta', 'links'
           expect(body['data'].length).to eq 1
           expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids.slice(5, 1)
+          expect(body['meta']['record-count']).to eq 6
+        end
+
+        it 'fetches the documents once' do
+          merged_params = include_params.merge(page: { number: 1, size: 6 })
+          get(ACTIVITIES_ENDPOINT, params: merged_params, headers: auth_headers)
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'included', 'links'
+          expect(body['data'].map { |d| d['id'] }).to eq ordered_activity_ids
+          document_activity = body['data'].select { |activity| activity['id'] == activities.first.id }.first
+          expect(document_activity['relationships']['documents']['data'].count).to eq 2
           expect(body['meta']['record-count']).to eq 6
         end
       end

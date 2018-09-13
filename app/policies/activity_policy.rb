@@ -15,7 +15,7 @@ class ActivityPolicy < ApplicationPolicy
     end
 
     def self.accessible_records(target, scope, contacts_role, mandates_role, conditions = {})
-      new_scope = scope.includes(:contacts, :mandates).where(conditions)
+      new_scope = scope.where(conditions)
       if target.role?(contacts_role) && target.role?(mandates_role)
         return activities_with_permitted_mandates(new_scope, target.user, mandates_role)
                .or(activities_with_contacts(new_scope))
@@ -28,14 +28,14 @@ class ActivityPolicy < ApplicationPolicy
     end
 
     def self.activities_with_contacts(scope)
-      scope.where.not(contacts: { id: nil })
+      scope.where(id: Activity.joins(:contacts).where.not(contacts: { id: nil }))
     end
 
     def self.activities_with_permitted_mandates(scope, user, role)
       scope.where(
-        mandates: {
-          id: MandatePolicy::Scope.accessible_records(Mandate.all, user, role)
-        }
+        id: Activity.joins(:mandates).where(
+          mandates: { id: MandatePolicy::Scope.accessible_records(Mandate.all, user, role) }
+        )
       )
     end
   end

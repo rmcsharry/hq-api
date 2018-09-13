@@ -53,7 +53,7 @@ class Contact
       llc lp other partg statutory_corporation statutory_institution trust vvag
     ].freeze
 
-    has_many :bank_accounts, foreign_key: :bank, dependent: :nullify, inverse_of: :bank
+    has_many :bank_accounts, foreign_key: :bank_id, dependent: :nullify, inverse_of: :bank
     has_many(
       :contact_members,
       class_name: 'OrganizationMember',
