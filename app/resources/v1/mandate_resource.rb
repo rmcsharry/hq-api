@@ -172,7 +172,7 @@ module V1
 
       def order_by_name_of_contact(records, direction)
         records.order(
-          "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
+          "COALESCE(contacts.last_name || ', ' || contacts.first_name, contacts.organization_name) #{direction}"
         )
       end
     end

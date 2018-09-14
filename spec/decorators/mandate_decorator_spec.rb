@@ -15,21 +15,21 @@ RSpec.describe MandateDecorator do
     context 'all three are owners' do
       let(:owners) { [mandate_member1, mandate_member2, mandate_member3] }
       it 'responds with all names' do
-        expect(subject.owner_name).to eq 'Thomas Makait, Maria Makait und Novo Investments UG'
+        expect(subject.owner_name).to eq 'Makait, Thomas, Makait, Maria und Novo Investments UG'
       end
     end
 
     context 'person1 is owner' do
       let(:owners) { [mandate_member1] }
       it "responds with person1's name" do
-        expect(subject.owner_name).to eq 'Thomas Makait'
+        expect(subject.owner_name).to eq 'Makait, Thomas'
       end
     end
 
     context 'person1 and person2 are owners' do
       let(:owners) { [mandate_member1, mandate_member2] }
       it "responds with person1 and person2's names" do
-        expect(subject.owner_name).to eq 'Thomas Makait und Maria Makait'
+        expect(subject.owner_name).to eq 'Makait, Thomas und Makait, Maria'
       end
     end
 

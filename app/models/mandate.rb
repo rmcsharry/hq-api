@@ -100,7 +100,7 @@ class Mandate < ApplicationRecord
   scope :with_owner_name, lambda {
     from(
       '(SELECT m.*, agg.name AS owner_name FROM mandates m LEFT JOIN (SELECT mm.mandate_id AS mandate_id, ' \
-      "string_agg(COALESCE(c.first_name || ' ' || c.last_name, c.organization_name), ', ') AS name FROM " \
+      "string_agg(COALESCE(c.last_name || ', ' || c.first_name, c.organization_name), ', ') AS name FROM " \
       "mandate_members mm LEFT JOIN contacts c ON mm.contact_id = c.id WHERE mm.member_type = 'owner' GROUP BY " \
       'mm.mandate_id) agg ON m.id = agg.mandate_id) mandates'
     )

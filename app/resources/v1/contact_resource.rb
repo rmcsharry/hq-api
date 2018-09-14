@@ -19,6 +19,7 @@ module V1
       :gender,
       :last_name,
       :legal_address,
+      :name_list,
       :maiden_name,
       :name,
       :nationality,
