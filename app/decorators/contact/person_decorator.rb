@@ -10,5 +10,11 @@ class Contact
     def name
       "#{first_name} #{last_name}"
     end
+
+    # Returns the Person's full name is list style
+    # @return [String]
+    def name_list
+      "#{last_name}, #{first_name}"
+    end
   end
 end

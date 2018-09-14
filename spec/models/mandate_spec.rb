@@ -163,7 +163,7 @@ RSpec.describe Mandate, type: :model do
       let(:owners) { [mandate_member1, mandate_member2, mandate_member3] }
       it 'responds with all names' do
         expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq(
-          'Thomas Makait, Maria Makait, Novo Investments UG'
+          'Makait, Thomas, Makait, Maria, Novo Investments UG'
         )
       end
     end
@@ -171,14 +171,14 @@ RSpec.describe Mandate, type: :model do
     context 'person1 is owner' do
       let(:owners) { [mandate_member1] }
       it "responds with person1's name" do
-        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Thomas Makait'
+        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Makait, Thomas'
       end
     end
 
     context 'person1 and person2 are owners' do
       let(:owners) { [mandate_member1, mandate_member2] }
       it "responds with person1 and person2's names" do
-        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Thomas Makait, Maria Makait'
+        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Makait, Thomas, Makait, Maria'
       end
     end
 

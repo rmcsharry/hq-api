@@ -99,7 +99,9 @@ class Contact < ApplicationRecord
 
   scope :with_name, lambda {
     from(
-      "(SELECT COALESCE(first_name || ' ' || last_name, organization_name) AS name, contacts.* FROM contacts) contacts"
+      "(SELECT COALESCE(first_name || ' ' || last_name, organization_name) AS name, " \
+      "COALESCE(last_name || ', ' || first_name, organization_name) AS name_list, " \
+      'contacts.* FROM contacts) contacts'
     )
   }
 

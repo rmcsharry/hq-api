@@ -17,6 +17,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :last_name }
   it { is_expected.to have_attribute :maiden_name }
   it { is_expected.to have_attribute :name }
+  it { is_expected.to have_attribute :name_list }
   it { is_expected.to have_attribute :nationality }
   it { is_expected.to have_attribute :nobility_title }
   it { is_expected.to have_attribute :organization_category }
@@ -82,6 +83,24 @@ RSpec.describe ::V1::ContactResource, type: :resource do
 
       it "responds with the organization's name" do
         expect(subject.name).to eq 'HQ Trust GmbH'
+      end
+    end
+  end
+
+  describe '#name_list' do
+    context 'person' do
+      let(:contact) { create(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
+
+      it "responds with the person's full name in list style" do
+        expect(subject.name_list).to eq 'Mustermann, Max'
+      end
+    end
+
+    context 'organization' do
+      let(:contact) { create(:contact_organization, organization_name: 'HQ Trust GmbH') }
+
+      it "responds with the organization's name" do
+        expect(subject.name_list).to eq 'HQ Trust GmbH'
       end
     end
   end

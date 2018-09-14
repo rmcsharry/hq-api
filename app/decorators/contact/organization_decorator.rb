@@ -6,5 +6,6 @@ class Contact
     delegate_all
 
     alias_attribute :name, :organization_name
+    alias_attribute :name_list, :organization_name
   end
 end
