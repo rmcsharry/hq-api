@@ -6,7 +6,7 @@ module V1
     before_action :authenticate_user!
 
     def accessible_fields(scope)
-      return { contacts: 'name' } if scope == :ews
+      return { contacts: 'first-name,last-name,name' } if scope == :ews
     end
 
     def accessible_actions(scope)
