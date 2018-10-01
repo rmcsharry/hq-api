@@ -68,6 +68,24 @@ module V1
       records.where(id: Activity.joins(mandates: [:mandate_groups]).where('mandate_groups.id = ?', value[0]))
     }
 
+    filter :started_at, apply: lambda { |records, value, _options|
+      records.where('started_at >= ?', Time.zone.parse(value[0]))
+    }
+
+    filter :ended_at, apply: lambda { |records, value, _options|
+      date = Time.zone.parse(value[0])
+      records.where('(ended_at IS NOT NULL AND ended_at <= ?) OR started_at <= ?', date, date)
+    }
+
+    filter :query, apply: lambda { |records, value, _options|
+      records.left_outer_joins(:documents).where(
+        'title ILIKE ? OR description ILIKE ? OR documents.name ILIKE ?',
+        "%#{value[0]}%",
+        "%#{value[0]}%",
+        "%#{value[0]}%"
+      )
+    }
+
     def fetchable_fields
       super - %i[ews_id ews_token ews_url]
     end

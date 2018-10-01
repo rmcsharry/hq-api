@@ -22,4 +22,7 @@ RSpec.describe V1::ActivityResource, type: :resource do
   it { is_expected.to filter(:contact_id) }
   it { is_expected.to filter(:mandate_id) }
   it { is_expected.to filter(:mandate_group_id) }
+  it { is_expected.to filter(:started_at) }
+  it { is_expected.to filter(:ended_at) }
+  it { is_expected.to filter(:query) }
 end
