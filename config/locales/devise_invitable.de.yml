@@ -22,7 +22,7 @@ de:
         someone_invited_you: "Sie wurden zu der HQ Trust Digital-Plattform eingeladen. Bitte bestätigen Sie die Einladung um fortzufahren."
         accept: "Einladung bestätigen"
         alternative: "Wenn der Button nicht funktioniert, klicken Sie bitten auf den folgenden Link:"
-        questions: "Bei Problemen oder Fragen wenden Sie sich gerne per E-Mail an die Administratoren:"
+        questions: "Diese Einladung ist 4 Wochen lang gültig. Bei Problemen oder Fragen wenden Sie sich gerne per E-Mail an die Administratoren:"
   time:
     formats:
       devise:
