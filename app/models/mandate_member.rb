@@ -29,8 +29,24 @@ class MandateMember < ApplicationRecord
   extend Enumerize
 
   MEMBER_TYPES = %i[
-    owner tax_advisor beneficiary wealth_manager lawyer notary family_officer bookkeeper contact_depot_bank
-    contact_fund advisor chairman administrative_board_member supervisory_board_member auditor managing_director
+    administrative_board_member
+    advisor
+    assistance
+    auditor
+    beneficiary
+    bookkeeper
+    chairman
+    contact_depot_bank
+    contact_fund
+    family_officer
+    lawyer
+    managing_director
+    notary
+    owner
+    procurator
+    supervisory_board_member
+    tax_advisor
+    wealth_manager
   ].freeze
 
   belongs_to :mandate
