@@ -228,9 +228,11 @@ namespace :db do
       contacts = Contact::Person.all
       admin_user = User.find_by(email: 'admin@hqfinanz.de')
       mandate_groups_organizations = MandateGroup.organizations
+      mandate_groups_organizations_length = mandate_groups_organizations.length
       mandate_groups_families = MandateGroup.families
+      mandate_groups_families_length = mandate_groups_families.length
       special_family = mandate_groups_families.first
-      48.times do
+      48.times do |i|
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
         Mandate.create(
           aasm_state: %i[prospect client cancelled].sample,
@@ -246,8 +248,8 @@ namespace :db do
           secondary_consultant: admin_user.contact,
           assistant: contacts.sample,
           bookkeeper: contacts.sample,
-          mandate_groups_organizations: mandate_groups_organizations.sample(Faker::Number.between(1, 4)),
-          mandate_groups_families: [special_family] | mandate_groups_families.sample(Faker::Number.between(1, 4))
+          mandate_groups_organizations: [mandate_groups_organizations[i % mandate_groups_organizations_length]],
+          mandate_groups_families: [special_family] | [mandate_groups_families[i % mandate_groups_families_length]]
         )
       end
     end
