@@ -46,6 +46,9 @@ class BankAccount < ApplicationRecord
     skip: SKIPPED_ATTRIBUTES
   )
 
+  before_validation :normalize_iban
+  before_validation :normalize_bic
+
   validates :account_type, presence: true
   validates :owner, presence: true
   validates :currency, presence: true
@@ -67,5 +70,15 @@ class BankAccount < ApplicationRecord
 
   def bank_name
     bank&.organization_name
+  end
+
+  private
+
+  def normalize_iban
+    self.iban = iban.upcase.gsub(/\s+/, '') if iban.present?
+  end
+
+  def normalize_bic
+    self.bic = bic.upcase.gsub(/\s+/, '') if bic.present?
   end
 end

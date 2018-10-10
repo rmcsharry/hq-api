@@ -76,6 +76,16 @@ RSpec.describe BankAccount, type: :model do
       it { is_expected.to be_valid }
     end
 
+    context 'iban and bic with spaces' do
+      let(:iban) { 'de21 301 204 0 00 00001 5228' }
+      let(:bic) { 'DEU TDE bbxxx' }
+      it 'are formatted' do
+        subject.valid?
+        expect(subject.iban).to eq 'DE21301204000000015228'
+        expect(subject.bic).to eq 'DEUTDEBBXXX'
+      end
+    end
+
     context 'iban present but no bic' do
       let(:iban) { 'DE21301204000000015228' }
       it { is_expected.to_not be_valid }
