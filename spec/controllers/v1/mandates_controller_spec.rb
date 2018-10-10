@@ -155,7 +155,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         describe 'with empty owner name' do
           let(:owner_name) { '' }
 
-          it 'it finds one mandate' do
+          it 'it finds four mandates' do
             subject
             expect(response).to have_http_status(200)
             body = JSON.parse(response.body)
@@ -193,7 +193,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         describe 'with incomplete name' do
           let(:owner_name) { 'Mustermann, Ma' }
 
-          it 'it finds one mandate' do
+          it 'it finds four mandates' do
             subject
             expect(response).to have_http_status(200)
             body = JSON.parse(response.body)
