@@ -50,8 +50,8 @@ module V1
     }
 
     filter :owner_name, apply: lambda { |records, value, _options|
-      owner_name, category = value[0]&.split('–', 2)
-      category = value[1] if value[1].present?
+      search_string = value.join(',')
+      owner_name, category = search_string&.split(/[–;]/, 2)
       records = records.with_owner_name.where('mandates.owner_name ILIKE ?', "%#{owner_name&.strip}%")
       return records unless category
       categories = Mandate.category.values.map { |v| [v.text, v] }.to_h
