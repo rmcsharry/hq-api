@@ -117,7 +117,7 @@ module V1
 
     filter :name_list, apply: lambda { |records, value, _options|
       search_string = value.join(',')
-      records.where('contacts.name ILIKE ?', "%#{search_string}%")
+      records.where('contacts.name_list ILIKE ?', "%#{search_string}%")
     }
 
     filter :first_name, apply: lambda { |records, value, _options|
