@@ -115,6 +115,11 @@ module V1
       records.where('contacts.name ILIKE ?', "%#{value[0]}%")
     }
 
+    filter :name_list, apply: lambda { |records, value, _options|
+      search_string = value.join(',')
+      records.where('contacts.name ILIKE ?', "%#{search_string}%")
+    }
+
     filter :first_name, apply: lambda { |records, value, _options|
       records.where('contacts.first_name ILIKE ?', "%#{value[0]}%")
     }

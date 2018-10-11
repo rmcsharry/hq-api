@@ -282,7 +282,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           contact['attributes'].keys
         end.flatten.uniq
 
-        expect(rendered_attributes).to eq(%w[contact-type first-name last-name name])
+        expect(rendered_attributes).to eq(%w[contact-type first-name last-name name name-list])
       end
     end
   end
