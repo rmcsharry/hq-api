@@ -74,11 +74,24 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
 
   describe 'GET /v1/mandates' do
     let(:contact) { create(:contact_person) }
-    let!(:mandate1) { create(:mandate, primary_consultant: contact) }
-    let!(:mandate2) { create(:mandate, secondary_consultant: contact) }
-    let!(:mandate3) { create(:mandate, assistant: contact) }
-    let!(:mandate4) { create(:mandate, bookkeeper: contact) }
-    let!(:mandate5) { create(:mandate, :with_multiple_owners) }
+    let(:owner_contact) { create(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
+    let!(:mandate1) do
+      create(
+        :mandate, :with_owner, owner: owner_contact, category: 'family_office_with_investment_advice',
+                               primary_consultant: contact
+      )
+    end
+    let!(:mandate2) do
+      create(:mandate, :with_owner, owner: owner_contact, category: 'wealth_management', secondary_consultant: contact)
+    end
+    let!(:mandate3) do
+      create(:mandate, :with_owner, owner: owner_contact, category: 'investment_advice', assistant: contact)
+    end
+    let!(:mandate4) do
+      create(:mandate, :with_owner, owner: owner_contact, category: 'alternative_investments', bookkeeper: contact)
+    end
+    let!(:mandate5) { create(:mandate, :with_multiple_owners, category: 'institutional') }
+
     let!(:user) do
       create(
         :user,
@@ -127,19 +140,67 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(body['meta']['record-count']).to eq 0
       end
 
-      it 'fetches the mandates even with empty owner name filter' do
-        get(
-          MANDATES_ENDPOINT,
-          params: {
-            filter: { owner_name: '' },
-            page: { number: 1, size: 5 }
-          },
-          headers: auth_headers
-        )
-        expect(response).to have_http_status(200)
-        body = JSON.parse(response.body)
-        expect(body.keys).to include 'data', 'meta', 'links'
-        expect(body['meta']['record-count']).to eq 0
+      context 'filter by owner name' do
+        subject do
+          get(
+            MANDATES_ENDPOINT,
+            params: {
+              filter: { owner_name: owner_name },
+              page: { number: 1, size: 5 }
+            },
+            headers: auth_headers
+          )
+        end
+
+        describe 'with empty owner name' do
+          let(:owner_name) { '' }
+
+          it 'it finds four mandates' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
+
+        describe 'with dash and incomplete mandate category' do
+          let(:owner_name) { 'Mustermann, Max – Vermögens' }
+
+          it 'it finds one mandate' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 1
+            expect(body['data'].first['attributes']['category']).to eq 'wealth_management'
+          end
+        end
+
+        describe 'with semicolon and complete mandate category' do
+          let(:owner_name) { 'Mustermann, Max;Alternative Investments' }
+
+          it 'it finds one mandate' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 1
+            expect(body['data'].first['attributes']['category']).to eq 'alternative_investments'
+          end
+        end
+
+        describe 'with incomplete name' do
+          let(:owner_name) { 'Mustermann, Ma' }
+
+          it 'it finds four mandates' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
       end
     end
 
@@ -180,7 +241,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     end
   end
 
-  describe 'GET /v1/mandates/<mandata_id>' do
+  describe 'GET /v1/mandates/<mandate_id>' do
     let(:contact) { create(:contact_person) }
     let(:mandate_group) { build(:mandate_group, group_type: 'organization') }
     let!(:mandate) { create(:mandate, :with_multiple_owners, mandate_groups: []) }
