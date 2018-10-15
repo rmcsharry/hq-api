@@ -15,6 +15,7 @@ module V1
       :confirmed_at,
       :created_at,
       :current_sign_in_at,
+      :deactivated_at,
       :email,
       :ews_user_id,
       :roles,
@@ -80,12 +81,21 @@ module V1
     filter :confirmed_at_max, apply: lambda { |records, value, _options|
       records.where('users.confirmed_at <= ?', Date.parse(value[0]))
     }
+
     filter :updated_at_min, apply: lambda { |records, value, _options|
       records.where('users.updated_at >= ?', Date.parse(value[0]))
     }
 
     filter :updated_at_max, apply: lambda { |records, value, _options|
       records.where('users.updated_at <= ?', Date.parse(value[0]))
+    }
+
+    filter :deactivated_at_min, apply: lambda { |records, value, _options|
+      records.where('users.deactivated_at >= ?', Date.parse(value[0]))
+    }
+
+    filter :deactivated_at_max, apply: lambda { |records, value, _options|
+      records.where('users.deactivated_at <= ?', Date.parse(value[0]))
     }
 
     filter :ews_user_id, apply: lambda { |records, value, _options|

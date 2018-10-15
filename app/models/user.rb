@@ -35,6 +35,7 @@
 #  comment                :text
 #  contact_id             :uuid
 #  ews_user_id            :string
+#  deactivated_at         :datetime
 #
 # Indexes
 #
@@ -112,6 +113,20 @@ class User < ApplicationRecord
     update ews_user_id: appctx['msexchuid']
   rescue JWT::DecodeError => _
     nil
+  end
+
+  def active_for_authentication?
+    super && deactivated_at.nil?
+  end
+
+  def deactivate!
+    self.deactivated_at = Time.zone.now unless deactivated_at
+    save!
+  end
+
+  def reactivate!
+    self.deactivated_at = nil
+    save!
   end
 
   protected

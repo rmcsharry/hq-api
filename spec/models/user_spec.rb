@@ -35,6 +35,7 @@
 #  comment                :text
 #  contact_id             :uuid
 #  ews_user_id            :string
+#  deactivated_at         :datetime
 #
 # Indexes
 #
@@ -129,6 +130,30 @@ RSpec.describe User, type: :model do
         subject.setup_ews_id 'a.b.c'
         expect(subject.ews_user_id).to eq(nil)
       end
+    end
+  end
+
+  describe '#deactivated_at' do
+    subject { create(:user) }
+
+    it 'disables login' do
+      expect(subject.active_for_authentication?).to eq true
+      subject.deactivated_at = Time.zone.now
+      subject.save!
+      expect(subject.active_for_authentication?).to eq false
+    end
+
+    it '#deactivate!' do
+      expect(subject.active_for_authentication?).to eq true
+      subject.deactivate!
+      expect(subject.active_for_authentication?).to eq false
+    end
+
+    it '#reactivate!' do
+      subject.deactivate!
+      expect(subject.active_for_authentication?).to eq false
+      subject.reactivate!
+      expect(subject.active_for_authentication?).to eq true
     end
   end
 end

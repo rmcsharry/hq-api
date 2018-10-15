@@ -430,3 +430,8 @@ de:
         client_communication: "Kundenkommunikation"
         kyc: "KYC-Dokumente"
         bank_documents: "Bankunterlagen"
+  jsonapi-resources:
+    exceptions:
+      deactivate_self:
+        title: 'Forbidden'
+        detail: 'Es ist nicht möglich, sich selbst zu deaktivieren.'

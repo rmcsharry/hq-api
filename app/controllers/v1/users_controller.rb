@@ -84,6 +84,35 @@ module V1
       render_response_document
     end
 
+    # rubocop:disable Metrics/MethodLength
+    def deactivate
+      begin
+        @response_document = create_response_document
+        user = User.find(params.require(:id))
+        authorize user, :update?
+        raise(JSONAPI::Exceptions::DeactivateSelf.new, 'forbidden') if user == current_user
+        user.deactivate!
+        generate_user_response(user: user)
+      rescue JSONAPI::Exceptions::Error => e
+        handle_exceptions(e)
+      end
+      render_response_document
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    def reactivate
+      begin
+        @response_document = create_response_document
+        user = User.find(params.require(:id))
+        authorize user, :update?
+        user.reactivate!
+        generate_user_response(user: user)
+      rescue JSONAPI::Exceptions::Error => e
+        handle_exceptions(e)
+      end
+      render_response_document
+    end
+
     def base_response_meta
       public_action? || anonymous_action? ? {} : super
     end
