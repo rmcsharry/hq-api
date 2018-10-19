@@ -10,6 +10,7 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to have_attribute :confirmed_at }
   it { is_expected.to have_attribute :created_at }
   it { is_expected.to have_attribute :current_sign_in_at }
+  it { is_expected.to have_attribute :deactivated_at }
   it { is_expected.to have_attribute :email }
   it { is_expected.to have_attribute :ews_user_id }
   it { is_expected.to have_attribute :roles }
@@ -27,6 +28,8 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to filter(:created_at_min) }
   it { is_expected.to filter(:current_sign_in_at_max) }
   it { is_expected.to filter(:current_sign_in_at_min) }
+  it { is_expected.to filter(:deactivated_at_max) }
+  it { is_expected.to filter(:deactivated_at_min) }
   it { is_expected.to filter(:email) }
   it { is_expected.to filter(:ews_user_id) }
   it { is_expected.to filter(:sign_in_count) }

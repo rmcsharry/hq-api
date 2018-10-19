@@ -682,4 +682,107 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'PATCH /v1/users/<user_id>/deactivate' do
+    let(:sign_in_email) { 'test@hqfinanz.de' }
+    let(:sign_in_password) { 'testmctest1A!' }
+    let(:deactivatable_user) { create(:user, email: sign_in_email, password: sign_in_password) }
+    let(:user) { create(:user, roles: %i[admin]) }
+    let(:sign_in_payload) do
+      {
+        data: {
+          attributes: {
+            email: sign_in_email,
+            password: sign_in_password
+          }
+        }
+      }
+    end
+
+    context 'for a valid user' do
+      it 'responds with 200 and deactivates the user' do
+        patch("#{USERS_ENDPOINT}/#{deactivatable_user.id}/deactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(deactivatable_user.reload.active_for_authentication?).to eq false
+
+        post("#{USERS_ENDPOINT}/sign-in", params: sign_in_payload.to_json, headers: headers)
+        expect(response).to have_http_status(401)
+      end
+    end
+
+    context 'for the logged-in user' do
+      it 'responds with 403 and does not deactivate the user' do
+        patch("#{USERS_ENDPOINT}/#{user.id}/deactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(403)
+        expect(deactivatable_user.reload.active_for_authentication?).to eq true
+      end
+    end
+
+    context 'without admin rights' do
+      let(:user) { create(:user) }
+
+      it 'responds with 403 and does not deactivate the user' do
+        patch("#{USERS_ENDPOINT}/#{deactivatable_user.id}/deactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(403)
+        expect(deactivatable_user.reload.active_for_authentication?).to eq true
+      end
+    end
+  end
+
+  describe 'PATCH /v1/users/<user_id>/reactivate' do
+    let(:sign_in_email) { 'test@hqfinanz.de' }
+    let(:sign_in_password) { 'testmctest1A!' }
+    let(:reactivatable_user) do
+      create(:user, email: sign_in_email, password: sign_in_password, deactivated_at: Time.zone.now)
+    end
+    let(:user) { create(:user, roles: %i[admin]) }
+    let(:sign_in_payload) do
+      {
+        data: {
+          attributes: {
+            email: sign_in_email,
+            password: sign_in_password
+          }
+        }
+      }
+    end
+
+    context 'for a valid user' do
+      it 'responds with 200 and reactivates the user' do
+        expect(reactivatable_user.reload.active_for_authentication?).to eq false
+        patch("#{USERS_ENDPOINT}/#{reactivatable_user.id}/reactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        body = JSON.parse(response.body)
+        expect(body.keys).to include 'data', 'meta'
+        expect(reactivatable_user.reload.active_for_authentication?).to eq true
+
+        post("#{USERS_ENDPOINT}/sign-in", params: sign_in_payload.to_json, headers: headers)
+        expect(response).to have_http_status(200)
+      end
+    end
+
+    context 'for the (non) logged-in user' do
+      let(:user) { create(:user, roles: %i[admin], deactivated_at: Time.zone.now) }
+
+      it 'responds with 401 and does not reactivate the user' do
+        expect(user.active_for_authentication?).to eq false
+        patch("#{USERS_ENDPOINT}/#{user.id}/reactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(401)
+        expect(user.reload.active_for_authentication?).to eq false
+      end
+    end
+
+    context 'without admin rights' do
+      let(:user) { create(:user) }
+
+      it 'responds with 403 and does not reactivate the user' do
+        expect(reactivatable_user.reload.active_for_authentication?).to eq false
+        patch("#{USERS_ENDPOINT}/#{reactivatable_user.id}/reactivate", params: {}, headers: auth_headers)
+        expect(response).to have_http_status(403)
+        expect(reactivatable_user.reload.active_for_authentication?).to eq false
+      end
+    end
+  end
 end

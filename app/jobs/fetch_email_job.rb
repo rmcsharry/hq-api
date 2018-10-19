@@ -60,7 +60,7 @@ class FetchEmailJob < ApplicationJob
 
   def parse_mail(mime_body)
     file = Tempfile.new
-    file.write mime_body
+    file.write mime_body.force_encoding('UTF-8')
     file.rewind
     Mail.read file.path
   ensure

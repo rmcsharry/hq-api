@@ -16,6 +16,10 @@ module V1
       records.where("member_type #{is_owner ? '=' : '!='} 'owner'")
     }
 
+    filter :"contact.type", apply: lambda { |records, value, _options|
+      records.joins(:contact).where('contacts.type = ?', value[0])
+    }
+
     sort :"mandate.category", apply: lambda { |records, direction, _context|
       records.joins(:mandate).order("mandates.category #{direction}")
     }

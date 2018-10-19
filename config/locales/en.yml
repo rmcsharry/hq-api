@@ -30,4 +30,8 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  jsonapi-resources:
+    exceptions:
+      deactivate_self:
+        title: 'Forbidden'
+        detail: 'Cannot deactivate yourself.'

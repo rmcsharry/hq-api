@@ -35,6 +35,7 @@ class MandateMember < ApplicationRecord
     auditor
     beneficiary
     bookkeeper
+    capital_management_company
     chairman
     contact_depot_bank
     contact_fund

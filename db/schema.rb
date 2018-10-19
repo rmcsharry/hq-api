@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_13_103458) do
+ActiveRecord::Schema.define(version: 2018_10_10_144715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -316,6 +316,7 @@ ActiveRecord::Schema.define(version: 2018_08_13_103458) do
     t.text "comment"
     t.uuid "contact_id"
     t.string "ews_user_id"
+    t.datetime "deactivated_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["contact_id"], name: "index_users_on_contact_id"
     t.index ["email"], name: "index_users_on_email", unique: true

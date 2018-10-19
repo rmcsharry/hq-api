@@ -398,6 +398,7 @@ de:
         auditor: "Wirtschaftsprüfer"
         beneficiary: "Wirtschaftlich Berechtigter"
         bookkeeper: "Buchhalter"
+        capital_management_company: "Kapitalverwaltungsgesellschaft (KVG)"
         chairman: "Vorstand"
         contact_depot_bank: "Ansprechpartner Depotbank"
         contact_fund: "Ansprechpartner Fondsgesellschaft"
@@ -429,3 +430,8 @@ de:
         client_communication: "Kundenkommunikation"
         kyc: "KYC-Dokumente"
         bank_documents: "Bankunterlagen"
+  jsonapi-resources:
+    exceptions:
+      deactivate_self:
+        title: 'Forbidden'
+        detail: 'Es ist nicht möglich, sich selbst zu deaktivieren.'
