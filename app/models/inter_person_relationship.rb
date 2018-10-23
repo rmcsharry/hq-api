@@ -46,6 +46,7 @@ class InterPersonRelationship < ApplicationRecord
     bank_advisor_client
     boss
     brother_sister
+    cousin_cousin
     daughter_son
     debtor
     employee
