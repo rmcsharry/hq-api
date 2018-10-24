@@ -187,6 +187,14 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
     end
 
     context 'with documents' do
+      subject { -> { post(ACTIVITIES_ENDPOINT, params: payload, headers: auth_headers) } }
+      let(:headers) { { 'Content-Type' => 'multipart/related' } }
+      let(:file) do
+        Rack::Test::UploadedFile.new(
+          Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'),
+          'application/pdf'
+        )
+      end
       let(:payload) do
         {
           data: {
@@ -201,13 +209,11 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
                 'valid-to': '2015-12-27',
                 category: 'contract_hq',
                 name: 'HQT Verträge M. Mustermann',
-                file: {
-                  body: Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'))),
-                  filename: 'hqtrust_beispiel.pdf'
-                }
+                file: 'cid:file:0'
               }]
             }
-          }
+          }.to_json,
+          'file:0': file
         }
       end
 
@@ -225,7 +231,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         expect(Base64.encode64(document.file.download)).to eq(
           Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
         )
-        expect(document.file.filename.to_s).to eq 'hqtrust_beispiel.pdf'
+        expect(document.file.filename.to_s).to eq 'hqtrust_sample.pdf'
       end
     end
 
