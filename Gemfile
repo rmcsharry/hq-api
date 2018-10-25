@@ -28,8 +28,8 @@ gem 'devise_invitable'                                              # Invitation
 # API Handling
 gem 'jsonapi-authorization', github: 'HQTrust/jsonapi-authorization', branch: 'hqtrust' # Auth for JSON API
 gem 'jsonapi-resources', github: 'HQTrust/jsonapi-resources', branch: 'hqtrust' # JSON API Resource handling
-gem 'pundit', '~> 1.1.0' # Simple authorization layer
-gem 'rack-cors' # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
+gem 'pundit', '~> 1.1.0'                                            # Simple authorization layer
+gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # Business Logic & Validation
 gem 'aasm'                                                          # State machines for Ruby classes

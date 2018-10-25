@@ -38,7 +38,7 @@ module V1
           uploader: @model.creator,
           owner: @model
         )
-        document.attach_file(param[:file])
+        document.file.attach(param[:file])
       end
     end
     # rubocop:enable Metrics/MethodLength

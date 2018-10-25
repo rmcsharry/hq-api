@@ -3,11 +3,14 @@
 module V1
   # Defines the Activities controller
   class ActivitiesController < ApplicationController
-    before_action :authenticate_user!
+    include MultipartRelated
 
+    before_action :authenticate_user!
     # rubocop:disable Rails/LexicallyScopedActionFilter
     after_action :check_additional_data, only: :create
     # rubocop:enable Rails/LexicallyScopedActionFilter
+
+    private
 
     def check_additional_data
       attributes = params[:data][:attributes]
@@ -25,8 +28,6 @@ module V1
     def accessible_actions(scope)
       return [:create] if scope == :ews
     end
-
-    private
 
     def relevant_for_fetch_email_job(ews_id:, activity_type:)
       ews_id.present? && activity_type == 'Activity::Email'

@@ -248,9 +248,9 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'included', 'links'
-        expect(body['included'].length).to eq 40
-        expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 20
-        expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 20
+        expect(body['included'].length).to eq 36
+        expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 18
+        expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 18
         expect(body['meta']['total-record-count']).to eq 11
       end
     end
@@ -262,8 +262,8 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         get(CONTACTS_ENDPOINT, params: {}, headers: auth_headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
-        expect(body['data'].length).to eq 20
-        expect(body['meta']['page-count']).to eq 2
+        expect(body['data'].length).to eq 10
+        expect(body['meta']['page-count']).to eq 3
       end
     end
 

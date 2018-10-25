@@ -140,6 +140,7 @@ RSpec.describe 'authorization for', type: :request do
     end
 
     describe '#create' do
+      let(:headers) { { 'Content-Type' => 'multipart/related' } }
       let!(:permitted_user) { create(:user) }
       let(:endpoint) do
         ->(auth_headers) { post ACTIVITIES_ENDPOINT, params: payload.to_json, headers: auth_headers }
