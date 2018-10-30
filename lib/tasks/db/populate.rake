@@ -116,22 +116,6 @@ namespace :db do
         comment: Faker::Company.catch_phrase,
         ews_user_id: '008c2269-2676-42a2-9f5d-d2e60ed85b28' # user id of test.sherpas@hqtrust.de in verticals EWS
       )
-      User.create!(
-        email: 'sales@hqfinanz.de',
-        password: password,
-        confirmed_at: 1.day.ago,
-        contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::Company.catch_phrase,
-        ews_user_id: '91b499df-2a41-4115-b032-69866c07bc5a'
-      )
-      User.create!(
-        email: 'bookkeeper@hqfinanz.de',
-        password: password,
-        confirmed_at: 1.day.ago,
-        contact: Contact.where(type: 'Contact::Person').sample,
-        comment: Faker::Company.catch_phrase,
-        ews_user_id: 'e41bb230-d0f7-486a-90be-ef67bd3efd8d'
-      )
 
       [
         'AI Administrator',
@@ -139,11 +123,13 @@ namespace :db do
         'Buchhaltung',
         'Compliance',
         'Controlling',
-        'HQA Geschäftsführung',
+        'Familien',
         'HQ AM',
+        'HQA Geschäftsführung',
         'HQT Geschäftsführung',
         'Institutionell',
         'Investment',
+        'Kontakte',
         'Kundenberater',
         'PVT'
       ].each do |name|
@@ -290,13 +276,6 @@ namespace :db do
         roles: UserGroup::AVAILABLE_ROLES,
         users: [User.find_by(email: 'admin@hqfinanz.de')]
       )
-      UserGroup.create!(
-        comment: Faker::Company.catch_phrase,
-        mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
-        name: 'HQ Trust',
-        roles: %i[contacts_read contacts_write mandates_read mandates_write families_read families_write],
-        users: [User.find_by(email: 'bookkeeper@hqfinanz.de'), User.find_by(email: 'sales@hqfinanz.de')]
-      )
 
       {
         'AI Administrator' => %i[alternative_investments funds_destroy funds_read funds_write],
@@ -310,6 +289,7 @@ namespace :db do
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
           mandates_read mandates_write
         ],
+        'Familien' => %i[families_read],
         'HQA Geschäftsführung' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
           mandates_read mandates_write
@@ -330,6 +310,7 @@ namespace :db do
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
           mandates_read mandates_write alternative_investments funds_read
         ],
+        'Kontakte' => %i[contacts_read],
         'Kundenberater' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
           mandates_read mandates_write alternative_investments funds_read
