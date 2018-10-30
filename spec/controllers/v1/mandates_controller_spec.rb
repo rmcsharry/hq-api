@@ -374,7 +374,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     end
 
     context 'with changes to the bank accounts' do
-      let(:bank_account) { create(:bank_account, mandate: mandate, iban: original_iban) }
+      let(:bank_account) { create(:bank_account, owner: mandate, iban: original_iban) }
       let(:original_iban) { 'DE12500105170648489890' }
       let(:updated_iban) { 'DE28500105170648489893' }
 

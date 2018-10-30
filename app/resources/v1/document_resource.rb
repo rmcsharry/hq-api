@@ -6,6 +6,7 @@ module V1
     attributes(
       :category,
       :created_at,
+      :document_type,
       :file,
       :file_name,
       :file_type,
@@ -18,6 +19,10 @@ module V1
     has_one :owner, polymorphic: true
 
     filter :owner_id
+
+    filter :document_type, apply: lambda { |records, value, _options|
+      records.where('documents.type = ?', value[0])
+    }
 
     def file_url
       Rails.application.routes.url_helpers.rails_blob_url(@model.file)

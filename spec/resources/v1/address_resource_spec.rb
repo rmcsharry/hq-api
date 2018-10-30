@@ -16,7 +16,7 @@ RSpec.describe V1::AddressResource, type: :resource do
   it { is_expected.to have_attribute :legal_address }
   it { is_expected.to have_attribute :primary_contact_address }
 
-  it { is_expected.to have_one(:contact) }
+  it { is_expected.to have_one(:owner) }
 
-  it { is_expected.to filter(:contact_id) }
+  it { is_expected.to filter(:owner_id) }
 end

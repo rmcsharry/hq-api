@@ -24,7 +24,7 @@ class ActivityPolicy < ApplicationPolicy
       elsif target.role?(mandates_role)
         return activities_with_permitted_mandates(new_scope, target.user, mandates_role)
       end
-      scope
+      new_scope
     end
 
     def self.activities_with_contacts(scope)
@@ -67,8 +67,8 @@ class ActivityPolicy < ApplicationPolicy
 
   private
 
-  def roles_apply_to_activity?(contact_role, mandate_role)
-    role?(contact_role, mandate_role) &&
-      Scope.accessible_records(self, Activity, contact_role, mandate_role, id: record.id).count.positive?
+  def roles_apply_to_activity?(contacts_role, mandates_role)
+    role?(contacts_role, mandates_role) &&
+      Scope.accessible_records(self, Activity, contacts_role, mandates_role, id: record.id).count.positive?
   end
 end

@@ -13,5 +13,11 @@ FactoryBot.define do
         content_type: 'application/pdf'
       )
     end
+
+    factory :fund_template_document, class: Document::FundTemplate do
+      name 'fund_capital_call_template.pdf'
+      category :fund_capital_call_template
+      owner { create(:fund, documents: [@instance.presence]) }
+    end
   end
 end

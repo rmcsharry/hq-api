@@ -49,8 +49,6 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:datev_creditor_id) }
   it { is_expected.to respond_to(:datev_debitor_id) }
   it { is_expected.to respond_to(:mandate_number) }
-  it { is_expected.to respond_to(:psplus_id) }
-
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
     it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }

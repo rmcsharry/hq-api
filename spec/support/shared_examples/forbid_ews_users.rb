@@ -29,13 +29,13 @@ RSpec.shared_examples 'forbid access for ews authenticated users' do |endpoint, 
     describe '#index' do
       let(:endpoint) { ->(auth_headers) { get endpoint, headers: auth_headers } }
 
-      include_examples 'request for ews authenticated user', permitted: options[:except].include?(:index)
+      include_examples 'request for ews authenticated user', permitted: options[:except]&.include?(:index)
     end
 
     describe '#show' do
       let(:endpoint) { ->(auth_headers) { get "#{endpoint}/#{record.id}", headers: auth_headers } }
 
-      include_examples 'request for ews authenticated user', permitted: options[:except].include?(:show)
+      include_examples 'request for ews authenticated user', permitted: options[:except]&.include?(:show)
     end
 
     describe '#create' do
@@ -44,7 +44,7 @@ RSpec.shared_examples 'forbid access for ews authenticated users' do |endpoint, 
         { data: { type: resource } }
       end
 
-      include_examples 'request for ews authenticated user', permitted: options[:except].include?(:create)
+      include_examples 'request for ews authenticated user', permitted: options[:except]&.include?(:create)
     end
 
     describe '#update' do
@@ -62,13 +62,13 @@ RSpec.shared_examples 'forbid access for ews authenticated users' do |endpoint, 
         }
       end
 
-      include_examples 'request for ews authenticated user', permitted: options[:except].include?(:update)
+      include_examples 'request for ews authenticated user', permitted: options[:except]&.include?(:update)
     end
 
     describe '#destroy' do
       let(:endpoint) { ->(auth_headers) { delete "#{endpoint}/#{record.id}", headers: auth_headers } }
 
-      include_examples 'request for ews authenticated user', permitted: options[:except].include?(:destroy)
+      include_examples 'request for ews authenticated user', permitted: options[:except]&.include?(:destroy)
     end
   end
 end

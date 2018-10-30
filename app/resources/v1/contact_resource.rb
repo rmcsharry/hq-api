@@ -65,14 +65,14 @@ module V1
     end
 
     def legal_address=(params)
-      @model.build_legal_address(contact: @model) unless @model.legal_address
+      @model.build_legal_address(owner: @model) unless @model.legal_address
       sanitized_params = sanitize_params(params, V1::AddressResource)
       @model.legal_address.assign_attributes(sanitized_params)
       @save_needed = true
     end
 
     def primary_contact_address=(params)
-      @model.build_primary_contact_address(contact: @model) unless @model.primary_contact_address
+      @model.build_primary_contact_address(owner: @model) unless @model.primary_contact_address
       sanitized_params = sanitize_params(params, V1::AddressResource)
       @model.primary_contact_address.assign_attributes(sanitized_params)
       @save_needed = true
@@ -175,7 +175,7 @@ module V1
         records = super.with_name
         if options.dig(:context, :request_method) == 'GET' &&
            options.dig(:context, :controller) != 'v1/versions'
-          records = records.includes(:legal_address, :primary_contact_address)
+          records = records.includes(:primary_contact_address, :legal_address)
         end
         records
       end

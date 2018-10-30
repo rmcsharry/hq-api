@@ -19,7 +19,7 @@ RSpec.describe 'FormatResponseDocumentService', type: :request do
   def create_address(contact)
     create(
       :address,
-      contact: contact,
+      owner: contact,
       postal_code: Faker::Address.zip_code,
       city: Faker::Address.city,
       country: Faker::Address.country_code,

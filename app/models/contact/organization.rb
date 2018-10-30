@@ -77,7 +77,7 @@ class Contact
     end
 
     def to_s
-      "#{organization_name} #{organization_type_text}"
+      organization_name
     end
   end
 end

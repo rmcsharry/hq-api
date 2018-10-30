@@ -41,6 +41,9 @@ namespace :db do
       puts 'Creating activities'
       Rake::Task['db:populate:activities'].invoke
 
+      puts 'Creating funds'
+      Rake::Task['db:populate:funds'].invoke
+
       puts 'Creating documents'
       Rake::Task['db:populate:documents'].invoke
 
@@ -68,7 +71,7 @@ namespace :db do
       Contact::Person.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
-        contact = contact_with_addresses(contact)
+        contact = owner_with_addresses(contact)
         addresses << [contact.legal_address, contact.primary_contact_address].uniq
         contact
       end
@@ -93,7 +96,7 @@ namespace :db do
       Contact::Organization.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
-        contact = contact_with_addresses(contact)
+        contact = owner_with_addresses(contact)
         addresses << [contact.legal_address, contact.primary_contact_address].uniq
         contact
       end
@@ -130,13 +133,22 @@ namespace :db do
         ews_user_id: 'e41bb230-d0f7-486a-90be-ef67bd3efd8d'
       )
 
-      %i[
-        contacts
-        families
-        mandates
+      [
+        'AI Administrator',
+        'Assistenz',
+        'Buchhaltung',
+        'Compliance',
+        'Controlling',
+        'HQA Geschäftsführung',
+        'HQ AM',
+        'HQT Geschäftsführung',
+        'Institutionell',
+        'Investment',
+        'Kundenberater',
+        'PVT'
       ].each do |name|
         User.create!(
-          email: "#{name}@hqfinanz.de",
+          email: "#{name.parameterize}@hqfinanz.de",
           password: password,
           confirmed_at: 1.day.ago,
           contact: Contact.where(type: 'Contact::Person').sample,
@@ -274,7 +286,7 @@ namespace :db do
       UserGroup.create!(
         comment: Faker::Company.catch_phrase,
         mandate_groups: MandateGroup.organizations.all,
-        name: 'Administratoren',
+        name: 'Administrator',
         roles: UserGroup::AVAILABLE_ROLES,
         users: [User.find_by(email: 'admin@hqfinanz.de')]
       )
@@ -287,16 +299,52 @@ namespace :db do
       )
 
       {
-        contacts: %i[contacts_read contacts_write],
-        families: %i[families_read families_write],
-        mandates: %i[mandates_read mandates_write]
+        'AI Administrator' => %i[alternative_investments funds_destroy funds_read funds_write],
+        'Assistenz' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'Buchhaltung' => %i[contacts_read families_read mandates_read],
+        'Compliance' => %i[contacts_read families_read mandates_read],
+        'Controlling' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'HQA Geschäftsführung' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'HQ AM' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'HQT Geschäftsführung' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'Institutionell' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ],
+        'Investment' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write alternative_investments funds_read
+        ],
+        'Kundenberater' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write alternative_investments funds_read
+        ],
+        'PVT' => %i[
+          contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
+          mandates_read mandates_write
+        ]
       }.each do |name, roles|
         UserGroup.create!(
           comment: Faker::SiliconValley.quote,
           mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
-          name: "HQ Trust - #{name.capitalize}",
+          name: name,
           roles: roles,
-          users: [User.find_by(email: "#{name}@hqfinanz.de")]
+          users: [User.find_by(email: "#{name.parameterize}@hqfinanz.de")]
         )
       end
     end
@@ -316,6 +364,34 @@ namespace :db do
           participant_class => participants[participant_class].sample(Faker::Number.between(1, 5))
         )
       end
+    end
+
+    task funds: :environment do
+      funds = Array.new(86) do
+        Fund.new(
+          aasm_state: %i[open closed liquidated].sample,
+          asset_class: Fund::ASSET_CLASSES.sample,
+          comment: Faker::Company.catch_phrase,
+          commercial_register_number: Faker::Company.duns_number,
+          commercial_register_office: Faker::Address.city,
+          currency: Fund::CURRENCIES.sample,
+          duration: Faker::Number.between(5, 12),
+          name: "#{Faker::Company.name} #{Faker::Company.suffix}",
+          psplus_asset_id: Faker::Number.number(9),
+          strategy: Fund::STRATEGIES.sample
+        )
+      end
+      Fund.import!(funds)
+      addresses = []
+      funds_with_addresses = funds.map do |fund|
+        fund = owner_with_addresses(fund)
+        addresses << [fund.legal_address, fund.primary_contact_address].uniq
+        fund
+      end
+      Address.import!(addresses.flatten)
+      Fund.import!(
+        funds_with_addresses, on_duplicate_key_update: %i[primary_contact_address_id legal_address_id]
+      )
     end
 
     task documents: :environment do
@@ -354,15 +430,15 @@ namespace :db do
     end
   end
 
-  def contact_with_addresses(contact)
-    contact.legal_address = build_address(contact)
-    contact.primary_contact_address = rand > 0.6 ? build_address(contact) : contact.legal_address
-    contact
+  def owner_with_addresses(owner)
+    owner.legal_address = build_address(owner)
+    owner.primary_contact_address = rand > 0.6 ? build_address(owner) : owner.legal_address
+    owner
   end
 
-  def build_address(contact)
+  def build_address(owner)
     Address.new(
-      contact: contact,
+      owner: owner,
       postal_code: Faker::Address.zip_code,
       city: Faker::Address.city,
       country: Faker::Address.country_code,
@@ -520,17 +596,20 @@ namespace :db do
     end
   end
 
-  def create_bank_account(mandate, bank, use_iban)
+  # rubocop:disable Metrics/MethodLength
+  def create_bank_account(owner, bank, use_iban)
     BankAccount.new(
       account_type: BankAccount::ACCOUNT_TYPE.sample,
-      owner: Faker::Name.name,
-      currency: BankAccount::CURRENCIES.sample,
-      bank: bank, mandate: mandate,
+      bank: bank,
       bank_account_number: !use_iban ? Faker::Number.number(10) : nil,
       bank_routing_number: !use_iban ? Faker::Number.number(8) : nil,
       bic: use_iban ? Faker::Bank.swift_bic : nil,
-      iban: use_iban ? IbanGenerator.random_iban : nil
+      currency: BankAccount::CURRENCIES.sample,
+      iban: use_iban ? IbanGenerator.random_iban : nil,
+      owner: owner,
+      owner_name: Faker::Name.name
     )
   end
+  # rubocop:enable Metrics/MethodLength
 end
 # rubocop:enable Metrics/BlockLength

@@ -6,26 +6,26 @@
 #
 #  id                  :uuid             not null, primary key
 #  account_type        :string
-#  owner               :string
+#  owner_name          :string
 #  bank_account_number :string
 #  bank_routing_number :string
 #  iban                :string
 #  bic                 :string
 #  currency            :string
-#  mandate_id          :uuid
+#  owner_id            :uuid             not null
 #  bank_id             :uuid
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  owner_type          :string           not null
 #
 # Indexes
 #
-#  index_bank_accounts_on_bank_id     (bank_id)
-#  index_bank_accounts_on_mandate_id  (mandate_id)
+#  index_bank_accounts_on_bank_id                  (bank_id)
+#  index_bank_accounts_on_owner_type_and_owner_id  (owner_type,owner_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (bank_id => contacts.id)
-#  fk_rails_...  (mandate_id => mandates.id)
 #
 
 require 'rails_helper'
@@ -33,8 +33,8 @@ require 'rails_helper'
 RSpec.describe BankAccount, type: :model do
   it { is_expected.to validate_presence_of(:owner) }
 
-  describe '#mandate' do
-    it { is_expected.to belong_to(:mandate).required }
+  describe '#owner' do
+    it { is_expected.to belong_to(:owner).required }
   end
 
   describe '#bank' do

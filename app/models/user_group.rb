@@ -24,6 +24,7 @@ class UserGroup < ApplicationRecord
 
   AVAILABLE_ROLES = %i[
     admin
+    alternative_investments
     contacts_destroy
     contacts_export
     contacts_read
@@ -36,6 +37,10 @@ class UserGroup < ApplicationRecord
     mandates_export
     mandates_read
     mandates_write
+    funds_destroy
+    funds_export
+    funds_read
+    funds_write
   ].freeze
 
   scope :with_user_count, lambda {

@@ -5,7 +5,7 @@
 # Table name: addresses
 #
 #  id                :uuid             not null, primary key
-#  contact_id        :uuid
+#  owner_id          :uuid             not null
 #  postal_code       :string
 #  city              :string
 #  country           :string
@@ -15,6 +15,11 @@
 #  updated_at        :datetime         not null
 #  category          :string
 #  street_and_number :string
+#  owner_type        :string           not null
+#
+# Indexes
+#
+#  index_addresses_on_owner_type_and_owner_id  (owner_type,owner_id)
 #
 
 require 'rails_helper'
@@ -25,8 +30,8 @@ RSpec.describe Address, type: :model do
   it { is_expected.to validate_presence_of(:city) }
   it { is_expected.to respond_to(:state) }
 
-  describe '#contact' do
-    it { is_expected.to belong_to(:contact).required }
+  describe '#owner' do
+    it { is_expected.to belong_to(:owner).required }
   end
 
   describe '#category' do

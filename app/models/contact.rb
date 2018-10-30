@@ -41,9 +41,9 @@
 
 # Defines the Contact model
 class Contact < ApplicationRecord
-  belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :contact, autosave: true
-  belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :contact, autosave: true
-  has_many :addresses, dependent: :destroy
+  belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
+  belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
+  has_many :addresses, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contact_details, dependent: :destroy
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy

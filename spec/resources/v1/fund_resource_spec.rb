@@ -1,0 +1,49 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe V1::FundResource, type: :resource do
+  let(:fund) { create(:fund) }
+  subject { described_class.new(fund, {}) }
+
+  it { is_expected.to have_attribute :asset_class }
+  it { is_expected.to have_attribute :comment }
+  it { is_expected.to have_attribute :commercial_register_number }
+  it { is_expected.to have_attribute :commercial_register_office }
+  it { is_expected.to have_attribute :currency }
+  it { is_expected.to have_attribute :dpi }
+  it { is_expected.to have_attribute :duration }
+  it { is_expected.to have_attribute :duration_extension }
+  it { is_expected.to have_attribute :holdings_last_update_at }
+  it { is_expected.to have_attribute :irr }
+  it { is_expected.to have_attribute :name }
+  it { is_expected.to have_attribute :psplus_asset_id }
+  it { is_expected.to have_attribute :region }
+  it { is_expected.to have_attribute :state }
+  it { is_expected.to have_attribute :strategy }
+  it { is_expected.to have_attribute :total_called_amount }
+  it { is_expected.to have_attribute :total_distributions_amount }
+  it { is_expected.to have_attribute :total_open_amount }
+  it { is_expected.to have_attribute :total_signed_amount }
+  it { is_expected.to have_attribute :tvpi }
+  it { is_expected.to have_attribute :updated_at }
+
+  it { is_expected.to have_many(:addresses) }
+  it { is_expected.to have_many(:bank_accounts) }
+  it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_one(:capital_management_company).with_class_name('Contact') }
+  it { is_expected.to have_one(:legal_address).with_class_name('Address') }
+  it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
+
+  it { is_expected.to filter(:asset_class) }
+  it { is_expected.to filter(:capital_management_company) }
+  it { is_expected.to filter(:commercial_register_number) }
+  it { is_expected.to filter(:commercial_register_office) }
+  it { is_expected.to filter(:currency) }
+  it { is_expected.to filter(:name) }
+  it { is_expected.to filter(:owner_id) }
+  it { is_expected.to filter(:psplus_asset_id) }
+  it { is_expected.to filter(:region) }
+  it { is_expected.to filter(:state) }
+  it { is_expected.to filter(:strategy) }
+end
