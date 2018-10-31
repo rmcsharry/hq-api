@@ -53,7 +53,7 @@ class Mandate < ApplicationRecord
   )
   belongs_to :assistant, class_name: 'Contact', optional: true, inverse_of: :assistant_mandates
   belongs_to :bookkeeper, class_name: 'Contact', optional: true, inverse_of: :bookkeeper_mandates
-  has_many :bank_accounts, dependent: :destroy
+  has_many :bank_accounts, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contacts, through: :mandate_members
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
