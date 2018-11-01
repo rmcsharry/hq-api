@@ -105,7 +105,7 @@ class Contact < ApplicationRecord
     )
   }
 
-  after_create :add_tax_detail
+  before_create :add_tax_detail
   before_validation :assign_primary_contact_address
 
   validates_associated :legal_address, :primary_contact_address, :compliance_detail, :tax_detail
