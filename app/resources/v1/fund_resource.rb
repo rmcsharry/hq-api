@@ -57,7 +57,7 @@ module V1
       records.where('funds.name ILIKE ?', "%#{value[0]}%")
     }
 
-    filter :capital_management_company, apply: lambda { |records, value, _options|
+    filter :"capital_management_company.organization_name", apply: lambda { |records, value, _options|
       records.joins(:capital_management_company).where('contacts.organization_name ILIKE ?', "%#{value[0]}%")
     }
 

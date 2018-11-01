@@ -36,7 +36,7 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
 
   it { is_expected.to filter(:asset_class) }
-  it { is_expected.to filter(:capital_management_company) }
+  it { is_expected.to filter(:"capital_management_company.organization_name") }
   it { is_expected.to filter(:commercial_register_number) }
   it { is_expected.to filter(:commercial_register_office) }
   it { is_expected.to filter(:currency) }
