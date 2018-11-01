@@ -404,7 +404,9 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       before do
         PaperTrail.request.whodunnit = user2.id
         contact.save!
-        foreign_tax_number = create(:foreign_tax_number, tax_detail: contact.tax_detail, tax_number: original_tax_number)
+        foreign_tax_number = create(
+          :foreign_tax_number, tax_detail: contact.tax_detail, tax_number: original_tax_number
+        )
         PaperTrail.request.whodunnit = user3.id
         foreign_tax_number.tax_number = updated_tax_number
         foreign_tax_number.save!
