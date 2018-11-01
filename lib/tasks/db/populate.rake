@@ -359,6 +359,7 @@ namespace :db do
           duration: Faker::Number.between(5, 12),
           name: "#{Faker::Company.name} #{Faker::Company.suffix}",
           psplus_asset_id: Faker::Number.number(9),
+          region: Fund::REGIONS.sample,
           strategy: Fund::STRATEGIES.sample
         )
       end
