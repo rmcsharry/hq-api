@@ -14,4 +14,9 @@ class DeviseMailer < Devise::Mailer
     @reset_password_url = "#{opts[:reset_password_url]}?reset_password_token=#{token}"
     devise_mail(record, :reset_password_instructions, opts)
   end
+
+  def confirmation_instructions(record, token, opts = {})
+    @confirm_email_url = "#{opts[:confirmation_url]}?confirmation_token=#{token}"
+    devise_mail(record, :confirmation_instructions, opts)
+  end
 end

@@ -18,7 +18,7 @@ de:
       unauthenticated: "Sie müssen sich anmelden oder registrieren, bevor Sie fortfahren können."
       unconfirmed: "Sie müssen Ihren Account bestätigen, bevor Sie fortfahren können."
     mailer:
-      kind_regards: "Viele Grüße,"
+      kind_regards: "Viele Grüße"
       your_hq_team: "Ihr HQ Trust Team"
       confirmation_instructions:
         subject: "Anleitung zur Bestätigung Ihres Accounts"
@@ -28,7 +28,19 @@ de:
         reset_requested: "Das Zurücksetzen Ihres Passworts wurde beantragt. Folgen Sie dieser Anleitung um fortzufahren."
         reset: "Passwort zurücksetzen"
         alternative: "Wenn der Button nicht funktioniert, klicken Sie bitten auf den folgenden Link:"
-        questions: "Sollten Sie diese E-Mail nicht angefordert haben oder sonstige Fragen bestehen, wenden Sie sich gerne per E-Mail an die Administratoren:"
+        questions: "Sollten Sie diese E-Mail nicht angefordert haben oder sonstige Fragen bestehen, wenden Sie sich bitte per E-Mail an die Administratoren:"
+      email_changed:
+        subject: "Ihre E-Mail wurde geändert"
+        title: "Änderung Ihrer E-Mail"
+        body: "Wir benachrichtigen Sie hiermit darüber, dass Ihre E-Mail-Adresse geändert wurde auf %{email}."
+        questions: "Sollte Ihnen die neue E-Mail-Adresse nicht bekannt vorkommen oder sonstige Fragen bestehen, wenden Sie sich gerne per E-Mail an die Administratoren:"
+      confirmation_instructions:
+        subject: "Änderung Ihrer E-Mail bestätigen"
+        title: "Änderung Ihrer E-Mail-Adresse bestätigen"
+        please_confirm: "Bitte bestätigen Sie die Änderung Ihrer E-Mail-Adresse für die HQ Trust Digital-Plattform."
+        accept: "E-Mail bestätigen"
+        alternative: "Wenn der Button nicht funktioniert, klicken Sie bitten auf den folgenden Link:"
+        questions: "Der Bestätigungslink ist 4 Wochen lang gültig. Bei Problemen oder Fragen wenden Sie sich gerne per E-Mail an die Administratoren:"
       unlock_instructions:
         subject: "Anleitung um Ihren Account freizuschalten"
     omniauth_callbacks:

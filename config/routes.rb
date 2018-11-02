@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   devise_for :users,
              defaults: { format: :json },
              path: 'v1/users',
-             skip: %i[sessions passwords registrations confirmations unlocks invitations]
+             skip: %i[sessions passwords registrations unlocks invitations]
 
   namespace :v1 do
     jsonapi_resources :activities
