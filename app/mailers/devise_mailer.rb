@@ -19,4 +19,9 @@ class DeviseMailer < Devise::Mailer
     @confirm_email_url = "#{opts[:confirmation_url]}?confirmation_token=#{token}"
     devise_mail(record, :confirmation_instructions, opts)
   end
+
+  def email_changed(record, opts={})
+    @new_email = opts[:new_email]
+    devise_mail(record, :email_changed, opts)
+  end
 end

@@ -140,6 +140,11 @@ class User < ApplicationRecord
     send_devise_notification(:confirmation_instructions, @raw_confirmation_token, opts)
   end
 
+  def send_email_changed_notification
+    opts = { to: email_before_last_save, new_email: unconfirmed_email }
+    send_devise_notification(:email_changed, opts)
+  end
+
   protected
 
   def send_reset_password_instructions_notification(token:, reset_password_url:)
