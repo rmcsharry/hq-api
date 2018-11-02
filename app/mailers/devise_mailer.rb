@@ -20,7 +20,7 @@ class DeviseMailer < Devise::Mailer
     devise_mail(record, :confirmation_instructions, opts)
   end
 
-  def email_changed(record, opts={})
+  def email_changed(record, opts = {})
     @new_email = opts[:new_email]
     devise_mail(record, :email_changed, opts)
   end
