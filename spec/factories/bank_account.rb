@@ -3,12 +3,16 @@
 FactoryBot.define do
   factory :bank_account do
     account_type 'currency_account'
-    owner { Faker::Name.name }
+    bic { Faker::Bank.swift_bic }
     currency 'EUR'
     iban 'DE21301204000000015228'
-    bic { Faker::Bank.swift_bic }
+    owner { build(:mandate) }
+    owner_name { Faker::Name.name }
 
-    association :mandate, factory: :mandate, strategy: :build
     association :bank, factory: :contact_organization, strategy: :build
+
+    trait :for_fund do
+      owner { build(:fund) }
+    end
   end
 end

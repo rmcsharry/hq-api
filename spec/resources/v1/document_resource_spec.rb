@@ -8,6 +8,7 @@ RSpec.describe V1::DocumentResource, type: :resource do
 
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :created_at }
+  it { is_expected.to have_attribute :document_type }
   it { is_expected.to have_attribute :file_name }
   it { is_expected.to have_attribute :file_type }
   it { is_expected.to have_attribute :file_url }
@@ -17,5 +18,6 @@ RSpec.describe V1::DocumentResource, type: :resource do
 
   it { is_expected.to have_one(:owner) }
 
+  it { is_expected.to filter(:document_type) }
   it { is_expected.to filter(:owner_id) }
 end

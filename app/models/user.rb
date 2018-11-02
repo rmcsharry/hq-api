@@ -57,6 +57,7 @@
 # Defines the User model used for authentication
 class User < ApplicationRecord
   attr_accessor :authenticated_via_ews
+  attr_accessor :confirmation_url
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -129,6 +130,19 @@ class User < ApplicationRecord
   def reactivate!
     self.deactivated_at = nil
     save!
+  end
+
+  def send_confirmation_instructions
+    generate_confirmation_token! unless @raw_confirmation_token
+
+    opts = { confirmation_url: confirmation_url }
+    opts[:to] = unconfirmed_email if pending_reconfirmation?
+    send_devise_notification(:confirmation_instructions, @raw_confirmation_token, opts)
+  end
+
+  def send_email_changed_notification
+    opts = { to: email_before_last_save, new_email: unconfirmed_email }
+    send_devise_notification(:email_changed, opts)
   end
 
   protected

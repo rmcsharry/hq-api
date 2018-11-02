@@ -14,6 +14,7 @@
 #  owner_id    :uuid             not null
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
+#  type        :string
 #
 # Indexes
 #
@@ -46,6 +47,8 @@ class Document < ApplicationRecord
   validate :valid_to_greater_or_equal_valid_from
 
   enumerize :category, in: CATEGORIES, scope: true
+
+  alias_attribute :document_type, :type
 
   private
 

@@ -12,8 +12,8 @@ FactoryBot.define do
     gender     :male
 
     trait :with_contact_details do
-      legal_address { create(:address, street_and_number: street_and_number, contact: @instance) }
-      primary_contact_address { create(:address, street_and_number: street_and_number, contact: @instance) }
+      legal_address { create(:address, street_and_number: street_and_number, owner: @instance) }
+      primary_contact_address { create(:address, street_and_number: street_and_number, owner: @instance) }
       primary_phone { create(:phone, primary: true, value: phone, contact: @instance) }
       primary_email { create(:email, primary: true, contact: @instance) }
     end

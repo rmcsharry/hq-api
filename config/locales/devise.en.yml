@@ -24,7 +24,17 @@ en:
       unlock_instructions:
         subject: "Unlock instructions"
       email_changed:
-        subject: "Email Changed"
+        subject: "Your email was changed"
+        title: "Your email was changed"
+        body: "We are contacting you to inform you that your email address has been changed to %{email}."
+        questions: "Should you not recognize the new email address or if you have any questions, please contact the administrators at:"
+      confirmation_instructions:
+        subject: "Confirm your new email"
+        title: "Confirm your new email"
+        please_confirm: "Please confirm your new email address for the HQ Trust Digital Platform."
+        accept: "Confirm email"
+        alternative: "Please use the following link if the button does not work:"
+        questions: "The confirmation link is valid for 4 weeks. Please contact our administrators should you have any questions or concerns:"
       password_change:
         subject: "Password Changed"
     omniauth_callbacks:

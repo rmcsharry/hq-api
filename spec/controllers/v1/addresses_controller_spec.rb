@@ -29,7 +29,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
               'legal-address': true
             },
             relationships: {
-              contact: {
+              owner: {
                 data: { id: contact.id, type: 'contacts' }
               }
             }
@@ -43,8 +43,8 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
         address = Address.find(JSON.parse(response.body)['data']['id'])
         expect(address.street_and_number).to eq 'Wohnstraße 13'
         expect(address.city).to eq 'Berlin'
-        expect(address.contact.legal_address).to eq address
-        expect(address.contact.primary_contact_address).to_not eq address
+        expect(address.owner.legal_address).to eq address
+        expect(address.owner.primary_contact_address).to_not eq address
       end
     end
   end
@@ -80,8 +80,8 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
         address.reload
         expect(address.street_and_number).to eq 'Wohnstraße 13'
         expect(address.city).to eq 'Berlin'
-        expect(address.contact.legal_address).to eq address
-        expect(address.contact.primary_contact_address).to eq address
+        expect(address.owner.legal_address).to eq address
+        expect(address.owner.primary_contact_address).to eq address
       end
     end
   end

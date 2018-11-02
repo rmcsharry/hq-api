@@ -27,21 +27,12 @@ module V1
     has_many :contacts
     has_many :documents
 
-    # rubocop:disable Metrics/MethodLength
     def documents=(params)
       params.each do |param|
-        document = @model.documents.build(
-          category: param[:category],
-          name: param[:name],
-          valid_from: param[:'valid-from'],
-          valid_to: param[:'valid-to'],
-          uploader: @model.creator,
-          owner: @model
-        )
+        document = build_document(params: param)
         document.file.attach(param[:file])
       end
     end
-    # rubocop:enable Metrics/MethodLength
 
     def activity_type=(params)
       @model.activity_type = params
@@ -106,6 +97,19 @@ module V1
       def sortable_fields(context)
         super(context) - %i[creator ews_id ews_token ews_url]
       end
+    end
+
+    private
+
+    def build_document(params:)
+      @model.documents.build(
+        category: params[:category],
+        name: params[:name],
+        valid_from: params[:validFrom],
+        valid_to: params[:validTo],
+        uploader: @model.creator,
+        owner: @model
+      )
     end
   end
 end

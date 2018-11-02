@@ -1,0 +1,27 @@
+<%= render partial: 'preheader', locals: { subject: t('devise.mailer.email_changed.subject') } %>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <%= render 'logo' %>
+  <%= render partial: 'hero', locals: { title: t('devise.mailer.email_changed.title') } %>
+  <!-- COPY BLOCK -->
+  <tr>
+    <td bgcolor="#fafafa" align="center" style="padding: 0 10px 0 10px;">
+      <!--[if (gte mso 9)|(IE)]>
+      <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
+      <tr>
+      <td align="center" valign="top" width="600">
+      <![endif]-->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;" >
+        <%= render 'standard_copy' do %>
+          <%= t('devise.mailer.email_changed.body', email: @new_email) %>
+        <% end %>
+        <%= render 'regards' %>
+      </table>
+      <!--[if (gte mso 9)|(IE)]>
+      </td>
+      </tr>
+      </table>
+      <![endif]-->
+    </td>
+  </tr>
+  <%= render partial: 'footer', locals: { questions: t('devise.mailer.email_changed.questions') } %>
+</table>

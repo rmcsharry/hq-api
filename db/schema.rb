@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_10_144715) do
+ActiveRecord::Schema.define(version: 2018_10_29_161516) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 2018_10_10_144715) do
   end
 
   create_table "addresses", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "contact_id"
+    t.uuid "owner_id", null: false
     t.string "postal_code"
     t.string "city"
     t.string "country"
@@ -77,22 +77,25 @@ ActiveRecord::Schema.define(version: 2018_10_10_144715) do
     t.datetime "updated_at", null: false
     t.string "category"
     t.string "street_and_number"
+    t.string "owner_type", null: false
+    t.index ["owner_type", "owner_id"], name: "index_addresses_on_owner_type_and_owner_id"
   end
 
   create_table "bank_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "account_type"
-    t.string "owner"
+    t.string "owner_name"
     t.string "bank_account_number"
     t.string "bank_routing_number"
     t.string "iban"
     t.string "bic"
     t.string "currency"
-    t.uuid "mandate_id"
+    t.uuid "owner_id", null: false
     t.uuid "bank_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "owner_type", null: false
     t.index ["bank_id"], name: "index_bank_accounts_on_bank_id"
-    t.index ["mandate_id"], name: "index_bank_accounts_on_mandate_id"
+    t.index ["owner_type", "owner_id"], name: "index_bank_accounts_on_owner_type_and_owner_id"
   end
 
   create_table "compliance_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -156,6 +159,7 @@ ActiveRecord::Schema.define(version: 2018_10_10_144715) do
     t.uuid "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "type"
     t.index ["owner_type", "owner_id"], name: "index_documents_on_owner_type_and_owner_id"
     t.index ["uploader_id"], name: "index_documents_on_uploader_id"
   end
@@ -167,6 +171,29 @@ ActiveRecord::Schema.define(version: 2018_10_10_144715) do
     t.datetime "updated_at", null: false
     t.uuid "tax_detail_id"
     t.index ["tax_detail_id"], name: "index_foreign_tax_numbers_on_tax_detail_id"
+  end
+
+  create_table "funds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "duration"
+    t.integer "duration_extension"
+    t.string "aasm_state", null: false
+    t.string "asset_class"
+    t.string "commercial_register_number"
+    t.string "commercial_register_office"
+    t.string "currency"
+    t.string "name", null: false
+    t.string "psplus_asset_id"
+    t.string "region"
+    t.string "strategy"
+    t.text "comment"
+    t.uuid "capital_management_company_id"
+    t.uuid "legal_address_id"
+    t.uuid "primary_contact_address_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["capital_management_company_id"], name: "index_funds_on_capital_management_company_id"
+    t.index ["legal_address_id"], name: "index_funds_on_legal_address_id"
+    t.index ["primary_contact_address_id"], name: "index_funds_on_primary_contact_address_id"
   end
 
   create_table "inter_person_relationships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -347,13 +374,15 @@ ActiveRecord::Schema.define(version: 2018_10_10_144715) do
   add_foreign_key "activities_mandates", "activities"
   add_foreign_key "activities_mandates", "mandates"
   add_foreign_key "bank_accounts", "contacts", column: "bank_id"
-  add_foreign_key "bank_accounts", "mandates"
   add_foreign_key "compliance_details", "contacts"
   add_foreign_key "contact_details", "contacts"
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "documents", "users", column: "uploader_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
+  add_foreign_key "funds", "addresses", column: "legal_address_id"
+  add_foreign_key "funds", "addresses", column: "primary_contact_address_id"
+  add_foreign_key "funds", "contacts", column: "capital_management_company_id"
   add_foreign_key "inter_person_relationships", "contacts", column: "source_person_id"
   add_foreign_key "inter_person_relationships", "contacts", column: "target_person_id"
   add_foreign_key "mandate_groups_mandates", "mandate_groups"

@@ -323,16 +323,16 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links'
         change1 = body['data'][-3]['attributes']
-        expect(change1['changed-by']).to eq 'Norman Bates'
-        expect(change1['created-at']).to be_present
-        expect(change1['event']).to eq 'update'
-        expect(change1['item-type']).to eq 'contacts'
-        expect(change1['changes']['first-name']).to eq([original_first_name, updated_first_name])
-        expect(change1['changes']['last-name']).to eq([original_last_name, updated_last_name])
-        expect(change1['changes']['updated-at']).to be_nil
+        expect(change1['event']).to eq 'create'
+        expect(change1['item-type']).to eq 'tax-details'
         change2 = body['data'][-2]['attributes']
-        expect(change2['event']).to eq 'create'
-        expect(change2['item-type']).to eq 'tax-details'
+        expect(change2['changed-by']).to eq 'Norman Bates'
+        expect(change2['created-at']).to be_present
+        expect(change2['event']).to eq 'update'
+        expect(change2['item-type']).to eq 'contacts'
+        expect(change2['changes']['first-name']).to eq([original_first_name, updated_first_name])
+        expect(change2['changes']['last-name']).to eq([original_last_name, updated_last_name])
+        expect(change2['changes']['updated-at']).to be_nil
         change3 = body['data'][-1]['attributes']
         expect(change3['event']).to eq 'update'
         expect(change3['changed-by']).to eq 'Shelley Stewart'
@@ -403,8 +403,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
 
       before do
         PaperTrail.request.whodunnit = user2.id
-        tax_detail = create(:tax_detail, :organization, contact: contact)
-        foreign_tax_number = create(:foreign_tax_number, tax_detail: tax_detail, tax_number: original_tax_number)
+        contact.save!
+        foreign_tax_number = create(
+          :foreign_tax_number, tax_detail: contact.tax_detail, tax_number: original_tax_number
+        )
         PaperTrail.request.whodunnit = user3.id
         foreign_tax_number.tax_number = updated_tax_number
         foreign_tax_number.save!
@@ -428,7 +430,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(change2['item-type']).to eq 'foreign-tax-numbers'
         expect(change2['changes']['tax-number']).to eq [nil, original_tax_number]
         change3 = body['data'].third['attributes']
-        expect(change3['changed-by']).to eq 'Norman Bates'
+        expect(change3['changed-by']).to be_nil
         expect(change3['created-at']).to be_present
         expect(change3['event']).to eq 'create'
         expect(change3['item-type']).to eq 'tax-details'

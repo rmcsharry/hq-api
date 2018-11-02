@@ -6,42 +6,42 @@
 #
 #  id                  :uuid             not null, primary key
 #  account_type        :string
-#  owner               :string
+#  owner_name          :string
 #  bank_account_number :string
 #  bank_routing_number :string
 #  iban                :string
 #  bic                 :string
 #  currency            :string
-#  mandate_id          :uuid
+#  owner_id            :uuid             not null
 #  bank_id             :uuid
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  owner_type          :string           not null
 #
 # Indexes
 #
-#  index_bank_accounts_on_bank_id     (bank_id)
-#  index_bank_accounts_on_mandate_id  (mandate_id)
+#  index_bank_accounts_on_bank_id                  (bank_id)
+#  index_bank_accounts_on_owner_type_and_owner_id  (owner_type,owner_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (bank_id => contacts.id)
-#  fk_rails_...  (mandate_id => mandates.id)
 #
 
-# Defines the Bank Account of a Mandate
+# Defines the Bank Account of a Mandate or Fund
 class BankAccount < ApplicationRecord
   extend Enumerize
 
   CURRENCIES = Money::Currency.all.map(&:iso_code)
   ACCOUNT_TYPE = %i[currency_account settlement_account].freeze
 
-  belongs_to :mandate
+  belongs_to :owner, polymorphic: true, inverse_of: :bank_accounts
   belongs_to :bank, class_name: 'Contact::Organization', inverse_of: :bank_accounts
 
   has_paper_trail(
     meta: {
-      parent_item_id: :mandate_id,
-      parent_item_type: 'Mandate'
+      parent_item_id: :owner_id,
+      parent_item_type: :owner_type
     },
     skip: SKIPPED_ATTRIBUTES
   )

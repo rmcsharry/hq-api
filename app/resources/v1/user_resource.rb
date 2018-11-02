@@ -11,7 +11,9 @@ module V1
     custom_action :set_password, method: :change_password, type: :post, level: :collection
 
     attributes(
+      :authenticated_via_ews,
       :comment,
+      :confirmation_url,
       :confirmed_at,
       :created_at,
       :current_sign_in_at,
@@ -136,6 +138,10 @@ module V1
       user.save!
     rescue ActiveRecord::RecordInvalid
       raise JSONAPI::Exceptions::ValidationErrors, self.class.new(user, {})
+    end
+
+    def fetchable_fields
+      super - %i[authenticated_via_ews confirmation_url]
     end
 
     class << self
