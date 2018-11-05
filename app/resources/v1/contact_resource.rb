@@ -162,6 +162,14 @@ module V1
       )
     }
 
+    filter :"compliance_detail.occupation_role", apply: lambda { |records, value, _options|
+      records.joins(:compliance_detail).where('compliance_details.occupation_role = ?', value[0])
+    }
+
+    filter :"compliance_detail.occupation_title", apply: lambda { |records, value, _options|
+      records.joins(:compliance_detail).where('compliance_details.occupation_title ILIKE ?', "%#{value[0]}%")
+    }
+
     def fetchable_fields
       super - %i[compliance_detail tax_detail]
     end
