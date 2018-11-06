@@ -4,7 +4,8 @@ require 'rails_helper'
 require 'devise/jwt/test_helpers'
 
 RSpec.describe CONTACTS_ENDPOINT, type: :request do
-  let!(:user) { create(:user, roles: %i[contacts_read contacts_write]) }
+  let(:contact) { create(:contact_person, :with_contact_details) }
+  let!(:user) { create(:user, contact: contact, roles: %i[contacts_read contacts_write]) }
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
@@ -248,9 +249,9 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'included', 'links'
-        expect(body['included'].length).to eq 36
-        expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 18
-        expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 18
+        expect(body['included'].length).to eq 40
+        expect(body['included'].count { |resource| resource['type'] == 'addresses' }).to eq 20
+        expect(body['included'].count { |resource| resource['type'] == 'contact-details' }).to eq 20
         expect(body['meta']['total-record-count']).to eq 11
       end
     end
