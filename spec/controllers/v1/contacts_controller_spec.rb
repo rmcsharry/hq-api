@@ -43,8 +43,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           data: {
             type: 'contacts',
             attributes: {
+              'contact-type': 'Contact::Person',
               'first-name': 'Max',
               'last-name': 'Mustermann',
+              gender: 'male',
               'legal-address': {
                 addition: 'Gartenhaus',
                 category: 'home',
@@ -77,8 +79,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           data: {
             type: 'contacts',
             attributes: {
+              'contact-type': 'Contact::Person',
               'first-name': 'Max',
               'last-name': 'Mustermann',
+              gender: 'male',
               'legal-address': {
                 addition: 'Gartenhaus',
                 category: 'home',
@@ -119,8 +123,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           data: {
             type: 'contacts',
             attributes: {
+              'contact-type': 'Contact::Person',
               'first-name': 'Max',
               'last-name': 'Mustermann',
+              gender: 'male',
               'legal-address': {
                 addition: 'Gartenhaus',
                 category: 'home',
@@ -161,8 +167,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           data: {
             type: 'contacts',
             attributes: {
+              'contact-type': 'Contact::Person',
               'first-name': 'Max',
               'last-name': 'Mustermann',
+              gender: 'male',
               'legal-address': {
                 addition: 'Gartenhaus',
                 category: 'home',
@@ -199,8 +207,10 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           data: {
             type: 'contacts',
             attributes: {
+              'contact-type': 'Contact::Person',
               'first-name': 'Max',
               'last-name': 'Mustermann',
+              gender: 'male',
               'legal-address': {
                 addition: 'Gartenhaus',
                 category: 'home',
@@ -220,6 +230,30 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(response).to have_http_status(422)
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
           'legal-address.postal-code - muss ausgefüllt werden'
+        )
+      end
+    end
+
+    context 'with an invalid type' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            attributes: {
+              'contact-type': 'Document',
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              gender: 'male'
+            }
+          }
+        }
+      end
+
+      it 'returns an error' do
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(400)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'Document is not a valid value for contact-type.'
         )
       end
     end

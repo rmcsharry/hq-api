@@ -196,6 +196,22 @@ module V1
           legal_address.street_and_number
         ]
       end
+
+      def create(context)
+        new(create_model(context), context)
+      end
+
+      def create_model(context)
+        type = context[:type]
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless valid_type?(type: type)
+        type.new
+      end
+
+      private
+
+      def valid_type?(type:)
+        Contact.subclasses.include? type
+      end
     end
   end
   # rubocop:enable Metrics/ClassLength

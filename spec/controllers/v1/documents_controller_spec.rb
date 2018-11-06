@@ -10,7 +10,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
   let!(:user) do
     create(
       :user,
-      roles: %i[contacts_read contacts_write contacts_destroy mandates_read mandates_write],
+      roles: %i[contacts_read contacts_write contacts_destroy mandates_read mandates_write funds_read funds_write],
       permitted_mandates: [mandate]
     )
   end
@@ -64,36 +64,40 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
   end
 
   describe 'POST /v1/documents' do
-    let(:headers) { { 'Content-Type' => 'multipart/related' } }
     subject { -> { post(DOCUMENTS_ENDPOINT, params: payload, headers: auth_headers) } }
 
+    let(:headers) { { 'Content-Type' => 'multipart/related' } }
+    let(:fund) { create(:fund) }
+    let(:file) do
+      Rack::Test::UploadedFile.new(
+        Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'),
+        'application/pdf'
+      )
+    end
+    let(:payload) do
+      {
+        data: {
+          type: 'documents',
+          attributes: {
+            'document-type': document_type,
+            'valid-from': '2004-05-29',
+            'valid-to': '2015-12-27',
+            category: category,
+            name: 'HQT Verträge M. Mustermann',
+            file: 'cid:file:0'
+          },
+          relationships: {
+            owner: owner
+          }
+        }.to_json,
+        'file:0': file
+      }
+    end
+
     context 'with valid payload' do
-      let(:file) do
-        Rack::Test::UploadedFile.new(
-          Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'),
-          'application/pdf'
-        )
-      end
-      let(:payload) do
-        {
-          data: {
-            type: 'documents',
-            attributes: {
-              'valid-from': '2004-05-29',
-              'valid-to': '2015-12-27',
-              category: 'contract_hq',
-              name: 'HQT Verträge M. Mustermann',
-              file: 'cid:file:0'
-            },
-            relationships: {
-              owner: {
-                data: { id: mandate.id, type: 'mandates' }
-              }
-            }
-          }.to_json,
-          'file:0': file
-        }
-      end
+      let(:document_type) { 'Document' }
+      let(:category) { 'contract_hq' }
+      let(:owner) { { data: { id: mandate.id, type: 'mandates' } } }
 
       it 'creates a new document' do
         is_expected.to change(Document, :count).by(1)
@@ -108,6 +112,40 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
           Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
         )
         expect(document.file.filename.to_s).to eq 'hqtrust_sample.pdf'
+      end
+    end
+
+    context 'for a valid fund template document' do
+      let(:document_type) { 'Document::FundTemplate' }
+      let(:category) { 'fund_capital_call_template' }
+      let(:owner) { { data: { id: fund.id, type: 'funds' } } }
+
+      it 'creates a new document' do
+        is_expected.to change(Document, :count).by(1)
+        expect(response).to have_http_status(201)
+        document = Document.find(JSON.parse(response.body)['data']['id'])
+        expect(document.category).to eq 'fund_capital_call_template'
+        expect(document.owner).to eq fund
+        expect(document.uploader).to eq user
+        expect(document.file.attached?).to be_truthy
+        expect(Base64.encode64(document.file.download)).to eq(
+          Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
+        )
+        expect(document.file.filename.to_s).to eq 'hqtrust_sample.pdf'
+      end
+    end
+
+    context 'with an invalid type' do
+      let(:document_type) { 'Contact::Organization' }
+      let(:category) { 'fund_capital_call_template' }
+      let(:owner) { { data: { id: fund.id, type: 'funds' } } }
+
+      it 'returns an error' do
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(400)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          'Contact::Organization is not a valid value for document-type.'
+        )
       end
     end
   end
