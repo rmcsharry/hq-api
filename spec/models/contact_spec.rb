@@ -72,4 +72,42 @@ RSpec.describe Contact, type: :model do
   describe '#activities' do
     it { is_expected.to have_and_belong_to_many(:activities) }
   end
+
+  describe '#mandate_member?' do
+    context 'as mandate member' do
+      let!(:mandate_member) { create(:mandate_member, member_type: 'advisor', contact: subject) }
+
+      it 'returns true' do
+        expect(subject.mandate_member?).to eq true
+        expect(subject.is_mandate_member).to eq true
+      end
+    end
+
+    context 'as no mandate member' do
+      it 'returns false' do
+        expect(subject.mandate_member?).to eq false
+        expect(subject.is_mandate_member).to eq false
+      end
+    end
+  end
+
+  describe '#mandate_owner?' do
+    context 'as mandate owner' do
+      let!(:mandate_member) { create(:mandate_member, member_type: 'owner', contact: subject) }
+
+      it 'returns true' do
+        expect(subject.mandate_owner?).to eq true
+        expect(subject.is_mandate_owner).to eq true
+      end
+    end
+
+    context 'as no mandate owner' do
+      let!(:mandate_member) { create(:mandate_member, member_type: 'advisor', contact: subject) }
+
+      it 'returns false' do
+        expect(subject.mandate_owner?).to eq false
+        expect(subject.is_mandate_owner).to eq false
+      end
+    end
+  end
 end

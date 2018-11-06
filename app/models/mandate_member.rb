@@ -45,6 +45,7 @@ class MandateMember < ApplicationRecord
     notary
     owner
     procurator
+    shareholder
     supervisory_board_member
     tax_advisor
     wealth_manager

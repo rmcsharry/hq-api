@@ -14,6 +14,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :date_of_death }
   it { is_expected.to have_attribute :first_name }
   it { is_expected.to have_attribute :gender }
+  it { is_expected.to have_attribute :is_mandate_member }
+  it { is_expected.to have_attribute :is_mandate_owner }
   it { is_expected.to have_attribute :last_name }
   it { is_expected.to have_attribute :maiden_name }
   it { is_expected.to have_attribute :name }
@@ -72,6 +74,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:organization_name) }
   it { is_expected.to filter(:organization_type) }
   it { is_expected.to filter(:professional_title) }
+  it { is_expected.to filter(:is_mandate_owner) }
+  it { is_expected.to filter(:is_mandate_member) }
 
   describe '#name' do
     context 'person' do
