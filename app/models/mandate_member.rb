@@ -56,7 +56,8 @@ class MandateMember < ApplicationRecord
   validates :member_type, presence: true
   validates(
     :contact_id,
-    uniqueness: { scope: :mandate_id, message: 'should occur only once per mandate', case_sensitive: false }
+    uniqueness: { scope: %i[mandate_id member_type],
+                  message: 'should occur only once per mandate and member type', case_sensitive: false }
   )
 
   validate :end_date_greater_or_equal_start_date
