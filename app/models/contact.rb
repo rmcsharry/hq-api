@@ -118,6 +118,17 @@ class Contact < ApplicationRecord
     false
   end
 
+  def mandate_member?
+    mandate_members.length.positive?
+  end
+
+  def mandate_owner?
+    mandate_members.any? { |member| member.member_type == :owner }
+  end
+
+  alias is_mandate_member mandate_member?
+  alias is_mandate_owner mandate_owner?
+
   private
 
   def add_tax_detail

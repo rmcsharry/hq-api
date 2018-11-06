@@ -17,11 +17,13 @@ module V1
       :date_of_death,
       :first_name,
       :gender,
+      :is_mandate_member,
+      :is_mandate_owner,
       :last_name,
       :legal_address,
-      :name_list,
       :maiden_name,
       :name,
+      :name_list,
       :nationality,
       :nobility_title,
       :organization_category,
@@ -83,6 +85,8 @@ module V1
       :commercial_register_number,
       :commercial_register_office,
       :gender,
+      :is_mandate_member,
+      :is_mandate_owner,
       :nationality,
       :nobility_title,
       :organization_category,
@@ -170,6 +174,26 @@ module V1
       records.joins(:compliance_detail).where('compliance_details.occupation_title ILIKE ?', "%#{value[0]}%")
     }
 
+    filter :is_mandate_owner, apply: lambda { |records, value, _options|
+      return records if value[0] == 'none'
+      ids = MandateMember.select(:contact_id).where(member_type: 'owner')
+      if ActiveModel::Type::Boolean.new.cast(value[0])
+        records.where(id: ids)
+      else
+        records.where.not(id: ids)
+      end
+    }
+
+    filter :is_mandate_member, apply: lambda { |records, value, _options|
+      return records if value[0] == 'none'
+      ids = MandateMember.select(:contact_id)
+      if ActiveModel::Type::Boolean.new.cast(value[0])
+        records.where(id: ids)
+      else
+        records.where.not(id: ids)
+      end
+    }
+
     def fetchable_fields
       super - %i[compliance_detail tax_detail]
     end
@@ -183,7 +207,7 @@ module V1
         records = super.with_name
         if options.dig(:context, :request_method) == 'GET' &&
            options.dig(:context, :controller) != 'v1/versions'
-          records = records.includes(:primary_contact_address, :legal_address)
+          records = records.includes(:primary_contact_address, :legal_address, :mandate_members)
         end
         records
       end
@@ -205,6 +229,10 @@ module V1
         type = context[:type]
         raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless valid_type?(type: type)
         type.new
+      end
+
+      def updatable_fields(context)
+        super(context) - %i[is_mandate_member is_mandate_owner]
       end
 
       private
