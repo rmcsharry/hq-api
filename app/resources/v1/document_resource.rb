@@ -3,6 +3,8 @@
 module V1
   # Defines the Document resource for the API
   class DocumentResource < BaseResource
+    model_hint model: Document::FundTemplate, resource: :document
+
     attributes(
       :category,
       :created_at,
@@ -66,7 +68,9 @@ module V1
       end
 
       def create_model(context)
-        _model_class.new(uploader: context[:current_user])
+        type = context[:type]
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('document-type', type) unless valid_type?(type: type)
+        type.new(uploader: context[:current_user])
       end
 
       def updatable_fields(context)
@@ -75,6 +79,12 @@ module V1
 
       def sortable_fields(context)
         super(context) - [:file]
+      end
+
+      private
+
+      def valid_type?(type:)
+        ([Document] + Document.subclasses).include? type
       end
     end
   end

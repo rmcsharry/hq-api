@@ -12,5 +12,15 @@ module V1
     def accessible_actions(scope)
       return [:index] if scope == :ews
     end
+
+    def context
+      if params[:action] == 'create'
+        super.merge(
+          type: params.require(:data).require(:attributes).require('contact-type').constantize
+        )
+      else
+        super
+      end
+    end
   end
 end

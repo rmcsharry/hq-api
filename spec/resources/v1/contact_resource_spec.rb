@@ -45,6 +45,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_one(:primary_email).with_class_name('ContactDetail') }
   it { is_expected.to have_one(:primary_phone).with_class_name('ContactDetail') }
 
+  it { is_expected.to filter(:"compliance_detail.occupation_role") }
+  it { is_expected.to filter(:"compliance_detail.occupation_title") }
   it { is_expected.to filter(:"legal_address.street_and_number") }
   it { is_expected.to filter(:"primary_contact_address.street_and_number") }
   it { is_expected.to filter(:"primary_email.value") }
