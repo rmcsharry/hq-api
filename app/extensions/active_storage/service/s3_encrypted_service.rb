@@ -54,7 +54,7 @@ module ActiveStorage
 
       def delete_prefixed(prefix)
         instrument :delete_prefixed, prefix: prefix do
-          bucket.objects(prefix: prefix).batch_delete!
+          resource.bucket(bucket).objects(prefix: prefix).batch_delete!
         end
       end
 
