@@ -46,8 +46,6 @@ class Contact
       ContactPolicy
     end
 
-    extend Enumerize
-
     ORGANIZATION_TYPES = %i[
       ag church eg ev foreign_ag foreign_gmbh foundation fund gbr gmbh gmbh_co_kg kg limited
       llc lp other partg statutory_corporation statutory_institution trust vvag

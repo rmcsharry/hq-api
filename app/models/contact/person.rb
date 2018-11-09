@@ -46,8 +46,6 @@ class Contact
       ContactPolicy
     end
 
-    extend Enumerize
-
     GENDERS = %i[male female].freeze
     NOBILITY_TITLES = %i[baron baroness count countess prince princess].freeze
     PROFESSIONAL_TITLES = %i[

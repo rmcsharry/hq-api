@@ -55,9 +55,9 @@ class FormatResponseDocumentService < ApplicationService
 
   def parse_headers(attributes, meta, relations)
     attribute_names = ['id', *attributes.keys]
-    relation_types = relations.map do |type, relation|
+    relation_types = relations.map do |type, _relation|
       attribute_names -= [type]
-      type if relation['data'].present?
+      type
     end.compact
 
     {

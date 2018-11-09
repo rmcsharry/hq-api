@@ -41,6 +41,9 @@
 
 # Defines the Contact model
 class Contact < ApplicationRecord
+  include ExportableAttributes
+  extend Enumerize
+
   belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
   belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
   has_many :addresses, as: :owner, inverse_of: :owner, dependent: :destroy
