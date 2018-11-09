@@ -28,11 +28,24 @@ module V1
     def serialized_enums
       return {} unless @model.class.respond_to? :enumerized_attributes
       hash = {}
-      @model.class.enumerized_attributes.each do |attribute|
-        attribute_getter = "#{attribute.name}_text".to_sym
-        hash[attribute_getter.to_s.dasherize] = @model.send(attribute_getter)
-      end
+      enumerized_attributes = @model.class.try(:exportable_attributes) || @model.class.enumerized_attributes
+      serialize_attributes!(attributes: enumerized_attributes, hash: hash)
+      serialize_dependants!(attributes: enumerized_attributes, hash: hash)
       hash
+    end
+
+    def serialize_attributes!(attributes:, hash:)
+      attributes.each do |attribute|
+        attribute_getter = "#{attribute.name}_text".to_sym
+        hash[attribute_getter.to_s.dasherize] = @model.try(attribute_getter)
+      end
+    end
+
+    def serialize_dependants!(attributes:, hash:)
+      attributes.instance_variable_get(:@dependants).each do |dependant|
+        serialize_attributes!(attributes: dependant, hash: hash)
+        serialize_dependants!(attributes: dependant, hash: hash)
+      end
     end
   end
 end
