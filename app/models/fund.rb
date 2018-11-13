@@ -42,7 +42,7 @@ class Fund < ApplicationRecord
   include AASM
 
   ASSET_CLASSES = %i[private_equity private_debt real_estate].freeze
-  CURRENCIES = Money::Currency.all.map(&:iso_code)
+  CURRENCIES = Money::Currency.map(&:iso_code)
   STRATEGIES = %i[
     buyout growth venture secondary distressed growth_buyout buyout_distressed direct_lending core core_plus value_add
     opportunistic

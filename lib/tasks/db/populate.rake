@@ -232,22 +232,28 @@ namespace :db do
       special_family = mandate_groups_families.first
       48.times do |i|
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
+        state = %i[prospect client cancelled].sample
         Mandate.create(
-          aasm_state: %i[prospect client cancelled].sample,
-          category: Mandate::CATEGORIES.sample,
-          comment: Faker::Company.catch_phrase,
-          valid_from: valid_from,
-          valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
-          datev_creditor_id: Faker::Number.number(10),
-          datev_debitor_id: Faker::Number.number(10),
-          psplus_id: Faker::Number.number(9),
-          mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
-          primary_consultant: contacts.sample,
-          secondary_consultant: admin_user.contact,
+          aasm_state: state,
           assistant: contacts.sample,
           bookkeeper: contacts.sample,
+          category: Mandate::CATEGORIES.sample,
+          comment: Faker::Company.catch_phrase,
+          datev_creditor_id: Faker::Number.number(10),
+          datev_debitor_id: Faker::Number.number(10),
+          default_currency: state == :prospect ? 'EUR' : nil,
+          mandate_groups_families: [special_family] | [mandate_groups_families[i % mandate_groups_families_length]],
           mandate_groups_organizations: [mandate_groups_organizations[i % mandate_groups_organizations_length]],
-          mandate_groups_families: [special_family] | [mandate_groups_families[i % mandate_groups_families_length]]
+          mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
+          primary_consultant: contacts.sample,
+          prospect_assets_under_management: state == :prospect ? (Faker::Number.between(500, 50_000) * 1000).to_f : nil,
+          prospect_fees_fixed_amount: state == :prospect ? (Faker::Number.between(100, 1_000) * 10).to_f : nil,
+          prospect_fees_min_amount: state == :prospect ? (Faker::Number.between(50, 1_500) * 10).to_f : nil,
+          prospect_fees_percentage: state == :prospect ? (Faker::Number.between(1, 250).to_f / 10_000).round(2) : nil,
+          psplus_id: Faker::Number.number(9),
+          secondary_consultant: admin_user.contact,
+          valid_from: valid_from,
+          valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil
         )
       end
     end

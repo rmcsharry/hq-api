@@ -9,8 +9,13 @@ module V1
       :comment,
       :datev_creditor_id,
       :datev_debitor_id,
+      :default_currency,
       :mandate_number,
       :owner_name,
+      :prospect_assets_under_management,
+      :prospect_fees_fixed_amount,
+      :prospect_fees_min_amount,
+      :prospect_fees_percentage,
       :psplus_id,
       :state,
       :updated_at,
@@ -41,6 +46,11 @@ module V1
       :category,
       :datev_creditor_id,
       :datev_debitor_id,
+      :default_currency,
+      :prospect_assets_under_management,
+      :prospect_fees_fixed_amount,
+      :prospect_fees_min_amount,
+      :prospect_fees_percentage,
       :psplus_id,
       :state
     )
@@ -123,6 +133,38 @@ module V1
 
     filter :mandate_groups_organizations, apply: lambda { |records, value, _options|
       records.joins(:mandate_groups_organizations).where('mandate_groups.name ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :prospect_assets_under_management_min, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_assets_under_management >= ?', value[0])
+    }
+
+    filter :prospect_assets_under_management_max, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_assets_under_management <= ?', value[0])
+    }
+
+    filter :prospect_fees_fixed_amount_min, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_fixed_amount >= ?', value[0])
+    }
+
+    filter :prospect_fees_fixed_amount_max, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_fixed_amount <= ?', value[0])
+    }
+
+    filter :prospect_fees_min_amount_min, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_min_amount >= ?', value[0])
+    }
+
+    filter :prospect_fees_min_amount_max, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_min_amount <= ?', value[0])
+    }
+
+    filter :prospect_fees_percentage_min, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_percentage >= ?', value[0])
+    }
+
+    filter :prospect_fees_percentage_max, apply: lambda { |records, value, _options|
+      records.where('mandates.prospect_fees_percentage <= ?', value[0])
     }
 
     sort :"primary_consultant.name", apply: lambda { |records, direction, _context|

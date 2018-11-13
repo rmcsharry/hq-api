@@ -4,23 +4,28 @@
 #
 # Table name: mandates
 #
-#  id                      :uuid             not null, primary key
-#  aasm_state              :string
-#  category                :string
-#  comment                 :text
-#  valid_from              :date
-#  valid_to                :date
-#  datev_creditor_id       :string
-#  datev_debitor_id        :string
-#  mandate_number          :string
-#  psplus_id               :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  primary_consultant_id   :uuid
-#  secondary_consultant_id :uuid
-#  assistant_id            :uuid
-#  bookkeeper_id           :uuid
-#  import_id               :integer
+#  id                               :uuid             not null, primary key
+#  aasm_state                       :string
+#  category                         :string
+#  comment                          :text
+#  valid_from                       :date
+#  valid_to                         :date
+#  datev_creditor_id                :string
+#  datev_debitor_id                 :string
+#  mandate_number                   :string
+#  psplus_id                        :string
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  primary_consultant_id            :uuid
+#  secondary_consultant_id          :uuid
+#  assistant_id                     :uuid
+#  bookkeeper_id                    :uuid
+#  import_id                        :integer
+#  default_currency                 :string
+#  prospect_assets_under_management :float
+#  prospect_fees_percentage         :float
+#  prospect_fees_fixed_amount       :float
+#  prospect_fees_min_amount         :float
 #
 # Indexes
 #
@@ -42,6 +47,7 @@ class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
 
+  CURRENCIES = Money::Currency.map(&:iso_code)
   CATEGORIES = %i[
     family_office_with_investment_advice family_office_without_investment_advice wealth_management investment_advice
     alternative_investments institutional reporting other
@@ -110,9 +116,11 @@ class Mandate < ApplicationRecord
   validates :primary_consultant, presence: true, if: :client?
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
+  validates :default_currency, presence: true, if: :default_currency_required?
   validate :valid_to_greater_or_equal_valid_from
 
   enumerize :category, in: CATEGORIES, scope: true
+  enumerize :default_currency, in: CURRENCIES
 
   alias_attribute :state, :aasm_state
 
@@ -129,5 +137,11 @@ class Mandate < ApplicationRecord
   # @return [Boolean]
   def primary_and_secondary_consultant_present?
     primary_consultant.present? && secondary_consultant.present?
+  end
+
+  def default_currency_required?
+    prospect_assets_under_management.present? ||
+      prospect_fees_fixed_amount.present? ||
+      prospect_fees_min_amount.present?
   end
 end

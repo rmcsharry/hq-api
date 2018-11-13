@@ -4,23 +4,28 @@
 #
 # Table name: mandates
 #
-#  id                      :uuid             not null, primary key
-#  aasm_state              :string
-#  category                :string
-#  comment                 :text
-#  valid_from              :date
-#  valid_to                :date
-#  datev_creditor_id       :string
-#  datev_debitor_id        :string
-#  mandate_number          :string
-#  psplus_id               :string
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  primary_consultant_id   :uuid
-#  secondary_consultant_id :uuid
-#  assistant_id            :uuid
-#  bookkeeper_id           :uuid
-#  import_id               :integer
+#  id                               :uuid             not null, primary key
+#  aasm_state                       :string
+#  category                         :string
+#  comment                          :text
+#  valid_from                       :date
+#  valid_to                         :date
+#  datev_creditor_id                :string
+#  datev_debitor_id                 :string
+#  mandate_number                   :string
+#  psplus_id                        :string
+#  created_at                       :datetime         not null
+#  updated_at                       :datetime         not null
+#  primary_consultant_id            :uuid
+#  secondary_consultant_id          :uuid
+#  assistant_id                     :uuid
+#  bookkeeper_id                    :uuid
+#  import_id                        :integer
+#  default_currency                 :string
+#  prospect_assets_under_management :float
+#  prospect_fees_percentage         :float
+#  prospect_fees_fixed_amount       :float
+#  prospect_fees_min_amount         :float
 #
 # Indexes
 #
@@ -49,6 +54,11 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:datev_creditor_id) }
   it { is_expected.to respond_to(:datev_debitor_id) }
   it { is_expected.to respond_to(:mandate_number) }
+  it { is_expected.to respond_to(:prospect_assets_under_management) }
+  it { is_expected.to respond_to(:prospect_fees_fixed_amount) }
+  it { is_expected.to respond_to(:prospect_fees_min_amount) }
+  it { is_expected.to respond_to(:prospect_fees_percentage) }
+
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
     it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
@@ -57,6 +67,12 @@ RSpec.describe Mandate, type: :model do
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }
+  end
+
+  describe '#default_currency' do
+    subject { create(:mandate, prospect_assets_under_management: 1_000_000, default_currency: 'EUR') }
+    it { is_expected.to enumerize(:default_currency) }
+    it { is_expected.to validate_presence_of(:default_currency) }
   end
 
   describe '#mandate_groups' do
