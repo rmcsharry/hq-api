@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_09_221226) do
+ActiveRecord::Schema.define(version: 2018_11_13_120801) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -260,10 +260,10 @@ ActiveRecord::Schema.define(version: 2018_11_09_221226) do
     t.uuid "bookkeeper_id"
     t.integer "import_id"
     t.string "default_currency"
-    t.float "prospect_assets_under_management"
-    t.float "prospect_fees_percentage"
-    t.float "prospect_fees_fixed_amount"
-    t.float "prospect_fees_min_amount"
+    t.decimal "prospect_assets_under_management", precision: 20, scale: 10
+    t.decimal "prospect_fees_percentage", precision: 20, scale: 10
+    t.decimal "prospect_fees_fixed_amount", precision: 20, scale: 10
+    t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
     t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
     t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
     t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"

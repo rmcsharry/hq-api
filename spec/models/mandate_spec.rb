@@ -22,10 +22,10 @@
 #  bookkeeper_id                    :uuid
 #  import_id                        :integer
 #  default_currency                 :string
-#  prospect_assets_under_management :float
-#  prospect_fees_percentage         :float
-#  prospect_fees_fixed_amount       :float
-#  prospect_fees_min_amount         :float
+#  prospect_assets_under_management :decimal(20, 10)
+#  prospect_fees_percentage         :decimal(20, 10)
+#  prospect_fees_fixed_amount       :decimal(20, 10)
+#  prospect_fees_min_amount         :decimal(20, 10)
 #
 # Indexes
 #
