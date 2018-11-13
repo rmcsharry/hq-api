@@ -22,6 +22,7 @@
 #  primary_contact_address_id    :uuid
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
+#  issuing_year                  :integer
 #
 # Indexes
 #
@@ -78,12 +79,13 @@ class Fund < ApplicationRecord
     end
   end
 
+  validates :asset_class, presence: true
+  validates :commercial_register_number, presence: true, if: :commercial_register_office
+  validates :commercial_register_office, presence: true, if: :commercial_register_number
+  validates :issuing_year, presence: true
   validates :name, presence: true
   validates :psplus_asset_id, length: { maximum: 15 }
-  validates :asset_class, presence: true
   validates :strategy, presence: true
-  validates :commercial_register_office, presence: true, if: :commercial_register_number
-  validates :commercial_register_number, presence: true, if: :commercial_register_office
 
   enumerize :asset_class, in: ASSET_CLASSES, scope: true
   enumerize :currency, in: CURRENCIES

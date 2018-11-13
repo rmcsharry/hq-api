@@ -363,6 +363,8 @@ namespace :db do
           commercial_register_office: Faker::Address.city,
           currency: Fund::CURRENCIES.sample,
           duration: Faker::Number.between(5, 12),
+          duration_extension: Faker::Number.between(0, 4),
+          issuing_year: Faker::Number.between(2005, 2020),
           name: "#{Faker::Company.name} #{Faker::Company.suffix}",
           psplus_asset_id: Faker::Number.number(9),
           region: Fund::REGIONS.sample,

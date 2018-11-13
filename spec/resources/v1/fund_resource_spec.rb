@@ -16,6 +16,7 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_attribute :duration_extension }
   it { is_expected.to have_attribute :holdings_last_update_at }
   it { is_expected.to have_attribute :irr }
+  it { is_expected.to have_attribute :issuing_year }
   it { is_expected.to have_attribute :name }
   it { is_expected.to have_attribute :psplus_asset_id }
   it { is_expected.to have_attribute :region }
@@ -35,11 +36,12 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_one(:legal_address).with_class_name('Address') }
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
 
-  it { is_expected.to filter(:asset_class) }
   it { is_expected.to filter(:"capital_management_company.organization_name") }
+  it { is_expected.to filter(:asset_class) }
   it { is_expected.to filter(:commercial_register_number) }
   it { is_expected.to filter(:commercial_register_office) }
   it { is_expected.to filter(:currency) }
+  it { is_expected.to filter(:issuing_year) }
   it { is_expected.to filter(:name) }
   it { is_expected.to filter(:owner_id) }
   it { is_expected.to filter(:psplus_asset_id) }
