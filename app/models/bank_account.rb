@@ -32,7 +32,7 @@
 class BankAccount < ApplicationRecord
   extend Enumerize
 
-  CURRENCIES = Money::Currency.all.map(&:iso_code)
+  CURRENCIES = Money::Currency.map(&:iso_code)
   ACCOUNT_TYPE = %i[currency_account settlement_account].freeze
 
   belongs_to :owner, polymorphic: true, inverse_of: :bank_accounts

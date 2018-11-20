@@ -22,6 +22,7 @@
 #  primary_contact_address_id    :uuid
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
+#  issuing_year                  :integer
 #
 # Indexes
 #
@@ -71,7 +72,13 @@ RSpec.describe Fund, type: :model do
   end
 
   describe '#name' do
+    it { is_expected.to respond_to(:name) }
     it { is_expected.to validate_presence_of(:name) }
+  end
+
+  describe '#issuing_year' do
+    it { is_expected.to respond_to(:issuing_year) }
+    it { is_expected.to validate_presence_of(:issuing_year) }
   end
 
   describe '#commercial_register_office' do

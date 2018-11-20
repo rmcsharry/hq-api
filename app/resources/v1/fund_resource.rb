@@ -15,6 +15,7 @@ module V1
       :duration_extension,
       :holdings_last_update_at,
       :irr,
+      :issuing_year,
       :name,
       :psplus_asset_id,
       :region,
@@ -47,6 +48,7 @@ module V1
     filters(
       :asset_class,
       :currency,
+      :issuing_year,
       :owner_id,
       :region,
       :state,
