@@ -63,6 +63,7 @@ namespace :db do
           nobility_title: rand > 0.8 ? Contact::Person::NOBILITY_TITLES.sample : nil,
           professional_title: rand > 0.5 ? Contact::Person::PROFESSIONAL_TITLES.sample : nil,
           maiden_name: rand > 0.5 ? Faker::Name.last_name : nil,
+          place_of_birth: rand > 0.4 ? Faker::Address.city : nil,
           date_of_birth: Faker::Date.birthday(18, 82),
           date_of_death: rand > 0.9 ? Faker::Date.birthday(0, 17) : nil,
           nationality: Faker::Address.country_code

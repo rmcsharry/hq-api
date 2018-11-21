@@ -330,15 +330,18 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let(:updated_first_name) { 'John Lorenz' }
       let(:updated_last_name) { 'Moser' }
       let(:updated_date_of_birth) { Date.new(1985, 12, 23) }
+      let(:updated_place_of_birth) { 'Mainz' }
       let(:original_first_name) { 'Kristoffer Jonas' }
       let(:original_last_name) { 'Klauß' }
       let(:original_date_of_birth) { Date.new(1988, 6, 29) }
+      let(:original_place_of_birth) { 'Berlin' }
       let!(:contact) do
         create(
           :contact_person,
           first_name: original_first_name,
           last_name: original_last_name,
-          date_of_birth: original_date_of_birth
+          date_of_birth: original_date_of_birth,
+          place_of_birth: original_place_of_birth
         )
       end
 
@@ -349,6 +352,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         contact.save!
         PaperTrail.request.whodunnit = user3.id
         contact.date_of_birth = updated_date_of_birth
+        contact.place_of_birth = updated_place_of_birth
         contact.save!
       end
 
@@ -374,6 +378,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(change3['created-at']).to be_present
         expect(change3['item-type']).to eq 'contacts'
         expect(change3['changes']['date-of-birth']).to eq([original_date_of_birth.to_s, updated_date_of_birth.to_s])
+        expect(change3['changes']['place-of-birth']).to eq([original_place_of_birth, updated_place_of_birth])
       end
     end
 

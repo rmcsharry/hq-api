@@ -27,6 +27,7 @@
 #  legal_address_id           :uuid
 #  primary_contact_address_id :uuid
 #  import_id                  :integer
+#  place_of_birth             :string
 #
 # Indexes
 #
