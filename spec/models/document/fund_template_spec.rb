@@ -29,7 +29,7 @@
 require 'rails_helper'
 
 RSpec.describe Document::FundTemplate, type: :model do
-  subject { build(:fund_template_document) }
+  subject { build(:fund_template_document, category: :fund_capital_call_template) }
 
   describe '#category' do
     let(:valid_categories) do
@@ -45,6 +45,20 @@ RSpec.describe Document::FundTemplate, type: :model do
     it 'validates category' do
       expect(subject).to allow_values(*valid_categories).for(:category)
       expect(subject).not_to allow_values(*invalid_categories).for(:category)
+    end
+
+    context 'with existing template' do
+      let!(:new_fund_template_document) do
+        build(:fund_template_document, owner: subject.owner, category: :fund_quarterly_report_template)
+      end
+
+      it 'validates uniqueness' do
+        # existing templates with the same category are only cleaned up on creation
+        new_fund_template_document.save!
+        new_fund_template_document.category = :fund_capital_call_template
+        expect(new_fund_template_document.valid?).to be_falsey
+        expect(new_fund_template_document.errors.messages[:category].first).to eq 'should occur only once per owner'
+      end
     end
   end
 end

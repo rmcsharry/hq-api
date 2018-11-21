@@ -88,9 +88,11 @@ RSpec.describe MandateMember, type: :model do
   describe '#mandate_contact_member_type_unique' do
     subject { build(:mandate_member) }
     it 'is_unique' do
-      should validate_uniqueness_of(:contact_id).scoped_to(%i[mandate_id member_type])
-                                                .with_message('should occur only once per mandate and member type')
-                                                .case_insensitive
+      expect(subject).to(
+        validate_uniqueness_of(:contact_id).scoped_to(%i[mandate_id member_type])
+                                           .with_message('should occur only once per mandate and member type')
+                                           .case_insensitive
+      )
     end
   end
 end

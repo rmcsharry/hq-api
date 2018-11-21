@@ -7,6 +7,12 @@ module V1
 
     before_action :authenticate_user!
 
+    def create
+      Document.transaction do
+        super
+      end
+    end
+
     def context
       if params[:action] == 'create'
         super.merge(

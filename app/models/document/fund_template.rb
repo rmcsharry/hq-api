@@ -41,5 +41,19 @@ class Document
     ].freeze
 
     enumerize :category, in: CATEGORIES, scope: true
+
+    validates(
+      :category,
+      uniqueness: { scope: %i[owner],
+                    message: 'should occur only once per owner', case_sensitive: false }
+    )
+
+    before_validation :replace_exisiting_fund_template, on: :create
+
+    private
+
+    def replace_exisiting_fund_template
+      Document::FundTemplate.where(owner: owner, category: category).find_each(&:destroy!)
+    end
   end
 end
