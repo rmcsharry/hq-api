@@ -3,8 +3,12 @@
 module V1
   # Defines the Fund resource for the API
   class FundResource < BaseResource
+    model_hint model: Fund::PrivateDebt, resource: :fund
+    model_hint model: Fund::PrivateEquity, resource: :fund
+    model_hint model: Fund::RealEstate, resource: :fund
+
     attributes(
-      :asset_class,
+      :fund_type,
       :comment,
       :commercial_register_number,
       :commercial_register_office,
@@ -46,7 +50,6 @@ module V1
     end
 
     filters(
-      :asset_class,
       :currency,
       :issuing_year,
       :owner_id,
@@ -54,6 +57,10 @@ module V1
       :state,
       :strategy
     )
+
+    filter :fund_type, apply: lambda { |records, value, _options|
+      records.where('funds.type = ?', value[0])
+    }
 
     filter :name, apply: lambda { |records, value, _options|
       records.where('funds.name ILIKE ?', "%#{value[0]}%")
@@ -74,6 +81,32 @@ module V1
     filter :psplus_asset_id, apply: lambda { |records, value, _options|
       records.where('funds.psplus_asset_id ILIKE ?', "%#{value[0]}%")
     }
+
+    class << self
+      def resource_for(model_record, context)
+        type = context[:type]
+        if type && context[:controller] == 'v1/funds'
+          model_record = model_record.becomes(type) if type != model_record.type
+        end
+        super
+      end
+
+      def create(context)
+        new(create_model(context), context)
+      end
+
+      def create_model(context)
+        type = context[:type]
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('fund-type', type) unless valid_type?(type: type)
+        type.new
+      end
+
+      private
+
+      def valid_type?(type:)
+        Fund.subclasses.include? type
+      end
+    end
 
     private
 

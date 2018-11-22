@@ -6,5 +6,15 @@ module V1
     include MultipartRelated
 
     before_action :authenticate_user!
+
+    def context
+      if %w[create update].include? params[:action]
+        super.merge(
+          type: params.require(:data).require(:attributes).require('fund-type').constantize
+        )
+      else
+        super
+      end
+    end
   end
 end

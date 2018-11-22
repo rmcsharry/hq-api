@@ -356,9 +356,10 @@ namespace :db do
 
     task funds: :environment do
       funds = Array.new(86) do
+        type = ['Fund::PrivateDebt', 'Fund::PrivateEquity', 'Fund::RealEstate'].sample
         Fund.new(
           aasm_state: %i[open closed liquidated].sample,
-          asset_class: Fund::ASSET_CLASSES.sample,
+          type: type,
           comment: Faker::Company.catch_phrase,
           commercial_register_number: Faker::Company.duns_number,
           commercial_register_office: Faker::Address.city,
@@ -369,7 +370,7 @@ namespace :db do
           name: "#{Faker::Company.name} #{Faker::Company.suffix}",
           psplus_asset_id: Faker::Number.number(9),
           region: Fund::REGIONS.sample,
-          strategy: Fund::STRATEGIES.sample
+          strategy: type.constantize.const_get(:STRATEGIES).sample
         )
       end
       Fund.import!(funds)
