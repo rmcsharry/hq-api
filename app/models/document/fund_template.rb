@@ -50,6 +50,11 @@ class Document
 
     before_validation :replace_exisiting_fund_template, on: :create
 
+    # Overwrite Document's Lockable concern by setting readonly? to false for templates
+    def readonly?
+      false
+    end
+
     private
 
     def replace_exisiting_fund_template
