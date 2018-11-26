@@ -17,6 +17,9 @@ module V1
 
     has_one :contact
 
-    filter :contact_id
+    filters(
+      :contact_id,
+      :contact_detail_type
+    )
   end
 end
