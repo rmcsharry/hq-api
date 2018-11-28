@@ -27,6 +27,8 @@ namespace :db do
     Rake::Task['db:drop'].invoke
     Rake::Task['db:create'].invoke
 
+    # ActiveRecord::Base.connection.execute('CREATE ROLE rdsadmin') # needed when importing from RDS
+
     db = ActiveRecord::Base.connection_config
     cmd = 'pg_restore -F c -v -c -C ' \
       "--dbname=postgresql://#{db[:username]}:#{db[:password]}@#{db[:host]}/#{db[:database]} #{db_dump.path}"

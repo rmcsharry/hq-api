@@ -68,6 +68,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
 
     let(:headers) { { 'Content-Type' => 'multipart/related' } }
     let(:fund) { create(:fund) }
+    let(:name) { 'HQT Verträge M. Mustermann' }
     let(:file) do
       Rack::Test::UploadedFile.new(
         Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'),
@@ -83,7 +84,7 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
             'valid-from': '2004-05-29',
             'valid-to': '2015-12-27',
             category: category,
-            name: 'HQT Verträge M. Mustermann',
+            name: name,
             file: 'cid:file:0'
           },
           relationships: {
@@ -146,6 +147,31 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
         expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
           'Contact::Organization is not a valid value for document-type.'
         )
+      end
+    end
+
+    context 'with an existing document for the same owner with the same category' do
+      let(:document_type) { 'Document::FundTemplate' }
+      let(:category) { 'fund_capital_call_template' }
+      let(:owner) { { data: { id: fund.id, type: 'funds' } } }
+      let(:name) { 'New' }
+      let(:existing_document) do
+        build(:fund_template_document, owner: fund, category: :fund_capital_call_template, name: 'Old')
+      end
+
+      before do
+        existing_document.save!
+        clear_enqueued_jobs
+      end
+
+      it 'replaces existing document with document in payload' do
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(201)
+        documents = Document.where(owner: fund, category: category).to_a
+        expect(documents.count).to eq 1
+        expect(documents.first.name).to eq name
+        expect(ActiveStorage::AnalyzeJob).to have_been_enqueued
+        expect(ActiveStorage::PurgeJob).to have_been_enqueued
       end
     end
   end

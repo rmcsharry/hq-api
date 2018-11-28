@@ -6,7 +6,7 @@ RSpec.describe V1::FundResource, type: :resource do
   let(:fund) { create(:fund) }
   subject { described_class.new(fund, {}) }
 
-  it { is_expected.to have_attribute :asset_class }
+  it { is_expected.to have_attribute :fund_type }
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :commercial_register_number }
   it { is_expected.to have_attribute :commercial_register_office }
@@ -37,7 +37,7 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
 
   it { is_expected.to filter(:"capital_management_company.organization_name") }
-  it { is_expected.to filter(:asset_class) }
+  it { is_expected.to filter(:fund_type) }
   it { is_expected.to filter(:commercial_register_number) }
   it { is_expected.to filter(:commercial_register_office) }
   it { is_expected.to filter(:currency) }

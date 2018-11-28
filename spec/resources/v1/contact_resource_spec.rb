@@ -26,6 +26,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :organization_industry }
   it { is_expected.to have_attribute :organization_name }
   it { is_expected.to have_attribute :organization_type }
+  it { is_expected.to have_attribute :place_of_birth }
   it { is_expected.to have_attribute :professional_title }
   it { is_expected.to have_attribute :updated_at }
 
@@ -73,6 +74,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:organization_industry) }
   it { is_expected.to filter(:organization_name) }
   it { is_expected.to filter(:organization_type) }
+  it { is_expected.to filter(:place_of_birth) }
   it { is_expected.to filter(:professional_title) }
   it { is_expected.to filter(:is_mandate_owner) }
   it { is_expected.to filter(:is_mandate_member) }

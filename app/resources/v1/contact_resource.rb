@@ -30,6 +30,7 @@ module V1
       :organization_industry,
       :organization_name,
       :organization_type,
+      :place_of_birth,
       :primary_contact_address,
       :professional_title,
       :tax_detail,
@@ -97,6 +98,10 @@ module V1
 
     filter :contact_type, apply: lambda { |records, value, _options|
       records.where('contacts.type = ?', value[0])
+    }
+
+    filter :place_of_birth, apply: lambda { |records, value, _options|
+      records.where('contacts.place_of_birth ILIKE ?', "%#{value[0]}%")
     }
 
     filter :date_of_birth_min, apply: lambda { |records, value, _options|

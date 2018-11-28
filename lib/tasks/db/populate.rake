@@ -63,6 +63,7 @@ namespace :db do
           nobility_title: rand > 0.8 ? Contact::Person::NOBILITY_TITLES.sample : nil,
           professional_title: rand > 0.5 ? Contact::Person::PROFESSIONAL_TITLES.sample : nil,
           maiden_name: rand > 0.5 ? Faker::Name.last_name : nil,
+          place_of_birth: rand > 0.4 ? Faker::Address.city : nil,
           date_of_birth: Faker::Date.birthday(18, 82),
           date_of_death: rand > 0.9 ? Faker::Date.birthday(0, 17) : nil,
           nationality: Faker::Address.country_code
@@ -355,9 +356,10 @@ namespace :db do
 
     task funds: :environment do
       funds = Array.new(86) do
+        type = ['Fund::PrivateDebt', 'Fund::PrivateEquity', 'Fund::RealEstate'].sample
         Fund.new(
           aasm_state: %i[open closed liquidated].sample,
-          asset_class: Fund::ASSET_CLASSES.sample,
+          type: type,
           comment: Faker::Company.catch_phrase,
           commercial_register_number: Faker::Company.duns_number,
           commercial_register_office: Faker::Address.city,
@@ -368,7 +370,7 @@ namespace :db do
           name: "#{Faker::Company.name} #{Faker::Company.suffix}",
           psplus_asset_id: Faker::Number.number(9),
           region: Fund::REGIONS.sample,
-          strategy: Fund::STRATEGIES.sample
+          strategy: type.constantize.const_get(:STRATEGIES).sample
         )
       end
       Fund.import!(funds)

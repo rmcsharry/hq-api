@@ -41,6 +41,7 @@ RSpec.describe 'FormatResponseDocumentService', type: :request do
       nobility_title: Contact::Person::NOBILITY_TITLES.sample,
       professional_title: Contact::Person::PROFESSIONAL_TITLES.sample,
       maiden_name: Faker::Name.last_name,
+      place_of_birth: Faker::Address.city,
       date_of_birth: Faker::Date.birthday(18, 82),
       date_of_death: Faker::Date.birthday(0, 17),
       nationality: Faker::Address.country_code

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_13_134001) do
+ActiveRecord::Schema.define(version: 2018_11_21_155800) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(version: 2018_11_13_134001) do
     t.uuid "legal_address_id"
     t.uuid "primary_contact_address_id"
     t.integer "import_id"
+    t.string "place_of_birth"
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_contacts_on_primary_contact_address_id"
   end
@@ -177,7 +178,6 @@ ActiveRecord::Schema.define(version: 2018_11_13_134001) do
     t.integer "duration"
     t.integer "duration_extension"
     t.string "aasm_state", null: false
-    t.string "asset_class"
     t.string "commercial_register_number"
     t.string "commercial_register_office"
     t.string "currency"
@@ -192,6 +192,7 @@ ActiveRecord::Schema.define(version: 2018_11_13_134001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "issuing_year"
+    t.string "type"
     t.index ["capital_management_company_id"], name: "index_funds_on_capital_management_company_id"
     t.index ["legal_address_id"], name: "index_funds_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_funds_on_primary_contact_address_id"

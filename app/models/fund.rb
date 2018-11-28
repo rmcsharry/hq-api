@@ -8,7 +8,6 @@
 #  duration                      :integer
 #  duration_extension            :integer
 #  aasm_state                    :string           not null
-#  asset_class                   :string
 #  commercial_register_number    :string
 #  commercial_register_office    :string
 #  currency                      :string
@@ -23,6 +22,7 @@
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  issuing_year                  :integer
+#  type                          :string
 #
 # Indexes
 #
@@ -42,12 +42,7 @@ class Fund < ApplicationRecord
   extend Enumerize
   include AASM
 
-  ASSET_CLASSES = %i[private_equity private_debt real_estate].freeze
   CURRENCIES = Money::Currency.map(&:iso_code)
-  STRATEGIES = %i[
-    buyout growth venture secondary distressed growth_buyout buyout_distressed direct_lending core core_plus value_add
-    opportunistic
-  ].freeze
   REGIONS = %i[global africa asia australia europe north_america south_america].freeze
 
   belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
@@ -79,7 +74,7 @@ class Fund < ApplicationRecord
     end
   end
 
-  validates :asset_class, presence: true
+  validates :type, presence: true
   validates :commercial_register_number, presence: true, if: :commercial_register_office
   validates :commercial_register_office, presence: true, if: :commercial_register_number
   validates :issuing_year, presence: true
@@ -87,12 +82,11 @@ class Fund < ApplicationRecord
   validates :psplus_asset_id, length: { maximum: 15 }
   validates :strategy, presence: true
 
-  enumerize :asset_class, in: ASSET_CLASSES, scope: true
   enumerize :currency, in: CURRENCIES
   enumerize :region, in: REGIONS, scope: true
-  enumerize :strategy, in: STRATEGIES, scope: true
 
   alias_attribute :state, :aasm_state
+  alias_attribute :fund_type, :type
 
   def holdings_last_update_at
     # TODO: Implement actual logic

@@ -5,6 +5,7 @@ RSpec.shared_examples 'simple crud authorization' do |endpoint, options|
   permissions = options[:permissions]
   skip = options[:skip] || []
   create_payload = options[:create_payload] || { data: { type: resource } }
+  update_attributes = options[:update_attributes] || {}
 
   context "#{resource} (xlsx request)" do
     describe '#index' do
@@ -40,14 +41,7 @@ RSpec.shared_examples 'simple crud authorization' do |endpoint, options|
           patch "#{endpoint}/#{record.id}", params: payload.to_json, headers: xlsx_headers(headers)
         end
       end
-      let(:payload) do
-        {
-          data: {
-            id: record.id,
-            type: resource
-          }
-        }
-      end
+      let(:payload) { { data: { id: record.id, type: resource, attributes: update_attributes } } }
 
       permit # none
     end
@@ -95,14 +89,7 @@ RSpec.shared_examples 'simple crud authorization' do |endpoint, options|
           patch "#{endpoint}/#{record.id}", params: payload.to_json, headers: auth_headers
         end
       end
-      let(:payload) do
-        {
-          data: {
-            id: record.id,
-            type: resource
-          }
-        }
-      end
+      let(:payload) { { data: { id: record.id, type: resource, attributes: update_attributes } } }
 
       permit permissions[:write]
     end

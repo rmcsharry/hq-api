@@ -4,15 +4,28 @@ require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
   let!(:record) { create(:fund) }
-  include_examples 'simple crud authorization',
-                   FUNDS_ENDPOINT,
-                   resource: 'funds',
-                   permissions: {
-                     destroy: :funds_destroy,
-                     export: :funds_export,
-                     read: :funds_read,
-                     write: :funds_write
-                   }
+  include_examples(
+    'simple crud authorization',
+    FUNDS_ENDPOINT,
+    resource: 'funds',
+    permissions: {
+      destroy: :funds_destroy,
+      export: :funds_export,
+      read: :funds_read,
+      write: :funds_write
+    },
+    create_payload: {
+      data: {
+        type: 'funds',
+        attributes: {
+          'fund-type': 'Fund::PrivateEquity'
+        }
+      }
+    },
+    update_attributes: {
+      'fund-type': 'Fund::PrivateEquity'
+    }
+  )
 
   include_examples 'forbid access for ews authenticated users', FUNDS_ENDPOINT, resource: 'funds'
 

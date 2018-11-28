@@ -8,7 +8,6 @@
 #  duration                      :integer
 #  duration_extension            :integer
 #  aasm_state                    :string           not null
-#  asset_class                   :string
 #  commercial_register_number    :string
 #  commercial_register_office    :string
 #  currency                      :string
@@ -23,6 +22,7 @@
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  issuing_year                  :integer
+#  type                          :string
 #
 # Indexes
 #
@@ -52,9 +52,8 @@ RSpec.describe Fund, type: :model do
     it { is_expected.to validate_length_of(:psplus_asset_id).is_at_most(15) }
   end
 
-  describe '#asset_class' do
-    it { is_expected.to validate_presence_of(:asset_class) }
-    it { is_expected.to enumerize(:asset_class) }
+  describe '#type' do
+    it { is_expected.to validate_presence_of(:type) }
   end
 
   describe '#region' do
@@ -63,7 +62,6 @@ RSpec.describe Fund, type: :model do
 
   describe '#strategy' do
     it { is_expected.to validate_presence_of(:strategy) }
-    it { is_expected.to enumerize(:strategy) }
   end
 
   describe '#aasm_state' do
