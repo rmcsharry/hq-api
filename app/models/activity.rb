@@ -30,8 +30,8 @@ class Activity < ApplicationRecord
 
   belongs_to :creator, class_name: 'User', inverse_of: :activities
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
-  has_and_belongs_to_many :mandates, uniq: true
-  has_and_belongs_to_many :contacts, uniq: true
+  has_and_belongs_to_many :mandates, -> { distinct }
+  has_and_belongs_to_many :contacts, -> { distinct }
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 

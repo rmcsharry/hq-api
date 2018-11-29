@@ -69,7 +69,7 @@ class User < ApplicationRecord
   has_many :activities, inverse_of: :creator, foreign_key: :creator_id, dependent: :nullify
   has_many :documents, inverse_of: :uploader, foreign_key: :uploader_id, dependent: :nullify
   has_many :created_versions, class_name: 'Version', inverse_of: :whodunnit, dependent: :nullify
-  has_and_belongs_to_many :user_groups, uniq: true
+  has_and_belongs_to_many :user_groups, -> { distinct }
 
   has_paper_trail(
     ignore: %i[sign_in_count current_sign_in_at last_sign_in_at current_sign_in_ip last_sign_in_ip],

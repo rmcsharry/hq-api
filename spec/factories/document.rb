@@ -19,5 +19,11 @@ FactoryBot.define do
       category :fund_capital_call_template
       owner { create(:fund, documents: [@instance.presence]) }
     end
+
+    factory :fund_subscription_agreement, class: Document::FundSubscriptionAgreement do
+      name 'fund_subscription_agreement.pdf'
+      category :fund_subscription_agreement
+      owner { create(:investor, documents: [@instance.presence], state: :signed) }
+    end
   end
 end

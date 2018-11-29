@@ -29,6 +29,9 @@ namespace :db do
       puts 'Creating mandates'
       Rake::Task['db:populate:mandates'].invoke
 
+      puts 'Creating bank accounts'
+      Rake::Task['db:populate:bank_accounts'].invoke
+
       puts 'Creating mandate members'
       Rake::Task['db:populate:mandate_members'].invoke
 
@@ -44,11 +47,14 @@ namespace :db do
       puts 'Creating funds'
       Rake::Task['db:populate:funds'].invoke
 
+      puts 'Creating investors'
+      Rake::Task['db:populate:investors'].invoke
+
+      puts 'Creating fund reports'
+      Rake::Task['db:populate:fund_reports'].invoke
+
       puts 'Creating documents'
       Rake::Task['db:populate:documents'].invoke
-
-      puts 'Creating bank accounts'
-      Rake::Task['db:populate:bank_accounts'].invoke
     end
   end
 
@@ -355,7 +361,7 @@ namespace :db do
     end
 
     task funds: :environment do
-      funds = Array.new(86) do
+      funds = Array.new(23) do
         type = ['Fund::PrivateDebt', 'Fund::PrivateEquity', 'Fund::RealEstate'].sample
         Fund.new(
           aasm_state: %i[open closed liquidated].sample,
@@ -384,6 +390,58 @@ namespace :db do
       Fund.import!(
         funds_with_addresses, on_duplicate_key_update: %i[primary_contact_address_id legal_address_id]
       )
+    end
+
+    task investors: :environment do
+      investors = []
+      users = User.all
+
+      Fund.all.each do |fund|
+        number_of_investors = (1..5).to_a.sample
+        Mandate
+          .joins(:bank_accounts)
+          .where('bank_accounts.id IS NOT NULL')
+          .where.not(state: :prospect)
+          .sample(number_of_investors).each do |mandate|
+          primary_owner = mandate.owners.sample.contact
+
+          state = %i[created signed].sample
+          investor = Investor.new(
+            aasm_state: state,
+            amount_total: Faker::Number.between(100_000, 100_000_000).round(2),
+            bank_account: mandate.bank_accounts.sample,
+            contact_address: primary_owner.primary_contact_address,
+            contact_email: primary_owner.primary_email,
+            contact_phone: primary_owner.primary_phone,
+            fund: fund,
+            investment_date: state == :signed ? Faker::Date.between(2.years.ago, 0.days.ago) : nil,
+            legal_address: primary_owner.legal_address,
+            mandate: mandate,
+            primary_owner: primary_owner
+          )
+          investor.build_fund_subscription_agreement(
+            category: :fund_subscription_agreement,
+            name: 'Zeichnungsschein',
+            uploader: users.sample
+          )
+          investors << investor
+        end
+      end
+
+      Investor.import! investors, recursive: true
+    end
+
+    task fund_reports: :environment do
+      Fund.all.each do |fund|
+        Faker::Number.between(2, 5).times do
+          FundReport.create(
+            description: Faker::Movie.quote,
+            fund: fund,
+            irr: (Faker::Number.between(100, 650).to_f / 10_000).round(2),
+            valuta_date: Faker::Date.between(6.years.ago, 0.days.ago)
+          )
+        end
+      end
     end
 
     task documents: :environment do

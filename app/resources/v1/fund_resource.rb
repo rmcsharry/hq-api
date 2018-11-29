@@ -2,6 +2,7 @@
 
 module V1
   # Defines the Fund resource for the API
+  # rubocop:disable Metrics/ClassLength
   class FundResource < BaseResource
     model_hint model: Fund::PrivateDebt, resource: :fund
     model_hint model: Fund::PrivateEquity, resource: :fund
@@ -36,6 +37,7 @@ module V1
     has_many :addresses
     has_many :bank_accounts
     has_many :documents
+    has_many :fund_reports
     has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :capital_management_company, class_name: 'Contact'
     has_one :legal_address, class_name: 'Address'
@@ -121,4 +123,5 @@ module V1
       )
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

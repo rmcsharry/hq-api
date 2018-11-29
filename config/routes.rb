@@ -17,8 +17,10 @@ Rails.application.routes.draw do
     jsonapi_resources :contacts
     jsonapi_resources :documents
     jsonapi_resources :foreign_tax_numbers
+    jsonapi_resources :fund_reports
     jsonapi_resources :funds
     jsonapi_resources :inter_person_relationships
+    jsonapi_resources :investors
     jsonapi_resources :mandate_groups
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates

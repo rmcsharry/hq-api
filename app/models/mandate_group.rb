@@ -19,8 +19,8 @@ class MandateGroup < ApplicationRecord
   GROUP_TYPES = %i[family organization].freeze
 
   has_many :mandate_groups_mandates, dependent: :destroy
-  has_and_belongs_to_many :mandates, uniq: true
-  has_and_belongs_to_many :user_groups, uniq: true
+  has_and_belongs_to_many :mandates, -> { distinct }
+  has_and_belongs_to_many :user_groups, -> { distinct }
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 

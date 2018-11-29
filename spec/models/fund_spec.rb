@@ -46,6 +46,7 @@ RSpec.describe Fund, type: :model do
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:investors) }
 
   describe '#psplus_asset_id' do
     it { is_expected.to respond_to(:psplus_asset_id) }

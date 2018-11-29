@@ -4,6 +4,7 @@ module V1
   # Defines the Document resource for the API
   class DocumentResource < BaseResource
     model_hint model: Document::FundTemplate, resource: :document
+    model_hint model: Document::FundSubscriptionAgreement, resource: :document
 
     attributes(
       :category,

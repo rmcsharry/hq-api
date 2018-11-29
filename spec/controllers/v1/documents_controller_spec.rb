@@ -136,6 +136,29 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
       end
     end
 
+    context 'for a valid fund_subscription_agreement', bullet: false do
+      let(:document_type) { 'Document::FundSubscriptionAgreement' }
+      let(:category) { 'fund_subscription_agreement' }
+      let!(:investor) { create :investor, documents: [] }
+      let(:owner) { { data: { id: investor.id, type: 'investors' } } }
+
+      it 'creates a new document and puts investor in signed state' do
+        is_expected.to change(Document, :count).by(1)
+        expect(response).to have_http_status(201)
+        document = Document.find(JSON.parse(response.body)['data']['id'])
+        expect(document.category).to eq 'fund_subscription_agreement'
+        expect(document.owner).to eq investor
+        expect(document.uploader).to eq user
+        expect(document.file.attached?).to be_truthy
+        expect(Base64.encode64(document.file.download)).to eq(
+          Base64.encode64(File.read(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')))
+        )
+        expect(document.file.filename.to_s).to eq 'hqtrust_sample.pdf'
+        expect(investor.reload.state).to eq 'signed'
+        expect(investor.documents.size).to eq 1
+      end
+    end
+
     context 'with an invalid type' do
       let(:document_type) { 'Contact::Organization' }
       let(:category) { 'fund_capital_call_template' }
