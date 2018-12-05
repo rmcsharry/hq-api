@@ -38,6 +38,7 @@ module V1
     has_many :bank_accounts
     has_many :documents
     has_many :fund_reports
+    has_many :fund_templates, class_name: 'Document'
     has_many :investors
     has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :capital_management_company, class_name: 'Contact'

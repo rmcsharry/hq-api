@@ -40,12 +40,13 @@
 require 'rails_helper'
 
 RSpec.describe Fund, type: :model do
+  it { is_expected.to belong_to(:capital_management_company).optional }
   it { is_expected.to belong_to(:legal_address).optional }
   it { is_expected.to belong_to(:primary_contact_address).optional }
-  it { is_expected.to belong_to(:capital_management_company).optional }
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:fund_templates) }
   it { is_expected.to have_many(:investors) }
 
   describe '#psplus_asset_id' do
