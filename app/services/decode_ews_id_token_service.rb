@@ -42,6 +42,7 @@ class DecodeEWSIdTokenService < ApplicationService
     def validate_payload(id_token)
       header, payload = decoded_parts(id_token)
       raise JWT::VerificationError if header['x5t'].blank?
+
       validate_appctx payload['appctx']
     end
 

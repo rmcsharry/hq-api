@@ -49,5 +49,6 @@ end
 def find_contact_by_email(email:)
   contact = Contact.joins(:primary_email).where(contact_details: { value: email }).first
   raise "Contact not found with primary email: #{email}" if contact.blank? && email.present?
+
   contact
 end

@@ -9,7 +9,7 @@ git_source(:github) do |repo_name|
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.2.0'
+gem 'rails', '~> 5.2.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -73,7 +73,7 @@ gem 'skylight'                                                      # Performanc
 group :development, :test do
   gem 'awesome_print'
   gem 'brakeman', require: false                                    # Static security tests
-  gem 'bullet'                                                      # Detect N+1 queries
+  gem 'bullet', '5.7.5'                                             # Detect N+1 queries, currently locked to 5.7.5 because of https://github.com/flyerhzm/bullet/issues/435
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
   gem 'pry-byebug'                                                  # Debugger

@@ -13,6 +13,6 @@ FactoryBot.define do
     documents { [] }
 
     investment_date { 1.day.ago }
-    amount_total '100000.0'
+    amount_total { '100000.0' }
   end
 end

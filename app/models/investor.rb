@@ -122,6 +122,7 @@ class Investor < ApplicationRecord
   # @return [void]
   def attributes_in_signed_state
     return unless signed?
+
     error_message = 'must be present if investor is signed'
     errors.add(:investment_date, error_message) if investment_date.nil?
     errors.add(:fund_subscription_agreement, error_message) if fund_subscription_agreement.nil?

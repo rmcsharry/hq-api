@@ -55,6 +55,7 @@ class ApplicationController < JSONAPI::ResourceController
 
   def filter_inaccessible_fields!
     return unless user_signed_in?
+
     params['fields'] = accessible_fields(:ews) if ews_request?
   end
 
@@ -74,8 +75,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def auth_token_payload
     return @auth_payload if @auth_payload.present?
+
     auth_header = request.headers['Authorization']&.split(' ')
     return {} if auth_header.blank? || auth_header.size != 2
+
     @auth_payload = Warden::JWTAuth::TokenDecoder.new.call(auth_header.last)
   end
 end

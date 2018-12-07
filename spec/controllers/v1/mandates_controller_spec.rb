@@ -398,7 +398,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(change1['created-at']).to be_present
         expect(change1['event']).to eq 'destroy'
         expect(change1['item-type']).to eq 'bank-accounts'
-        expect(change1['changes']).to be_empty
+        expect(change1['changes']['iban']).to eq [updated_iban, nil]
         change2 = body['data'].second['attributes']
         expect(change2['changed-by']).to eq 'Shelley Stewart'
         expect(change2['created-at']).to be_present

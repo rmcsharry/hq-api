@@ -3,13 +3,13 @@
 FactoryBot.define do
   factory :contact_person, class: Contact::Person do
     transient do
-      street_and_number '875 South Bundy Drive'
-      phone '+49301234567'
+      street_and_number { '875 South Bundy Drive' }
+      phone { '+49301234567' }
     end
 
-    first_name 'Thomas'
-    last_name  'Guntersen'
-    gender     :male
+    first_name { 'Thomas' }
+    last_name  { 'Guntersen' }
+    gender     { :male }
 
     trait :with_contact_details do
       legal_address { create(:address, street_and_number: street_and_number, owner: @instance) }

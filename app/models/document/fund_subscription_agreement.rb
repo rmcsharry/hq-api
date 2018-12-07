@@ -51,6 +51,7 @@ class Document
 
     def mark_owner_as_signed
       return unless owner.is_a? Investor
+
       owner.sign!
     end
   end

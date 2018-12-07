@@ -18,6 +18,7 @@ class MandateGroupPolicy < ApplicationPolicy
       search_scope = include_scope.where(conditions)
       organizations = accessible_organizations search_scope, target, admin_role
       return organizations unless target.role?(user_role)
+
       organizations.or(accessible_families(search_scope))
     end
 
@@ -36,6 +37,7 @@ class MandateGroupPolicy < ApplicationPolicy
 
   def index?
     return role?(:families_export, :admin) if export?
+
     user.present?
   end
 
@@ -47,12 +49,14 @@ class MandateGroupPolicy < ApplicationPolicy
 
   def create?
     return false if export?
+
     conditional_role?(:families_write, request: { 'group-type': 'family' }) ||
       conditional_role?(:admin, request: { 'group-type': 'organization' })
   end
 
   def update?
     return false if export?
+
     conditional_role?(
       :families_write,
       record: { group_type: 'family' },
@@ -64,6 +68,7 @@ class MandateGroupPolicy < ApplicationPolicy
 
   def destroy?
     return false if export?
+
     conditional_role?(:families_destroy, record: { group_type: 'family' }) ||
       conditional_role?(:admin, record: { group_type: 'organization' })
   end

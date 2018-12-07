@@ -53,6 +53,7 @@ module V1
         user = User.find_by_invitation_token(params[:invitation_token], true)
         # rubocop:enable Rails/DynamicFindBy
         raise(JSONAPI::Exceptions::RecordNotFound.new(params[:invitation_token]), 'not found') unless user&.valid?
+
         generate_user_response(user: user)
       rescue JSONAPI::Exceptions::Error => e
         handle_exceptions(e)
@@ -91,6 +92,7 @@ module V1
         user = User.find(params.require(:id))
         authorize user, :update?
         raise(JSONAPI::Exceptions::DeactivateSelf.new, 'forbidden') if user == current_user
+
         user.deactivate!
         generate_user_response(user: user)
       rescue JSONAPI::Exceptions::Error => e
@@ -135,6 +137,7 @@ module V1
         user = warden.authenticate!(scope: :user)
       end
       raise(JSONAPI::Exceptions::Unauthorized.new, 'unauthorized') unless user
+
       # Reload user to include mandate groups
       user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
       sign_in(:user, user)
@@ -144,6 +147,7 @@ module V1
     def authenticate_ews_id(id_token)
       user = AuthenticateEWSIdTokenService.call id_token
       raise(JSONAPI::Exceptions::RecordNotFound.new(id_token), 'not found') unless user
+
       user = User.where(id: user.id).includes(user_groups: [:mandate_groups]).first
       user.authenticated_via_ews = true
       sign_in :user, user
@@ -153,12 +157,14 @@ module V1
     def set_password_by_token(token:, password:)
       user = User.accept_invitation!(invitation_token: token, password: password)
       raise(JSONAPI::Exceptions::RecordNotFound.new(token), 'not found') unless user&.valid?
+
       user
     end
 
     def reset_password_by_token(token:, password:)
       user = User.reset_password_by_token(reset_password_token: token, password: password)
       raise(JSONAPI::Exceptions::RecordNotFound.new(token), 'not found') if user.id.nil?
+
       user.save!
       user
     rescue ActiveRecord::RecordInvalid

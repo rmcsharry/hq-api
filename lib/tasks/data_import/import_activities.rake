@@ -76,6 +76,7 @@ namespace :data_import do
         )
 
         next unless mail
+
         attach_document(activity: activity, file_name: 'mail.eml', content: email_file.open.read)
         mail.attachments.each do |attachment|
           attach_document(activity: activity, file_name: attachment.filename, content: attachment.decoded)

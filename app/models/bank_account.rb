@@ -65,6 +65,7 @@ class BankAccount < ApplicationRecord
 
   def iban_or_bank_number_present
     return if (iban.present? && bank_account_number.blank?) || (iban.blank? && bank_account_number.present?)
+
     errors.add(:iban_bank_account_number, 'exactly one of IBAN or bank account number must be set')
   end
 

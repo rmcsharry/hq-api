@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :activity do
-    title 'Activity with Mr. X'
-    description 'Lorem ipsum'
+    title { 'Activity with Mr. X' }
+    description { 'Lorem ipsum' }
     creator { create(:user) }
 
     factory :activity_call, class: Activity::Call do

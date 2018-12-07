@@ -78,7 +78,7 @@ class User < ApplicationRecord
 
   before_save :downcase_email
 
-  PASSWORD_REGEX = /\A(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\p{Alpha}\d]).{10,128}\z/
+  PASSWORD_REGEX = /\A(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\p{Alpha}\d]).{10,128}\z/.freeze
   validates :password, format: { with: PASSWORD_REGEX, message: :password_complexity }, if: :password_present?
 
   scope :with_user_group_count, lambda {
@@ -111,6 +111,7 @@ class User < ApplicationRecord
 
   def setup_ews_id(id_token)
     return if id_token.blank? || ews_user_id.present?
+
     decoded_token = DecodeEWSIdTokenService.call id_token
     appctx = JSON.parse(decoded_token['appctx'])
     update ews_user_id: appctx['msexchuid']

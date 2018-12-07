@@ -71,6 +71,7 @@ class MandateMember < ApplicationRecord
   # @return [void]
   def end_date_greater_or_equal_start_date
     return if start_date.blank? || end_date.blank? || end_date >= start_date
+
     errors.add(:end_date, "can't be before start_date")
   end
 end

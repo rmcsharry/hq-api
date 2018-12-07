@@ -49,6 +49,7 @@ class Activity < ApplicationRecord
   # @return [void]
   def ended_at_greater_or_equal_started_at
     return if ended_at.blank? || started_at.blank? || ended_at >= started_at
+
     errors.add(:ended_at, 'has to be after or at started_at')
   end
 end

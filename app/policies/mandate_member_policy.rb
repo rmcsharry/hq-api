@@ -24,6 +24,7 @@ class MandateMemberPolicy < ContactPolicy
 
   def index?
     return role?(:contacts_export, :mandates_export) if export?
+
     role? :contacts_read, :mandates_read
   end
 end

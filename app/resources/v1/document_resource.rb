@@ -71,6 +71,7 @@ module V1
       def create_model(context)
         type = context[:type]
         raise JSONAPI::Exceptions::InvalidFieldValue.new('document-type', type) unless valid_type?(type: type)
+
         type.new(uploader: context[:current_user])
       end
 

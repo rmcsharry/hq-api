@@ -73,30 +73,35 @@ class Address < ApplicationRecord
 
   def set_primary_contact_address
     return unless primary_contact_address
+
     owner.primary_contact_address = self
     owner.save!
   end
 
   def set_legal_address
     return unless legal_address
+
     owner.legal_address = self
     owner.save!
   end
 
   def save_owner_if_not_persisted
     return if owner.persisted?
+
     owner.save!
     self.owner = owner.reload
   end
 
   def check_primary_contact_address
     return if owner.primary_contact_address != self || destroyed_by_association
+
     errors[:base] << 'Cannot delete address while it is the primary contact address.'
     throw :abort
   end
 
   def check_legal_address
     return if owner.legal_address != self || destroyed_by_association
+
     errors[:base] << 'Cannot delete address while it is the legal address.'
     throw :abort
   end

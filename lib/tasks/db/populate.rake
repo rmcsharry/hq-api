@@ -557,6 +557,7 @@ namespace :db do
 
   def generate_foreign_tax_numbers(tax_detail)
     return if Faker::Boolean.boolean(0.6)
+
     tax_detail.foreign_tax_numbers = Array.new(Faker::Number.between(1, 4)) do
       ForeignTaxNumber.new(
         tax_detail: tax_detail,

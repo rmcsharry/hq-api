@@ -67,7 +67,7 @@ namespace :data_import do
             addition: row['addition_legal'],
             postal_code: row['postal_code_legal'],
             city: row['city_legal'],
-            country: row['country_legal'] ? row['country_legal'] : 'DE'
+            country: row['country_legal'] || 'DE'
           )
           contact.legal_address = legal_address
           contact.primary_contact_address = legal_address
@@ -79,7 +79,7 @@ namespace :data_import do
             addition: row['addition_primary'],
             postal_code: row['postal_code_primary'],
             city: row['city_primary'],
-            country: row['country_primary'] ? row['country_primary'] : 'DE'
+            country: row['country_primary'] || 'DE'
           )
           contact.primary_contact_address = primary_address
         end
@@ -91,7 +91,7 @@ namespace :data_import do
             addition: row['addition_secondary'],
             postal_code: row['postal_code_secondary'],
             city: row['city_secondary'],
-            country: row['country_secondary'] ? row['country_secondary'] : 'DE'
+            country: row['country_secondary'] || 'DE'
           )
         end
         if row['street_and_number_tertiary']
@@ -101,7 +101,7 @@ namespace :data_import do
             addition: row['addition_tertiary'],
             postal_code: row['postal_code_tertiary'],
             city: row['city_tertiary'],
-            country: row['country_tertiary'] ? row['country_tertiary'] : 'DE'
+            country: row['country_tertiary'] || 'DE'
           )
         end
         %w[email fax phone website].each do |channel|
@@ -116,6 +116,7 @@ namespace :data_import do
             ).save(validate: false)
           end
           next unless row["#{channel}_holiday"]
+
           "ContactDetail::#{channel.titleize}".constantize.new(
             contact: contact, value: row["#{channel}_holiday"], category: :vacation,
             primary: !row["#{channel}_private"] && !row["#{channel}_work"]

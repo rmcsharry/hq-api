@@ -23,6 +23,7 @@ namespace :data_import do
         role = person_relationship_roles[row['role']]
         not_imported_roles << row['role'] if source_person.present? && target_person.present? && role.nil?
         next if source_person.nil? || target_person.nil? || role.nil?
+
         InterPersonRelationship.create!(
           source_person: source_person,
           target_person: target_person,

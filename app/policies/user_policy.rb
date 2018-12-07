@@ -8,11 +8,13 @@ class UserPolicy < ApplicationPolicy
 
   def show?
     return role?(:admin) if export?
+
     role?(:admin) || user.id == record.id
   end
 
   def update?
     return false if export?
+
     role?(:admin) || user.id == record.id
   end
 

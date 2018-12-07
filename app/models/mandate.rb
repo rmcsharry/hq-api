@@ -131,6 +131,7 @@ class Mandate < ApplicationRecord
   # @return [void]
   def valid_to_greater_or_equal_valid_from
     return if valid_to.blank? || valid_from.blank? || valid_to >= valid_from
+
     errors.add(:valid_to, "can't be before valid_from")
   end
 
