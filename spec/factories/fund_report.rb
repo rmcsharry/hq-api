@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :fund_report, class: FundReport do
+  factory :fund_report do
     description { 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.' }
     fund { build(:fund) }
     irr { 0.065 }

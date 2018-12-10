@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_26_124422) do
+ActiveRecord::Schema.define(version: 2018_12_05_150536) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -174,6 +174,15 @@ ActiveRecord::Schema.define(version: 2018_11_26_124422) do
     t.index ["tax_detail_id"], name: "index_foreign_tax_numbers_on_tax_detail_id"
   end
 
+  create_table "fund_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "number"
+    t.date "valuta_date"
+    t.uuid "fund_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fund_id"], name: "index_fund_cashflows_on_fund_id"
+  end
+
   create_table "fund_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.date "valuta_date"
     t.decimal "irr", precision: 20, scale: 10
@@ -223,6 +232,28 @@ ActiveRecord::Schema.define(version: 2018_11_26_124422) do
     t.datetime "updated_at", null: false
     t.index ["source_person_id"], name: "index_inter_person_relationships_on_source_person_id"
     t.index ["target_person_id"], name: "index_inter_person_relationships_on_target_person_id"
+  end
+
+  create_table "investor_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "aasm_state"
+    t.decimal "distribution_reduction_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_participation_profits_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_dividends_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_interest_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_misc_profits_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_structure_costs_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_withholding_tax_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_recallable_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_compensatory_interest_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "capital_call_gross_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "capital_call_compensatory_interest_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "capital_call_management_fees_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.uuid "fund_cashflow_id"
+    t.uuid "investor_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["fund_cashflow_id"], name: "index_investor_cashflows_on_fund_cashflow_id"
+    t.index ["investor_id"], name: "index_investor_cashflows_on_investor_id"
   end
 
   create_table "investors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -423,6 +454,7 @@ ActiveRecord::Schema.define(version: 2018_11_26_124422) do
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "documents", "users", column: "uploader_id"
   add_foreign_key "foreign_tax_numbers", "tax_details"
+  add_foreign_key "fund_cashflows", "funds"
   add_foreign_key "fund_reports", "funds"
   add_foreign_key "fund_reports_investors", "fund_reports"
   add_foreign_key "fund_reports_investors", "investors"
@@ -431,6 +463,8 @@ ActiveRecord::Schema.define(version: 2018_11_26_124422) do
   add_foreign_key "funds", "contacts", column: "capital_management_company_id"
   add_foreign_key "inter_person_relationships", "contacts", column: "source_person_id"
   add_foreign_key "inter_person_relationships", "contacts", column: "target_person_id"
+  add_foreign_key "investor_cashflows", "fund_cashflows"
+  add_foreign_key "investor_cashflows", "investors"
   add_foreign_key "investors", "addresses", column: "contact_address_id"
   add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"

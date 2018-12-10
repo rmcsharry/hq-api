@@ -51,6 +51,7 @@ class Investor < ApplicationRecord
   belongs_to :primary_owner, class_name: 'Contact', autosave: true
   has_and_belongs_to_many :fund_reports, -> { distinct }
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
+  has_many :investor_cashflows, dependent: :nullify
   has_one :fund_subscription_agreement,
           -> { where(category: :fund_subscription_agreement) },
           class_name: 'Document::FundSubscriptionAgreement',

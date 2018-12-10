@@ -5,7 +5,7 @@ class CreateFundReports < ActiveRecord::Migration[5.2]
       t.decimal :irr, precision: 20, scale: 10
       t.text :description
 
-      t.belongs_to :fund, index: true, foreign_key: { to_table: :funds }, type: :uuid
+      t.belongs_to :fund, index: true, foreign_key: true, type: :uuid
 
       t.timestamps
     end

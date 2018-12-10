@@ -53,6 +53,9 @@ namespace :db do
       puts 'Creating fund reports'
       Rake::Task['db:populate:fund_reports'].invoke
 
+      puts 'Creating fund cashflows'
+      Rake::Task['db:populate:fund_cashflows'].invoke
+
       puts 'Creating documents'
       Rake::Task['db:populate:documents'].invoke
     end
@@ -442,6 +445,48 @@ namespace :db do
           )
         end
       end
+    end
+
+    task fund_cashflows: :environment do
+      fund_cashflows = []
+
+      Fund.all.each do |fund|
+        Faker::Number.between(2, 5).times do |i|
+          fund_cashflows << FundCashflow.new(
+            number: i + 1,
+            fund: fund,
+            valuta_date: Faker::Date.between(6.years.ago, 0.days.ago)
+          )
+        end
+      end
+
+      FundCashflow.import!(fund_cashflows)
+
+      investor_cashflows = []
+
+      FundCashflow.all.each do |fund_cashflow|
+        fund_cashflow.fund.investors.each do |investor|
+          investor_cashflows << InvestorCashflow.new(
+            fund_cashflow: fund_cashflow,
+            investor: investor,
+            aasm_state: rand > 0.2 ? :finished : :open,
+            distribution_reduction_amount: Faker::Number.between(0, 2_000_000),
+            distribution_participation_profits_amount: Faker::Number.between(0, 2_000_000),
+            distribution_dividends_amount: Faker::Number.between(0, 2_000_000),
+            distribution_interest_amount: Faker::Number.between(0, 2_000_000),
+            distribution_misc_profits_amount: Faker::Number.between(0, 2_000_000),
+            distribution_structure_costs_amount: Faker::Number.between(0, 2_000_000),
+            distribution_withholding_tax_amount: Faker::Number.between(0, 2_000_000),
+            distribution_recallable_amount: Faker::Number.between(0, 2_000_000),
+            distribution_compensatory_interest_amount: Faker::Number.between(0, 2_000_000),
+            capital_call_gross_amount: Faker::Number.between(0, 2_000_000),
+            capital_call_compensatory_interest_amount: Faker::Number.between(0, 2_000_000),
+            capital_call_management_fees_amount: Faker::Number.between(0, 2_000_000)
+          )
+        end
+      end
+
+      InvestorCashflow.import!(investor_cashflows)
     end
 
     task documents: :environment do
