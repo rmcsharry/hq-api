@@ -53,6 +53,7 @@ class Fund < ApplicationRecord
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :fund_cashflows, dependent: :destroy
+  has_many :investor_cashflows, through: :fund_cashflows
   has_many :fund_reports, dependent: :destroy
   has_many :fund_templates, class_name: 'Document::FundTemplate', as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :investors, dependent: :destroy
@@ -98,23 +99,19 @@ class Fund < ApplicationRecord
   end
 
   def total_signed_amount
-    # TODO: Implement actual logic
-    100
+    investors.sum(&:amount_total)
   end
 
   def total_called_amount
-    # TODO: Implement actual logic
-    100
+    investor_cashflows.sum(&:capital_call_total_amount)
   end
 
   def total_open_amount
-    # TODO: Implement actual logic
-    100
+    total_signed_amount - total_called_amount
   end
 
   def total_distributions_amount
-    # TODO: Implement actual logic
-    100
+    investor_cashflows.sum(&:distribution_total_amount)
   end
 
   def tvpi

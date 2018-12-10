@@ -87,13 +87,11 @@ class Investor < ApplicationRecord
   validate :attributes_in_signed_state
 
   def amount_called
-    # TODO: Implement actual logic
-    -1
+    investor_cashflows.sum(&:capital_call_total_amount)
   end
 
   def amount_open
-    # TODO: Implement actual logic
-    -1
+    amount_total - amount_called
   end
 
   def current_value
@@ -102,8 +100,7 @@ class Investor < ApplicationRecord
   end
 
   def amount_total_distribution
-    # TODO: Implement actual logic
-    -1
+    investor_cashflows.sum(&:distribution_total_amount)
   end
 
   def tvpi
