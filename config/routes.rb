@@ -29,14 +29,15 @@ Rails.application.routes.draw do
     jsonapi_resources :user_groups
     jsonapi_resources :users
 
+    get  'investors/:id/filled-fund-subscription-agreement', to: 'investors#filled_fund_subscription_agreement'
     post 'users/sign-in',                             to: 'users#sign_in_user'
     post 'users/sign-in-ews-id',                      to: 'users#sign_in_ews_id'
     get  'users/validate-token',                      to: 'users#validate_token'
     get  'users/invitation/:invitation_token',        to: 'users#read_invitation'
     post 'users/invitation/:invitation_token',        to: 'users#accept_invitation'
     post 'users/set-password/:reset_password_token',  to: 'users#reset_password'
-    patch 'users/:id/deactivate',                      to: 'users#deactivate'
-    patch 'users/:id/reactivate',                      to: 'users#reactivate'
+    patch 'users/:id/deactivate',                     to: 'users#deactivate'
+    patch 'users/:id/reactivate',                     to: 'users#reactivate'
   end
 
   root to: 'v1/users#index'

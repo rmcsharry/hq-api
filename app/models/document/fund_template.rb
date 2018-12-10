@@ -55,6 +55,15 @@ class Document
       false
     end
 
+    def self.fund_subscription_agreement_context(investor:, mandate:)
+      {
+        investor: {
+          amount_total: investor.amount_total,
+          owner_name: mandate.owner_name
+        }
+      }
+    end
+
     private
 
     def replace_exisiting_fund_template

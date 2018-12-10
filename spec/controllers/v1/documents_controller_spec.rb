@@ -116,6 +116,19 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
       end
     end
 
+    context 'with valid fund_subscription_agreement', bullet: false do
+      let(:document_type) { 'Document::FundSubscriptionAgreement' }
+      let(:category) { 'fund_subscription_agreement' }
+      let(:investor) { create :investor, state: 'created' }
+      let(:owner) { { data: { id: investor.id, type: 'investors' } } }
+
+      it 'puts investor into signed state' do
+        is_expected.to change(Document, :count).by(1)
+        expect(response).to have_http_status(201)
+        expect(investor.reload.state).to eq 'signed'
+      end
+    end
+
     context 'for a valid fund template document' do
       let(:document_type) { 'Document::FundTemplate' }
       let(:category) { 'fund_capital_call_template' }

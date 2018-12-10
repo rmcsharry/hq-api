@@ -70,7 +70,11 @@ class Investor < ApplicationRecord
     state :signed
 
     event :sign do
-      transitions from: :created, to: :signed, before: :set_investment_date
+      before do
+        set_investment_date
+      end
+
+      transitions from: :created, to: :signed
     end
   end
 
