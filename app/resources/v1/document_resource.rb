@@ -28,19 +28,19 @@ module V1
     }
 
     def file_url
-      Rails.application.routes.url_helpers.rails_blob_url(@model.file)
+      Rails.application.routes.url_helpers.rails_blob_url(@model.file) if @model.file.attached?
     end
 
     def file_type
-      @model.file.content_type
+      @model.file.content_type if @model.file.attached?
     end
 
     def file_name
-      @model.file.filename.to_s
+      @model.file.filename.to_s if @model.file.attached?
     end
 
     def file=(params)
-      @model.file.attach(params)
+      @model.file.attach(params.tempfile)
     end
 
     # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160
