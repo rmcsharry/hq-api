@@ -40,7 +40,7 @@ module V1
     end
 
     def file=(params)
-      @model.file.attach(params.tempfile)
+      @model.file.attach(params)
     end
 
     # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160
