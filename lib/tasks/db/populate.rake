@@ -422,11 +422,13 @@ namespace :db do
             mandate: mandate,
             primary_owner: primary_owner
           )
-          investor.build_fund_subscription_agreement(
-            category: :fund_subscription_agreement,
-            name: 'Zeichnungsschein',
-            uploader: users.sample
-          )
+          if state == :signed
+            investor.build_fund_subscription_agreement(
+              category: :fund_subscription_agreement,
+              name: 'Zeichnungsschein',
+              uploader: users.sample
+            )
+          end
           investors << investor
         end
       end

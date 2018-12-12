@@ -61,6 +61,18 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       end
     end
 
+    describe 'with template that contains distracting xml tags' do
+      let(:document_name) { 'hqtrust_sample_with_distracting_xml_tags.docx' }
+
+      it 'fills the template correctly' do
+        expect(response).to have_http_status(201)
+
+        mandate = Mandate.with_owner_name.find(investor.mandate_id)
+        expect(@response_document.paragraphs[2].to_s).to eq("Inhaber: #{mandate.owner_name}")
+        expect(@response_document.paragraphs[3].to_s).to eq("Zeichnungsbetrag: #{investor.amount_total}")
+      end
+    end
+
     describe 'with missing funds permissions' do
       let(:document_name) { 'hqtrust_sample_template.docx' }
       let!(:user) do
