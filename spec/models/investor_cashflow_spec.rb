@@ -6,7 +6,7 @@
 #
 #  id                                        :uuid             not null, primary key
 #  aasm_state                                :string
-#  distribution_reduction_amount             :decimal(20, 10)  default(0.0), not null
+#  distribution_repatriation_amount          :decimal(20, 10)  default(0.0), not null
 #  distribution_participation_profits_amount :decimal(20, 10)  default(0.0), not null
 #  distribution_dividends_amount             :decimal(20, 10)  default(0.0), not null
 #  distribution_interest_amount              :decimal(20, 10)  default(0.0), not null
@@ -36,13 +36,13 @@
 
 require 'rails_helper'
 
-RSpec.describe InvestorCashflow, type: :model do
+RSpec.describe InvestorCashflow, type: :model, bullet: false do
   subject { create(:investor_cashflow, :capital_call, :distribution) }
 
   it { is_expected.to belong_to(:fund_cashflow).required }
   it { is_expected.to belong_to(:investor).required }
 
-  it { is_expected.to respond_to :distribution_reduction_amount }
+  it { is_expected.to respond_to :distribution_repatriation_amount }
   it { is_expected.to respond_to :distribution_participation_profits_amount }
   it { is_expected.to respond_to :distribution_dividends_amount }
   it { is_expected.to respond_to :distribution_interest_amount }

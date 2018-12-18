@@ -22,7 +22,7 @@
 
 require 'rails_helper'
 
-RSpec.describe FundCashflow, type: :model do
+RSpec.describe FundCashflow, type: :model, bullet: false do
   subject { create(:fund_cashflow, fund: fund) }
 
   let(:fund) { create(:fund) }
@@ -61,8 +61,8 @@ RSpec.describe FundCashflow, type: :model do
 
   describe '#fund_cashflow_type and #net_cashflow_amount' do
     context 'with net distribution investor cashflows' do
-      let!(:investor_cashflow1) { create(:investor_cashflow, :distribution, fund_cashflow: subject) }
-      let!(:investor_cashflow2) { create(:investor_cashflow, :distribution, fund_cashflow: subject) }
+      let!(:investor_cashflow1) { create(:investor_cashflow, :distribution, fund_cashflow: subject, fund: fund) }
+      let!(:investor_cashflow2) { create(:investor_cashflow, :distribution, fund_cashflow: subject, fund: fund) }
 
       it 'is classified as distribution' do
         expect(subject.fund_cashflow_type).to eq :distribution
@@ -71,8 +71,8 @@ RSpec.describe FundCashflow, type: :model do
     end
 
     context 'with net capital call investor cashflows' do
-      let!(:investor_cashflow1) { create(:investor_cashflow, :capital_call, fund_cashflow: subject) }
-      let!(:investor_cashflow2) { create(:investor_cashflow, :capital_call, fund_cashflow: subject) }
+      let!(:investor_cashflow1) { create(:investor_cashflow, :capital_call, fund_cashflow: subject, fund: fund) }
+      let!(:investor_cashflow2) { create(:investor_cashflow, :capital_call, fund_cashflow: subject, fund: fund) }
 
       it 'is classified as capital_call' do
         expect(subject.fund_cashflow_type).to eq :capital_call
@@ -83,8 +83,8 @@ RSpec.describe FundCashflow, type: :model do
 
   describe '#state' do
     context 'with all investor cashflows finished' do
-      let!(:investor_cashflow1) { create(:investor_cashflow, state: :finished, fund_cashflow: subject) }
-      let!(:investor_cashflow2) { create(:investor_cashflow, state: :finished, fund_cashflow: subject) }
+      let!(:investor_cashflow1) { create(:investor_cashflow, state: :finished, fund_cashflow: subject, fund: fund) }
+      let!(:investor_cashflow2) { create(:investor_cashflow, state: :finished, fund_cashflow: subject, fund: fund) }
 
       it 'is classified as finished' do
         expect(subject.state).to eq :finished
@@ -92,8 +92,8 @@ RSpec.describe FundCashflow, type: :model do
     end
 
     context 'with one investor cashflow open' do
-      let!(:investor_cashflow1) { create(:investor_cashflow, state: :finished, fund_cashflow: subject) }
-      let!(:investor_cashflow2) { create(:investor_cashflow, state: :open, fund_cashflow: subject) }
+      let!(:investor_cashflow1) { create(:investor_cashflow, state: :finished, fund_cashflow: subject, fund: fund) }
+      let!(:investor_cashflow2) { create(:investor_cashflow, state: :open, fund_cashflow: subject, fund: fund) }
 
       it 'is classified as open' do
         expect(subject.state).to eq :open

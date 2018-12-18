@@ -14,10 +14,11 @@ module V1
       :distribution_misc_profits_amount,
       :distribution_participation_profits_amount,
       :distribution_recallable_amount,
-      :distribution_reduction_amount,
+      :distribution_repatriation_amount,
       :distribution_structure_costs_amount,
       :distribution_total_amount,
       :distribution_withholding_tax_amount,
+      :investor_id,
       :net_cashflow_amount,
       :state
     )
@@ -27,9 +28,13 @@ module V1
 
     filter :fund_cashflow_id
 
+    def fetchable_fields
+      super - [:investor_id]
+    end
+
     class << self
       def updatable_fields(context)
-        super(context) - %i[net_cashflow_amount capital_call_total_amount distribution_total_amount state]
+        super(context) - %i[net_cashflow_amount capital_call_total_amount distribution_total_amount state investor_id]
       end
     end
   end

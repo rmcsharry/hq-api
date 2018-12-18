@@ -5,6 +5,7 @@ module V1
   class FundCashflowResource < BaseResource
     attributes(
       :fund_cashflow_type,
+      :investor_cashflows,
       :investor_count,
       :net_cashflow_amount,
       :number,
@@ -31,6 +32,14 @@ module V1
 
     def investor_count
       @model.investor_cashflows.count
+    end
+
+    def investor_cashflows=(params)
+      params.each do |param|
+        sanitized_params = sanitize_params(param, V1::InvestorCashflowResource)
+        @model.investor_cashflows.build(sanitized_params)
+      end
+      @save_needed = true
     end
 
     class << self

@@ -48,7 +48,7 @@ class FundCashflow < ApplicationRecord
           LEFT JOIN (
             SELECT fund_cashflow_id AS fund_cashflow_id,
               (
-                SUM(investor_cashflows.distribution_reduction_amount) +
+                SUM(investor_cashflows.distribution_repatriation_amount) +
                 SUM(distribution_participation_profits_amount) +
                 SUM(distribution_dividends_amount) +
                 SUM(distribution_interest_amount) +

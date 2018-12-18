@@ -472,7 +472,7 @@ namespace :db do
             fund_cashflow: fund_cashflow,
             investor: investor,
             aasm_state: rand > 0.2 ? :finished : :open,
-            distribution_reduction_amount: Faker::Number.between(0, 2_000_000),
+            distribution_repatriation_amount: Faker::Number.between(0, 2_000_000),
             distribution_participation_profits_amount: Faker::Number.between(0, 2_000_000),
             distribution_dividends_amount: Faker::Number.between(0, 2_000_000),
             distribution_interest_amount: Faker::Number.between(0, 2_000_000),

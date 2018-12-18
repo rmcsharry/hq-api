@@ -16,7 +16,6 @@
 #  aasm_state         :string           not null
 #  investment_date    :datetime
 #  amount_total       :decimal(20, 2)
-#  decimal            :decimal(20, 2)
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
@@ -75,7 +74,7 @@ class Investor < ApplicationRecord
         set_investment_date
       end
 
-      transitions from: :created, to: :signed
+      transitions from: %i[created signed], to: :signed
     end
   end
 

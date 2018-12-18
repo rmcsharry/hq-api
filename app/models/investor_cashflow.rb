@@ -6,7 +6,7 @@
 #
 #  id                                        :uuid             not null, primary key
 #  aasm_state                                :string
-#  distribution_reduction_amount             :decimal(20, 10)  default(0.0), not null
+#  distribution_repatriation_amount          :decimal(20, 10)  default(0.0), not null
 #  distribution_participation_profits_amount :decimal(20, 10)  default(0.0), not null
 #  distribution_dividends_amount             :decimal(20, 10)  default(0.0), not null
 #  distribution_interest_amount              :decimal(20, 10)  default(0.0), not null
@@ -60,13 +60,16 @@ class InvestorCashflow < ApplicationRecord
 
   alias_attribute :state, :aasm_state
 
+  validate :investor_belongs_to_same_fund_as_fund_cashflow
+  validate :investor_has_signed
+
   def net_cashflow_amount
     distribution_total_amount - capital_call_total_amount
   end
 
   # rubocop:disable Metrics/AbcSize
   def distribution_total_amount
-    distribution_reduction_amount +
+    distribution_repatriation_amount +
       distribution_participation_profits_amount +
       distribution_dividends_amount +
       distribution_interest_amount +
@@ -82,5 +85,23 @@ class InvestorCashflow < ApplicationRecord
     capital_call_gross_amount +
       capital_call_compensatory_interest_amount +
       capital_call_management_fees_amount
+  end
+
+  private
+
+  # Validates that the investor belongs to the same fund as the fund cashflow
+  # @return [void]
+  def investor_belongs_to_same_fund_as_fund_cashflow
+    return if investor&.fund == fund_cashflow&.fund
+
+    errors.add(:investor, 'does not belong to the same fund as the fund cashflow')
+  end
+
+  # Validates that the investor has signed already
+  # @return [void]
+  def investor_has_signed
+    return if investor&.signed?
+
+    errors.add(:investor, 'has to have signed')
   end
 end

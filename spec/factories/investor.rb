@@ -14,5 +14,10 @@ FactoryBot.define do
 
     investment_date { 1.day.ago }
     amount_total { '100000.0' }
+
+    trait :signed do
+      aasm_state { :signed }
+      fund_subscription_agreement { build :fund_subscription_agreement, owner: @instance }
+    end
   end
 end

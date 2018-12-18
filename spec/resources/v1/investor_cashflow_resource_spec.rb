@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe V1::InvestorCashflowResource, type: :resource do
+RSpec.describe V1::InvestorCashflowResource, type: :resource, bullet: false do
   let(:investor_cashflow) { create(:investor_cashflow) }
   subject { described_class.new(investor_cashflow, {}) }
 
@@ -16,7 +16,7 @@ RSpec.describe V1::InvestorCashflowResource, type: :resource do
   it { is_expected.to have_attribute :distribution_misc_profits_amount }
   it { is_expected.to have_attribute :distribution_participation_profits_amount }
   it { is_expected.to have_attribute :distribution_recallable_amount }
-  it { is_expected.to have_attribute :distribution_reduction_amount }
+  it { is_expected.to have_attribute :distribution_repatriation_amount }
   it { is_expected.to have_attribute :distribution_structure_costs_amount }
   it { is_expected.to have_attribute :distribution_total_amount }
   it { is_expected.to have_attribute :distribution_withholding_tax_amount }

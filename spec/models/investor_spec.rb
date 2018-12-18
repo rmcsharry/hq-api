@@ -16,7 +16,6 @@
 #  aasm_state         :string           not null
 #  investment_date    :datetime
 #  amount_total       :decimal(20, 2)
-#  decimal            :decimal(20, 2)
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #

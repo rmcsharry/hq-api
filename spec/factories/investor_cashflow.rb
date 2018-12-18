@@ -6,7 +6,7 @@ FactoryBot.define do
       fund { build(:fund) }
     end
 
-    investor { build(:investor, fund: fund) }
+    investor { build(:investor, :signed, fund: fund) }
     fund_cashflow { build(:fund_cashflow, fund: fund) }
     aasm_state { 'open' }
 
@@ -23,7 +23,7 @@ FactoryBot.define do
       distribution_misc_profits_amount { 100_000 }
       distribution_participation_profits_amount { 100_000 }
       distribution_recallable_amount { 100_000 }
-      distribution_reduction_amount { 100_000 }
+      distribution_repatriation_amount { 100_000 }
       distribution_structure_costs_amount { 100_000 }
       distribution_withholding_tax_amount { 100_000 }
     end

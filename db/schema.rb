@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_05_150536) do
+ActiveRecord::Schema.define(version: 2018_12_13_162120) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -236,7 +236,7 @@ ActiveRecord::Schema.define(version: 2018_12_05_150536) do
 
   create_table "investor_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "aasm_state"
-    t.decimal "distribution_reduction_amount", precision: 20, scale: 10, default: "0.0", null: false
+    t.decimal "distribution_repatriation_amount", precision: 20, scale: 10, default: "0.0", null: false
     t.decimal "distribution_participation_profits_amount", precision: 20, scale: 10, default: "0.0", null: false
     t.decimal "distribution_dividends_amount", precision: 20, scale: 10, default: "0.0", null: false
     t.decimal "distribution_interest_amount", precision: 20, scale: 10, default: "0.0", null: false
@@ -268,7 +268,6 @@ ActiveRecord::Schema.define(version: 2018_12_05_150536) do
     t.string "aasm_state", null: false
     t.datetime "investment_date"
     t.decimal "amount_total", precision: 20, scale: 2
-    t.decimal "decimal", precision: 20, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["fund_id"], name: "index_investors_on_fund_id"
