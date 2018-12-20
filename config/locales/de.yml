@@ -364,6 +364,8 @@ de:
         apprentice: "Auszubildender"
         military_or_civil_service: "Grundwehr-/Zivildienstleistender"
         unemployed: "Ohne Beschäftigung"
+        self_employed: "Selbstständig"
+        supervisory_board_member: "Aufsichtsrat"
     inter_person_relationship:
       # TODO: add gender dependent role titles from frontend
     tax_detail:
