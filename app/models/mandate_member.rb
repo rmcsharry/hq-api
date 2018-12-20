@@ -32,6 +32,7 @@ class MandateMember < ApplicationRecord
     administrative_board_member
     advisor
     assistance
+    attorney
     auditor
     beneficiary
     bookkeeper
@@ -40,11 +41,15 @@ class MandateMember < ApplicationRecord
     contact_depot_bank
     contact_fund
     family_officer
+    investment
+    investment_manager
     lawyer
     managing_director
     notary
     owner
+    portfolio_manager
     procurator
+    risk_manager
     shareholder
     supervisory_board_member
     tax_advisor
