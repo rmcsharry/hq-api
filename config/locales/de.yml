@@ -375,6 +375,7 @@ de:
         w_8imy: "W-8IMY"
         w_8eci: "W-8ECI"
         w_8exp: "W-8EXP"
+        w_9: "W-9"
       us_fatca_status:
         participation_ffi: "Participating FFI"
         reporting_ffi: "Reporting FFI"
