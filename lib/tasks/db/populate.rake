@@ -467,7 +467,7 @@ namespace :db do
       investor_cashflows = []
 
       FundCashflow.all.each do |fund_cashflow|
-        fund_cashflow.fund.investors.each do |investor|
+        fund_cashflow.fund.investors.signed.each do |investor|
           investor_cashflows << InvestorCashflow.new(
             fund_cashflow: fund_cashflow,
             investor: investor,
