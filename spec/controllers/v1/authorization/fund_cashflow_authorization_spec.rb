@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
-  let!(:record) { create(:fund_cashflow) }
+  let(:fund) { create(:fund) }
+  let!(:record) { create(:fund_cashflow, fund: fund) }
   include_examples(
     'simple crud authorization',
     FUND_CASHFLOWS_ENDPOINT,
@@ -16,5 +17,5 @@ RSpec.describe 'authorization for', type: :request do
     }
   )
 
-  include_examples 'forbid access for ews authenticated users', FUNDS_ENDPOINT, resource: 'funds'
+  include_examples 'forbid access for ews authenticated users', FUND_CASHFLOWS_ENDPOINT, resource: 'funds'
 end

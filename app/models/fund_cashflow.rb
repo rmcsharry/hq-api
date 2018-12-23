@@ -105,6 +105,6 @@ class FundCashflow < ApplicationRecord
   private
 
   def assign_number
-    self.number ||= (fund.fund_cashflows.pluck(:number).max || 0) + 1
+    self.number ||= (fund&.fund_cashflows&.pluck(:number)&.max || 0) + 1
   end
 end
