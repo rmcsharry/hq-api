@@ -31,7 +31,8 @@ module V1
 
     filters(
       :fund_id,
-      :mandate_id
+      :mandate_id,
+      :state
     )
 
     filter :fund_report_id, apply: lambda { |records, value, _options|
