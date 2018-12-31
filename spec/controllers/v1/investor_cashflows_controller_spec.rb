@@ -48,4 +48,129 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'GET /v1/investor-cashflows/:id/filled-fund-template', bullet: false do
+    let(:contact_person) { create(:contact_person, :with_contact_details) }
+    let(:mandate) { create(:mandate) }
+    let!(:mandate_member) do
+      create(:mandate_member, mandate: mandate, contact: contact_person, member_type: :owner)
+    end
+    let!(:user) do
+      create(
+        :user,
+        roles: %i[contacts_read funds_read mandates_read],
+        permitted_mandates: [mandate]
+      )
+    end
+
+    let!(:fund) { create(:fund) }
+    let!(:investor) do
+      create(
+        :investor,
+        :signed,
+        contact_address: contact_person.primary_contact_address,
+        contact_email: contact_person.primary_email,
+        contact_phone: contact_person.primary_phone,
+        fund: fund,
+        legal_address: contact_person.legal_address,
+        mandate: mandate
+      )
+    end
+    let!(:cashflow_type) { :distribution }
+    let!(:fund_cashflow) { create(:fund_cashflow, fund: fund) }
+    let!(:investor_cashflow) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: cashflow_type == :distribution ? 0 : 1,
+        distribution_dividends_amount: cashflow_type == :distribution ? 1 : 0,
+        fund_cashflow: fund_cashflow,
+        investor: investor
+      )
+    end
+    let!(:document) do
+      category = cashflow_type == :distribution ? :fund_distribution_template : :fund_capital_call_template
+      doc = create(
+        :fund_template_document,
+        category: category,
+        owner: fund
+      )
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+
+    before do
+      get(
+        "#{INVESTOR_CASHFLOWS_ENDPOINT}/#{investor_cashflow.id}/filled-fund-template",
+        params: {},
+        headers: auth_headers
+      )
+
+      tempfile = Tempfile.new
+      tempfile.binmode
+      tempfile.write response.body
+      @response_document = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
+      tempfile.close
+    end
+
+    context 'with actual template for a capital call' do
+      let!(:cashflow_type) { :capital_call }
+      let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
+
+      it 'downloads the filled template' do
+        expect(response).to have_http_status(201)
+        content = @response_document.to_s
+
+        primary_owner = investor.primary_owner.decorate
+        primary_address = investor.contact_address
+
+        expect(content).to include('Kapitalabruf')
+        expect(content).to include(fund.name)
+        expect(content).to include(primary_owner.gender_text)
+        expect(content).to include(primary_owner.name)
+        expect(content).to include(primary_address.street_and_number)
+        expect(content).to include(primary_address.postal_code)
+        expect(content).to include(primary_address.city)
+      end
+    end
+
+    context 'with actual template for a distribution' do
+      let!(:cashflow_type) { :distribution }
+      let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+
+      it 'downloads the filled template' do
+        expect(response).to have_http_status(201)
+        content = @response_document.to_s
+
+        primary_owner = investor.primary_owner.decorate
+        primary_address = investor.contact_address
+
+        expect(content).to include('Ausschüttung')
+        expect(content).to include(fund.name)
+        expect(content).to include(primary_owner.gender_text)
+        expect(content).to include(primary_owner.name)
+        expect(content).to include(primary_address.street_and_number)
+        expect(content).to include(primary_address.postal_code)
+        expect(content).to include(primary_address.city)
+      end
+    end
+
+    context 'with missing funds permissions' do
+      let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+      let!(:user) do
+        create(
+          :user,
+          roles: %i[contacts_read mandates_read],
+          permitted_mandates: [mandate]
+        )
+      end
+
+      it 'receives a 403' do
+        expect(response).to have_http_status(403)
+      end
+    end
+  end
 end

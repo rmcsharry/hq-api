@@ -40,7 +40,9 @@ Rails.application.routes.draw do
     patch 'users/:id/deactivate',                             to: 'users#deactivate'
     patch 'users/:id/reactivate',                             to: 'users#reactivate'
     post  'investor-cashflows/:id/finish',                    to: 'investor_cashflows#finish'
+    get   'investor-cashflows/:id/filled-fund-template',      to: 'investor_cashflows#filled_fund_template'
     get   'investors/:id/filled-fund-subscription-agreement', to: 'investors#filled_fund_subscription_agreement'
+    get   'investors/:id/filled-fund-quarterly-report',       to: 'investors#filled_fund_quarterly_report'
   end
 
   root to: 'v1/users#index'

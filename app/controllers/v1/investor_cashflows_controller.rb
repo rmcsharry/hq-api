@@ -3,6 +3,8 @@
 module V1
   # Defines the InvestorCashflows controller
   class InvestorCashflowsController < ApplicationController
+    include DocumentBuilder
+
     before_action :authenticate_user!
 
     def finish
@@ -41,6 +43,48 @@ module V1
           }
         }
       }
+    end
+
+    # rubocop:disable Metrics/MethodLength
+    def filled_fund_template
+      investor_cashflow = InvestorCashflow
+                          .includes(investor: :contact_address, fund_cashflow: :fund)
+                          .find(params.require(:id))
+      authorize investor_cashflow, :show?
+
+      cashflow_type = investor_cashflow.fund_cashflow.fund_cashflow_type
+
+      if cashflow_type == :capital_call
+        template = fund_template(investor_cashflow, :fund_capital_call_template)
+        context = fund_capital_call_context(investor_cashflow)
+      else
+        template = fund_template(investor_cashflow, :fund_distribution_template)
+        context = fund_distribution_context(investor_cashflow)
+      end
+
+      render_filled_template(template, context)
+    end
+    # rubocop:enable Metrics/MethodLength
+
+    private
+
+    def fund_template(investor_cashflow, template_category)
+      Document.find_by(
+        owner_id: investor_cashflow.fund_cashflow.fund_id,
+        category: template_category
+      )
+    end
+
+    def fund_distribution_context(investor_cashflow)
+      Document::FundTemplate.fund_distribution_context(
+        investor_cashflow: investor_cashflow
+      )
+    end
+
+    def fund_capital_call_context(investor_cashflow)
+      Document::FundTemplate.fund_capital_call_context(
+        investor_cashflow: investor_cashflow
+      )
     end
   end
 end

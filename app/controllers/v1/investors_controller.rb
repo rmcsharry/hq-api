@@ -12,27 +12,42 @@ module V1
       authorize investor, :show?
 
       render_filled_template(
-        fund_subscription_agreement_template(investor),
+        fund_template(investor, :fund_subscription_agreement_template),
         fund_subscription_agreement_context(investor)
+      )
+    end
+
+    def filled_fund_quarterly_report
+      investor = Investor.find(params.require(:id))
+      fund_report = FundReport.find(params.require(:fund_report_id))
+      authorize investor, :show?
+      authorize fund_report, :show?
+
+      render_filled_template(
+        fund_template(investor, :fund_quarterly_report_template),
+        fund_quarterly_report_context(investor, fund_report)
       )
     end
 
     private
 
-    def fund_subscription_agreement_template(investor)
+    def fund_template(investor, template_category)
       Document.find_by(
         owner_id: investor.fund_id,
-        category: :fund_subscription_agreement_template
+        category: template_category
       )
     end
 
     def fund_subscription_agreement_context(investor)
-      mandate = Mandate.with_owner_name.find(investor.mandate_id)
-      authorize mandate, :show?
-
       Document::FundTemplate.fund_subscription_agreement_context(
+        investor: investor
+      )
+    end
+
+    def fund_quarterly_report_context(investor, fund_report)
+      Document::FundTemplate.fund_quarterly_report_context(
         investor: investor,
-        mandate: mandate
+        fund_report: fund_report
       )
     end
   end
