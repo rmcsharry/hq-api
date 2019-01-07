@@ -91,7 +91,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
   describe 'GET /v1/investors/:id/filled-fund-quarterly-report', bullet: false do
     let!(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, fund: fund, mandate: mandate) }
+    let!(:investor) { create(:investor, fund: fund, mandate: mandate, primary_owner: primary_owner) }
     let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
     let!(:document) do
       doc = create(
@@ -106,6 +106,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       )
       doc
     end
+    let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
 
     before do
       get(
@@ -121,8 +122,22 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       tempfile.close
     end
 
-    context 'with actual template' do
-      let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
+    context 'with person as primary owner' do
+      let(:primary_owner) { create(:contact_person) }
+
+      it 'downloads the filled template' do
+        expect(response).to have_http_status(201)
+        content = @response_document.to_s
+
+        primary_owner = investor.primary_owner.decorate
+
+        expect(content).to include(fund.name)
+        expect(content).to include(primary_owner.name)
+      end
+    end
+
+    context 'with organization as primary owner' do
+      let(:primary_owner) { create(:contact_organization) }
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)

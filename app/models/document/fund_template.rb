@@ -66,6 +66,7 @@ class Document
       bank_account = fund.bank_accounts.first
       primary_owner = investor.primary_owner.decorate
       primary_address = investor.contact_address
+      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
 
       current_date = Time.zone.now.strftime('%d.%m.%Y')
 
@@ -96,7 +97,7 @@ class Document
           primary_owner: {
             formal_salutation: primary_owner.formal_salutation,
             full_name: primary_owner.name,
-            gender: primary_owner.gender_text
+            gender: gender_text
           }
         },
         investor_cashflow: {
@@ -118,6 +119,7 @@ class Document
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
       primary_address = investor.contact_address
+      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
 
       current_date = Time.zone.now.strftime('%d.%m.%Y')
 
@@ -141,7 +143,7 @@ class Document
           primary_owner: {
             formal_salutation: primary_owner.formal_salutation,
             full_name: primary_owner.name,
-            gender: primary_owner.gender_text
+            gender: gender_text
           }
         },
         investor_cashflow: {
@@ -188,6 +190,7 @@ class Document
       primary_owner = investor.primary_owner.decorate
       primary_address = investor.contact_address
       current_date = Time.zone.now.strftime('%d.%m.%Y')
+      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
 
       {
         current_date: current_date,
@@ -208,7 +211,7 @@ class Document
           primary_owner: {
             formal_salutation: primary_owner.formal_salutation,
             full_name: primary_owner.name,
-            gender: primary_owner.gender_text
+            gender: gender_text
           }
         }
       }

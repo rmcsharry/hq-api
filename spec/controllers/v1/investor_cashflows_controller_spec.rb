@@ -73,7 +73,8 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
         contact_phone: contact_person.primary_phone,
         fund: fund,
         legal_address: contact_person.legal_address,
-        mandate: mandate
+        mandate: mandate,
+        primary_owner: primary_owner
       )
     end
     let!(:cashflow_type) { :distribution }
@@ -116,49 +117,98 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
       tempfile.close
     end
 
-    context 'with actual template for a capital call' do
-      let!(:cashflow_type) { :capital_call }
-      let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
+    describe 'with person as primary_owner' do
+      let(:primary_owner) { create :contact_person }
 
-      it 'downloads the filled template' do
-        expect(response).to have_http_status(201)
-        content = @response_document.to_s
+      context 'with actual template for a capital call' do
+        let!(:cashflow_type) { :capital_call }
+        let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
 
-        primary_owner = investor.primary_owner.decorate
-        primary_address = investor.contact_address
+        it 'downloads the filled template' do
+          expect(response).to have_http_status(201)
+          content = @response_document.to_s
 
-        expect(content).to include('Kapitalabruf')
-        expect(content).to include(fund.name)
-        expect(content).to include(primary_owner.gender_text)
-        expect(content).to include(primary_owner.name)
-        expect(content).to include(primary_address.street_and_number)
-        expect(content).to include(primary_address.postal_code)
-        expect(content).to include(primary_address.city)
+          primary_owner = investor.primary_owner.decorate
+          primary_address = investor.contact_address
+
+          expect(content).to include('Kapitalabruf')
+          expect(content).to include(fund.name)
+          expect(content).to include(primary_owner.gender_text)
+          expect(content).to include(primary_owner.name)
+          expect(content).to include(primary_address.street_and_number)
+          expect(content).to include(primary_address.postal_code)
+          expect(content).to include(primary_address.city)
+        end
+      end
+
+      context 'with actual template for a distribution' do
+        let!(:cashflow_type) { :distribution }
+        let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+
+        it 'downloads the filled template' do
+          expect(response).to have_http_status(201)
+          content = @response_document.to_s
+
+          primary_owner = investor.primary_owner.decorate
+          primary_address = investor.contact_address
+
+          expect(content).to include('Ausschüttung')
+          expect(content).to include(fund.name)
+          expect(content).to include(primary_owner.gender_text)
+          expect(content).to include(primary_owner.name)
+          expect(content).to include(primary_address.street_and_number)
+          expect(content).to include(primary_address.postal_code)
+          expect(content).to include(primary_address.city)
+        end
       end
     end
 
-    context 'with actual template for a distribution' do
-      let!(:cashflow_type) { :distribution }
-      let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+    describe 'with organization as primary_owner' do
+      let(:primary_owner) { create :contact_organization }
 
-      it 'downloads the filled template' do
-        expect(response).to have_http_status(201)
-        content = @response_document.to_s
+      context 'with actual template for a capital call' do
+        let!(:cashflow_type) { :capital_call }
+        let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
 
-        primary_owner = investor.primary_owner.decorate
-        primary_address = investor.contact_address
+        it 'downloads the filled template' do
+          expect(response).to have_http_status(201)
+          content = @response_document.to_s
 
-        expect(content).to include('Ausschüttung')
-        expect(content).to include(fund.name)
-        expect(content).to include(primary_owner.gender_text)
-        expect(content).to include(primary_owner.name)
-        expect(content).to include(primary_address.street_and_number)
-        expect(content).to include(primary_address.postal_code)
-        expect(content).to include(primary_address.city)
+          primary_owner = investor.primary_owner.decorate
+          primary_address = investor.contact_address
+
+          expect(content).to include('Kapitalabruf')
+          expect(content).to include(fund.name)
+          expect(content).to include(primary_owner.name)
+          expect(content).to include(primary_address.street_and_number)
+          expect(content).to include(primary_address.postal_code)
+          expect(content).to include(primary_address.city)
+        end
+      end
+
+      context 'with actual template for a distribution' do
+        let!(:cashflow_type) { :distribution }
+        let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+
+        it 'downloads the filled template' do
+          expect(response).to have_http_status(201)
+          content = @response_document.to_s
+
+          primary_owner = investor.primary_owner.decorate
+          primary_address = investor.contact_address
+
+          expect(content).to include('Ausschüttung')
+          expect(content).to include(fund.name)
+          expect(content).to include(primary_owner.name)
+          expect(content).to include(primary_address.street_and_number)
+          expect(content).to include(primary_address.postal_code)
+          expect(content).to include(primary_address.city)
+        end
       end
     end
 
     context 'with missing funds permissions' do
+      let(:primary_owner) { create :contact_person }
       let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
       let!(:user) do
         create(
