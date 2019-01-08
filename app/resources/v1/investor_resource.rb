@@ -39,6 +39,13 @@ module V1
       records.joins(:fund_reports).where('fund_reports.id = ?', value[0])
     }
 
+    sort :"mandate.owner_name", apply: lambda { |records, direction, _context|
+      records
+        .merge(Mandate.with_owner_name)
+        .joins('LEFT OUTER JOIN investors as investors ON mandates.id = investors.mandate_id')
+        .order("mandates.owner_name #{direction}")
+    }
+
     class << self
       def updatable_fields(context)
         super(context) - %i[
