@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :document do
-    name 'Contracts'
-    category :contract_hq
+    name { 'Contracts' }
+    category { :contract_hq }
     uploader { create(:user) }
     owner { create(:mandate, documents: [@instance.presence]) }
     after(:build) do |document|
@@ -15,9 +15,15 @@ FactoryBot.define do
     end
 
     factory :fund_template_document, class: Document::FundTemplate do
-      name 'fund_capital_call_template.pdf'
-      category :fund_capital_call_template
+      name { 'fund_capital_call_template.pdf' }
+      category { :fund_capital_call_template }
       owner { create(:fund, documents: [@instance.presence]) }
+    end
+
+    factory :fund_subscription_agreement, class: Document::FundSubscriptionAgreement do
+      name { 'fund_subscription_agreement.pdf' }
+      category { :fund_subscription_agreement }
+      owner { create(:investor, documents: [@instance.presence], state: :signed) }
     end
   end
 end

@@ -123,6 +123,7 @@ class Contact
     # @return [void]
     def date_of_death_greater_or_equal_date_of_birth
       return if date_of_death.blank? || date_of_death >= date_of_birth
+
       errors.add(:date_of_death, "can't be before the date of birth")
     end
   end

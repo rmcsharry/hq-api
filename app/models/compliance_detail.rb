@@ -32,7 +32,7 @@ class ComplianceDetail < ApplicationRecord
   KAGB_CLASSIFICATIONS = %i[none private semi_professional professional].freeze
   OCCUPATION_ROLES = %i[
     worker technician foreman employee qualified_employee chief_executive managing_director officer retiree
-    housewife pupil student apprentice military_or_civil_service unemployed
+    housewife pupil student apprentice military_or_civil_service unemployed self_employed supervisory_board_member
   ].freeze
 
   belongs_to :contact

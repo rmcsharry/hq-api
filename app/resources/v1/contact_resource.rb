@@ -181,6 +181,7 @@ module V1
 
     filter :is_mandate_owner, apply: lambda { |records, value, _options|
       return records if value[0] == 'none'
+
       ids = MandateMember.select(:contact_id).where(member_type: 'owner')
       if ActiveModel::Type::Boolean.new.cast(value[0])
         records.where(id: ids)
@@ -191,6 +192,7 @@ module V1
 
     filter :is_mandate_member, apply: lambda { |records, value, _options|
       return records if value[0] == 'none'
+
       ids = MandateMember.select(:contact_id)
       if ActiveModel::Type::Boolean.new.cast(value[0])
         records.where(id: ids)
@@ -233,6 +235,7 @@ module V1
       def create_model(context)
         type = context[:type]
         raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless valid_type?(type: type)
+
         type.new
       end
 

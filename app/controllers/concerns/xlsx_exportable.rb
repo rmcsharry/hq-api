@@ -12,6 +12,7 @@ module XLSXExportable
   included do # rubocop:disable Metrics/BlockLength
     def render_response_document
       return render_xlsx_document if request.format == XLSX_MIME_TYPE
+
       super
     end
 

@@ -18,6 +18,7 @@ namespace :data_import do
         )
         organization = Contact::Organization.find_by(import_id: row['organization_id'])
         next unless organization
+
         contact = Contact.find_by!(import_id: row['contact_id'])
         OrganizationMember.create!(
           organization: organization,

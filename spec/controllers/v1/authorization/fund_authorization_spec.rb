@@ -29,7 +29,7 @@ RSpec.describe 'authorization for', type: :request do
 
   include_examples 'forbid access for ews authenticated users', FUNDS_ENDPOINT, resource: 'funds'
 
-  describe 'contacts' do
+  describe 'funds' do
     describe 'versions' do
       let!(:fund) { create(:fund) }
       let(:endpoint) do

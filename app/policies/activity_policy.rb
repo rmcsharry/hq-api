@@ -42,26 +42,31 @@ class ActivityPolicy < ApplicationPolicy
 
   def index?
     return role?(:contacts_export, :mandates_export) if export?
+
     role? :contacts_read, :mandates_read
   end
 
   def show?
     return roles_apply_to_activity?(:contacts_export, :mandates_export) if export?
+
     roles_apply_to_activity? :contacts_read, :mandates_read
   end
 
   def create?
     return false if export?
+
     user.present?
   end
 
   def update?
     return false if export?
+
     roles_apply_to_activity? :contacts_write, :mandates_write
   end
 
   def destroy?
     return false if export?
+
     roles_apply_to_activity? :contacts_destroy, :mandates_destroy
   end
 

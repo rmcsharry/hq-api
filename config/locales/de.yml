@@ -364,6 +364,8 @@ de:
         apprentice: "Auszubildender"
         military_or_civil_service: "Grundwehr-/Zivildienstleistender"
         unemployed: "Ohne Beschäftigung"
+        self_employed: "Selbstständig"
+        supervisory_board_member: "Aufsichtsrat"
     inter_person_relationship:
       # TODO: add gender dependent role titles from frontend
     tax_detail:
@@ -373,6 +375,7 @@ de:
         w_8imy: "W-8IMY"
         w_8eci: "W-8ECI"
         w_8exp: "W-8EXP"
+        w_9: "W-9"
       us_fatca_status:
         participation_ffi: "Participating FFI"
         reporting_ffi: "Reporting FFI"
@@ -395,6 +398,7 @@ de:
         administrative_board_member: "Verwaltungsratsmitglied"
         advisor: "Beirat"
         assistance: "Assistenz / Assistenz der GF"
+        attorney: "Bevollmächtigter"
         auditor: "Wirtschaftsprüfer"
         beneficiary: "Wirtschaftlich Berechtigter"
         bookkeeper: "Buchhalter"
@@ -403,11 +407,15 @@ de:
         contact_depot_bank: "Ansprechpartner Depotbank"
         contact_fund: "Ansprechpartner Fondsgesellschaft"
         family_officer: "Family Officer"
+        investment: "Beteiligung"
+        investment_manager: "Investmentmanager"
         lawyer: "Rechtsanwalt"
         managing_director: "Geschäftsführer"
         notary: "Notar"
         owner: "Mandatsinhaber"
+        portfolio_manager: "Portfoliomanager"
         procurator: "Prokurist"
+        risk_manager: "Risikomanager"
         shareholder: "Gesellschafter"
         supervisory_board_member: "Aufsichtsratsmitglied"
         tax_advisor: "Steuerberater"

@@ -17,6 +17,7 @@ module V1
       type_filter = params.dig(:filter, :group_type)
       return scoped_resource.count if type_filter.blank?
       return scoped_resource.families.count if type_filter == 'family'
+
       scoped_resource.organizations.count
     end
   end

@@ -38,6 +38,7 @@ class InterPersonRelationship < ApplicationRecord
   )
 
   AVAILABLE_ROLES = %i[
+    acquaintance
     architect
     architect_client
     assistant
@@ -49,6 +50,7 @@ class InterPersonRelationship < ApplicationRecord
     cousin_cousin
     daughter_son
     debtor
+    divorcee
     employee
     employer
     estate_agent

@@ -22,7 +22,7 @@ module ActiveStorage
         @upload_options = upload
       end
 
-      def upload(key, io, checksum: nil)
+      def upload(key, io, checksum: nil, **)
         instrument :upload, key: key, checksum: checksum do
           begin
             encryption_client.put_object(

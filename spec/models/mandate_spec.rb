@@ -50,6 +50,7 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to belong_to(:bookkeeper).optional }
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }
+  it { is_expected.to have_many(:investments) }
 
   it { is_expected.to respond_to(:datev_creditor_id) }
   it { is_expected.to respond_to(:datev_debitor_id) }

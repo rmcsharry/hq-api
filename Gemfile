@@ -9,7 +9,7 @@ git_source(:github) do |repo_name|
 end
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.2.0'
+gem 'rails', '~> 5.2.0'
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -32,22 +32,23 @@ gem 'pundit', '~> 1.1.0'                                            # Simple aut
 gem 'rack-cors'                                                     # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 
 # Business Logic & Validation
-gem 'aasm'                                                          # State machines for Ruby classes
-gem 'axlsx'                                                         # Wrapper for generation of .xlsx documents
-gem 'carmen'                                                        # A repository of geographic regions for Ruby
-gem 'draper'                                                        # Decorate models
-gem 'email_validator'                                               # Validates Emails
-gem 'enumerize'                                                     # Advanced Enum handling
-gem 'faker', github: 'stympy/faker', branch: 'master'               # A library for generating fake data such as names, addresses, and phone numbers.
-gem 'ibanizator'                                                    # Validates IBAN
-gem 'jwt'                                                           # Interact with Json-Web-Tokens
-gem 'mail'                                                          # Parse, generate or send emails
-gem 'money'                                                         # List of Currency
-gem 'phony_rails'                                                   # Validates, displays and saves phone numbers
-gem 'steuernummer'                                                  # Validates German tax numbers
-gem 'tzinfo-data'                                                   # Timezone info for different OSs
-gem 'validate_url'                                                  # Validates URLs
-gem 'valvat'                                                        # Validates European VAT numbers
+gem 'aasm'                                                                           # State machines for Ruby classes
+gem 'axlsx', github: 'randym/axlsx', ref: 'c593a08b2a929dac7aa8dc418b55e26b4c49dc34' # Wrapper for generation of .xlsx documents
+gem 'carmen'                                                                         # A repository of geographic regions for Ruby
+gem 'draper'                                                                         # Decorate models
+gem 'email_validator'                                                                # Validates Emails
+gem 'enumerize'                                                                      # Advanced Enum handling
+gem 'faker', github: 'stympy/faker', branch: 'master'                                # A library for generating fake data such as names, addresses, and phone numbers.
+gem 'ibanizator'                                                                     # Validates IBAN
+gem 'jwt'                                                                            # Interact with Json-Web-Tokens
+gem 'mail'                                                                           # Parse, generate or send emails
+gem 'money'                                                                          # List of Currency
+gem 'phony_rails'                                                                    # Validates, displays and saves phone numbers
+gem 'rubyzip'                                                                        # reading and writing zip files
+gem 'steuernummer'                                                                   # Validates German tax numbers
+gem 'tzinfo-data'                                                                    # Timezone info for different OSs
+gem 'validate_url'                                                                   # Validates URLs
+gem 'valvat'                                                                         # Validates European VAT numbers
 
 # Cloud Resources
 gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
@@ -73,7 +74,7 @@ gem 'skylight'                                                      # Performanc
 group :development, :test do
   gem 'awesome_print'
   gem 'brakeman', require: false                                    # Static security tests
-  gem 'bullet'                                                      # Detect N+1 queries
+  gem 'bullet', '5.7.5'                                             # Detect N+1 queries, currently locked to 5.7.5 because of https://github.com/flyerhzm/bullet/issues/435
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
   gem 'pry-byebug'                                                  # Debugger

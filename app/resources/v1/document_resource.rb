@@ -4,6 +4,7 @@ module V1
   # Defines the Document resource for the API
   class DocumentResource < BaseResource
     model_hint model: Document::FundTemplate, resource: :document
+    model_hint model: Document::FundSubscriptionAgreement, resource: :document
 
     attributes(
       :category,
@@ -27,15 +28,15 @@ module V1
     }
 
     def file_url
-      Rails.application.routes.url_helpers.rails_blob_url(@model.file)
+      Rails.application.routes.url_helpers.rails_blob_url(@model.file) if @model.file.attached?
     end
 
     def file_type
-      @model.file.content_type
+      @model.file.content_type if @model.file.attached?
     end
 
     def file_name
-      @model.file.filename.to_s
+      @model.file.filename.to_s if @model.file.attached?
     end
 
     def file=(params)
@@ -70,6 +71,7 @@ module V1
       def create_model(context)
         type = context[:type]
         raise JSONAPI::Exceptions::InvalidFieldValue.new('document-type', type) unless valid_type?(type: type)
+
         type.new(uploader: context[:current_user])
       end
 

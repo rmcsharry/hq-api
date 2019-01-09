@@ -65,8 +65,9 @@ class Mandate < ApplicationRecord
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :mandate_members, dependent: :destroy
   has_many :owners, -> { where(member_type: 'owner') }, class_name: 'MandateMember', inverse_of: :mandate
-  has_and_belongs_to_many :activities, uniq: true
-  has_and_belongs_to_many :mandate_groups, uniq: true
+  has_many :investments, class_name: 'Investor', dependent: :destroy
+  has_and_belongs_to_many :activities, -> { distinct }
+  has_and_belongs_to_many :mandate_groups, -> { distinct }
   has_and_belongs_to_many(
     :mandate_groups_families,
     -> { where(group_type: 'family') },
@@ -130,6 +131,7 @@ class Mandate < ApplicationRecord
   # @return [void]
   def valid_to_greater_or_equal_valid_from
     return if valid_to.blank? || valid_from.blank? || valid_to >= valid_from
+
     errors.add(:valid_to, "can't be before valid_from")
   end
 

@@ -17,6 +17,7 @@ module MultipartRelated
 
     def verify_content_type_header
       return true if params[:action] == 'create' && request.content_type == MULTIFORM_TYPE
+
       super
     end
 

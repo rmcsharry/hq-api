@@ -8,6 +8,7 @@ module V1
 
     def meta(options)
       return super unless options[:serialization_options][:format] == :xlsx
+
       serialized_related_objects.merge(serialized_enums)
     end
 
@@ -27,6 +28,7 @@ module V1
 
     def serialized_enums
       return {} unless @model.class.respond_to? :enumerized_attributes
+
       hash = {}
       enumerized_attributes = @model.class.try(:exportable_attributes) || @model.class.enumerized_attributes
       serialize_attributes!(attributes: enumerized_attributes, hash: hash)

@@ -43,26 +43,31 @@ class BankAccountPolicy < ApplicationPolicy
 
   def index?
     return role? :mandates_export, :funds_export if export?
+
     role? :mandates_read, :funds_read
   end
 
   def show?
     return roles_apply_to_bank_account? :mandates_export, :funds_export if export?
+
     roles_apply_to_bank_account? :mandates_read, :funds_read
   end
 
   def create?
     return false if export?
+
     role? :mandates_write, :funds_write
   end
 
   def update?
     return false if export?
+
     roles_apply_to_bank_account? :mandates_write, :funds_write
   end
 
   def destroy?
     return false if export?
+
     roles_apply_to_bank_account? :mandates_destroy, :funds_destroy
   end
 

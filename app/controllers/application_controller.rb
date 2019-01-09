@@ -5,8 +5,11 @@ class ApplicationController < JSONAPI::ResourceController
   include XLSXExportable
   include Pundit
 
+  rescue_from Exception, with: :handle_generic_exception
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   rescue_from JSONAPI::Exceptions::Unauthorized, with: :not_authorized
+  rescue_from AASM::InvalidTransition, with: :unprocessable_entity
+
   before_action :set_paper_trail_whodunnit
   before_action :filter_inaccessible_fields!
 
@@ -32,6 +35,10 @@ class ApplicationController < JSONAPI::ResourceController
     head :forbidden
   end
 
+  def unprocessable_entity
+    head :unprocessable_entity
+  end
+
   protected
 
   def scoped_resource
@@ -55,6 +62,7 @@ class ApplicationController < JSONAPI::ResourceController
 
   def filter_inaccessible_fields!
     return unless user_signed_in?
+
     params['fields'] = accessible_fields(:ews) if ews_request?
   end
 
@@ -74,8 +82,15 @@ class ApplicationController < JSONAPI::ResourceController
 
   def auth_token_payload
     return @auth_payload if @auth_payload.present?
+
     auth_header = request.headers['Authorization']&.split(' ')
     return {} if auth_header.blank? || auth_header.size != 2
+
     @auth_payload = Warden::JWTAuth::TokenDecoder.new.call(auth_header.last)
+  end
+
+  def handle_generic_exception(exception)
+    Raven.capture_exception(exception)
+    raise exception
   end
 end

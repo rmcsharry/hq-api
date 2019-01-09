@@ -9,6 +9,7 @@ class PolicyWithRoles
     @request = user_context.request
     auth_header = @request.headers['HTTP_AUTHORIZATION']
     return if auth_header.blank? || !auth_header.start_with?('Bearer ')
+
     token_payload = decode(auth_header)
     @roles = token_payload['roles']
     @user  = user_context.user

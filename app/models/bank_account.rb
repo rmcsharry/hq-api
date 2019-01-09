@@ -33,7 +33,7 @@ class BankAccount < ApplicationRecord
   extend Enumerize
 
   CURRENCIES = Money::Currency.map(&:iso_code)
-  ACCOUNT_TYPE = %i[currency_account settlement_account].freeze
+  ACCOUNT_TYPE = %i[currency_account payments_account settlement_account].freeze
 
   belongs_to :owner, polymorphic: true, inverse_of: :bank_accounts
   belongs_to :bank, class_name: 'Contact::Organization', inverse_of: :bank_accounts
@@ -65,6 +65,7 @@ class BankAccount < ApplicationRecord
 
   def iban_or_bank_number_present
     return if (iban.present? && bank_account_number.blank?) || (iban.blank? && bank_account_number.present?)
+
     errors.add(:iban_bank_account_number, 'exactly one of IBAN or bank account number must be set')
   end
 

@@ -64,6 +64,7 @@ module V1
       owner_name, category = search_string&.split(/[–;]/, 2)
       records = records.with_owner_name.where('mandates.owner_name ILIKE ?', "%#{owner_name&.strip}%")
       return records unless category
+
       categories = Mandate.category.values.map { |v| [v.text, v] }.to_h
       possible_categories = categories.select { |key| key.downcase.include? category.strip.downcase }.values
       records.where(category: possible_categories)
@@ -120,6 +121,7 @@ module V1
     filter :user_id, apply: lambda { |records, value, _options|
       contact = User.find_by(id: value[0])&.contact
       return records.none unless contact
+
       records.where(
         primary_consultant: contact
       ).or(

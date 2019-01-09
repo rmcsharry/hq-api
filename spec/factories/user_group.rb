@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :user_group do
-    name { Faker::RickAndMorty.location }
-    comment { Faker::RickAndMorty.quote }
+    name { Faker::TvShows::RickAndMorty.quote }
+    comment { Faker::TvShows::RickAndMorty.quote }
     roles { %w[admin mandates_read mandates_write] }
   end
 end

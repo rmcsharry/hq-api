@@ -54,6 +54,7 @@ class FetchEmailJob < ApplicationJob
 
     response = client.call('GetItem', message: request)
     raise 'Could not fetch email from ews' unless response.success?
+
     response.body[:get_item_response][:response_messages][:get_item_response_message][:items][:message][:mime_content]
   end
   # rubocop:enable Metrics/MethodLength
@@ -97,6 +98,7 @@ class FetchEmailJob < ApplicationJob
   def decoded_body(mail)
     body_parts = mail.body.parts
     return mail.body.decoded unless body_parts.size.positive?
+
     body_parts.map do |part|
       part.body.decoded
     end.join("\n")

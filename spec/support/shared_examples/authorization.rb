@@ -8,6 +8,7 @@ RSpec.shared_examples 'authorization policy' do |roles, options|
     describe "#{verb} access" do
       let!(:current_user) do
         return permitted_user if options[:permitted] && defined?(permitted_user)
+
         create(:user, user_groups: [create(:user_group, roles: [role])])
       end
       let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }

@@ -36,7 +36,7 @@
 class TaxDetail < ApplicationRecord
   extend Enumerize
 
-  US_TAX_FORMS = %i[none w_8ben w_8ben_e w_8imy w_8eci w_8exp].freeze
+  US_TAX_FORMS = %i[none w_8ben w_8ben_e w_8imy w_8eci w_8exp w_9].freeze
   US_FATCA_STATUSES = %i[
     none participation_ffi reporting_ffi nonreporting_ffi owner_documented_ffi active_nffe passive_nffe
   ].freeze
