@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_13_162120) do
+ActiveRecord::Schema.define(version: 2019_01_09_143130) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -156,8 +156,8 @@ ActiveRecord::Schema.define(version: 2018_12_13_162120) do
     t.date "valid_from"
     t.date "valid_to"
     t.uuid "uploader_id", null: false
-    t.string "owner_type", null: false
-    t.uuid "owner_id", null: false
+    t.string "owner_type"
+    t.uuid "owner_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"

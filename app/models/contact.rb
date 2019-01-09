@@ -50,7 +50,7 @@ class Contact < ApplicationRecord
   has_many :addresses, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contact_details, dependent: :destroy
-  has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
+  has_many :documents, as: :owner, inverse_of: :owner, dependent: :nullify
   has_many :mandate_members, dependent: :destroy
   has_many :mandates, through: :mandate_members
   has_many :organization_members, dependent: :destroy, inverse_of: :contact
@@ -82,7 +82,7 @@ class Contact < ApplicationRecord
   )
   has_one :compliance_detail, dependent: :destroy, autosave: true
   has_one :tax_detail, dependent: :destroy, autosave: true
-  has_one :user, dependent: :destroy
+  has_one :user, dependent: :nullify
   has_one :primary_email,
           -> { where(primary: true) },
           class_name: 'ContactDetail::Email',

@@ -56,8 +56,8 @@ class Address < ApplicationRecord
   before_save :set_legal_address
   before_save :save_owner_if_not_persisted
 
-  before_destroy :check_primary_contact_address
-  before_destroy :check_legal_address
+  before_destroy :clear_primary_contact_address
+  before_destroy :clear_legal_address
 
   def to_s
     [
@@ -92,18 +92,16 @@ class Address < ApplicationRecord
     self.owner = owner.reload
   end
 
-  def check_primary_contact_address
-    return if owner.primary_contact_address != self || destroyed_by_association
+  def clear_primary_contact_address
+    return if owner.primary_contact_address != self
 
-    errors[:base] << 'Cannot delete address while it is the primary contact address.'
-    throw :abort
+    owner.update_columns(primary_contact_address_id: nil) # rubocop:disable Rails/SkipsModelValidations
   end
 
-  def check_legal_address
-    return if owner.legal_address != self || destroyed_by_association
+  def clear_legal_address
+    return if owner.legal_address != self
 
-    errors[:base] << 'Cannot delete address while it is the legal address.'
-    throw :abort
+    owner.update_columns(legal_address_id: nil) # rubocop:disable Rails/SkipsModelValidations
   end
 
   def set_defaults

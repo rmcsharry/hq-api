@@ -10,8 +10,8 @@
 #  valid_from  :date
 #  valid_to    :date
 #  uploader_id :uuid             not null
-#  owner_type  :string           not null
-#  owner_id    :uuid             not null
+#  owner_type  :string
+#  owner_id    :uuid
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  type        :string

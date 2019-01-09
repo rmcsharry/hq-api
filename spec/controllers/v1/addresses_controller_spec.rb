@@ -102,12 +102,9 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
       let(:address) { contact.legal_address }
       let!(:contact) { create(:contact_person, :with_contact_details) }
 
-      it 'does not delete the address' do
-        is_expected.to change(Address, :count).by(0)
-        expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
-          'Cannot delete address while it is the legal address.'
-        )
+      it 'does delete the address' do
+        is_expected.to change(Address, :count).by(-1)
+        expect(response).to have_http_status(204)
       end
     end
 
@@ -115,12 +112,9 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
       let(:address) { contact.primary_contact_address }
       let!(:contact) { create(:contact_person, :with_contact_details) }
 
-      it 'does not delete the address' do
-        is_expected.to change(Address, :count).by(0)
-        expect(response).to have_http_status(422)
-        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
-          'Cannot delete address while it is the primary contact address.'
-        )
+      it 'does delete the address' do
+        is_expected.to change(Address, :count).by(-1)
+        expect(response).to have_http_status(204)
       end
     end
   end
