@@ -122,15 +122,7 @@ module V1
       contact = User.find_by(id: value[0])&.contact
       return records.none unless contact
 
-      records.where(
-        primary_consultant: contact
-      ).or(
-        records.where(secondary_consultant: contact)
-      ).or(
-        records.where(assistant: contact)
-      ).or(
-        records.where(bookkeeper: contact)
-      )
+      records.associated_to_contact_with_id(contact)
     }
 
     filter :mandate_groups_organizations, apply: lambda { |records, value, _options|
