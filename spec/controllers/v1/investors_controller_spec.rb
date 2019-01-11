@@ -149,5 +149,14 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
         expect(content).to include(primary_owner.name)
       end
     end
+
+    context 'with missing template' do
+      let(:document) { nil }
+      let(:primary_owner) { create(:contact_person) }
+
+      it 'returns `not_found` error code' do
+        expect(response).to have_http_status(404)
+      end
+    end
   end
 end

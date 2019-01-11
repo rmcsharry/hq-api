@@ -11,6 +11,8 @@ module DocumentBuilder
 
   included do
     def render_filled_template(template, context)
+      return render json: {}, status: :not_found if template.nil?
+
       authorize template, :show?
 
       filled_template = build_document(template, context)
