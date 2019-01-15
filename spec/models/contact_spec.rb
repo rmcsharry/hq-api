@@ -53,6 +53,11 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:passive_person_relationships) }
   it { is_expected.to have_many(:actively_related_persons) }
   it { is_expected.to have_many(:passively_related_persons) }
+  it { is_expected.to have_many(:investors) }
+  it { is_expected.to have_many(:primary_consultant_mandates) }
+  it { is_expected.to have_many(:secondary_consultant_mandates) }
+  it { is_expected.to have_many(:primary_contact_investors) }
+  it { is_expected.to have_many(:secondary_contact_investors) }
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }
@@ -108,6 +113,60 @@ RSpec.describe Contact, type: :model do
       it 'returns false' do
         expect(subject.mandate_owner?).to eq false
         expect(subject.is_mandate_owner).to eq false
+      end
+    end
+  end
+
+  describe '#associated_to_mandate_with_id?' do
+    let!(:mandate) { create :mandate }
+    let!(:person) { create :contact_person }
+    let!(:uninvolved_person) { create :contact_person }
+
+    it 'finds contacts through primary_consultant' do
+      mandate.primary_consultant = person
+      mandate.save!
+
+      associated_contacts = Contact.associated_to_mandate_with_id(mandate.id)
+      expect(associated_contacts).to include(person)
+      expect(associated_contacts).not_to include(uninvolved_person)
+    end
+
+    it 'finds contacts through secondary_consultant' do
+      mandate.secondary_consultant = person
+      mandate.save!
+
+      expect(Contact.associated_to_mandate_with_id(mandate.id)).to include(person)
+    end
+
+    it 'finds contacts through bookkeeper' do
+      mandate.bookkeeper = person
+      mandate.save!
+
+      expect(Contact.associated_to_mandate_with_id(mandate.id)).to include(person)
+    end
+
+    it 'finds contacts through assistant' do
+      mandate.assistant = person
+      mandate.save!
+
+      expect(Contact.associated_to_mandate_with_id(mandate.id)).to include(person)
+    end
+
+    describe 'with existing mandate_memberships' do
+      let!(:mandate_member) { create :mandate_member, mandate: mandate, contact: person }
+      let!(:second_person) { create :contact_person }
+
+      it 'finds contacts through memberships' do
+        expect(Contact.associated_to_mandate_with_id(mandate.id)).to include(person)
+      end
+
+      it 'finds contacts through memberships and direct associations simultaneously' do
+        mandate.assistant = second_person
+        mandate.save!
+
+        associated_contacts = Contact.associated_to_mandate_with_id(mandate.id)
+        expect(associated_contacts).to include(person)
+        expect(associated_contacts).to include(second_person)
       end
     end
   end

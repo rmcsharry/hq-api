@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_09_143130) do
+ActiveRecord::Schema.define(version: 2019_01_09_154637) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -270,8 +270,12 @@ ActiveRecord::Schema.define(version: 2019_01_09_143130) do
     t.decimal "amount_total", precision: 20, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "primary_contact_id"
+    t.uuid "secondary_contact_id"
     t.index ["fund_id"], name: "index_investors_on_fund_id"
     t.index ["mandate_id"], name: "index_investors_on_mandate_id"
+    t.index ["primary_contact_id"], name: "index_investors_on_primary_contact_id"
+    t.index ["secondary_contact_id"], name: "index_investors_on_secondary_contact_id"
   end
 
   create_table "mandate_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -469,7 +473,9 @@ ActiveRecord::Schema.define(version: 2019_01_09_143130) do
   add_foreign_key "investors", "bank_accounts"
   add_foreign_key "investors", "contact_details", column: "contact_email_id"
   add_foreign_key "investors", "contact_details", column: "contact_phone_id"
+  add_foreign_key "investors", "contacts", column: "primary_contact_id"
   add_foreign_key "investors", "contacts", column: "primary_owner_id"
+  add_foreign_key "investors", "contacts", column: "secondary_contact_id"
   add_foreign_key "investors", "funds"
   add_foreign_key "investors", "mandates"
   add_foreign_key "mandate_groups_mandates", "mandate_groups"

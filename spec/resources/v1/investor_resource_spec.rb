@@ -27,6 +27,8 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to have_one :legal_address }
   it { is_expected.to have_one :mandate }
   it { is_expected.to have_one :primary_owner }
+  it { is_expected.to have_one(:primary_contact).with_class_name('Contact') }
+  it { is_expected.to have_one(:secondary_contact).with_class_name('Contact') }
 
   it { is_expected.to have_many :documents }
 

@@ -4,25 +4,29 @@
 #
 # Table name: investors
 #
-#  id                 :uuid             not null, primary key
-#  fund_id            :uuid
-#  mandate_id         :uuid
-#  legal_address_id   :uuid
-#  contact_address_id :uuid
-#  contact_email_id   :uuid
-#  contact_phone_id   :uuid
-#  bank_account_id    :uuid
-#  primary_owner_id   :uuid
-#  aasm_state         :string           not null
-#  investment_date    :datetime
-#  amount_total       :decimal(20, 2)
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
+#  id                   :uuid             not null, primary key
+#  fund_id              :uuid
+#  mandate_id           :uuid
+#  legal_address_id     :uuid
+#  contact_address_id   :uuid
+#  contact_email_id     :uuid
+#  contact_phone_id     :uuid
+#  bank_account_id      :uuid
+#  primary_owner_id     :uuid
+#  aasm_state           :string           not null
+#  investment_date      :datetime
+#  amount_total         :decimal(20, 2)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  primary_contact_id   :uuid
+#  secondary_contact_id :uuid
 #
 # Indexes
 #
-#  index_investors_on_fund_id     (fund_id)
-#  index_investors_on_mandate_id  (mandate_id)
+#  index_investors_on_fund_id               (fund_id)
+#  index_investors_on_mandate_id            (mandate_id)
+#  index_investors_on_primary_contact_id    (primary_contact_id)
+#  index_investors_on_secondary_contact_id  (secondary_contact_id)
 #
 # Foreign Keys
 #
@@ -33,7 +37,9 @@
 #  fk_rails_...  (fund_id => funds.id)
 #  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
+#  fk_rails_...  (primary_contact_id => contacts.id)
 #  fk_rails_...  (primary_owner_id => contacts.id)
+#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 # Defines the Investor
@@ -48,6 +54,10 @@ class Investor < ApplicationRecord
   belongs_to :legal_address, class_name: 'Address', autosave: true
   belongs_to :mandate, inverse_of: :investments, autosave: true
   belongs_to :primary_owner, class_name: 'Contact', autosave: true
+  belongs_to :primary_contact, class_name: 'Contact', optional: true, inverse_of: :primary_contact_investors
+  belongs_to(
+    :secondary_contact, class_name: 'Contact', optional: true, inverse_of: :secondary_contact_investors
+  )
   has_and_belongs_to_many :fund_reports, -> { distinct }
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :investor_cashflows, dependent: :nullify

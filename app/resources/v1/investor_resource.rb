@@ -8,6 +8,7 @@ module V1
       :amount_open,
       :amount_total,
       :amount_total_distribution,
+      :created_at,
       :current_value,
       :dpi,
       :investment_date,
@@ -26,6 +27,8 @@ module V1
     has_one :legal_address, class_name: 'Address'
     has_one :mandate
     has_one :primary_owner, class_name: 'Contact'
+    has_one :primary_contact, class_name: 'Contact'
+    has_one :secondary_contact, class_name: 'Contact'
 
     has_many :documents
 

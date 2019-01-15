@@ -41,6 +41,7 @@
 #
 
 # Defines the Contact model
+# rubocop:disable Metrics/ClassLength
 class Contact < ApplicationRecord
   include ExportableAttributes
   extend Enumerize
@@ -55,6 +56,7 @@ class Contact < ApplicationRecord
   has_many :mandates, through: :mandate_members
   has_many :organization_members, dependent: :destroy, inverse_of: :contact
   has_many :organizations, through: :organization_members
+  has_many :investors, foreign_key: :primary_owner_id, inverse_of: :primary_owner, dependent: :nullify
   has_many(
     :active_person_relationships, class_name: 'InterPersonRelationship', dependent: :destroy,
                                   inverse_of: :source_person, foreign_key: :source_person_id
@@ -72,6 +74,14 @@ class Contact < ApplicationRecord
   has_many(
     :secondary_consultant_mandates, class_name: 'Mandate', foreign_key: :secondary_consultant_id,
                                     inverse_of: :secondary_consultant, dependent: :nullify
+  )
+  has_many(
+    :primary_contact_investors, class_name: 'Investor', foreign_key: :primary_contact_id,
+                                inverse_of: :primary_contact, dependent: :nullify
+  )
+  has_many(
+    :secondary_contact_investors, class_name: 'Investor', foreign_key: :secondary_contact_id,
+                                  inverse_of: :secondary_contact, dependent: :nullify
   )
   has_many(
     :assistant_mandates, class_name: 'Mandate', foreign_key: :assistant_id, inverse_of: :assistant, dependent: :nullify
@@ -109,6 +119,25 @@ class Contact < ApplicationRecord
     )
   }
 
+  scope :associated_to_mandate_with_id, lambda { |mandate_id|
+    joins(
+      <<-SQL.squish
+        LEFT JOIN mandates m
+        ON contacts.id = m.primary_consultant_id
+        OR contacts.id = m.secondary_consultant_id
+        OR contacts.id = m.assistant_id
+        OR contacts.id = m.bookkeeper_id
+      SQL
+    )
+      .joins(
+        <<-SQL.squish
+          LEFT JOIN mandate_members mm
+          ON contacts.id = mm.contact_id
+        SQL
+      )
+      .where('mm.mandate_id = ? OR m.id = ?', mandate_id, mandate_id)
+  }
+
   before_create :add_tax_detail
   before_validation :assign_primary_contact_address
 
@@ -143,3 +172,4 @@ class Contact < ApplicationRecord
     self.primary_contact_address = legal_address unless primary_contact_address
   end
 end
+# rubocop:enable Metrics/ClassLength

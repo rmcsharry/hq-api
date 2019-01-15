@@ -4,25 +4,29 @@
 #
 # Table name: investors
 #
-#  id                 :uuid             not null, primary key
-#  fund_id            :uuid
-#  mandate_id         :uuid
-#  legal_address_id   :uuid
-#  contact_address_id :uuid
-#  contact_email_id   :uuid
-#  contact_phone_id   :uuid
-#  bank_account_id    :uuid
-#  primary_owner_id   :uuid
-#  aasm_state         :string           not null
-#  investment_date    :datetime
-#  amount_total       :decimal(20, 2)
-#  created_at         :datetime         not null
-#  updated_at         :datetime         not null
+#  id                   :uuid             not null, primary key
+#  fund_id              :uuid
+#  mandate_id           :uuid
+#  legal_address_id     :uuid
+#  contact_address_id   :uuid
+#  contact_email_id     :uuid
+#  contact_phone_id     :uuid
+#  bank_account_id      :uuid
+#  primary_owner_id     :uuid
+#  aasm_state           :string           not null
+#  investment_date      :datetime
+#  amount_total         :decimal(20, 2)
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  primary_contact_id   :uuid
+#  secondary_contact_id :uuid
 #
 # Indexes
 #
-#  index_investors_on_fund_id     (fund_id)
-#  index_investors_on_mandate_id  (mandate_id)
+#  index_investors_on_fund_id               (fund_id)
+#  index_investors_on_mandate_id            (mandate_id)
+#  index_investors_on_primary_contact_id    (primary_contact_id)
+#  index_investors_on_secondary_contact_id  (secondary_contact_id)
 #
 # Foreign Keys
 #
@@ -33,7 +37,9 @@
 #  fk_rails_...  (fund_id => funds.id)
 #  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
+#  fk_rails_...  (primary_contact_id => contacts.id)
 #  fk_rails_...  (primary_owner_id => contacts.id)
+#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 require 'rails_helper'
@@ -57,6 +63,8 @@ RSpec.describe Investor, type: :model do
   it { is_expected.to belong_to(:mandate) }
   it { is_expected.to have_many(:documents) }
   it { is_expected.to have_one(:fund_subscription_agreement) }
+  it { is_expected.to belong_to(:primary_contact).optional }
+  it { is_expected.to belong_to(:secondary_contact).optional }
 
   describe '#sign' do
     let(:investor) { create :investor }

@@ -46,6 +46,7 @@ module V1
     has_many :organization_members
     has_many :organizations, class_name: 'Contact'
     has_many :versions, relation_name: 'child_versions', class_name: 'Version'
+    has_many :investors
     has_one :compliance_detail
     has_one :tax_detail
     has_one :primary_contact_address, class_name: 'Address'
@@ -98,6 +99,11 @@ module V1
 
     filter :contact_type, apply: lambda { |records, value, _options|
       records.where('contacts.type = ?', value[0])
+    }
+
+    filter :mandate_id, apply: lambda { |records, value, _options|
+      mandate_id = value[0]
+      records.associated_to_mandate_with_id(mandate_id)
     }
 
     filter :place_of_birth, apply: lambda { |records, value, _options|
