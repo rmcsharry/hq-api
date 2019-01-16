@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Quill::Delta, type: :util do
   def normalize_xml(xml_string)
-    xml_string.gsub(/>\s</, '><')
+    Nokogiri::XML.parse("<w>#{xml_string}<\w>", &:noblanks).to_s
   end
 
   describe 'delta string parsing' do
@@ -162,6 +162,104 @@ RSpec.describe Quill::Delta, type: :util do
         <w:p>
           <w:r>
             <w:t xml:space=\"preserve\">the end</w:t>
+          </w:r>
+        </w:p>
+      EXPECTATION
+    end
+
+    it 'handles new-lines before bullet lists' do
+      delta = Quill::Delta.new <<-QUILL.squish
+        {
+          "ops": [
+            { "insert": "Test\\n\\n" },
+            { "attributes": { "italic": true, "bold": true }, "insert": "Test" },
+            { "insert": " " },
+            { "attributes": { "italic": true }, "insert": "Nummer" },
+            { "insert": " " },
+            { "attributes": { "bold": true }, "insert": "Zwei" },
+            { "insert": "\\n\\n" },
+            { "attributes": { "bold": true }, "insert": "Punkt 1" },
+            { "attributes": { "list": "bullet" }, "insert": "\\n" },
+            { "insert": "Punkt 2" },
+            { "attributes": { "list": "bullet" }, "insert": "\\n" },
+            { "attributes": { "italic": true }, "insert": "Punkt 3" },
+            { "attributes": { "list": "bullet" }, "insert": "\\n" }
+          ]
+        }
+      QUILL
+
+      expect(normalize_xml(delta.to_s)).to eq normalize_xml <<-EXPECTATION.squish
+        <w:p>
+          <w:r>
+            <w:t xml:space=\"preserve\">Test</w:t>
+          </w:r>
+        </w:p>
+        <w:p></w:p>
+        <w:p>
+          <w:r>
+            <w:rPr>
+              <w:i/>
+              <w:b/>
+            </w:rPr>
+            <w:t xml:space=\"preserve\">Test</w:t>
+          </w:r>
+          <w:r>
+            <w:t xml:space=\"preserve\"> </w:t>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:i/>
+            </w:rPr>
+            <w:t xml:space=\"preserve\">Nummer</w:t>
+          </w:r>
+          <w:r>
+            <w:t xml:space=\"preserve\"> </w:t>
+          </w:r>
+          <w:r>
+            <w:rPr>
+              <w:b/>
+            </w:rPr>
+            <w:t xml:space=\"preserve\">Zwei</w:t>
+          </w:r>
+        </w:p>
+        <w:p></w:p>
+        <w:p>
+          <w:pPr>
+            <w:numPr>
+              <w:ilvl w:val="0"/>
+              <w:numId w:val="1"/>
+            </w:numPr>
+          </w:pPr>
+          <w:r>
+            <w:rPr>
+              <w:b/>
+            </w:rPr>
+            <w:t xml:space=\"preserve\">Punkt 1</w:t>
+          </w:r>
+        </w:p>
+        <w:p>
+          <w:pPr>
+            <w:numPr>
+              <w:ilvl w:val="0"/>
+              <w:numId w:val="1"/>
+            </w:numPr>
+          </w:pPr>
+          <w:r>
+            <w:t xml:space=\"preserve\">Punkt 2</w:t>
+          </w:r>
+        </w:p>
+        <w:p>
+          <w:pPr>
+            <w:numPr>
+              <w:ilvl w:val="0"/>
+              <w:numId w:val="1"/>
+            </w:numPr>
+          </w:pPr>
+          <w:r>
+            <w:rPr>
+              <w:i/>
+            </w:rPr>
+            <w:t xml:space=\"preserve\">Punkt 3</w:t>
           </w:r>
         </w:p>
       EXPECTATION

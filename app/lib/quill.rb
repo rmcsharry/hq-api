@@ -34,7 +34,8 @@ module Quill
         apply_insert insert, attributes
       end
 
-      @paragraphs.map(&:to_s).join
+      # Quill does always end with a new line which we strip here
+      @paragraphs[0..-2].map(&:to_s).join
     end
 
     # Set line-format for current paragraph
@@ -45,13 +46,21 @@ module Quill
 
     # Insert given text into current paragraph.
     # Insert a new paragraph for every new line, delimited by "\n".
+    # rubocop:disable Metrics/AbcSize
     def apply_insert(insert, attributes)
-      lines = insert.split("\n")
-      @paragraphs.last.text_runs << Quill::TextRun.new(lines.first, attributes)
-      lines.drop(1).each do |text|
-        @paragraphs << Quill::Paragraph.new(Quill::TextRun.new(text, attributes))
+      insert.lines.each do |line|
+        text_before_newline = line.split("\n")
+
+        unless text_before_newline.first.nil?
+          @paragraphs.last.text_runs << Quill::TextRun.new(text_before_newline.first, attributes)
+        end
+
+        line.scan("\n").count.times do
+          @paragraphs << Quill::Paragraph.new
+        end
       end
     end
+    # rubocop:enable Metrics/AbcSize
   end
 
   # Defines text-paragraphs consisting of multiple formatted text-fragments.
@@ -96,7 +105,7 @@ module Quill
     attr_reader :attributes
     attr_reader :text
 
-    def initialize(text, attributes)
+    def initialize(text = '', attributes = nil)
       @attributes = attributes
       @text = text
     end
