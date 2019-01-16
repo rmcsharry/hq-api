@@ -22,7 +22,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
-  describe 'GET /v1/investors/:id/filled-fund-subscription-agreement', bullet: false do
+  describe 'GET /v1/investors/:id/filled-fund-subscription-agreement' do
     let!(:fund) { create(:fund) }
     let!(:investor) { create(:investor, fund: fund, mandate: mandate) }
     let!(:document) do
@@ -89,7 +89,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
   end
 
-  describe 'GET /v1/investors/:id/filled-fund-quarterly-report', bullet: false do
+  describe 'GET /v1/investors/:id/filled-fund-quarterly-report' do
     let!(:fund) { create(:fund) }
     let!(:investor) { create(:investor, fund: fund, mandate: mandate, primary_owner: primary_owner) }
     let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
@@ -114,12 +114,15 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
         params: {},
         headers: auth_headers
       )
+    end
 
+    def response_document
       tempfile = Tempfile.new 'filled-report'
       tempfile.binmode
       tempfile.write response.body
-      @response_document = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
+      docx = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
       tempfile.close
+      docx
     end
 
     context 'with person as primary owner' do
@@ -127,7 +130,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
-        content = @response_document.to_s
+        content = response_document.to_s
 
         primary_owner = investor.primary_owner.decorate
 
@@ -141,7 +144,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
-        content = @response_document.to_s
+        content = response_document.to_s
 
         primary_owner = investor.primary_owner.decorate
 
@@ -156,6 +159,28 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
       it 'returns `not_found` error code' do
         expect(response).to have_http_status(404)
+      end
+    end
+
+    context 'with missing template', bullet: false do
+      let!(:document) do
+        doc = create(
+          :fund_template_document,
+          category: :fund_quarterly_report_template,
+          owner: fund
+        )
+        doc.file.attach(
+          io: File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')),
+          filename: 'sample.pdf',
+          content_type: Mime[:pdf].to_s
+        )
+        doc
+      end
+      let(:primary_owner) { create(:contact_person) }
+
+      it 'returns unmodified pdf document' do
+        expected_document = File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'))
+        expect(Base64.encode64(expected_document.read)).to eq(Base64.encode64(response.body))
       end
     end
   end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Docx
+  MIME_TYPE = Mime[:docx].to_s.freeze
+
   # Defines an interface to read and write .docx files
   class Document
     attr_reader :documents
