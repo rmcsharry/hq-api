@@ -99,7 +99,7 @@ class Fund < ApplicationRecord
   end
 
   def total_signed_amount
-    investors.sum(&:amount_total)
+    investors.signed.sum(&:amount_total)
   end
 
   def total_called_amount
@@ -107,7 +107,11 @@ class Fund < ApplicationRecord
   end
 
   def total_open_amount
-    total_signed_amount - total_called_amount
+    total_signed_amount - total_called_amount + total_recallable_amount
+  end
+
+  def total_recallable_amount
+    investor_cashflows.sum(&:distribution_recallable_amount)
   end
 
   def total_distributions_amount
