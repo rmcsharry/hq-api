@@ -10,8 +10,8 @@
 #  valid_from  :date
 #  valid_to    :date
 #  uploader_id :uuid             not null
-#  owner_type  :string           not null
-#  owner_id    :uuid             not null
+#  owner_type  :string
+#  owner_id    :uuid
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  type        :string
@@ -190,6 +190,7 @@ class Document
       primary_owner = investor.primary_owner.decorate
       primary_address = investor.contact_address
       current_date = Time.zone.now.strftime('%d.%m.%Y')
+      description = Quill::Delta.new(fund_report.description).to_s
       gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
 
       {
@@ -199,7 +200,7 @@ class Document
           name: fund.name
         },
         fund_report: {
-          description: fund_report.description
+          description: description
         },
         investor: {
           amount_total: investor.amount_total,

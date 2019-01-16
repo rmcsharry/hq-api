@@ -113,6 +113,16 @@ class Mandate < ApplicationRecord
     )
   }
 
+  scope :associated_to_contact_with_id, lambda { |contact_id|
+    where(
+      'primary_consultant_id = ? OR secondary_consultant_id = ? OR assistant_id = ? OR bookkeeper_id = ?',
+      contact_id,
+      contact_id,
+      contact_id,
+      contact_id
+    )
+  }
+
   validates :category, presence: true
   validates :primary_consultant, presence: true, if: :client?
   validates :mandate_groups_organizations, presence: true

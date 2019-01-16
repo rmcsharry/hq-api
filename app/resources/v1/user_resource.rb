@@ -20,6 +20,8 @@ module V1
       :deactivated_at,
       :email,
       :ews_user_id,
+      :mandates_client_count,
+      :mandates_prospect_count,
       :roles,
       :sign_in_count,
       :updated_at,
@@ -39,6 +41,14 @@ module V1
         role[:mandate_groups] = value.uniq if key.start_with? 'mandates'
         role
       end
+    end
+
+    def mandates_client_count
+      Mandate.associated_to_contact_with_id(@model.contact_id).where(state: :client).count
+    end
+
+    def mandates_prospect_count
+      Mandate.associated_to_contact_with_id(@model.contact_id).where(state: :prospect).count
     end
 
     filters(

@@ -211,4 +211,59 @@ RSpec.describe Mandate, type: :model do
       end
     end
   end
+
+  describe '#associated_to_contact_with_id' do
+    let(:person) { create(:contact_person, first_name: 'Thomas', last_name: 'Makait') }
+    let!(:random_mandate) { create(:mandate) }
+    subject! { mandate }
+
+    context 'when person is not associated' do
+      let(:mandate) { create(:mandate) }
+
+      it 'does not find any associated mandates' do
+        associated_mandates = Mandate.associated_to_contact_with_id(person.id)
+        expect(associated_mandates.count).to eq(0)
+      end
+    end
+
+    context 'when person is primary_consultant' do
+      let(:mandate) { create(:mandate, primary_consultant: person) }
+
+      it 'finds associated mandate' do
+        associated_mandates = Mandate.associated_to_contact_with_id(person.id)
+        expect(associated_mandates.count).to eq(1)
+        expect(associated_mandates.first).to eq(mandate)
+      end
+    end
+
+    context 'when person is secondary_consultant' do
+      let(:mandate) { create(:mandate, secondary_consultant: person) }
+
+      it 'finds associated mandate' do
+        associated_mandates = Mandate.associated_to_contact_with_id(person.id)
+        expect(associated_mandates.count).to eq(1)
+        expect(associated_mandates.first).to eq(mandate)
+      end
+    end
+
+    context 'when person is assistant' do
+      let(:mandate) { create(:mandate, assistant: person) }
+
+      it 'finds associated mandate' do
+        associated_mandates = Mandate.associated_to_contact_with_id(person.id)
+        expect(associated_mandates.count).to eq(1)
+        expect(associated_mandates.first).to eq(mandate)
+      end
+    end
+
+    context 'when person is bookkeeper' do
+      let(:mandate) { create(:mandate, bookkeeper: person) }
+
+      it 'finds associated mandate' do
+        associated_mandates = Mandate.associated_to_contact_with_id(person.id)
+        expect(associated_mandates.count).to eq(1)
+        expect(associated_mandates.first).to eq(mandate)
+      end
+    end
+  end
 end

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Docx
+  MIME_TYPE = Mime[:docx].to_s.freeze
+
   # Defines an interface to read and write .docx files
   class Document
     attr_reader :documents
@@ -33,8 +35,6 @@ module Docx
       end.string
     end
 
-    private
-
     # Find and return all nodes (not necessarily leafs) that contain at least
     # one token in the form of {.*}.
     def nodes_with_replace_tokens(document)
@@ -51,38 +51,58 @@ module Docx
     # for token in the form of {.*}. For found token, erase their
     # container nodes contents and insert replacement from context
     # if that token can be found in it
+    # rubocop:disable Metrics/CyclomaticComplexity
+    # rubocop:disable Metrics/PerceivedComplexity
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/AbcSize
     def apply_context(node, context)
       current_key = ''
       current_nodes = []
+      # rubocop:disable Metrics/BlockLength
       node.search('text()').each do |text_node|
         current_key += text_node.text
         match = /\{(?<token>(.*))\}/.match(current_key)
+        current_nodes << text_node
 
-        if match.nil?
-          current_nodes << text_node
-          next
+        next if match.nil?
+
+        current_key = ''
+        replacement = context.dig(*match['token'].split('.').map(&:to_sym))
+        is_xml_replacement = replacement.to_s&.start_with?('<w:p>')
+
+        # match_string is the token with the containing curlies, e.g. "{contact.name}"
+        # the following loop iteratively deletes exactly the characters of said
+        # match_string and inserts `replacement` when visiting the first character "{"
+        match_string = match.to_s
+        first_node = nil
+        current_nodes.each do |intermediate_node|
+          break if match_string.length.zero?
+
+          intermediate_node.content = intermediate_node.content.chars.map do |char|
+            if char != match_string[0] || match_string.length.zero?
+              char
+            else
+              replaced_char = match_string[0]
+              match_string[0] = ''
+              if replaced_char == '{'
+                first_node = intermediate_node
+                is_xml_replacement ? '' : replacement
+              end
+            end
+          end.join
         end
 
-        key = match['token']
-        pre_match = match.pre_match
-        replacement = context.dig(*key.split('.').map(&:to_sym))
-        text_node.content = "#{pre_match}#{replacement}"
-        rest = match.post_match
-        if rest.include?('{') || rest.include?('}')
-          current_key = rest
-        else
-          text_node.content += rest
-          current_key = ''
+        if is_xml_replacement
+          paragraph = first_node&.ancestors('//w:p')&.first
+          paragraph&.replace(replacement)
         end
 
-        current_nodes.each do |clearable_node|
-          clearable_node.content = ''
-        end
         current_nodes = []
       end
+      # rubocop:enable Metrics/BlockLength
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
     # rubocop:enable Metrics/MethodLength
     # rubocop:enable Metrics/AbcSize
 
