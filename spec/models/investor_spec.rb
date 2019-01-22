@@ -139,25 +139,8 @@ RSpec.describe Investor, type: :model do
     it { is_expected.to respond_to(:state) }
   end
 
-  describe '#amount_total' do
-    it { is_expected.to respond_to(:amount_total) }
-    it { is_expected.to validate_presence_of(:amount_total) }
-  end
-
-  describe '#amount_open' do
-    it { is_expected.to respond_to(:amount_open) }
-
-    # TODO: Add meaningful specs
-  end
-
   describe '#current_value' do
     it { is_expected.to respond_to(:current_value) }
-
-    # TODO: Add meaningful specs
-  end
-
-  describe '#amount_total_distribution' do
-    it { is_expected.to respond_to(:amount_total_distribution) }
 
     # TODO: Add meaningful specs
   end
@@ -178,5 +161,96 @@ RSpec.describe Investor, type: :model do
     it { is_expected.to respond_to(:irr) }
 
     # TODO: Add meaningful specs
+  end
+
+  context 'investor KPIs', bullet: false do
+    subject { create(:investor, :signed, fund: fund, amount_total: '4500000.99') }
+    let(:fund) { create(:fund) }
+    let!(:capital_call1) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            capital_call_gross_amount: '550000.25',
+                            capital_call_management_fees_amount: '12000'
+      )
+    end
+    let!(:capital_call2) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            capital_call_gross_amount: '250000',
+                            capital_call_compensatory_interest_amount: '10000'
+      )
+    end
+    let!(:capital_call3) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            capital_call_gross_amount: '1430000.84',
+                            distribution_repatriation_amount: '750000'
+      )
+    end
+    let!(:distribution1) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            capital_call_compensatory_interest_amount: '10000',
+                            distribution_repatriation_amount: '750000',
+                            distribution_recallable_amount: '34000.23'
+      )
+    end
+    let!(:distribution2) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            capital_call_compensatory_interest_amount: '20000',
+                            distribution_repatriation_amount: '10000',
+                            distribution_participation_profits_amount: '10000',
+                            distribution_dividends_amount: '10000',
+                            distribution_interest_amount: '10000',
+                            distribution_withholding_tax_amount: '10000',
+                            distribution_recallable_amount: '10000',
+                            distribution_compensatory_interest_amount: '10000'
+      )
+    end
+    let!(:distribution3) do
+      create(
+        :investor_cashflow, investor: subject, fund: fund,
+                            distribution_repatriation_amount: '35000',
+                            distribution_participation_profits_amount: '35000',
+                            distribution_dividends_amount: '35000',
+                            distribution_interest_amount: '35000',
+                            distribution_misc_profits_amount: '35000',
+                            distribution_structure_costs_amount: '35000',
+                            distribution_withholding_tax_amount: '35000',
+                            distribution_recallable_amount: '35000',
+                            distribution_compensatory_interest_amount: '35000'
+      )
+    end
+
+    describe '#amount_total' do
+      it 'return the total amount of the investor' do
+        expect(subject.amount_total).to eq 4_500_000.99
+      end
+    end
+
+    describe '#amount_called' do
+      it 'calculates the sum of all capital calls' do
+        expect(subject.amount_called).to eq 2_282_001.09
+      end
+    end
+
+    describe '#amount_open' do
+      it 'calculates the amount that is still open' do
+        expect(subject.amount_open).to eq 2_297_000.13
+      end
+    end
+
+    describe '#amount_recallable' do
+      it 'calculates the sum of all recallable distributions' do
+        expect(subject.amount_recallable).to eq 79_000.23
+      end
+    end
+
+    describe '#amount_total_distribution' do
+      it 'calculates the sum of all distributions' do
+        expect(subject.amount_total_distribution).to eq 1_919_000.23
+      end
+    end
   end
 end
