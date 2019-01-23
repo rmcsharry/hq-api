@@ -122,12 +122,13 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
-        let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
+        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
           content = @response_document.to_s
 
+          cashflow = investor_cashflow.decorate
           primary_owner = investor.primary_owner.decorate
           primary_address = investor.contact_address
 
@@ -138,17 +139,24 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
           expect(content).to include(primary_address.street_and_number)
           expect(content).to include(primary_address.postal_code)
           expect(content).to include(primary_address.city)
+          expect(content).to include(fund.currency)
+          expect(content).to include(cashflow.net_cashflow_amount)
+          expect(content).to include(cashflow.net_cashflow_percentage)
+
+          # Check that there are no un-replaced templating tokens
+          expect(content).not_to match(/\{[a-z_\.]+\}/)
         end
       end
 
       context 'with actual template for a distribution' do
         let!(:cashflow_type) { :distribution }
-        let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
           content = @response_document.to_s
 
+          cashflow = investor_cashflow.decorate
           primary_owner = investor.primary_owner.decorate
           primary_address = investor.contact_address
 
@@ -159,6 +167,11 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
           expect(content).to include(primary_address.street_and_number)
           expect(content).to include(primary_address.postal_code)
           expect(content).to include(primary_address.city)
+          expect(content).to include(cashflow.net_cashflow_amount)
+          expect(content).to include(cashflow.net_cashflow_percentage)
+
+          # Check that there are no un-replaced templating tokens
+          expect(content).not_to match(/\{[a-z_\.]+\}/)
         end
       end
     end
@@ -168,7 +181,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
-        let(:document_name) { '20181219-Kapitalabruf_Vorlage.docx' }
+        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -188,7 +201,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a distribution' do
         let!(:cashflow_type) { :distribution }
-        let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -209,7 +222,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
     context 'with missing funds permissions' do
       let(:primary_owner) { create :contact_person }
-      let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+      let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
       let!(:user) do
         create(
           :user,

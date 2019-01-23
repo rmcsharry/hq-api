@@ -56,9 +56,14 @@ class Document
       false
     end
 
+    def self.fund_capital_call_context(investor_cashflow:)
+      fund_distribution_context(investor_cashflow: investor_cashflow)
+    end
+
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def self.fund_capital_call_context(investor_cashflow:)
+    # rubocop:disable Metrics/LineLength
+    def self.fund_distribution_context(investor_cashflow:)
       investor_cashflow = investor_cashflow.decorate
       investor = investor_cashflow.investor.decorate
       fund_cashflow = investor_cashflow.fund_cashflow.decorate
@@ -80,52 +85,6 @@ class Document
             owner_name: bank_account&.owner_name,
             routing_number: bank_account&.bank_routing_number
           },
-          currency: fund.currency,
-          name: fund.name
-        },
-        fund_cashflow: {
-          number: fund_cashflow.number,
-          valuta_date: fund_cashflow.valuta_date
-        },
-        investor: {
-          amount_total: investor.amount_total,
-          contact_address: {
-            city: primary_address.city,
-            postal_code: primary_address.postal_code,
-            street_and_number: primary_address.street_and_number
-          },
-          primary_owner: {
-            formal_salutation: primary_owner.formal_salutation,
-            full_name: primary_owner.name,
-            gender: gender_text
-          }
-        },
-        investor_cashflow: {
-          capital_call_total_amount: investor_cashflow.capital_call_total_amount,
-          capital_call_total_percentage: investor_cashflow.capital_call_total_percentage
-        }
-      }
-    end
-    # rubocop:enable Metrics/AbcSize
-    # rubocop:enable Metrics/MethodLength
-
-    # rubocop:disable Metrics/AbcSize
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/LineLength
-    def self.fund_distribution_context(investor_cashflow:)
-      investor_cashflow = investor_cashflow.decorate
-      investor = investor_cashflow.investor.decorate
-      fund_cashflow = investor_cashflow.fund_cashflow.decorate
-      fund = investor.fund
-      primary_owner = investor.primary_owner.decorate
-      primary_address = investor.contact_address
-      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
-
-      current_date = Time.zone.now.strftime('%d.%m.%Y')
-
-      {
-        current_date: current_date,
-        fund: {
           currency: fund.currency,
           name: fund.name
         },
@@ -174,7 +133,9 @@ class Document
           distribution_total_amount: investor_cashflow.distribution_total_amount,
           distribution_total_percentage: investor_cashflow.distribution_total_percentage,
           distribution_withholding_tax_amount: investor_cashflow.distribution_withholding_tax_amount,
-          distribution_withholding_tax_percentage: investor_cashflow.distribution_withholding_tax_percentage
+          distribution_withholding_tax_percentage: investor_cashflow.distribution_withholding_tax_percentage,
+          net_cashflow_amount: investor_cashflow.net_cashflow_amount,
+          net_cashflow_percentage: investor_cashflow.net_cashflow_percentage
         }
       }
     end

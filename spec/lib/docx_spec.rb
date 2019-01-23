@@ -7,7 +7,7 @@ RSpec.describe Docx::Document, type: :util do
 
   describe 'document parsing' do
     context 'with `Ausschuettung` template' do
-      let(:document_name) { '20181219-Ausschuettung_Vorlage.docx' }
+      let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
 
       it 'properly parses the template' do
         document = Docx::Document.new(file_path)
