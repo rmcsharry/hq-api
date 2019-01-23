@@ -66,7 +66,7 @@ module Docx
 
         next if match.nil?
 
-        current_key = ''
+        current_key = match.post_match
         replacement = context.dig(*match['token'].split('.').map(&:to_sym))
         is_xml_replacement = replacement.to_s&.start_with?('<w:p>')
 
@@ -97,7 +97,7 @@ module Docx
           paragraph&.replace(replacement)
         end
 
-        current_nodes = []
+        current_nodes = [text_node]
       end
       # rubocop:enable Metrics/BlockLength
     end

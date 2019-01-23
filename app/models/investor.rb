@@ -100,16 +100,20 @@ class Investor < ApplicationRecord
   end
 
   def amount_open
-    amount_total - amount_called
+    amount_total - amount_called + amount_recallable
+  end
+
+  def amount_recallable
+    investor_cashflows.sum(&:distribution_recallable_amount)
+  end
+
+  def amount_total_distribution
+    investor_cashflows.sum(&:distribution_total_amount)
   end
 
   def current_value
     # TODO: Implement actual logic
     -1
-  end
-
-  def amount_total_distribution
-    investor_cashflows.sum(&:distribution_total_amount)
   end
 
   def tvpi
