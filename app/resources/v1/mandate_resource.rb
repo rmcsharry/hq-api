@@ -90,6 +90,18 @@ module V1
       records.where('mandates.valid_to <= ?', Date.parse(value[0]))
     }
 
+    filter :updated_at_min, apply: lambda { |records, value, _options|
+      records.where('mandates.updated_at >= ?', Time.zone.parse(value[0]))
+    }
+
+    filter :updated_at_max, apply: lambda { |records, value, _options|
+      records.where('mandates.updated_at <= ?', Time.zone.parse(value[0]))
+    }
+
+    filter :comment, apply: lambda { |records, value, _options|
+      records.where('mandates.comment ILIKE ?', "%#{value[0]}%")
+    }
+
     filter :"primary_consultant.name", apply: lambda { |records, value, _options|
       records.joins(:primary_consultant).where(
         "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) ILIKE ?",
