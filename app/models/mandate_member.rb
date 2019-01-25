@@ -38,8 +38,10 @@ class MandateMember < ApplicationRecord
     bookkeeper
     capital_management_company
     chairman
+    consultant
     contact_depot_bank
     contact_fund
+    employee
     family_officer
     investment
     investment_manager
