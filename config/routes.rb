@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates
     jsonapi_resources :organization_members
+    jsonapi_resources :tasks
     jsonapi_resources :tax_details
     jsonapi_resources :user_groups
     jsonapi_resources :users
@@ -43,6 +44,8 @@ Rails.application.routes.draw do
     get   'investor-cashflows/:id/filled-fund-template',      to: 'investor_cashflows#filled_fund_template'
     get   'investors/:id/filled-fund-subscription-agreement', to: 'investors#filled_fund_subscription_agreement'
     get   'investors/:id/filled-fund-quarterly-report',       to: 'investors#filled_fund_quarterly_report'
+    patch 'tasks/:id/finish',                                 to: 'tasks#finish'
+    patch 'tasks/:id/unfinish',                               to: 'tasks#unfinish'
   end
 
   root to: 'v1/users#index'

@@ -22,6 +22,7 @@ module V1
       :ews_user_id,
       :mandates_client_count,
       :mandates_prospect_count,
+      :open_tasks_count,
       :roles,
       :sign_in_count,
       :updated_at,
@@ -49,6 +50,10 @@ module V1
 
     def mandates_prospect_count
       Mandate.associated_to_contact_with_id(@model.contact_id).where(state: :prospect).count
+    end
+
+    def open_tasks_count
+      Task.associated_to_user_with_id(@model.id).where.not(state: :finished).count
     end
 
     filters(

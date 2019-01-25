@@ -57,6 +57,8 @@ class Contact < ApplicationRecord
   has_many :organization_members, dependent: :destroy, inverse_of: :contact
   has_many :organizations, through: :organization_members
   has_many :investors, foreign_key: :primary_owner_id, inverse_of: :primary_owner, dependent: :nullify
+  has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
+  has_many :task_links, class_name: 'Task', as: :linked_object, inverse_of: :linked_object, dependent: :destroy
   has_many(
     :active_person_relationships, class_name: 'InterPersonRelationship', dependent: :destroy,
                                   inverse_of: :source_person, foreign_key: :source_person_id
@@ -161,6 +163,15 @@ class Contact < ApplicationRecord
 
   alias is_mandate_member mandate_member?
   alias is_mandate_owner mandate_owner?
+
+  def task_assignees
+    assigned_contact_ids = Mandate
+                           .joins('LEFT JOIN mandate_members mm ON mandates.id = mm.mandate_id')
+                           .where('mm.contact_id = ?', id)
+                           .pluck(:assistant_id, :primary_consultant_id, :secondary_consultant_id)
+
+    User.where(contact_id: assigned_contact_ids)
+  end
 
   private
 

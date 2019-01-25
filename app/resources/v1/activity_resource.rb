@@ -3,11 +3,6 @@
 module V1
   # Defines the Activity resource for the API
   class ActivityResource < BaseResource
-    model_hint model: Activity::Call, resource: :activity
-    model_hint model: Activity::Email, resource: :activity
-    model_hint model: Activity::Meeting, resource: :activity
-    model_hint model: Activity::Note, resource: :activity
-
     attributes(
       :activity_type,
       :created_at,

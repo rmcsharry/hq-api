@@ -58,6 +58,7 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:secondary_consultant_mandates) }
   it { is_expected.to have_many(:primary_contact_investors) }
   it { is_expected.to have_many(:secondary_contact_investors) }
+  it { is_expected.to have_many(:reminders) }
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }

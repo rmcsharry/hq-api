@@ -42,6 +42,18 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
     end
   end
 
+  describe 'GET /v1/documents/<id>' do
+    let!(:document) { create(:document, owner: mandate) }
+
+    it 'can include the polymorphic owner' do
+      get("#{DOCUMENTS_ENDPOINT}/#{document.id}", params: { include: 'owner' }, headers: auth_headers)
+      body = JSON.parse(response.body)
+
+      expect(response).to have_http_status(200)
+      expect(body.dig('data', 'relationships', 'owner', 'data', 'id')).not_to be_nil
+    end
+  end
+
   describe 'GET document file' do
     let(:document) { create(:document) }
 

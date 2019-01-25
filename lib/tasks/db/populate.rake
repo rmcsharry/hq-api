@@ -58,6 +58,9 @@ namespace :db do
 
       puts 'Creating documents'
       Rake::Task['db:populate:documents'].invoke
+
+      puts 'Creating tasks and reminders'
+      Rake::Task['db:populate:tasks_and_reminders'].invoke
     end
   end
 
@@ -294,46 +297,46 @@ namespace :db do
       )
 
       {
-        'AI Administrator' => %i[alternative_investments funds_destroy funds_read funds_write],
+        'AI Administrator' => %i[alternative_investments funds_destroy funds_read funds_write tasks],
         'Assistenz' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
-        'Buchhaltung' => %i[contacts_read families_read mandates_read],
-        'Compliance' => %i[contacts_read families_read mandates_read],
+        'Buchhaltung' => %i[contacts_read families_read mandates_read tasks],
+        'Compliance' => %i[contacts_read families_read mandates_read tasks],
         'Controlling' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
         'Familien' => %i[families_read],
         'HQA Geschäftsführung' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
         'HQ AM' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
         'HQT Geschäftsführung' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
         'Institutionell' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ],
         'Investment' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write alternative_investments funds_read
+          mandates_read mandates_write alternative_investments funds_read tasks
         ],
         'Kontakte' => %i[contacts_read],
         'Kundenberater' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write alternative_investments funds_read
+          mandates_read mandates_write alternative_investments funds_read tasks
         ],
         'PVT' => %i[
           contacts_destroy contacts_read contacts_write families_destroy families_read families_write mandates_destroy
-          mandates_read mandates_write
+          mandates_read mandates_write tasks
         ]
       }.each do |name, roles|
         UserGroup.create!(
@@ -524,6 +527,48 @@ namespace :db do
         bank_accounts.push(generate_bank_accounts(mandate, banks))
       end
       BankAccount.import!(bank_accounts.flatten)
+    end
+
+    task tasks_and_reminders: :environment do
+      admin_user = User.find_by(email: 'admin@hqfinanz.de')
+      tasks = []
+
+      Faker::Number.between(3, 6).times do
+        assignees = rand > 0.5 ? [] : User.all.sample(Faker::Number.between(1, 4))
+        due_at = rand > 0.5 ? nil : Faker::Date.between(0.days.from_now, 2.weeks.from_now)
+
+        tasks << Task::Simple.new(
+          assignees: assignees,
+          creator: admin_user,
+          description: Faker::Hacker.say_something_smart,
+          due_at: due_at,
+          title: Faker::Lebowski.quote
+        )
+      end
+
+      expiring_documents = Task::DocumentExpiryReminder.disregarded_documents_expiring_within(10.days)
+      expiring_documents.each do |document|
+        tasks << Task::DocumentExpiryReminder.new(subject: document)
+      end
+
+      birthday_contacts = Task::ContactBirthdayReminder.disregarded_contacts_with_birthday_within(10.days)
+      birthday_contacts.each do |contact|
+        tasks << Task::ContactBirthdayReminder.new(subject: contact)
+      end
+
+      Task.import! tasks
+
+      Document.where.not(valid_to: nil).sample(2).each do |document|
+        reminder = Task::DocumentExpiryReminder.new(subject: document)
+        reminder.assignees << admin_user
+        reminder.save
+      end
+
+      Contact.where.not(date_of_birth: nil).sample(2).each do |contact|
+        reminder = Task::ContactBirthdayReminder.new(subject: contact)
+        reminder.assignees << admin_user
+        reminder.save
+      end
     end
   end
 

@@ -43,6 +43,10 @@ class Activity < ApplicationRecord
 
   alias_attribute :activity_type, :type
 
+  def task_assignees
+    [creator]
+  end
+
   private
 
   # Validates if started_at timestamp is before ended_at if ended_at is set

@@ -4,9 +4,6 @@ module V1
   # Defines the Contact resource for the API
   # rubocop:disable Metrics/ClassLength
   class ContactResource < BaseResource
-    model_hint model: Contact::Organization, resource: :contact
-    model_hint model: Contact::Person, resource: :contact
-
     attributes(
       :comment,
       :commercial_register_number,

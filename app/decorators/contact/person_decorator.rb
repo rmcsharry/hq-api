@@ -26,5 +26,24 @@ class Contact
       salutation = is_female ? 'Frau' : 'Herr'
       "Sehr #{salutation_prefix} #{salutation} #{name}"
     end
+
+    # Returns next birthday
+    # @return [Date]
+    def next_birthday
+      return nil unless date_of_birth
+
+      now = Time.zone.now
+      birthday_year = next_birthday_this_year? ? now.year : now.year + 1
+      Date.new(birthday_year, date_of_birth.month, date_of_birth.day)
+    end
+
+    private
+
+    def next_birthday_this_year?
+      now = Time.zone.now
+
+      date_of_birth.month > now.month ||
+        date_of_birth.change(year: now.year) >= now
+    end
   end
 end
