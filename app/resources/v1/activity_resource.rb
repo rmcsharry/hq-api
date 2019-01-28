@@ -64,7 +64,7 @@ module V1
     }
 
     filter :query, apply: lambda { |records, value, _options|
-      records.left_outer_joins(:documents).where(
+      records.left_joins(:documents).where(
         'title ILIKE ? OR description ILIKE ? OR documents.name ILIKE ?',
         "%#{value[0]}%",
         "%#{value[0]}%",

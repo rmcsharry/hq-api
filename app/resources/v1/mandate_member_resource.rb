@@ -21,7 +21,7 @@ module V1
     }
 
     sort :"mandate.category", apply: lambda { |records, direction, _context|
-      records.joins(:mandate).order("mandates.category #{direction}")
+      records.left_joins(:mandate).order("mandates.category #{direction}")
     }
 
     sort :"mandate.owner_name", apply: lambda { |records, direction, _context|
