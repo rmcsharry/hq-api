@@ -253,7 +253,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
     context 'with an expired token' do
       let(:auth_headers) do
-        Timecop.freeze(61.minutes.ago) do
+        Timecop.freeze(361.minutes.ago) do
           Devise::JWT::TestHelpers.auth_headers(headers, user)
         end
       end

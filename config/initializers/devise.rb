@@ -336,6 +336,7 @@ Devise.setup do |config|
   # JWT-based authentication for API by https://github.com/waiting-for-dev/devise-jwt
   config.jwt do |jwt|
     jwt.secret = Rails.application.secrets.devise_jwt_secret_key
+    jwt.expiration_time = 21_600 # 6 hours expiration time per token
     jwt.dispatch_requests = [
       ['POST', %r{^/v1/.*$}],
       ['PUT', %r{^/v1/.*$}],
