@@ -6,6 +6,9 @@ module V1
 
   # Defines the Task resource for the API
   class TaskResource < BaseResource
+    custom_action :finish, type: :patch, level: :instance
+    custom_action :unfinish, type: :patch, level: :instance
+
     attributes(
       :created_at,
       :description,
@@ -41,6 +44,16 @@ module V1
 
       records.associated_to_user_with_id(user_id)
     }
+
+    def finish(_data)
+      @model.finish(context[:current_user])
+      @model
+    end
+
+    def unfinish(_data)
+      @model.unfinish
+      @model
+    end
 
     class << self
       def create(context)

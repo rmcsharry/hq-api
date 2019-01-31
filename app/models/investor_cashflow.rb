@@ -38,8 +38,8 @@
 class InvestorCashflow < ApplicationRecord
   include AASM
 
-  belongs_to :fund_cashflow, inverse_of: :investor_cashflows, autosave: true, required: true
-  belongs_to :investor, inverse_of: :investor_cashflows, autosave: true, required: true
+  belongs_to :fund_cashflow, inverse_of: :investor_cashflows, autosave: true, optional: false
+  belongs_to :investor, inverse_of: :investor_cashflows, autosave: true, optional: false
 
   has_paper_trail(
     meta: {

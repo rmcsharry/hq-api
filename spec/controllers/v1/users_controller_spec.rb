@@ -312,7 +312,7 @@ RSpec.describe USERS_ENDPOINT, type: :request do
 
         it 'invites a new user' do
           is_expected.to change(User, :count).by(1)
-          expect(response).to have_http_status(202)
+          expect(response).to have_http_status(200)
           user = User.find_by(email: email)
           expect(ActionMailer::Base.deliveries.last.header['set-password-url'].value).to eq set_password_url
           expect(user.contact).to eq contact

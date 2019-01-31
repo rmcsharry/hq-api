@@ -22,7 +22,7 @@
 
 # Defines the FundCashflow
 class FundCashflow < ApplicationRecord
-  belongs_to :fund, autosave: true, required: true
+  belongs_to :fund, autosave: true, optional: false
   has_many :investor_cashflows, dependent: :destroy
 
   has_paper_trail(

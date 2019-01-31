@@ -145,12 +145,14 @@ module V1
       reset_password_url = data.require(:attributes).require(:reset_password_url)
       check_whitelisted_url!(key: 'reset_password_url', url: reset_password_url)
       User.send_reset_password_instructions(email: email, reset_password_url: reset_password_url)
+      nil # return nil to not expose user information
     end
 
     def change_password(data)
       user = context[:current_user]
       user.password = data.require(:attributes).require(:password)
       user.save!
+      nil # return nil to not expose user information
     rescue ActiveRecord::RecordInvalid
       raise JSONAPI::Exceptions::ValidationErrors, self.class.new(user, {})
     end
