@@ -187,8 +187,8 @@ class Document
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
       bank_account = investor.bank_account
-      primary_contact = investor.primary_contact
-      secondary_contact = investor.secondary_contact
+      primary_contact = investor.primary_contact&.decorate
+      secondary_contact = investor.secondary_contact&.decorate
       current_date = Time.zone.now.strftime('%d.%m.%Y')
       primary_owner_birth_date = primary_owner.date_of_birth ? primary_owner.date_of_birth.strftime('%d.%m.%Y') : '-'
       legal_address = primary_owner.legal_address
@@ -217,8 +217,8 @@ class Document
             street_and_number: legal_address&.street_and_number
           },
           primary_contact: {
-            full_name: primary_contact&.full_name,
-            primary_email_address: primary_contact&.primary_email_address
+            full_name: primary_contact&.name,
+            primary_email_address: primary_contact&.primary_email
           },
           primary_owner: {
             birth_date: primary_owner_birth_date,
@@ -232,8 +232,8 @@ class Document
             tax_numbers: primary_owner.tax_numbers
           },
           secondary_contact: {
-            full_name: secondary_contact&.full_name,
-            primary_email_address: secondary_contact&.primary_email_address
+            full_name: secondary_contact&.name,
+            primary_email_address: secondary_contact&.primary_email
           }
         }
       }
