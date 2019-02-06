@@ -66,6 +66,7 @@ class Mandate < ApplicationRecord
   has_many :mandate_members, dependent: :destroy
   has_many :owners, -> { where(member_type: 'owner') }, class_name: 'MandateMember', inverse_of: :mandate
   has_many :investments, class_name: 'Investor', dependent: :destroy
+  has_many :task_links, class_name: 'Task', as: :linked_object, inverse_of: :linked_object, dependent: :destroy
   has_and_belongs_to_many :activities, -> { distinct }
   has_and_belongs_to_many :mandate_groups, -> { distinct }
   has_and_belongs_to_many(
@@ -134,6 +135,16 @@ class Mandate < ApplicationRecord
   enumerize :default_currency, in: CURRENCIES
 
   alias_attribute :state, :aasm_state
+
+  def task_assignees
+    assigned_contact_ids = [
+      assistant_id,
+      primary_consultant_id,
+      secondary_consultant_id
+    ]
+
+    User.where(contact_id: assigned_contact_ids)
+  end
 
   private
 

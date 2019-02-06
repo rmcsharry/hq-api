@@ -17,9 +17,7 @@ module Docx
       @documents.each do |_file_name, document|
         next unless document.instance_of? Nokogiri::XML::Document
 
-        nodes_with_replace_tokens(document).each do |node|
-          apply_context node, context
-        end
+        apply_context document.search('text()'), context
       end
     end
 
@@ -35,18 +33,6 @@ module Docx
       end.string
     end
 
-    # Find and return all nodes (not necessarily leafs) that contain at least
-    # one token in the form of {.*}.
-    def nodes_with_replace_tokens(document)
-      nodes = document.xpath('//*[contains(text(), "{")]')
-      nodes.map do |node|
-        current_node = node
-        current_node = current_node.parent while current_node.parent && !current_node.text.include?('}')
-
-        current_node.text.match?(/{.*}/) ? current_node : nil
-      end.compact
-    end
-
     # Drill down into child text-nodes of given node and search
     # for token in the form of {.*}. For found token, erase their
     # container nodes contents and insert replacement from context
@@ -55,18 +41,17 @@ module Docx
     # rubocop:disable Metrics/PerceivedComplexity
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/AbcSize
-    def apply_context(node, context)
+    def apply_context(text_nodes, context)
       current_key = ''
       current_nodes = []
       # rubocop:disable Metrics/BlockLength
-      node.search('text()').each do |text_node|
+      text_nodes.each do |text_node|
         current_key += text_node.text
         match = /\{(?<token>(.*))\}/.match(current_key)
         current_nodes << text_node
 
         next if match.nil?
 
-        current_key = match.post_match
         replacement = context.dig(*match['token'].split('.').map(&:to_sym))
         is_xml_replacement = replacement.to_s&.start_with?('<w:p>')
 
@@ -97,6 +82,7 @@ module Docx
           paragraph&.replace(replacement)
         end
 
+        current_key = text_node.text
         current_nodes = [text_node]
       end
       # rubocop:enable Metrics/BlockLength

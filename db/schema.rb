@@ -352,6 +352,34 @@ ActiveRecord::Schema.define(version: 2019_01_09_154637) do
     t.index ["organization_id"], name: "index_organization_members_on_organization_id"
   end
 
+  create_table "tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "creator_id"
+    t.uuid "finisher_id"
+    t.string "subject_type"
+    t.uuid "subject_id"
+    t.string "linked_object_type"
+    t.uuid "linked_object_id"
+    t.string "aasm_state", null: false
+    t.string "description"
+    t.string "title", null: false
+    t.string "type", null: false
+    t.datetime "finished_at"
+    t.datetime "due_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_tasks_on_creator_id"
+    t.index ["finisher_id"], name: "index_tasks_on_finisher_id"
+    t.index ["linked_object_type", "linked_object_id"], name: "index_tasks_on_linked_object_type_and_linked_object_id"
+    t.index ["subject_type", "subject_id"], name: "index_tasks_on_subject_type_and_subject_id"
+  end
+
+  create_table "tasks_users", id: false, force: :cascade do |t|
+    t.uuid "task_id"
+    t.uuid "user_id"
+    t.index ["task_id"], name: "index_tasks_users_on_task_id"
+    t.index ["user_id"], name: "index_tasks_users_on_user_id"
+  end
+
   create_table "tax_details", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "de_tax_number"
     t.string "de_tax_id"
@@ -489,6 +517,10 @@ ActiveRecord::Schema.define(version: 2019_01_09_154637) do
   add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
   add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
   add_foreign_key "organization_members", "contacts", column: "organization_id"
+  add_foreign_key "tasks", "users", column: "creator_id"
+  add_foreign_key "tasks", "users", column: "finisher_id"
+  add_foreign_key "tasks_users", "tasks"
+  add_foreign_key "tasks_users", "users"
   add_foreign_key "tax_details", "contacts"
   add_foreign_key "user_groups_users", "user_groups"
   add_foreign_key "user_groups_users", "users"

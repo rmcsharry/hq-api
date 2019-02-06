@@ -7,7 +7,8 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   include ActiveJob::TestHelper
 
   let(:random_user) { create(:user) }
-  let(:contact_person) { create(:contact_person, user: random_user) }
+  let(:tax_detail) { create :tax_detail, de_tax_number: '21/815/08150' }
+  let(:contact_person) { create(:contact_person, user: random_user, tax_detail: tax_detail) }
   let(:mandate) { create(:mandate) }
   let!(:mandate_member) do
     create(:mandate_member, mandate: mandate, contact: contact_person, member_type: :owner)
@@ -23,8 +24,19 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'GET /v1/investors/:id/filled-fund-subscription-agreement' do
+    let(:primary_contact) { create(:contact_person) }
+    let(:secondary_contact) { create(:contact_person) }
     let!(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, fund: fund, mandate: mandate) }
+    let!(:investor) do
+      create(
+        :investor,
+        fund: fund,
+        mandate: mandate,
+        primary_contact: primary_contact,
+        primary_owner: contact_person,
+        secondary_contact: secondary_contact
+      )
+    end
     let!(:document) do
       doc = create(
         :fund_template_document,
@@ -60,6 +72,12 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
         expect(content).to include(fund.name)
         expect(content).to include(primary_owner.name)
+        expect(content).to include(primary_contact.decorate.name)
+        expect(content).to include(secondary_contact.decorate.name)
+        expect(content).to include('DE 21/815/08150')
+
+        # Check that there are no un-replaced templating tokens
+        expect(content).not_to match(/\{[a-z_\.]+\}/)
       end
     end
 

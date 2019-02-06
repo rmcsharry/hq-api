@@ -22,6 +22,7 @@ module V1
       :ews_user_id,
       :mandates_client_count,
       :mandates_prospect_count,
+      :open_tasks_count,
       :roles,
       :sign_in_count,
       :updated_at,
@@ -49,6 +50,10 @@ module V1
 
     def mandates_prospect_count
       Mandate.associated_to_contact_with_id(@model.contact_id).where(state: :prospect).count
+    end
+
+    def open_tasks_count
+      Task.associated_to_user_with_id(@model.id).where.not(state: :finished).count
     end
 
     filters(
@@ -140,12 +145,14 @@ module V1
       reset_password_url = data.require(:attributes).require(:reset_password_url)
       check_whitelisted_url!(key: 'reset_password_url', url: reset_password_url)
       User.send_reset_password_instructions(email: email, reset_password_url: reset_password_url)
+      nil # return nil to not expose user information
     end
 
     def change_password(data)
       user = context[:current_user]
       user.password = data.require(:attributes).require(:password)
       user.save!
+      nil # return nil to not expose user information
     rescue ActiveRecord::RecordInvalid
       raise JSONAPI::Exceptions::ValidationErrors, self.class.new(user, {})
     end

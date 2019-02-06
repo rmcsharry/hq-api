@@ -11,7 +11,7 @@ module V1
     filter :owner_id
 
     sort :"bank.name", apply: lambda { |records, direction, _context|
-      records.joins(:bank).order("contacts.organization_name #{direction}")
+      records.left_joins(:bank).order("contacts.organization_name #{direction}")
     }
 
     # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160

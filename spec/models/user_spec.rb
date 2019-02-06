@@ -71,6 +71,12 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_many(:activities) }
   end
 
+  describe '#tasks' do
+    it { is_expected.to have_many(:created_tasks).inverse_of(:creator).class_name('Task') }
+    it { is_expected.to have_many(:finished_by_user_tasks).inverse_of(:finisher).class_name('Task') }
+    it { is_expected.to have_and_belong_to_many(:tasks) }
+  end
+
   describe '#user_group_count' do
     subject { create(:user) }
     let!(:user_groups) { create_list(:user_group, 3, users: [subject]) }

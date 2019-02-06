@@ -15,7 +15,7 @@ module V1
     filter :fund_id
 
     sort :investor_count, apply: lambda { |records, direction, _context|
-      records.left_outer_joins(:investors).group(:id).order("COUNT(investors.id) #{direction}")
+      records.left_joins(:investors).group(:id).order("COUNT(investors.id) #{direction}")
     }
 
     def investor_count

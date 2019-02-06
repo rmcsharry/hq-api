@@ -3,11 +3,6 @@
 module V1
   # Defines the Activity resource for the API
   class ActivityResource < BaseResource
-    model_hint model: Activity::Call, resource: :activity
-    model_hint model: Activity::Email, resource: :activity
-    model_hint model: Activity::Meeting, resource: :activity
-    model_hint model: Activity::Note, resource: :activity
-
     attributes(
       :activity_type,
       :created_at,
@@ -69,7 +64,7 @@ module V1
     }
 
     filter :query, apply: lambda { |records, value, _options|
-      records.left_outer_joins(:documents).where(
+      records.left_joins(:documents).where(
         'title ILIKE ? OR description ILIKE ? OR documents.name ILIKE ?',
         "%#{value[0]}%",
         "%#{value[0]}%",

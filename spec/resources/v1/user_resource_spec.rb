@@ -13,6 +13,9 @@ RSpec.describe V1::UserResource, type: :resource do
   it { is_expected.to have_attribute :deactivated_at }
   it { is_expected.to have_attribute :email }
   it { is_expected.to have_attribute :ews_user_id }
+  it { is_expected.to have_attribute :mandates_client_count }
+  it { is_expected.to have_attribute :mandates_prospect_count }
+  it { is_expected.to have_attribute :open_tasks_count }
   it { is_expected.to have_attribute :roles }
   it { is_expected.to have_attribute :sign_in_count }
   it { is_expected.to have_attribute :updated_at }

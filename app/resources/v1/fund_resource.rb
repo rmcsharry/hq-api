@@ -2,12 +2,7 @@
 
 module V1
   # Defines the Fund resource for the API
-  # rubocop:disable Metrics/ClassLength
   class FundResource < BaseResource
-    model_hint model: Fund::PrivateDebt, resource: :fund
-    model_hint model: Fund::PrivateEquity, resource: :fund
-    model_hint model: Fund::RealEstate, resource: :fund
-
     attributes(
       :fund_type,
       :comment,
@@ -126,5 +121,4 @@ module V1
       )
     end
   end
-  # rubocop:enable Metrics/ClassLength
 end

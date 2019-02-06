@@ -140,6 +140,87 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(body['meta']['record-count']).to eq 0
       end
 
+      context 'sort by joined associations' do
+        subject do
+          get(
+            MANDATES_ENDPOINT,
+            params: {
+              sort: sorting_param,
+              page: { number: 1, size: 5 }
+            },
+            headers: auth_headers
+          )
+        end
+
+        describe 'sort by primary consultant' do
+          let(:sorting_param) { 'primaryConsultant.name' }
+
+          before do
+            mandate1.update(primary_consultant_id: nil)
+          end
+
+          it 'also returns mandates without primary consultant' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['data'].count).to eq 4
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
+
+        describe 'sort by secondary consultant' do
+          let(:sorting_param) { 'secondaryConsultant.name' }
+
+          before do
+            mandate1.update(secondary_consultant_id: nil)
+          end
+
+          it 'also returns mandates without secondary consultant' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['data'].count).to eq 4
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
+
+        describe 'sort by bookkeeper' do
+          let(:sorting_param) { 'bookkeeper.name' }
+
+          before do
+            mandate1.update(bookkeeper_id: nil)
+          end
+
+          it 'also returns mandates without bookkeeper' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['data'].count).to eq 4
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
+
+        describe 'sort by assistant' do
+          let(:sorting_param) { 'assistant.name' }
+
+          before do
+            mandate1.update(assistant_id: nil)
+          end
+
+          it 'also returns mandates without assistant' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['data'].count).to eq 4
+            expect(body['meta']['record-count']).to eq 4
+          end
+        end
+      end
+
       context 'filter by owner name' do
         subject do
           get(

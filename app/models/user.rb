@@ -69,6 +69,15 @@ class User < ApplicationRecord
   has_many :activities, inverse_of: :creator, foreign_key: :creator_id, dependent: :nullify
   has_many :documents, inverse_of: :uploader, foreign_key: :uploader_id, dependent: :nullify
   has_many :created_versions, class_name: 'Version', inverse_of: :whodunnit, dependent: :nullify
+  has_many(
+    :created_tasks, class_name: 'Task', foreign_key: :creator_id, inverse_of: :creator,
+                    dependent: :nullify
+  )
+  has_many(
+    :finished_by_user_tasks, class_name: 'Task', foreign_key: :finisher_id, inverse_of: :finisher,
+                             dependent: :nullify
+  )
+  has_and_belongs_to_many :tasks, -> { distinct }
   has_and_belongs_to_many :user_groups, -> { distinct }
 
   has_paper_trail(

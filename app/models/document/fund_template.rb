@@ -181,11 +181,18 @@ class Document
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
+    # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     def self.fund_subscription_agreement_context(investor:)
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
+      bank_account = investor.bank_account
+      primary_contact = investor.primary_contact&.decorate
+      secondary_contact = investor.secondary_contact&.decorate
       current_date = Time.zone.now.strftime('%d.%m.%Y')
+      primary_owner_birth_date = primary_owner.date_of_birth ? primary_owner.date_of_birth.strftime('%d.%m.%Y') : '-'
+      legal_address = primary_owner.legal_address
+      primary_fax = primary_owner.contact_details.find_by(type: 'ContactDetail::Fax', primary: true)&.value
 
       {
         current_date: current_date,
@@ -193,12 +200,45 @@ class Document
           name: fund.name
         },
         investor: {
+          bank_account: {
+            account_number: bank_account.bank_account_number,
+            bic: bank_account.bic,
+            iban: bank_account.iban,
+            routing_number: bank_account.bank_routing_number
+          },
+          contact_phone: primary_owner.primary_phone&.value,
+          legal_address: {
+            addition: legal_address&.addition,
+            city: legal_address&.city,
+            country: legal_address&.country,
+            full_address: legal_address&.to_s,
+            postal_code: legal_address&.postal_code,
+            state: legal_address&.state,
+            street_and_number: legal_address&.street_and_number
+          },
+          primary_contact: {
+            full_name: primary_contact&.name,
+            primary_email_address: primary_contact&.primary_email
+          },
           primary_owner: {
-            full_name: primary_owner.name
+            birth_date: primary_owner_birth_date,
+            commercial_register_number: primary_owner.commercial_register_number,
+            commercial_register_office: primary_owner.commercial_register_office,
+            full_name: primary_owner.name,
+            nationality: primary_owner.nationality,
+            organization_type: primary_owner.organization_type,
+            place_of_birth: primary_owner.place_of_birth,
+            primary_fax: primary_fax,
+            tax_numbers: primary_owner.tax_numbers
+          },
+          secondary_contact: {
+            full_name: secondary_contact&.name,
+            primary_email_address: secondary_contact&.primary_email
           }
         }
       }
     end
+    # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
 
     private

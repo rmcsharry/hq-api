@@ -38,6 +38,7 @@ class Document < ApplicationRecord
 
   belongs_to :uploader, class_name: 'User', inverse_of: :documents
   belongs_to :owner, polymorphic: true, inverse_of: :documents
+  has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
   has_one_attached :file
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)

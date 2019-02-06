@@ -6,6 +6,25 @@ module V1
     include JSONAPI::Authorization::PunditScopedResource
     abstract
 
+    model_hint model: Activity::Call, resource: :activity
+    model_hint model: Activity::Email, resource: :activity
+    model_hint model: Activity::Meeting, resource: :activity
+    model_hint model: Activity::Note, resource: :activity
+    model_hint model: Contact::Organization, resource: :contact
+    model_hint model: Contact::Person, resource: :contact
+    model_hint model: ContactDetail::Email, resource: :contact_detail
+    model_hint model: ContactDetail::Fax, resource: :contact_detail
+    model_hint model: ContactDetail::Phone, resource: :contact_detail
+    model_hint model: ContactDetail::Website, resource: :contact_detail
+    model_hint model: Document::FundSubscriptionAgreement, resource: :document
+    model_hint model: Document::FundTemplate, resource: :document
+    model_hint model: Fund::PrivateDebt, resource: :fund
+    model_hint model: Fund::PrivateEquity, resource: :fund
+    model_hint model: Fund::RealEstate, resource: :fund
+    model_hint model: Task::ContactBirthdayReminder, resource: :task
+    model_hint model: Task::DocumentExpiryReminder, resource: :task
+    model_hint model: Task::Simple, resource: :task
+
     def meta(options)
       return super unless options[:serialization_options][:format] == :xlsx
 

@@ -174,19 +174,19 @@ module V1
     }
 
     sort :"primary_consultant.name", apply: lambda { |records, direction, _context|
-      order_by_name_of_contact(records.joins(:primary_consultant), direction)
+      order_by_name_of_contact(records.left_joins(:primary_consultant), direction)
     }
 
     sort :"secondary_consultant.name", apply: lambda { |records, direction, _context|
-      order_by_name_of_contact(records.joins(:secondary_consultant), direction)
+      order_by_name_of_contact(records.left_joins(:secondary_consultant), direction)
     }
 
     sort :"assistant.name", apply: lambda { |records, direction, _context|
-      order_by_name_of_contact(records.joins(:assistant), direction)
+      order_by_name_of_contact(records.left_joins(:assistant), direction)
     }
 
     sort :"bookkeeper.name", apply: lambda { |records, direction, _context|
-      order_by_name_of_contact(records.joins(:bookkeeper), direction)
+      order_by_name_of_contact(records.left_joins(:bookkeeper), direction)
     }
 
     sort :owner_name, apply: lambda { |records, direction, _context|

@@ -36,11 +36,11 @@ module V1
     }
 
     sort :mandate_count, apply: lambda { |records, direction, _context|
-      records.left_outer_joins(:mandate_groups_mandates).group(:id).order("COUNT(mandate_groups.id) #{direction}")
+      records.left_joins(:mandate_groups_mandates).group(:id).order("COUNT(mandate_groups.id) #{direction}")
     }
 
     sort :user_group_count, apply: lambda { |records, direction, _context|
-      records.left_outer_joins(:user_groups).group(:id).order("COUNT(mandate_groups.id) #{direction}")
+      records.left_joins(:user_groups).group(:id).order("COUNT(mandate_groups.id) #{direction}")
     }
   end
 end

@@ -14,7 +14,7 @@ module V1
     )
 
     sort :"organization.name", apply: lambda { |records, direction, _context|
-      records.joins(:organization).order("contacts.organization_name #{direction}")
+      records.left_joins(:organization).order("contacts.organization_name #{direction}")
     }
   end
 end

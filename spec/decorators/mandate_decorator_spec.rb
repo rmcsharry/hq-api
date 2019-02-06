@@ -4,12 +4,12 @@ require 'rails_helper'
 
 RSpec.describe MandateDecorator do
   describe '#owner_name' do
-    let(:person1) { create(:contact_person, first_name: 'Thomas', last_name: 'Makait') }
-    let(:person2) { create(:contact_person, first_name: 'Maria', last_name: 'Makait') }
-    let(:organization) { create(:contact_organization, organization_name: 'Novo Investments UG') }
-    let(:mandate_member1) { create(:mandate_member, contact: person1, member_type: 'owner') }
-    let(:mandate_member2) { create(:mandate_member, contact: person2, member_type: 'owner') }
-    let(:mandate_member3) { create(:mandate_member, contact: organization, member_type: 'owner') }
+    let!(:person1) { create(:contact_person, first_name: 'Thomas', last_name: 'Makait') }
+    let!(:person2) { create(:contact_person, first_name: 'Maria', last_name: 'Makait') }
+    let!(:organization) { create(:contact_organization, organization_name: 'Novo Investments UG') }
+    let!(:mandate_member1) { create(:mandate_member, contact: person1, member_type: 'owner') }
+    let!(:mandate_member2) { create(:mandate_member, contact: person2, member_type: 'owner') }
+    let!(:mandate_member3) { create(:mandate_member, contact: organization, member_type: 'owner') }
     subject { create(:mandate, mandate_members: owners).decorate }
 
     context 'all three are owners' do

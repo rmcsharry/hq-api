@@ -50,6 +50,10 @@ RSpec.describe Document, type: :model do
     it { is_expected.to enumerize(:category) }
   end
 
+  describe '#reminders' do
+    it { is_expected.to have_many(:reminders) }
+  end
+
   describe '#valid_to_greater_or_equal_valid_from' do
     subject { build(:document, valid_from: valid_from, valid_to: valid_to) }
     let(:valid_from) { 5.days.ago }
