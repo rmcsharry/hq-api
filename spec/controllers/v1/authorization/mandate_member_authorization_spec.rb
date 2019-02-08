@@ -27,7 +27,7 @@ RSpec.describe 'authorization for', type: :request do
     let!(:permitted_mandate_member) { create(:mandate_member, contact: contact, mandate: permitted_mandate) }
     let!(:forbidden_mandate_member) { create(:mandate_member, contact: contact, mandate: random_mandate) }
     let!(:mandate_group) { create(:mandate_group, mandates: [permitted_mandate]) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, permitted_user) }
 
     def response_data

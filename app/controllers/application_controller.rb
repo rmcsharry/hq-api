@@ -15,15 +15,18 @@ class ApplicationController < JSONAPI::ResourceController
 
   respond_to :json
 
+  # rubocop:disable Metrics/AbcSize
   def context
     super.merge(
       controller: params['controller'],
       current_user: current_user,
       includes: params['include']&.split(',')&.map { |s| s.underscore.to_sym },
       pundit_user: pundit_user,
-      request_method: request.request_method
+      request_method: request.request_method,
+      response_format: request.format == XLSX_MIME_TYPE ? :xlsx : :json
     )
   end
+  # rubocop:enable Metrics/AbcSize
 
   def base_response_meta
     {

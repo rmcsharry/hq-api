@@ -20,7 +20,7 @@ RSpec.describe 'authorization for', type: :request do
     let!(:mandate_activity) { create(:activity_note, mandates: [permitted_mandate]) }
     let!(:contact_activity) { create(:activity_note, contacts: [contact]) }
     let!(:mandate_group) { create(:mandate_group, mandates: [permitted_mandate]) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, permitted_user) }
 
     def response_data

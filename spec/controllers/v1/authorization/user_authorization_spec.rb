@@ -15,7 +15,7 @@ RSpec.describe 'authorization for', type: :request do
   context 'users' do
     let!(:user) { create(:user) }
     let!(:foreign_user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
     describe '#index' do

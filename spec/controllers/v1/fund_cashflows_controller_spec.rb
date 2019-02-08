@@ -5,7 +5,7 @@ require 'devise/jwt/test_helpers'
 
 RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
   let!(:user) { create(:user, roles: %i[funds_read funds_write]) }
-  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'POST /v1/fund-cashflows' do

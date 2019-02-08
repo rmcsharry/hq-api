@@ -59,7 +59,7 @@ RSpec.describe 'authorization for', type: :request do
             get MANDATES_ENDPOINT, headers: auth_headers, params: { include: 'mandate-groups-organizations' }
           end
         end
-        let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+        let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
         let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, permitted_user) }
 
         it 'only includes each organization once' do
