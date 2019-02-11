@@ -6,6 +6,24 @@ RSpec.describe Docx::Document, type: :util do
   let(:file_path) { Rails.root.join('spec', 'fixtures', 'docx', document_name) }
 
   describe 'document parsing' do
+    context 'with a zoomed and scrolled template' do
+      let(:document_name) { 'zoomed_scrolled.docx' }
+      it 'resets the zoom setting to 100%' do
+        document = Docx::Document.new(file_path)
+        document.commit({})
+
+        tempfile = Tempfile.new
+        tempfile.binmode
+        tempfile.write document.render
+        rendered_document = Docx::Document.new(tempfile.path)
+        tempfile.close
+
+        settings = rendered_document.documents['word/settings.xml']
+        zoom_node = settings.xpath('//w:zoom').first
+        expect(zoom_node.attr('w:percent')).to eq('100')
+      end
+    end
+
     context 'with `Ausschuettung` template' do
       let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
 

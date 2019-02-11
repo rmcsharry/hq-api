@@ -61,3 +61,13 @@ module JSONAPI
     # rubocop:enable Style/CaseEquality
   end
 end
+
+module JSONAPI
+  # JSONAPI::Resources extension of the RequestParser class
+  class RequestParser
+    def parse_pagination(resource_klass, page)
+      paginator_name = context[:response_format] == :xlsx ? :none : resource_klass._paginator
+      JSONAPI::Paginator.paginator_for(paginator_name).new(page) unless paginator_name == :none
+    end
+  end
+end

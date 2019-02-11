@@ -6,7 +6,7 @@ require 'devise/jwt/test_helpers'
 RSpec.describe CONTACTS_ENDPOINT, type: :request do
   let(:contact) { create(:contact_person, :with_contact_details) }
   let!(:user) { create(:user, contact: contact, roles: %i[contacts_read contacts_write]) }
-  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   let(:compliance_detail_payload) do

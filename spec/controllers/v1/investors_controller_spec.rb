@@ -20,7 +20,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       permitted_mandates: [mandate]
     )
   end
-  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'GET /v1/investors/:id/filled-fund-subscription-agreement' do

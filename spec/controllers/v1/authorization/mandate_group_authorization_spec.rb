@@ -14,7 +14,7 @@ RSpec.describe 'authorization for', type: :request do
 
   context 'mandate-groups' do
     let!(:user) { create(:user) }
-    let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+    let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
     let!(:organization) { create(:mandate_group, group_type: 'organization') }
     let!(:family) { create(:mandate_group, group_type: 'family') }

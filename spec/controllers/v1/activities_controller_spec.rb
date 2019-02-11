@@ -15,7 +15,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
       permitted_mandates: [mandate_1, mandate_2]
     )
   end
-  let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+  let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   before(:all) do

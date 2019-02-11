@@ -11,7 +11,7 @@ RSpec.shared_examples 'authorization policy' do |roles, options|
 
         create(:user, user_groups: [create(:user_group, roles: [role])])
       end
-      let(:headers) { { 'Content-Type' => 'application/vnd.api+json' } }
+      let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
       let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, current_user) }
 
       before(:each) do

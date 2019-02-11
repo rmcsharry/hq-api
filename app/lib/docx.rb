@@ -17,6 +17,7 @@ module Docx
       @documents.each do |_file_name, document|
         next unless document.instance_of? Nokogiri::XML::Document
 
+        reset_settings!
         apply_context document.search('text()'), context
       end
     end
@@ -31,6 +32,12 @@ module Docx
       Zip::OutputStream.write_buffer do |out|
         generate_output_file(out, @documents)
       end.string
+    end
+
+    def reset_settings!
+      settings_document = @documents['word/settings.xml']
+      zoom_node = settings_document&.xpath('//w:zoom')&.first
+      zoom_node&.set_attribute('w:percent', '100')
     end
 
     # Drill down into child text-nodes of given node and search
