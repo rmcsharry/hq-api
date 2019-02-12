@@ -292,11 +292,12 @@ metadata:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "100M"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      geo $the_real_ip $external_ip {
-        default 1;
-
-        <%= ENV.fetch('WHITELISTED_IPS').split(',').map { |ip| "#{ip} 0;" }.join('\n') %>
-      }
+      set $external_ip = 1;
+      <%=
+        ENV.fetch('WHITELISTED_IPS').split(',').map do |ip|
+          "if ($the_real_ip = #{ip.split('/').first}) { set $external_ip 0; }"
+        end.join('\n')
+      %>
 
       set $internal_endpoint 1;
       if ($uri = /v1/newsletter-subscribers/confirm-subscription) {
