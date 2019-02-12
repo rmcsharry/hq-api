@@ -7,7 +7,7 @@ class NewsletterSubscriberMailer < ApplicationMailer
     subscriber = params[:record].decorate
     confirm_email_url = "#{subscriber.confirmation_base_url}?confirmation_token=#{params[:confirmation_token]}"
     mail(
-      from: 'HQ Trust Team <news@hqtrust.de>',
+      from: 'HQ Trust Service <service@hqtrust.de>',
       to: subscriber.email,
       delivery_method_options: {
         version: 'v3.1',
