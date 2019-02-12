@@ -296,7 +296,7 @@ metadata:
       <%=
         ENV.fetch('WHITELISTED_IPS').split(',').map do |ip|
           "if ($the_real_ip = #{ip.split('/').first}) { set $external_ip 0; }"
-        end.join('\n')
+        end.join("\n")
       %>
 
       set $internal_endpoint 1;
