@@ -307,7 +307,9 @@ metadata:
         set $internal_endpoint 0;
       }
 
-      if ($external_ip + $internal_endpoint = 2) {
+      set $forbidden_request "${external_ip}${internal_endpoint}";
+
+      if ($forbidden_request = 11) {
         return 403;
       }
 spec:
