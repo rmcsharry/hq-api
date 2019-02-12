@@ -298,10 +298,9 @@ metadata:
         <%= ENV.fetch('WHITELISTED_IPS').split(',').map { |ip| "#{ip} 0;" }.join('\n') %>
       }
 
-      geo $uri $internal_endpoint {
-        default 1;
-
-        /v1/newsletter-subscribers/confirm-subscription 0;
+      set $internal_endpoint 1;
+      if ($uri = /v1/newsletter-subscribers/confirm-subscription) {
+        set $internal_endpoint 0;
       }
 
       if ($external_ip = $internal_endpoint) {
