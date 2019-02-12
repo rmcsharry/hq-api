@@ -9,6 +9,8 @@ api:
     ALLOWED_ORIGINS: 'localhost:3001'
     OUTLOOK_ORIGINS: 'localhost:3002'
     EWS_AUTH_PUBLIC_KEY: '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz8r1QsOxylq05qBOUlnj\n+1tbkvKqbOrPNeX4jD97zKgveGAnDtVpj9AyBZ/S3nujA4SBLDRbRcaquIX1aXMt\nDnFpscb+/dCNe529oSY1sHHKdp5jppK7BApjLZpPkqDmJMsG7jFQD+h+Fl/1FGhX\nlX6fa97dno+hn/WqrbL6uO3wAojdO99P0lsOewCf2ZByO5fEq0m5i3GRJs7+f9Cw\nxX0UlRq3r2B69HuRhQF+aFOWTkqomCWRRT9yA3NblbfHextWGHaRKm7ZuCRkiL4D\nDcjcuZBlkPw5N01ctTbe0zfJf9UNc3kT7FshoPr/DskX8Zls06AJGA1S3TAZI4hZ\n+wIDAQAB\n-----END PUBLIC KEY-----'
+    NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL: 'https://www.hqtrust.dev.hqfinanz.de/confirmation-failure'
+    WHITELISTED_URLS: 'https://app.dev.hqfinanz.de,https://www.hqtrust.de'
 deploy-prod:
   build:
     dockerfile_path: Dockerfile-deploy

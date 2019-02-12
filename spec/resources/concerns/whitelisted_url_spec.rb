@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe WhitelistedUrl do
   describe '#whitelisted_url?' do
-    ENV['WHITELISTED_URLS'] = 'http://localhost:3001,https://app.dev.hqfinanz.de'
+    ENV['WHITELISTED_URLS'] = 'http://localhost:3001,https://app.dev.hqfinanz.de,https://www.hqtrust.de'
 
     context 'for whitelisted urls' do
       let(:urls) { %w[http://localhost:3001 http://localhost:3001/test/url https://app.dev.hqfinanz.de/] }

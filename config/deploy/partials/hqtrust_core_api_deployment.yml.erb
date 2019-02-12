@@ -132,6 +132,18 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: ews-auth-public-key
+            - name: MAILJET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-api-key
+            - name: MAILJET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-secret-key
+            - name: NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL
+              value: <%= newsletter_subscriber_confirmation_failure_url %>
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -243,6 +255,16 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: skylight-authentication
+            - name: MAILJET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-api-key
+            - name: MAILJET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-secret-key
 ---
 kind: Service
 apiVersion: v1
@@ -561,3 +583,13 @@ spec:
                     secretKeyRef:
                       name: hqtrust-core-api-secrets
                       key: skylight-authentication
+                - name: MAILJET_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: mailjet-api-key
+                - name: MAILJET_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: mailjet-secret-key
