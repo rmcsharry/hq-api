@@ -34,7 +34,7 @@ RSpec.describe NEWSLETTER_SUBSCRIBERS_ENDPOINT, type: :request do
         is_expected.to change(NewsletterSubscriber, :count).by(1)
         is_expected.to change { ActionMailer::Base.deliveries.size }.by(1)
         expect(response).to have_http_status(201)
-        expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq 'HQ Trust Team <news@hqtrust.de>'
+        expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq 'HQ Trust Service <service@hqtrust.de>'
         subscriber = NewsletterSubscriber.find(JSON.parse(response.body)['data']['id'])
         expect(subscriber.email).to eq email
         expect(subscriber.mailjet_list_id).to eq '1234'
@@ -69,7 +69,7 @@ RSpec.describe NEWSLETTER_SUBSCRIBERS_ENDPOINT, type: :request do
         is_expected.to change(NewsletterSubscriber, :count).by(1)
         is_expected.to change { ActionMailer::Base.deliveries.size }.by(1)
         expect(response).to have_http_status(201)
-        expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq 'HQ Trust Team <news@hqtrust.de>'
+        expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq 'HQ Trust Service <service@hqtrust.de>'
         subscriber = NewsletterSubscriber.find(JSON.parse(response.body)['data']['id'])
         expect(subscriber.first_name).to eq 'Max'
         expect(subscriber.last_name).to eq 'Mustermann'

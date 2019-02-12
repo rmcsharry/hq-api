@@ -291,7 +291,22 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "100M"
-    nginx.ingress.kubernetes.io/whitelist-source-range: <%= ENV.fetch('WHITELISTED_IPS') %>
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      geo $the_real_ip $external_ip {
+        default 1;
+
+        <%= ENV.fetch('WHITELISTED_IPS').split(',').map { |ip| "#{ip} 0;" }.join('\n') %>
+      }
+
+      geo $uri $internal_endpoint {
+        default 1;
+
+        /v1/newsletter-subscribers/confirm-subscription 0;
+      }
+
+      if ($external_ip = $internal_endpoint) {
+        return 403;
+      }
 spec:
   rules:
     - host: <%= host %>
