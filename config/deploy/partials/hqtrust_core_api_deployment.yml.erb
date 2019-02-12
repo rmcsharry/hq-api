@@ -303,8 +303,11 @@ metadata:
       if ($uri = /v1/newsletter-subscribers/confirm-subscription) {
         set $internal_endpoint 0;
       }
+      if ($uri = /v1/newsletter-subscribers) {
+        set $internal_endpoint 0;
+      }
 
-      if ($external_ip = $internal_endpoint) {
+      if ($external_ip + $internal_endpoint = 2) {
         return 403;
       }
 spec:
