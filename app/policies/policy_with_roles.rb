@@ -3,9 +3,10 @@
 # Handles token decoding and role extraction and acts as superclass
 # for both, policies and policy-scopes
 class PolicyWithRoles
-  attr_reader :request, :roles, :user
+  attr_reader :request, :roles, :user, :user_context
 
   def initialize(user_context)
+    @user_context = user_context
     @request = user_context.request
     auth_header = @request.headers['HTTP_AUTHORIZATION']
     return if auth_header.blank? || !auth_header.start_with?('Bearer ')

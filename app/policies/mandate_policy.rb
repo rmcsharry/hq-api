@@ -18,7 +18,7 @@ class MandatePolicy < ApplicationPolicy
                    .where(user_groups_users: { user_id: user.id })
                    .where('user_groups.roles @> ARRAY[?]::varchar[]', [role])
 
-      scope.where(conditions.merge(id: ids))
+      scope.where(conditions).where(id: ids)
     end
   end
 
