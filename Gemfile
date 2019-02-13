@@ -53,6 +53,7 @@ gem 'valvat'                                                                    
 # Cloud Resources
 gem 'aws-sdk-rails'                                                 # Interact with AWS in general (SES for example)
 gem 'aws-sdk-s3'                                                    # Interact with AWS S3
+gem 'mailjet'                                                       # Interact with Mailjet for emails
 gem 'savon'                                                         # Interact with SOAP services
 
 # Database, Storage & Job Handling

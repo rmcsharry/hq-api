@@ -26,12 +26,14 @@ Rails.application.routes.draw do
     jsonapi_resources :mandate_groups
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates
+    jsonapi_resources :newsletter_subscribers
     jsonapi_resources :organization_members
     jsonapi_resources :tasks
     jsonapi_resources :tax_details
     jsonapi_resources :user_groups
     jsonapi_resources :users
 
+    get   'newsletter-subscribers/confirm-subscription',      to: 'newsletter_subscribers#confirm_subscription'
     post  'users/sign-in',                                    to: 'users#sign_in_user'
     post  'users/sign-in-ews-id',                             to: 'users#sign_in_ews_id'
     get   'users/validate-token',                             to: 'users#validate_token'

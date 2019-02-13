@@ -9,6 +9,7 @@ class ApplicationController < JSONAPI::ResourceController
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   rescue_from JSONAPI::Exceptions::Unauthorized, with: :not_authorized
   rescue_from AASM::InvalidTransition, with: :unprocessable_entity
+  rescue_from ActiveRecord::InvalidForeignKey, with: :conflict
 
   before_action :set_paper_trail_whodunnit
   before_action :filter_inaccessible_fields!
@@ -40,6 +41,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def unprocessable_entity
     head :unprocessable_entity
+  end
+
+  def conflict
+    render json: { errors: JSONAPI::Exceptions::Conflict.new.errors }, status: :conflict
   end
 
   protected

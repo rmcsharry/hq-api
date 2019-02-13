@@ -228,7 +228,8 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
     subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", params: {}, headers: auth_headers) } }
 
     context 'with valid payload' do
-      let!(:document) { create(:document) }
+      let!(:owner) { create :contact_person }
+      let!(:document) { create(:document, owner: owner) }
 
       before do
         document.file.analyze

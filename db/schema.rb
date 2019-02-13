@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_09_154637) do
+ActiveRecord::Schema.define(version: 2019_02_05_153425) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -340,6 +340,24 @@ ActiveRecord::Schema.define(version: 2019_01_09_154637) do
     t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
     t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"
     t.index ["secondary_consultant_id"], name: "index_mandates_on_secondary_consultant_id"
+  end
+
+  create_table "newsletter_subscribers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "email", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "gender"
+    t.string "professional_title"
+    t.string "nobility_title"
+    t.string "confirmation_token"
+    t.string "mailjet_list_id"
+    t.string "confirmation_base_url"
+    t.string "confirmation_success_url"
+    t.string "aasm_state"
+    t.datetime "confirmed_at"
+    t.datetime "confirmation_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "organization_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

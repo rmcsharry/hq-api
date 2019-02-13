@@ -132,6 +132,18 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: ews-auth-public-key
+            - name: MAILJET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-api-key
+            - name: MAILJET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-secret-key
+            - name: NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL
+              value: <%= newsletter_subscriber_confirmation_failure_url %>
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -243,6 +255,16 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: skylight-authentication
+            - name: MAILJET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-api-key
+            - name: MAILJET_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hqtrust-core-api-secrets
+                  key: mailjet-secret-key
 ---
 kind: Service
 apiVersion: v1
@@ -269,7 +291,27 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "100M"
-    nginx.ingress.kubernetes.io/whitelist-source-range: <%= ENV.fetch('WHITELISTED_IPS') %>
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      set $external_ip 1;
+      <%=
+        ENV.fetch('WHITELISTED_IPS').split(',').map do |ip|
+          "if ($the_real_ip = #{ip.split('/').first}) { set $external_ip 0; }"
+        end.join("\n      ")
+      %>
+
+      set $internal_endpoint 1;
+      if ($uri = /v1/newsletter-subscribers/confirm-subscription) {
+        set $internal_endpoint 0;
+      }
+      if ($uri = /v1/newsletter-subscribers) {
+        set $internal_endpoint 0;
+      }
+
+      set $forbidden_request "${external_ip}${internal_endpoint}";
+
+      if ($forbidden_request = 11) {
+        return 403;
+      }
 spec:
   rules:
     - host: <%= host %>
@@ -561,3 +603,13 @@ spec:
                     secretKeyRef:
                       name: hqtrust-core-api-secrets
                       key: skylight-authentication
+                - name: MAILJET_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: mailjet-api-key
+                - name: MAILJET_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: hqtrust-core-api-secrets
+                      key: mailjet-secret-key
