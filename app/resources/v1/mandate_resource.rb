@@ -25,6 +25,7 @@ module V1
 
     has_many :bank_accounts
     has_many :documents
+    has_many :investors, relation_name: :investments
     has_many :mandate_groups
     has_many :mandate_groups_families, class_name: 'MandateGroup'
     has_many :mandate_groups_organizations, class_name: 'MandateGroup'
