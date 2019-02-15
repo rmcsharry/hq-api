@@ -18,6 +18,7 @@ module V1
       :is_mandate_owner,
       :last_name,
       :legal_address,
+      :legal_address_text,
       :maiden_name,
       :name,
       :name_list,
@@ -29,6 +30,7 @@ module V1
       :organization_type,
       :place_of_birth,
       :primary_contact_address,
+      :primary_contact_address_text,
       :professional_title,
       :tax_detail,
       :updated_at
@@ -160,7 +162,7 @@ module V1
       records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
     }
 
-    filter :primary_contact_address, apply: lambda { |records, value, _options|
+    filter :primary_contact_address_text, apply: lambda { |records, value, _options|
       records
         .joins(
           'INNER JOIN addresses AS pca ON contacts.primary_contact_address_id = pca.id'
@@ -170,7 +172,7 @@ module V1
         )
     }
 
-    filter :legal_address, apply: lambda { |records, value, _options|
+    filter :legal_address_text, apply: lambda { |records, value, _options|
       records
         .joins(
           'INNER JOIN addresses AS la ON contacts.legal_address_id = la.id'
@@ -234,10 +236,10 @@ module V1
 
       def sortable_fields(context)
         super + %i[
+          legal_address_text
+          primary_contact_address_text
           primary_email.value
           primary_phone.value
-          primary_contact_address.street_and_number
-          legal_address.street_and_number
         ]
       end
 
@@ -253,7 +255,7 @@ module V1
       end
 
       def updatable_fields(context)
-        super(context) - %i[is_mandate_member is_mandate_owner]
+        super(context) - %i[is_mandate_member is_mandate_owner legal_address_text primary_contact_address_text]
       end
 
       private
