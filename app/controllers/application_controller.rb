@@ -9,6 +9,7 @@ class ApplicationController < JSONAPI::ResourceController
   rescue_from Pundit::NotAuthorizedError, with: :not_authorized
   rescue_from JSONAPI::Exceptions::Unauthorized, with: :not_authorized
   rescue_from AASM::InvalidTransition, with: :unprocessable_entity
+  rescue_from ActiveRecord::ReadOnlyRecord, with: :method_not_allowed
   rescue_from ActiveRecord::InvalidForeignKey, with: :conflict
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
@@ -42,6 +43,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def unprocessable_entity
     head :unprocessable_entity
+  end
+
+  def method_not_allowed
+    head :method_not_allowed
   end
 
   def conflict

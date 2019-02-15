@@ -20,4 +20,5 @@ RSpec.describe V1::DocumentResource, type: :resource do
 
   it { is_expected.to filter(:document_type) }
   it { is_expected.to filter(:owner_id) }
+  it { is_expected.to filter(:state) }
 end

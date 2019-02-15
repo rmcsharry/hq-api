@@ -224,22 +224,74 @@ RSpec.describe DOCUMENTS_ENDPOINT, type: :request do
     end
   end
 
-  describe 'DELETE /v1/documents' do
-    subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", params: {}, headers: auth_headers) } }
+  describe 'PATCH /v1/documents/<id>/archive' do
+    subject { -> { patch("#{DOCUMENTS_ENDPOINT}/#{document.id}/archive", params: {}, headers: auth_headers) } }
 
     context 'with valid payload' do
-      let!(:owner) { create :contact_person }
-      let!(:document) { create(:document, owner: owner) }
+      let!(:document) { create(:document, state: :created) }
 
+      it 'puts document from `created` into `archived` state' do
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(200)
+        expect(document.reload.state).to eq('archived')
+      end
+    end
+  end
+
+  describe 'PATCH /v1/documents/<id>/unarchive' do
+    subject { -> { patch("#{DOCUMENTS_ENDPOINT}/#{document.id}/unarchive", params: {}, headers: auth_headers) } }
+
+    context 'with valid payload' do
+      let!(:document) { create(:document, state: :archived) }
+
+      it 'puts document from `archived` into `created` state' do
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(200)
+        expect(document.reload.state).to eq('created')
+      end
+    end
+  end
+
+  describe 'DELETE /v1/documents' do
+    subject { -> { delete("#{DOCUMENTS_ENDPOINT}/#{document.id}", params: {}, headers: auth_headers) } }
+    let!(:contact) { create :contact_person }
+    let!(:document) do
+      Timecop.freeze(2019, 1, 1, 12, 0, 0) do
+        create(:document, owner: contact)
+      end
+    end
+
+    context 'within grace period of 24h' do
       before do
-        document.file.analyze
+        Timecop.freeze(2019, 1, 2, 11, 0, 0)
       end
 
-      it 'deletes a document' do
+      after do
+        Timecop.return
+      end
+
+      it 'deletes the document' do
         clear_enqueued_jobs
         is_expected.to change(Document, :count).by(-1)
         expect(response).to have_http_status(204)
         expect(ActiveStorage::PurgeJob).to have_been_enqueued
+      end
+    end
+
+    context 'after grace period expired' do
+      before do
+        Timecop.freeze(2019, 1, 2, 13, 0, 0)
+      end
+
+      after do
+        Timecop.return
+      end
+
+      it 'does not delete the document and fails with 405: Method not Allowed' do
+        clear_enqueued_jobs
+        is_expected.to change(Document, :count).by(0)
+        expect(response).to have_http_status(405)
+        expect(ActiveStorage::PurgeJob).not_to have_been_enqueued
       end
     end
   end

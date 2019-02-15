@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_05_153425) do
+ActiveRecord::Schema.define(version: 2019_02_07_083612) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -161,6 +161,7 @@ ActiveRecord::Schema.define(version: 2019_02_05_153425) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "type"
+    t.string "aasm_state", default: "created", null: false
     t.index ["owner_type", "owner_id"], name: "index_documents_on_owner_type_and_owner_id"
     t.index ["uploader_id"], name: "index_documents_on_uploader_id"
   end

@@ -15,6 +15,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  type        :string
+#  aasm_state  :string           default("created"), not null
 #
 # Indexes
 #
@@ -29,6 +30,7 @@
 # Defines the Document model
 class Document < ApplicationRecord
   extend Enumerize
+  include AASM
   include Lockable
 
   CATEGORIES = %i[
@@ -43,6 +45,19 @@ class Document < ApplicationRecord
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 
+  aasm do
+    state :created, initial: true
+    state :archived
+
+    event :archive do
+      transitions from: %i[created archived], to: :archived
+    end
+
+    event :unarchive do
+      transitions from: %i[created archived], to: :created
+    end
+  end
+
   validates :name, presence: true
   validates :category, presence: true
   validate :valid_to_greater_or_equal_valid_from
@@ -50,6 +65,11 @@ class Document < ApplicationRecord
   enumerize :category, in: CATEGORIES, scope: true
 
   alias_attribute :document_type, :type
+  alias_attribute :state, :aasm_state
+
+  def unlocked_attributes
+    %w[aasm_state updated_at]
+  end
 
   private
 

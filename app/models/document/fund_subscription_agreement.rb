@@ -15,6 +15,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  type        :string
+#  aasm_state  :string           default("created"), not null
 #
 # Indexes
 #

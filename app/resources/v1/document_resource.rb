@@ -5,6 +5,9 @@ module V1
 
   # Defines the Document resource for the API
   class DocumentResource < BaseResource
+    custom_action :archive, type: :patch, level: :instance
+    custom_action :unarchive, type: :patch, level: :instance
+
     attributes(
       :category,
       :created_at,
@@ -14,13 +17,14 @@ module V1
       :file_type,
       :file_url,
       :name,
+      :state,
       :valid_from,
       :valid_to
     )
 
     has_one :owner, polymorphic: true, class_name: 'DocumentOwner'
 
-    filter :owner_id
+    filters :owner_id, :state
 
     filter :document_type, apply: lambda { |records, value, _options|
       records.where('documents.type = ?', value[0])
@@ -54,6 +58,16 @@ module V1
 
     def fetchable_fields
       super - [:file]
+    end
+
+    def archive(_data)
+      @model.archive!
+      @model
+    end
+
+    def unarchive(_data)
+      @model.unarchive!
+      @model
     end
 
     class << self
