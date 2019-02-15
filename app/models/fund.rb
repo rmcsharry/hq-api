@@ -136,4 +136,18 @@ class Fund < ApplicationRecord
   def to_s
     name
   end
+
+  def cashflow_template(fund_cashflow)
+    type = fund_cashflow.fund_cashflow_type
+    category = type == :capital_call ? :fund_capital_call_template : :fund_distribution_template
+    Document.find_by!(owner: self, category: category)
+  end
+
+  def quarterly_report_template
+    Document.find_by!(owner: self, category: :fund_quarterly_report_template)
+  end
+
+  def subscription_agreement_template
+    Document.find_by!(owner: self, category: :fund_subscription_agreement_template)
+  end
 end

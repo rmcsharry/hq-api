@@ -46,6 +46,8 @@ Rails.application.routes.draw do
     get   'investor-cashflows/:id/filled-fund-template',      to: 'investor_cashflows#filled_fund_template'
     get   'investors/:id/filled-fund-subscription-agreement', to: 'investors#filled_fund_subscription_agreement'
     get   'investors/:id/filled-fund-quarterly-report',       to: 'investors#filled_fund_quarterly_report'
+    get   'fund-cashflows/:id/archived-documents',            to: 'fund_cashflows#archived_documents'
+    get   'fund-reports/:id/archived-documents',              to: 'fund_reports#archived_documents'
   end
 
   root to: 'v1/users#index'

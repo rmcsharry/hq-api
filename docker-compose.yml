@@ -23,7 +23,7 @@ services:
       - redis
     environment:
       REDIS_URL: 'redis://redis'
-      ALLOWED_ORIGINS: 'localhost:3001,app.dev.hqfinanz.de'
+      ALLOWED_ORIGINS: 'localhost:3001,192.168.1.158:3001,app.dev.hqfinanz.de'
       OUTLOOK_ORIGINS: 'localhost:3002'
     env_file:
       - development.env
@@ -40,8 +40,8 @@ services:
       - redis
     environment:
       REDIS_URL: 'redis://redis'
-      WHITELISTED_URLS: 'http://localhost:3000,http://localhost:3001,https://app.dev.hqfinanz.de,https://www.hqtrust.de'
-      ALLOWED_ORIGINS: 'localhost:3001,app.dev.hqfinanz.de'
+      WHITELISTED_URLS: 'http://localhost:3000,http://192.168.1.158:3001,http://localhost:3001,https://app.dev.hqfinanz.de,https://www.hqtrust.de'
+      ALLOWED_ORIGINS: 'localhost:3001,192.168.1.158:3001,app.dev.hqfinanz.de'
       OUTLOOK_ORIGINS: 'localhost:3002'
       NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL: 'https://www.hqtrust.dev.hqfinanz.de/confirmation-failure'
     env_file:

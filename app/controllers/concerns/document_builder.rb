@@ -8,22 +8,18 @@ module DocumentBuilder
 
   # rubocop:disable Metrics/BlockLength
   included do
-    def render_filled_template(template, context)
-      return render json: {}, status: :not_found if template.nil?
-
+    def send_filled_template(template, context)
       authorize template, :show?
 
-      return send_document(template.file.download, template.file.content_type) unless docx?(template)
+      return send_file(template.file.download, template.file.content_type) unless docx?(template)
 
       filled_template = build_document(template, context)
-      send_document(filled_template, Docx::MIME_TYPE)
+      send_file(filled_template, Docx::MIME_TYPE)
     end
 
-    private
-
-    def send_document(document, mime_type)
+    def send_file(file, mime_type)
       response.headers['Content-Type'] = mime_type
-      send_data document, type: mime_type, status: :created
+      send_data file, type: mime_type, status: :created
     end
 
     def build_document(template, context)
@@ -32,6 +28,8 @@ module DocumentBuilder
       document.commit(context)
       document.render
     end
+
+    private
 
     def load_template(template)
       tempfile = Tempfile.new

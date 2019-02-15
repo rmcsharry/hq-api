@@ -10,6 +10,7 @@ class ApplicationController < JSONAPI::ResourceController
   rescue_from JSONAPI::Exceptions::Unauthorized, with: :not_authorized
   rescue_from AASM::InvalidTransition, with: :unprocessable_entity
   rescue_from ActiveRecord::InvalidForeignKey, with: :conflict
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
   before_action :set_paper_trail_whodunnit
   before_action :filter_inaccessible_fields!
@@ -45,6 +46,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def conflict
     render json: { errors: JSONAPI::Exceptions::Conflict.new.errors }, status: :conflict
+  end
+
+  def not_found
+    head :not_found
   end
 
   protected
