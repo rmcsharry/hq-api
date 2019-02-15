@@ -278,7 +278,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
     context 'with includes' do
       let(:params) { { include: 'legal-address,primary-contact-address,primary-email,primary-phone' } }
 
-      it 'fetches the contacts with includes' do
+      it 'fetches the contacts with includes', bullet: false do
         get(CONTACTS_ENDPOINT, params: params, headers: auth_headers)
         expect(response).to have_http_status(200)
         body = JSON.parse(response.body)

@@ -77,6 +77,14 @@ module V1
     end
 
     class << self
+      def records(options)
+        records = super
+        if options.dig(:context, :request_method) == 'GET' && options.dig(:context, :controller) == 'v1/activities'
+          records = records.preload(mandates: [:owners])
+        end
+        records
+      end
+
       def create(context)
         new(create_model(context), context)
       end

@@ -39,7 +39,7 @@ module V1
 
     class << self
       def records(options)
-        super.preload(:owner)
+        super.preload(owner: %i[legal_address primary_contact_address])
       end
     end
   end

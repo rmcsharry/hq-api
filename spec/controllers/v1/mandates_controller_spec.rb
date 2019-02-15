@@ -107,7 +107,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     end
 
     context 'authenticated as user' do
-      it 'fetches the mandates for user\'s user_id' do
+      it 'fetches the mandates for user\'s user_id', bullet: false do
         get(
           MANDATES_ENDPOINT,
           params: {

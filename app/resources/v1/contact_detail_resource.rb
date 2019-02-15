@@ -16,5 +16,11 @@ module V1
       :contact_id,
       :contact_detail_type
     )
+
+    class << self
+      def records(options)
+        super.preload(:contact)
+      end
+    end
   end
 end

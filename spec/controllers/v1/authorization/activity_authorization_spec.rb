@@ -27,7 +27,7 @@ RSpec.describe 'authorization for', type: :request do
       JSON.parse(response.body)['data']
     end
 
-    describe '#index' do
+    describe '#index', bullet: false do
       let!(:permitted_user) { create(:user) }
       let(:endpoint) { ->(auth_headers) { get ACTIVITIES_ENDPOINT, headers: auth_headers } }
 

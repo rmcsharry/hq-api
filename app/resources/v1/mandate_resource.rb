@@ -72,7 +72,7 @@ module V1
     }
 
     filter :mandate_number, apply: lambda { |records, value, _options|
-      records.with_owner_name.where('mandates.mandate_number ILIKE ?', "%#{value[0]}%")
+      records.where('mandates.mandate_number ILIKE ?', "%#{value[0]}%")
     }
 
     filter :valid_from_min, apply: lambda { |records, value, _options|
@@ -191,7 +191,7 @@ module V1
     }
 
     sort :owner_name, apply: lambda { |records, direction, _context|
-      records.includes(:owners).with_owner_name.order("mandates.owner_name #{direction}")
+      records.preload(:owners).with_owner_name.order("mandates.owner_name #{direction}")
     }
 
     class << self
@@ -200,7 +200,8 @@ module V1
         if options.dig(:context, :request_method) == 'POST' && options.dig(:context, :controller) == 'v1/activities'
           records = records.includes(:mandate_groups_organizations)
         end
-        records
+        records = preload_includes(records: records, options: options)
+        preload_xlsx(records: records, options: options)
       end
 
       def resource_for(model_record, context)
@@ -223,6 +224,26 @@ module V1
         records.order(
           "COALESCE(contacts.last_name || ', ' || contacts.first_name, contacts.organization_name) #{direction}"
         )
+      end
+
+      def preload_includes(records:, options:)
+        %i[primary_consultant secondary_consultant bookkeeper assistant].each do |included_resource|
+          records = records.preload(included_resource) if options.dig(:context, :includes)&.include? included_resource
+        end
+        if options.dig(:context, :request_method) == 'GET' && options.dig(:context, :controller) == 'v1/mandates'
+          records = records.with_owner_name.preload(owners: [:contact])
+        end
+
+        records
+      end
+
+      def preload_xlsx(records:, options:)
+        if options.dig(:context, :response_format) == :xlsx
+          records = records.with_owner_name.preload(
+            :primary_consultant, :secondary_consultant, :bookkeeper, :assistant, mandate_members: [:contact]
+          )
+        end
+        records
       end
     end
   end

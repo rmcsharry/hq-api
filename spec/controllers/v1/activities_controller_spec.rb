@@ -27,7 +27,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
     ActiveJob::Base.queue_adapter = @queue_adapter
   end
 
-  describe 'GET /v1/activities' do
+  describe 'GET /v1/activities', bullet: false do
     let(:mandate_group) { create(:mandate_group) }
     let!(:mandate_1) { create(:mandate, mandate_groups: [mandate_group]) }
     let(:mandate_2) { create(:mandate, mandate_groups: [mandate_group]) }

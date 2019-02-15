@@ -51,8 +51,6 @@ RSpec.describe ::V1::ContactResource, type: :resource do
 
   it { is_expected.to filter(:"compliance_detail.occupation_role") }
   it { is_expected.to filter(:"compliance_detail.occupation_title") }
-  it { is_expected.to filter(:"legal_address.street_and_number") }
-  it { is_expected.to filter(:"primary_contact_address.street_and_number") }
   it { is_expected.to filter(:"primary_email.value") }
   it { is_expected.to filter(:"primary_phone.value") }
   it { is_expected.to filter(:comment) }
@@ -65,7 +63,10 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:date_of_death_min) }
   it { is_expected.to filter(:first_name) }
   it { is_expected.to filter(:gender) }
+  it { is_expected.to filter(:is_mandate_member) }
+  it { is_expected.to filter(:is_mandate_owner) }
   it { is_expected.to filter(:last_name) }
+  it { is_expected.to filter(:legal_address) }
   it { is_expected.to filter(:maiden_name) }
   it { is_expected.to filter(:name) }
   it { is_expected.to filter(:name_list) }
@@ -76,9 +77,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:organization_name) }
   it { is_expected.to filter(:organization_type) }
   it { is_expected.to filter(:place_of_birth) }
+  it { is_expected.to filter(:primary_contact_address) }
   it { is_expected.to filter(:professional_title) }
-  it { is_expected.to filter(:is_mandate_owner) }
-  it { is_expected.to filter(:is_mandate_member) }
 
   describe '#name' do
     context 'person' do

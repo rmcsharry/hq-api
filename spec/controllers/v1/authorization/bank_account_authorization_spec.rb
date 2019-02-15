@@ -36,7 +36,7 @@ RSpec.describe 'authorization for', type: :request do
         expect(response.status).to eq(403)
       end
 
-      describe 'with mandates_read role' do
+      describe 'with mandates_read role', bullet: false do
         let!(:user_group) do
           create(:user_group, users: [permitted_user], mandate_groups: [mandate_group], roles: %i[mandates_read])
         end
@@ -49,7 +49,7 @@ RSpec.describe 'authorization for', type: :request do
         end
       end
 
-      describe 'with mandates_read and funds_read role' do
+      describe 'with mandates_read and funds_read role', bullet: false do
         let!(:user_group) do
           create(
             :user_group, users: [permitted_user], mandate_groups: [mandate_group], roles: %i[mandates_read funds_read]

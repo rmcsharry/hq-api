@@ -9,5 +9,11 @@ module V1
     )
 
     has_one :contact
+
+    class << self
+      def records(options)
+        super.preload(:contact)
+      end
+    end
   end
 end
