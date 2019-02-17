@@ -15,6 +15,7 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #  type        :string
+#  aasm_state  :string           default("created"), not null
 #
 # Indexes
 #
@@ -56,14 +57,14 @@ class Document
       false
     end
 
-    def self.fund_capital_call_context(investor_cashflow:)
-      fund_distribution_context(investor_cashflow: investor_cashflow)
+    def self.fund_capital_call_context(investor_cashflow)
+      fund_distribution_context(investor_cashflow)
     end
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     # rubocop:disable Metrics/LineLength
-    def self.fund_distribution_context(investor_cashflow:)
+    def self.fund_distribution_context(investor_cashflow)
       investor_cashflow = investor_cashflow.decorate
       investor = investor_cashflow.investor.decorate
       fund_cashflow = investor_cashflow.fund_cashflow.decorate
@@ -145,7 +146,7 @@ class Document
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def self.fund_quarterly_report_context(investor:, fund_report:)
+    def self.fund_quarterly_report_context(investor, fund_report)
       investor = investor.decorate
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
@@ -183,7 +184,7 @@ class Document
 
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
-    def self.fund_subscription_agreement_context(investor:)
+    def self.fund_subscription_agreement_context(investor)
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
       bank_account = investor.bank_account

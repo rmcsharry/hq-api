@@ -18,6 +18,7 @@ module V1
       :is_mandate_owner,
       :last_name,
       :legal_address,
+      :legal_address_text,
       :maiden_name,
       :name,
       :name_list,
@@ -29,6 +30,7 @@ module V1
       :organization_type,
       :place_of_birth,
       :primary_contact_address,
+      :primary_contact_address_text,
       :professional_title,
       :tax_detail,
       :updated_at
@@ -160,18 +162,24 @@ module V1
       records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
     }
 
-    filter :"primary_contact_address.street_and_number", apply: lambda { |records, value, _options|
-      records.joins(:primary_contact_address).where(
-        "addresses.street_and_number || ', ' || addresses.postal_code || ' ' || addresses.city || ', ' || " \
-        'addresses.country ILIKE ?', "%#{value[0]}%"
-      )
+    filter :primary_contact_address_text, apply: lambda { |records, value, _options|
+      records
+        .joins(
+          'INNER JOIN addresses AS pca ON contacts.primary_contact_address_id = pca.id'
+        ).where(
+          "pca.street_and_number || ', ' || pca.postal_code || ' ' || pca.city || ', ' || " \
+          'pca.country ILIKE ?', "%#{value[0]}%"
+        )
     }
 
-    filter :"legal_address.street_and_number", apply: lambda { |records, value, _options|
-      records.joins(:legal_address).where(
-        "addresses.street_and_number || ', ' || addresses.postal_code || ' ' || addresses.city || ', ' || " \
-        'addresses.country ILIKE ?', "%#{value[0]}%"
-      )
+    filter :legal_address_text, apply: lambda { |records, value, _options|
+      records
+        .joins(
+          'INNER JOIN addresses AS la ON contacts.legal_address_id = la.id'
+        ).where(
+          "la.street_and_number || ', ' || la.postal_code || ' ' || la.city || ', ' || " \
+          'la.country ILIKE ?', "%#{value[0]}%"
+        )
     }
 
     filter :"compliance_detail.occupation_role", apply: lambda { |records, value, _options|
@@ -219,15 +227,19 @@ module V1
            options.dig(:context, :controller) != 'v1/versions'
           records = records.includes(:primary_contact_address, :legal_address, :mandate_members)
         end
-        records
+        return records unless options.dig(:context, :response_format) == :xlsx
+
+        records.preload(
+          :tax_detail, :compliance_detail, :contact_details, :addresses, :mandates, :primary_email, :primary_phone
+        )
       end
 
       def sortable_fields(context)
         super + %i[
+          legal_address_text
+          primary_contact_address_text
           primary_email.value
           primary_phone.value
-          primary_contact_address.street_and_number
-          legal_address.street_and_number
         ]
       end
 
@@ -243,7 +255,7 @@ module V1
       end
 
       def updatable_fields(context)
-        super(context) - %i[is_mandate_member is_mandate_owner]
+        super(context) - %i[is_mandate_member is_mandate_owner legal_address_text primary_contact_address_text]
       end
 
       private

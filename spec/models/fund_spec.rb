@@ -201,4 +201,137 @@ RSpec.describe Fund, type: :model do
       end
     end
   end
+
+  describe '#cashflow_template', bullet: false do
+    let!(:fund) { create(:fund) }
+    let!(:cashflow) { create(:fund_cashflow, fund: fund, number: 1) }
+    let!(:investor) { create(:investor, :signed, fund: fund) }
+    let!(:template) do
+      category = cashflow_type == :distribution ? :fund_distribution_template : :fund_capital_call_template
+      doc = create(:fund_template_document, category: category, owner: fund)
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+    let!(:investor_cashflow) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: cashflow_type == :distribution ? 0 : 1,
+        distribution_dividends_amount: cashflow_type == :distribution ? 1 : 0,
+        fund_cashflow: cashflow,
+        investor: investor
+      )
+    end
+
+    context 'as a capital_call' do
+      let!(:cashflow_type) { :capital_call }
+
+      context 'with missing template' do
+        let!(:template) { nil }
+
+        it 'throws an exception' do
+          expect do
+            fund.cashflow_template(cashflow)
+          end.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context 'with existing template' do
+        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+
+        it 'returns the template' do
+          expect(fund.cashflow_template(cashflow)).to eq(template)
+        end
+      end
+    end
+
+    context 'as a distribution' do
+      let!(:cashflow_type) { :distribution }
+
+      context 'with missing template' do
+        let!(:template) { nil }
+
+        it 'throws an exception' do
+          expect do
+            fund.cashflow_template(cashflow)
+          end.to raise_error(ActiveRecord::RecordNotFound)
+        end
+      end
+
+      context 'with existing template' do
+        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
+
+        it 'returns the template' do
+          expect(fund.cashflow_template(cashflow)).to eq(template)
+        end
+      end
+    end
+  end
+
+  describe '#quarterly_report_template' do
+    let!(:fund) { create(:fund) }
+    let!(:document_category) { :fund_quarterly_report_template }
+    let!(:template) do
+      doc = create(:fund_template_document, category: document_category, owner: fund)
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+
+    context 'with missing template' do
+      let!(:template) { nil }
+
+      it 'throws an exception' do
+        expect do
+          fund.quarterly_report_template
+        end.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'with existing template' do
+      let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
+
+      it 'returns the template' do
+        expect(fund.quarterly_report_template).to eq(template)
+      end
+    end
+  end
+
+  describe '#subscription_agreement_template' do
+    let!(:fund) { create(:fund) }
+    let!(:document_category) { :fund_subscription_agreement_template }
+    let!(:template) do
+      doc = create(:fund_template_document, category: document_category, owner: fund)
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+
+    context 'with missing template' do
+      let!(:template) { nil }
+
+      it 'throws an exception' do
+        expect do
+          fund.subscription_agreement_template
+        end.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'with existing template' do
+      let(:document_name) { '20181219-Zeichnungsschein_Vorlage.docx' }
+
+      it 'returns the template' do
+        expect(fund.subscription_agreement_template).to eq(template)
+      end
+    end
+  end
 end

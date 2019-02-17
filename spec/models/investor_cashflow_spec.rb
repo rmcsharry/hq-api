@@ -77,4 +77,55 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
       expect(subject.capital_call_total_amount).to eq 300_000
     end
   end
+
+  describe '#document_context' do
+    let(:fund) { create(:fund) }
+    let!(:cashflow) { create(:fund_cashflow, fund: fund, number: 1) }
+    let!(:investor) { create(:investor, :signed, fund: fund) }
+    let!(:investor_cashflow) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: cashflow_type == :distribution ? 0 : 1,
+        distribution_dividends_amount: cashflow_type == :distribution ? 1 : 0,
+        fund_cashflow: cashflow,
+        investor: investor
+      )
+    end
+
+    context 'as a capital_call' do
+      let!(:cashflow_type) { :capital_call }
+
+      it 'returns the capital_call context' do
+        expect(investor_cashflow.document_context.keys).to(
+          match_array(
+            %i[
+              current_date
+              fund
+              fund_cashflow
+              investor
+              investor_cashflow
+            ]
+          )
+        )
+      end
+    end
+
+    context 'as a distribution' do
+      let!(:cashflow_type) { :distribution }
+
+      it 'returns the distribution context' do
+        expect(investor_cashflow.document_context.keys).to(
+          match_array(
+            %i[
+              current_date
+              fund
+              fund_cashflow
+              investor
+              investor_cashflow
+            ]
+          )
+        )
+      end
+    end
+  end
 end

@@ -36,5 +36,14 @@ module V1
         "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) #{direction}"
       )
     }
+
+    class << self
+      def records(options)
+        records = super
+        return records unless options.dig(:context, :response_format) == :xlsx
+
+        records.preload(:contact, :mandate)
+      end
+    end
   end
 end

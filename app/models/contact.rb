@@ -153,6 +153,14 @@ class Contact < ApplicationRecord
     false
   end
 
+  def legal_address_text
+    legal_address&.to_s
+  end
+
+  def primary_contact_address_text
+    primary_contact_address&.to_s
+  end
+
   def mandate_member?
     mandate_members.length.positive?
   end

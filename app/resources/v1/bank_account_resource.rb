@@ -23,5 +23,11 @@ module V1
 
       :completed
     end
+
+    class << self
+      def records(options)
+        super.preload(:owner, :bank)
+      end
+    end
   end
 end

@@ -87,6 +87,14 @@ class InvestorCashflow < ApplicationRecord
       capital_call_management_fees_amount
   end
 
+  def document_context
+    if fund_cashflow.fund_cashflow_type == :capital_call
+      Document::FundTemplate.fund_capital_call_context(self)
+    else
+      Document::FundTemplate.fund_distribution_context(self)
+    end
+  end
+
   private
 
   # Validates that the investor belongs to the same fund as the fund cashflow

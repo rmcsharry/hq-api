@@ -131,6 +131,14 @@ class Investor < ApplicationRecord
     -1
   end
 
+  def subscription_agreement_context
+    Document::FundTemplate.fund_subscription_agreement_context(self)
+  end
+
+  def quarterly_report_context(fund_report)
+    Document::FundTemplate.fund_quarterly_report_context(self, fund_report)
+  end
+
   private
 
   # Validates presence of investment_date and fund_subscription_agreement if state is `signed`

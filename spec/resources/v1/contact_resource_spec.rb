@@ -17,6 +17,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :is_mandate_member }
   it { is_expected.to have_attribute :is_mandate_owner }
   it { is_expected.to have_attribute :last_name }
+  it { is_expected.to have_attribute :legal_address_text }
   it { is_expected.to have_attribute :maiden_name }
   it { is_expected.to have_attribute :name }
   it { is_expected.to have_attribute :name_list }
@@ -27,32 +28,31 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :organization_name }
   it { is_expected.to have_attribute :organization_type }
   it { is_expected.to have_attribute :place_of_birth }
+  it { is_expected.to have_attribute :primary_contact_address_text }
   it { is_expected.to have_attribute :professional_title }
   it { is_expected.to have_attribute :updated_at }
 
-  it { is_expected.to have_many(:addresses) }
-  it { is_expected.to have_many(:mandate_members) }
-  it { is_expected.to have_many(:documents) }
-  it { is_expected.to have_many(:contact_details) }
-  it { is_expected.to have_many(:organizations).with_class_name('Contact') }
-  it { is_expected.to have_many(:organization_members) }
-  it { is_expected.to have_many(:investors) }
   it { is_expected.not_to have_many(:active_person_relationships).with_class_name('InterPersonRelationship') }
-  it { is_expected.not_to have_many(:passive_person_relationships).with_class_name('InterPersonRelationship') }
   it { is_expected.not_to have_many(:actively_related_persons).with_class_name('Contact') }
+  it { is_expected.not_to have_many(:passive_person_relationships).with_class_name('InterPersonRelationship') }
   it { is_expected.not_to have_many(:passively_related_persons).with_class_name('Contact') }
+  it { is_expected.to have_many(:addresses) }
+  it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:contact_members).with_class_name('OrganizationMember') }
   it { is_expected.to have_many(:contacts) }
+  it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:investors) }
+  it { is_expected.to have_many(:mandate_members) }
+  it { is_expected.to have_many(:organization_members) }
+  it { is_expected.to have_many(:organizations).with_class_name('Contact') }
   it { is_expected.to have_one(:compliance_detail) }
-  it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
   it { is_expected.to have_one(:legal_address).with_class_name('Address') }
+  it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }
   it { is_expected.to have_one(:primary_email).with_class_name('ContactDetail') }
   it { is_expected.to have_one(:primary_phone).with_class_name('ContactDetail') }
 
   it { is_expected.to filter(:"compliance_detail.occupation_role") }
   it { is_expected.to filter(:"compliance_detail.occupation_title") }
-  it { is_expected.to filter(:"legal_address.street_and_number") }
-  it { is_expected.to filter(:"primary_contact_address.street_and_number") }
   it { is_expected.to filter(:"primary_email.value") }
   it { is_expected.to filter(:"primary_phone.value") }
   it { is_expected.to filter(:comment) }
@@ -65,7 +65,10 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:date_of_death_min) }
   it { is_expected.to filter(:first_name) }
   it { is_expected.to filter(:gender) }
+  it { is_expected.to filter(:is_mandate_member) }
+  it { is_expected.to filter(:is_mandate_owner) }
   it { is_expected.to filter(:last_name) }
+  it { is_expected.to filter(:legal_address_text) }
   it { is_expected.to filter(:maiden_name) }
   it { is_expected.to filter(:name) }
   it { is_expected.to filter(:name_list) }
@@ -76,9 +79,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:organization_name) }
   it { is_expected.to filter(:organization_type) }
   it { is_expected.to filter(:place_of_birth) }
+  it { is_expected.to filter(:primary_contact_address_text) }
   it { is_expected.to filter(:professional_title) }
-  it { is_expected.to filter(:is_mandate_owner) }
-  it { is_expected.to filter(:is_mandate_member) }
 
   describe '#name' do
     context 'person' do

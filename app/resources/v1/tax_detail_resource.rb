@@ -11,5 +11,13 @@ module V1
 
     has_one :contact
     has_many :foreign_tax_numbers
+
+    class << self
+      def records(options)
+        records = super
+        records = records.preload(:contact) if options.dig(:context, :request_method) == 'GET'
+        records
+      end
+    end
   end
 end

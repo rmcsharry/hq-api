@@ -253,4 +253,40 @@ RSpec.describe Investor, type: :model do
       end
     end
   end
+
+  describe '#subscription_agreement_context', bullet: false do
+    let(:fund) { create(:fund) }
+    let!(:investor) { create(:investor, :signed, fund: fund) }
+
+    it 'returns the subscription_agreement context' do
+      expect(investor.subscription_agreement_context.keys).to(
+        match_array(
+          %i[
+            current_date
+            fund
+            investor
+          ]
+        )
+      )
+    end
+  end
+
+  describe '#quarterly_report_context', bullet: false do
+    let(:fund) { create(:fund) }
+    let!(:investor) { create(:investor, :signed, fund: fund) }
+    let!(:report) { create(:fund_report, fund: fund) }
+
+    it 'returns the quarterly_report context' do
+      expect(investor.quarterly_report_context(report).keys).to(
+        match_array(
+          %i[
+            current_date
+            fund
+            fund_report
+            investor
+          ]
+        )
+      )
+    end
+  end
 end
