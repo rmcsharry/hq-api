@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
+# Defines module for interacting with .docx files
 module Docx
   MIME_TYPE = Mime[:docx].to_s.freeze
+
+  def self.docx?(file)
+    file.content_type == Docx::MIME_TYPE
+  end
 
   # Defines an interface to read and write .docx files
   class Document

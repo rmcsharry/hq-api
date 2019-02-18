@@ -52,8 +52,8 @@ class Document
 
     before_validation :replace_exisiting_fund_template, on: :create
 
-    # Overwrite Document's Lockable concern by setting readonly? to false for templates
-    def readonly?
+    # Overwrite Document's Lockable concern by setting grace_perios_expired? to false for templates
+    def grace_period_expired?
       false
     end
 

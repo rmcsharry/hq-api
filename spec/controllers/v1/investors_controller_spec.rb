@@ -180,7 +180,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       end
     end
 
-    context 'with missing template', bullet: false do
+    context 'with pdf template' do
       let!(:document) do
         doc = create(
           :fund_template_document,

@@ -11,10 +11,22 @@ module DocumentBuilder
     def send_filled_template(template, context)
       authorize template, :show?
 
-      return send_file(template.file.download, template.file.content_type) unless docx?(template)
+      file = template.file
+      return send_file(file.download, file.content_type) unless Docx.docx?(file)
 
       filled_template = build_document(template, context)
       send_file(filled_template, Docx::MIME_TYPE)
+    end
+
+    def send_archive(file_map)
+      archive = Zip::OutputStream.write_buffer do |out|
+        file_map.each do |file_name, file|
+          out.put_next_entry(file_name)
+          out.write(file)
+        end
+      end.string
+
+      send_file archive, Mime[:zip].to_s
     end
 
     def send_file(file, mime_type)
@@ -37,10 +49,6 @@ module DocumentBuilder
       tempfile.write template.file.download
       tempfile.close
       tempfile
-    end
-
-    def docx?(template)
-      template.file.content_type == Docx::MIME_TYPE
     end
   end
   # rubocop:enable Metrics/BlockLength

@@ -83,5 +83,43 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
         expect(response).to have_http_status(403)
       end
     end
+
+    context 'with pdf template' do
+      let!(:document) do
+        doc = create(
+          :fund_template_document,
+          category: :fund_quarterly_report_template,
+          owner: fund
+        )
+        doc.file.attach(
+          io: File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')),
+          filename: 'sample.pdf',
+          content_type: Mime[:pdf].to_s
+        )
+        doc
+      end
+      let(:primary_owner) { create(:contact_person) }
+
+      it 'returns zip containing unmodified pdf documents' do
+        expected_document = File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')).read
+
+        expect(@response_archive.size).to eq(2)
+        file_names = @response_archive.entries.map { |e| e.name.force_encoding('UTF-8') }
+        expect(file_names).to(
+          match_array(
+            [
+              'Quartalsbericht_Fund_Last, First.pdf',
+              'Quartalsbericht_Fund_Family, Fore.pdf'
+            ]
+          )
+        )
+        response_documents = @response_archive.entries.map do |entry|
+          entry.get_input_stream.read
+        end
+        response_documents.each do |response_document|
+          expect(Base64.encode64(expected_document)).to eq(Base64.encode64(response_document))
+        end
+      end
+    end
   end
 end
