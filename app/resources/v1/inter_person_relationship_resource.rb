@@ -23,9 +23,9 @@ module V1
     }
 
     sort :target_person, apply: lambda { |records, direction, _context|
-      records.joins(:target_person)
+      records.joins('LEFT OUTER JOIN contacts AS targets ON targets.id = inter_person_relationships.target_person_id')
              .order(
-               "(contacts.first_name || ' ' || contacts.last_name) #{direction}"
+               "(targets.last_name || ', ' || targets.first_name) #{direction}"
              )
     }
   end
