@@ -46,7 +46,7 @@ class ApplicationController < JSONAPI::ResourceController
   end
 
   def method_not_allowed
-    head :method_not_allowed
+    render json: { errors: JSONAPI::Exceptions::MethodNotAllowed.new.errors }, status: :method_not_allowed
   end
 
   def conflict

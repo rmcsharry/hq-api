@@ -13,27 +13,27 @@ module V1
                     .find(params.require(:id))
       authorize fund_report, :show?
 
-      send_file build_document_archive(fund_report), 'application/zip'
+      send_archive build_documents(fund_report)
     end
 
     private
 
-    def build_document_archive(fund_report)
+    def build_documents(fund_report)
       template = fund_report.fund.quarterly_report_template
+      is_docx = Docx.docx?(template.file)
 
-      Zip::OutputStream.write_buffer do |out|
-        fund_report.investors.each do |investor|
-          context = investor.quarterly_report_context(fund_report)
-          out.put_next_entry(document_name(fund_report, investor))
-          out.write(build_document(template, context))
-        end
-      end.string
+      fund_report.investors.each_with_object({}) do |investor, documents|
+        context = investor.quarterly_report_context(fund_report)
+        name = document_name(fund_report, investor, is_docx)
+        documents[name] = is_docx ? build_document(template, context) : template.file.download
+      end
     end
 
-    def document_name(fund_report, investor)
+    def document_name(fund_report, investor, is_docx)
+      extension = is_docx ? 'docx' : 'pdf'
       fund_identifier = fund_report.fund.name
       mandate_identifier = investor.mandate.decorate.owner_name
-      "Quartalsbericht_#{fund_identifier}_#{mandate_identifier}.docx"
+      "Quartalsbericht_#{fund_identifier}_#{mandate_identifier}.#{extension}"
     end
   end
 end

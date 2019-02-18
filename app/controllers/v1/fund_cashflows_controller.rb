@@ -13,21 +13,19 @@ module V1
                       .find(params.require(:id))
       authorize fund_cashflow, :show?
 
-      send_file build_document_archive(fund_cashflow), 'application/zip'
+      send_archive build_documents(fund_cashflow)
     end
 
     private
 
-    def build_document_archive(fund_cashflow)
+    def build_documents(fund_cashflow)
       template = fund_cashflow.fund.cashflow_template(fund_cashflow)
 
-      Zip::OutputStream.write_buffer do |out|
-        fund_cashflow.investor_cashflows.each do |investor_cashflow|
-          context = investor_cashflow.document_context
-          out.put_next_entry(document_name(fund_cashflow, investor_cashflow))
-          out.write(build_document(template, context))
-        end
-      end.string
+      fund_cashflow.investor_cashflows.each_with_object({}) do |investor_cashflow, documents|
+        context = investor_cashflow.document_context
+        name = document_name(fund_cashflow, investor_cashflow)
+        documents[name] = build_document(template, context)
+      end
     end
 
     def document_name(fund_cashflow, investor_cashflow)
