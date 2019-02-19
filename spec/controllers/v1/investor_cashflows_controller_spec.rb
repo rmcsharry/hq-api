@@ -68,11 +68,11 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
       create(
         :investor,
         :signed,
-        contact_address: contact_person.primary_contact_address,
-        contact_email: contact_person.primary_email,
-        contact_phone: contact_person.primary_phone,
+        contact_address: primary_owner.primary_contact_address,
+        contact_email: primary_owner.primary_email,
+        contact_phone: primary_owner.primary_phone,
         fund: fund,
-        legal_address: contact_person.legal_address,
+        legal_address: primary_owner.legal_address,
         mandate: mandate,
         primary_owner: primary_owner
       )
@@ -118,7 +118,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     describe 'with person as primary_owner' do
-      let(:primary_owner) { create :contact_person }
+      let(:primary_owner) { create :contact_person, :with_contact_details, :with_mandate, mandate: mandate }
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
@@ -177,7 +177,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     describe 'with organization as primary_owner' do
-      let(:primary_owner) { create :contact_organization }
+      let(:primary_owner) { create :contact_organization, :with_contact_details, :with_mandate, mandate: mandate }
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
@@ -221,7 +221,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     context 'with missing funds permissions' do
-      let(:primary_owner) { create :contact_person }
+      let(:primary_owner) { create :contact_person, :with_contact_details, :with_mandate, mandate: mandate }
       let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
       let!(:user) do
         create(

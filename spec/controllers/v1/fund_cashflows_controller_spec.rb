@@ -175,8 +175,8 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
         expect(file_names).to(
           match_array(
             [
-              'Anschreiben_Ausschüttung_1_Fund_Last, First.docx',
-              'Anschreiben_Ausschüttung_1_Fund_Family, Fore.docx'
+              'Anschreiben_Ausschüttung_1_Fund_Family, Fore und Guntersen, Thomas.docx',
+              'Anschreiben_Ausschüttung_1_Fund_Last, First und Guntersen, Thomas.docx'
             ]
           )
         )

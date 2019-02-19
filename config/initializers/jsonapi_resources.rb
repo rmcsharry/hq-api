@@ -3,7 +3,7 @@
 JSONAPI.configure do |config|
   config.default_paginator = :paged
   config.default_page_size = 10
-  config.maximum_page_size = 100
+  config.maximum_page_size = 1000
   config.top_level_meta_include_record_count = true
   config.top_level_meta_include_page_count = true
   config.resource_key_type = :uuid
@@ -59,15 +59,5 @@ module JSONAPI
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Style/CaseEquality
-  end
-end
-
-module JSONAPI
-  # JSONAPI::Resources extension of the RequestParser class
-  class RequestParser
-    def parse_pagination(resource_klass, page)
-      paginator_name = context[:response_format] == :xlsx ? :none : resource_klass._paginator
-      JSONAPI::Paginator.paginator_for(paginator_name).new(page) unless paginator_name == :none
-    end
   end
 end
