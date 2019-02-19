@@ -8,11 +8,10 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
   let(:random_user) { create(:user) }
   let(:tax_detail) { create :tax_detail, de_tax_number: '21/815/08150' }
-  let(:contact_person) { create(:contact_person, user: random_user, tax_detail: tax_detail) }
-  let(:mandate) { create(:mandate) }
-  let!(:mandate_member) do
-    create(:mandate_member, mandate: mandate, contact: contact_person, member_type: :owner)
+  let(:contact_person) do
+    create(:contact_person, :with_mandate, mandate: mandate, user: random_user, tax_detail: tax_detail)
   end
+  let!(:mandate) { create(:mandate) }
   let!(:user) do
     create(
       :user,
@@ -26,15 +25,21 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   describe 'GET /v1/investors/:id/filled-fund-subscription-agreement' do
     let(:primary_contact) { create(:contact_person) }
     let(:secondary_contact) { create(:contact_person) }
+    let!(:mandate_member1) do
+      create(:mandate_member, mandate: mandate, contact: primary_contact, member_type: :consultant)
+    end
+    let!(:mandate_member2) do
+      create(:mandate_member, mandate: mandate, contact: secondary_contact, member_type: :consultant)
+    end
     let!(:fund) { create(:fund) }
     let!(:investor) do
       create(
         :investor,
         fund: fund,
-        mandate: mandate,
-        primary_contact: primary_contact,
-        primary_owner: contact_person,
-        secondary_contact: secondary_contact
+        mandate: mandate.reload,
+        primary_contact: primary_contact.reload,
+        primary_owner: contact_person.reload,
+        secondary_contact: secondary_contact.reload
       )
     end
     let!(:document) do
@@ -144,7 +149,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
 
     context 'with person as primary owner' do
-      let(:primary_owner) { create(:contact_person) }
+      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
@@ -158,7 +163,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
 
     context 'with organization as primary owner' do
-      let(:primary_owner) { create(:contact_organization) }
+      let(:primary_owner) { create(:contact_organization, :with_mandate, mandate: mandate) }
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
@@ -173,7 +178,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
     context 'with missing template' do
       let(:document) { nil }
-      let(:primary_owner) { create(:contact_person) }
+      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
 
       it 'returns `not_found` error code' do
         expect(response).to have_http_status(404)
@@ -194,7 +199,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
         )
         doc
       end
-      let(:primary_owner) { create(:contact_person) }
+      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
 
       it 'returns unmodified pdf document' do
         expected_document = File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'))

@@ -5,11 +5,16 @@ FactoryBot.define do
     transient do
       street_and_number { '875 South Bundy Drive' }
       phone { '+49301234567' }
+      mandate { build(:mandate) }
     end
 
     first_name { 'Thomas' }
     last_name  { 'Guntersen' }
     gender     { :male }
+
+    trait :with_mandate do
+      mandate_members { [create(:mandate_member, contact: @instance, mandate: mandate)] }
+    end
 
     trait :with_contact_details do
       legal_address { create(:address, street_and_number: street_and_number, owner: @instance) }

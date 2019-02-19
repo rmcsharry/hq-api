@@ -43,8 +43,12 @@
 #
 
 # Defines the Investor
+# rubocop:disable Metrics/ClassLength
 class Investor < ApplicationRecord
   include AASM
+
+  BELONG_TO_MANDATE = 'must belong to mandate'
+  BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
 
   belongs_to :bank_account, autosave: true
   belongs_to :contact_address, class_name: 'Address', autosave: true
@@ -94,6 +98,14 @@ class Investor < ApplicationRecord
   validates :mandate, presence: true
   validates :amount_total, presence: true
   validate :attributes_in_signed_state
+  validate :bank_account_belongs_to_mandate
+  validate :contact_address_belongs_to_primary_owner
+  validate :contact_email_belongs_to_primary_owner
+  validate :contact_phone_belongs_to_primary_owner
+  validate :legal_address_belongs_to_primary_owner
+  validate :primary_contact_belongs_to_mandate
+  validate :primary_owner_belongs_to_mandate
+  validate :secondary_contact_belongs_to_mandate
 
   def amount_called
     investor_cashflows.sum(&:capital_call_total_amount)
@@ -151,7 +163,54 @@ class Investor < ApplicationRecord
     errors.add(:fund_subscription_agreement, error_message) if fund_subscription_agreement.nil?
   end
 
+  def bank_account_belongs_to_mandate
+    errors.add(:bank_account, BELONG_TO_MANDATE) if bank_account.present? && bank_account.owner != mandate
+  end
+
+  def primary_owner_belongs_to_mandate
+    return if primary_owner.blank? || mandate.owners.map(&:contact).include?(primary_owner)
+
+    errors.add(:primary_owner, BELONG_TO_MANDATE)
+  end
+
+  def primary_contact_belongs_to_mandate
+    return if primary_contact.blank? || mandate.mandate_members.map(&:contact).include?(primary_contact)
+
+    errors.add(:primary_contact, BELONG_TO_MANDATE)
+  end
+
+  def secondary_contact_belongs_to_mandate
+    return if secondary_contact.blank? || mandate.mandate_members.map(&:contact).include?(secondary_contact)
+
+    errors.add(:secondary_contact, BELONG_TO_MANDATE)
+  end
+
+  def contact_address_belongs_to_primary_owner
+    return if contact_address.blank? || contact_address.owner == primary_owner
+
+    errors.add(:contact_address, BELONG_TO_PRIMARY_OWNER)
+  end
+
+  def legal_address_belongs_to_primary_owner
+    return if legal_address.blank? || legal_address.owner == primary_owner
+
+    errors.add(:legal_address, BELONG_TO_PRIMARY_OWNER)
+  end
+
+  def contact_email_belongs_to_primary_owner
+    return if contact_email.blank? || contact_email.contact == primary_owner
+
+    errors.add(:contact_email, BELONG_TO_PRIMARY_OWNER)
+  end
+
+  def contact_phone_belongs_to_primary_owner
+    return if contact_phone.blank? || contact_phone.contact == primary_owner
+
+    errors.add(:contact_phone, BELONG_TO_PRIMARY_OWNER)
+  end
+
   def set_investment_date
     self.investment_date = Time.zone.now if investment_date.nil?
   end
 end
+# rubocop:enable Metrics/ClassLength

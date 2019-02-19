@@ -62,8 +62,8 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
         expect(file_names).to(
           match_array(
             [
-              'Quartalsbericht_Fund_Last, First.docx',
-              'Quartalsbericht_Fund_Family, Fore.docx'
+              'Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas.docx',
+              'Quartalsbericht_Fund_Last, First und Guntersen, Thomas.docx'
             ]
           )
         )
@@ -108,8 +108,8 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
         expect(file_names).to(
           match_array(
             [
-              'Quartalsbericht_Fund_Last, First.pdf',
-              'Quartalsbericht_Fund_Family, Fore.pdf'
+              'Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas.pdf',
+              'Quartalsbericht_Fund_Last, First und Guntersen, Thomas.pdf'
             ]
           )
         )
