@@ -16,6 +16,9 @@ class FormatResponseDocumentService < ApplicationService
 
   def call
     resources.each do |resource|
+      # resource is {} in case the object is not available due to auhorization restrictions (e.g. policies)
+      next if resource.empty?
+
       type = build_type(resource['type'])
       @worksheets[type] ||= []
       @worksheets[type] << parse_resource(resource, type)
