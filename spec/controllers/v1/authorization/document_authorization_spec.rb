@@ -12,6 +12,7 @@ RSpec.describe 'authorization for', type: :request do
 
   context 'documents' do
     let!(:fund_document) { create(:document, owner: fund) }
+    let!(:investor_document) { create(:document, owner: investor) }
     let!(:mandate_document) { create(:document, owner: permitted_mandate) }
     let!(:contact_document) { create(:document, owner: contact_person) }
     let!(:activity_mandate_document) { create(:document, owner: mandate_activity) }
@@ -20,6 +21,7 @@ RSpec.describe 'authorization for', type: :request do
     let!(:forbidden_activity_document) { create(:document, owner: forbidden_mandate_activity) }
 
     let!(:fund) { create(:fund) }
+    let!(:investor) { create(:investor, fund: fund) }
     let!(:permitted_mandate) { create(:mandate, comment: 'permitted') }
     let!(:forbidden_mandate) { create(:mandate, comment: 'forbidden') }
     let!(:contact_person) { create(:contact_person) }
@@ -48,7 +50,7 @@ RSpec.describe 'authorization for', type: :request do
       end
 
       it 'operates on a total of seven documents' do
-        expect(Document.count).to eq(7)
+        expect(Document.count).to eq(8)
       end
 
       context 'without any relevant roles' do
@@ -120,9 +122,14 @@ RSpec.describe 'authorization for', type: :request do
           create(:user_group, users: [permitted_user], roles: [:funds_read])
         end
 
-        it 'includes documents of funds' do
+        it 'includes documents of funds and investors' do
           endpoint.call(auth_headers)
-          expect(response_ids).to contain_exactly(fund_document.id)
+          expect(response_ids).to(
+            contain_exactly(
+              fund_document.id,
+              investor_document.id
+            )
+          )
         end
 
         describe '(xlsx request)', bullet: false do
@@ -149,7 +156,7 @@ RSpec.describe 'authorization for', type: :request do
           )
         end
 
-        it 'includes documents of contacts, funds, mandates and their activities' do
+        it 'includes documents of contacts, funds, investors, mandates and their activities' do
           endpoint.call(auth_headers)
           expect(response_ids).to(
             contain_exactly(
@@ -157,6 +164,7 @@ RSpec.describe 'authorization for', type: :request do
               activity_mandate_document.id,
               contact_document.id,
               fund_document.id,
+              investor_document.id,
               mandate_document.id
             )
           )
