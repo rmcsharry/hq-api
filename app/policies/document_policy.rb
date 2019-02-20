@@ -36,9 +36,9 @@ class DocumentPolicy < ContactPolicy
     end
 
     def self.accessible_funds(root_scope, target_scope, contact_access, mandate_access)
-      return target_scope.or(root_scope.where(owner_type: 'Fund')) if contact_access || mandate_access
+      return target_scope.or(root_scope.where(owner_type: %w[Fund Investor])) if contact_access || mandate_access
 
-      target_scope.where(owner_type: 'Fund')
+      target_scope.where(owner_type: %w[Fund Investor])
     end
 
     def self.accessible_mandates(root_scope, target_scope, user, contact_access, mandates_role)

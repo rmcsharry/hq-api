@@ -174,13 +174,13 @@ class Investor < ApplicationRecord
   end
 
   def primary_contact_belongs_to_mandate
-    return if primary_contact.blank? || mandate.mandate_members.map(&:contact).include?(primary_contact)
+    return if primary_contact.blank? || valid_contacts.include?(primary_contact)
 
     errors.add(:primary_contact, BELONG_TO_MANDATE)
   end
 
   def secondary_contact_belongs_to_mandate
-    return if secondary_contact.blank? || mandate.mandate_members.map(&:contact).include?(secondary_contact)
+    return if secondary_contact.blank? || valid_contacts.include?(secondary_contact)
 
     errors.add(:secondary_contact, BELONG_TO_MANDATE)
   end
@@ -211,6 +211,12 @@ class Investor < ApplicationRecord
 
   def set_investment_date
     self.investment_date = Time.zone.now if investment_date.nil?
+  end
+
+  def valid_contacts
+    mandate.mandate_members.map(&:contact) + [
+      mandate.primary_consultant, mandate.secondary_consultant, mandate.assistant, mandate.bookkeeper
+    ]
   end
 end
 # rubocop:enable Metrics/ClassLength
