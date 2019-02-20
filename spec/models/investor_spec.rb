@@ -352,6 +352,15 @@ RSpec.describe Investor, type: :model do
       end
     end
 
+    context 'is bookkeeper of mandate' do
+      let(:contact) { mandate.bookkeeper }
+
+      it 'is valid' do
+        mandate.mandate_members = [mandate_member]
+        expect(subject).to be_valid
+      end
+    end
+
     context 'is not member of mandate' do
       let(:contact) { build(:contact_person) }
 
@@ -370,6 +379,15 @@ RSpec.describe Investor, type: :model do
 
     context 'is member of mandate' do
       let(:contact) { secondary_contact }
+
+      it 'is valid' do
+        mandate.mandate_members = [mandate_member]
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is primary consultant of mandate' do
+      let(:contact) { mandate.primary_consultant }
 
       it 'is valid' do
         mandate.mandate_members = [mandate_member]
