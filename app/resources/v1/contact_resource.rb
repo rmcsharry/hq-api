@@ -81,6 +81,14 @@ module V1
       @save_needed = true
     end
 
+    def name_list
+      @model.decorate.name_list
+    end
+
+    def name
+      @model.decorate.name
+    end
+
     filters(
       :comment,
       :commercial_register_number,
