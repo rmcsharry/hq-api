@@ -44,5 +44,11 @@ services:
       ALLOWED_ORIGINS: 'localhost:3001,app.dev.hqfinanz.de'
       OUTLOOK_ORIGINS: 'localhost:3002'
       NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL: 'https://www.hqtrust.dev.hqfinanz.de/confirmation-failure'
+      NEWSLETTER_SUBSCRIBER_HQT_SENDER: 'HQ Trust Service <service@hqtrust.de>'
+      NEWSLETTER_SUBSCRIBER_HQAM_SENDER: 'HQ Asset Management Service <service@hqam.com>'
+      NEWSLETTER_SUBSCRIBER_HQT_SUBJECT: 'HQ Trust: Bestätigen Sie Ihre E-Mail-Adresse'
+      NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT: 'HQ Asset Management: Bestätigen Sie Ihre E-Mail-Adresse'
+      NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID: 682266
+      NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID: 123456
     env_file:
       - development.env

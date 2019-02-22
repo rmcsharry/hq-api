@@ -20,6 +20,7 @@
 #  confirmation_sent_at     :datetime
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  subscriber_context       :string           default("hqt"), not null
 #
 
 require 'rails_helper'
@@ -30,6 +31,7 @@ RSpec.describe NewsletterSubscriber, type: :model do
   it { is_expected.to enumerize(:nobility_title) }
   it { is_expected.to enumerize(:professional_title) }
   it { is_expected.to enumerize(:gender) }
+  it { is_expected.to enumerize(:subscriber_context) }
 
   describe '#first_name' do
     context 'last_name is present' do

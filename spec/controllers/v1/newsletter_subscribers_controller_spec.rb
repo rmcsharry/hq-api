@@ -35,11 +35,48 @@ RSpec.describe NEWSLETTER_SUBSCRIBERS_ENDPOINT, type: :request do
         is_expected.to change { ActionMailer::Base.deliveries.size }.by(1)
         expect(response).to have_http_status(201)
         expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq 'HQ Trust Service <service@hqtrust.de>'
+        expect(ActionMailer::Base.deliveries.last.header['Subject'].value).to eq(
+          'HQ Trust: Bestätigen Sie Ihre E-Mail-Adresse'
+        )
         subscriber = NewsletterSubscriber.find(JSON.parse(response.body)['data']['id'])
         expect(subscriber.email).to eq email
         expect(subscriber.mailjet_list_id).to eq '1234'
         expect(subscriber.confirmation_base_url).to eq 'https://www.hqtrust.de/confirm-newsletter-subscription'
         expect(subscriber.confirmation_success_url).to eq 'https://www.hqtrust.de/confirmation-success'
+        json_body = JSON.parse(response.body)
+        expect(json_body['meta']).to be_nil
+      end
+    end
+
+    context 'with hqam as context' do
+      let(:payload) do
+        {
+          data: {
+            type: 'newsletter_subscribers',
+            attributes: {
+              email: email,
+              'mailjet-list-id': '1234',
+              'confirmation-base-url': confirmation_base_url,
+              'confirmation-success-url': confirmation_success_url,
+              'subscriber-context': 'hqam'
+            }
+          }
+        }
+      end
+
+      it 'creates a new newsletter subscriber' do
+        is_expected.to change(NewsletterSubscriber, :count).by(1)
+        is_expected.to change { ActionMailer::Base.deliveries.size }.by(1)
+        expect(response).to have_http_status(201)
+        expect(ActionMailer::Base.deliveries.last.header['From'].value).to eq(
+          'HQ Asset Management Service <service@hqam.com>'
+        )
+        expect(ActionMailer::Base.deliveries.last.header['Subject'].value).to eq(
+          'HQ Asset Management: Bestätigen Sie Ihre E-Mail-Adresse'
+        )
+        subscriber = NewsletterSubscriber.find(JSON.parse(response.body)['data']['id'])
+        expect(subscriber.email).to eq email
+        expect(subscriber.subscriber_context).to eq 'hqam'
         json_body = JSON.parse(response.body)
         expect(json_body['meta']).to be_nil
       end

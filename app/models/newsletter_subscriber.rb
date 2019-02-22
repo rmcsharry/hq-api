@@ -20,6 +20,7 @@
 #  confirmation_sent_at     :datetime
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  subscriber_context       :string           default("hqt"), not null
 #
 
 # Defines the Newsletter Subscriber model
@@ -69,6 +70,7 @@ class NewsletterSubscriber < ApplicationRecord
   enumerize :gender, in: Contact::Person::GENDERS, scope: true
   enumerize :nobility_title, in: Contact::Person::NOBILITY_TITLES, scope: true
   enumerize :professional_title, in: Contact::Person::PROFESSIONAL_TITLES, scope: true
+  enumerize :subscriber_context, in: %i[hqt hqam], scope: true
 
   before_validation :normalize_email
   after_create :send_confirmation

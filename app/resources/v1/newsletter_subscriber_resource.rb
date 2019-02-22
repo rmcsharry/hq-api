@@ -6,11 +6,11 @@ module V1
     include WhitelistedUrl
 
     attributes(
-      :state,
-      :confirmation_sent_at,
       :confirmation_base_url,
+      :confirmation_sent_at,
       :confirmation_success_url,
       :confirmed_at,
+      :subscriber_context,
       :created_at,
       :email,
       :first_name,
@@ -19,6 +19,7 @@ module V1
       :mailjet_list_id,
       :nobility_title,
       :professional_title,
+      :state,
       :updated_at
     )
 
