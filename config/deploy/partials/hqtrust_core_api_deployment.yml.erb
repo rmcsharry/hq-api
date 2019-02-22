@@ -145,17 +145,17 @@ spec:
             - name: NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL
               value: <%= newsletter_subscriber_confirmation_failure_url %>
             - name: NEWSLETTER_SUBSCRIBER_HQT_SENDER
-              value: <%= newsletter_subscriber_hqt_sender %>
+              value: "<%= newsletter_subscriber_hqt_sender %>"
             - name: NEWSLETTER_SUBSCRIBER_HQAM_SENDER
-              value: <%= newsletter_subscriber_hqam_sender %>
+              value: "<%= newsletter_subscriber_hqam_sender %>"
             - name: NEWSLETTER_SUBSCRIBER_HQT_SUBJECT
-              value: <%= newsletter_subscriber_hqt_subject %>
+              value: "<%= newsletter_subscriber_hqt_subject %>"
             - name: NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT
-              value: <%= newsletter_subscriber_hqam_subject %>
+              value: "<%= newsletter_subscriber_hqam_subject %>"
             - name: NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID
-              value: <%= newsletter_subscriber_hqt_template_id %>
+              value: "<%= newsletter_subscriber_hqt_template_id %>"
             - name: NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID
-              value: <%= newsletter_subscriber_hqam_template_id %>
+              value: "<%= newsletter_subscriber_hqam_template_id %>"
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
