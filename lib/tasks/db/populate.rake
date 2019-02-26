@@ -705,7 +705,7 @@ namespace :db do
       OrganizationMember.new(
         contact: contacts.sample,
         organization: organization,
-        role: %w[Geschäftsführer Gesellschafter Mitarbeiter Berater].sample
+        role: OrganizationMember::AVAILABLE_ROLES.sample
       )
     end
   end
