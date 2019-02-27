@@ -78,7 +78,7 @@ class MigrateOrganizationMemberRoles < ActiveRecord::Migration[5.2]
 
   def change
     ROLES.each do |key, value|
-      OrganizationMember.where(role: key).update(role: value)
+      OrganizationMember.where(role: key).update_all(role: value)
     end
   end
 end
