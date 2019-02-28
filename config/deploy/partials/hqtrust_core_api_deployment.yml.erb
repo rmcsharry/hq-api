@@ -277,6 +277,18 @@ spec:
                 secretKeyRef:
                   name: hqtrust-core-api-secrets
                   key: mailjet-secret-key
+            - name: NEWSLETTER_SUBSCRIBER_HQT_SENDER
+              value: "<%= newsletter_subscriber_hqt_sender %>"
+            - name: NEWSLETTER_SUBSCRIBER_HQAM_SENDER
+              value: "<%= newsletter_subscriber_hqam_sender %>"
+            - name: NEWSLETTER_SUBSCRIBER_HQT_SUBJECT
+              value: "<%= newsletter_subscriber_hqt_subject %>"
+            - name: NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT
+              value: "<%= newsletter_subscriber_hqam_subject %>"
+            - name: NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID
+              value: "<%= newsletter_subscriber_hqt_template_id %>"
+            - name: NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID
+              value: "<%= newsletter_subscriber_hqam_template_id %>"
 ---
 kind: Service
 apiVersion: v1
