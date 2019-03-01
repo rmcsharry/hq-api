@@ -12,7 +12,7 @@ class NewsletterSubscriberMailer < ApplicationMailer
       to: subscriber.email,
       delivery_method_options: {
         version: 'v3.1',
-        'TemplateID' => template(record: subscriber),
+        'TemplateID' => template(record: subscriber).to_i,
         'TemplateLanguage' => true,
         'TemplateErrorReporting' => {
           'Email' => 'admin@shr.ps',
