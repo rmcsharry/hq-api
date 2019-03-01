@@ -153,9 +153,9 @@ spec:
             - name: NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT
               value: "<%= newsletter_subscriber_hqam_subject %>"
             - name: NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID
-              value: "<%= newsletter_subscriber_hqt_template_id %>"
+              value: <%= newsletter_subscriber_hqt_template_id %>
             - name: NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID
-              value: "<%= newsletter_subscriber_hqam_template_id %>"
+              value: <%= newsletter_subscriber_hqam_template_id %>
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -286,9 +286,9 @@ spec:
             - name: NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT
               value: "<%= newsletter_subscriber_hqam_subject %>"
             - name: NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID
-              value: "<%= newsletter_subscriber_hqt_template_id %>"
+              value: <%= newsletter_subscriber_hqt_template_id %>
             - name: NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID
-              value: "<%= newsletter_subscriber_hqam_template_id %>"
+              value: <%= newsletter_subscriber_hqam_template_id %>
 ---
 kind: Service
 apiVersion: v1
