@@ -143,4 +143,32 @@ RSpec.describe DecodeEWSIdTokenService, type: :service_object do
       end.to raise_error(JWT::VerificationError)
     end
   end
+
+  describe 'invalid appctx' do
+    context 'missing appctx' do
+      let(:token_payload) do
+        valid_token_payload['appctx'] = nil
+        valid_token_payload
+      end
+
+      it 'is rejected' do
+        expect do
+          subject.call
+        end.to raise_error(JWT::VerificationError)
+      end
+    end
+
+    context 'invalid json as appctx' do
+      let(:token_payload) do
+        valid_token_payload['appctx'] = '{"msexchiud": "\injection"'
+        valid_token_payload
+      end
+
+      it 'is rejected' do
+        expect do
+          subject.call
+        end.to raise_error(JWT::VerificationError)
+      end
+    end
+  end
 end
