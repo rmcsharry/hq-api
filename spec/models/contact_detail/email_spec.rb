@@ -28,8 +28,8 @@ RSpec.describe ContactDetail::Email, type: :model do
   subject { build(:email) }
 
   describe '#value' do
-    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de'] }
-    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk'] }
+    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de', 'test+test@test.de'] }
+    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk', 'test\test@test.de'] }
 
     it 'validates email format' do
       expect(subject).to allow_values(*valid_emails).for(:value)

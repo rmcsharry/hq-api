@@ -89,12 +89,20 @@ RSpec.describe User, type: :model do
   describe '#email' do
     subject { create(:user, email: 'USER@hqfinanz.de') }
 
+    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de', 'test+test@test.de'] }
+    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk', 'test\test@test.de'] }
+
     it 'saves email downcased' do
       expect(subject.email).to eq 'user@hqfinanz.de'
     end
 
     it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
     it { is_expected.to validate_presence_of(:email) }
+
+    it 'validates email format' do
+      expect(subject).to allow_values(*valid_emails).for(:email)
+      expect(subject).not_to allow_values(*invalid_emails).for(:email)
+    end
   end
 
   describe '#setup_ews_id' do

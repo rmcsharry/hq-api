@@ -63,7 +63,7 @@ class NewsletterSubscriber < ApplicationRecord
   validates :mailjet_list_id, presence: true
   validates :confirmation_base_url, presence: true
   validates :confirmation_success_url, presence: true
-  validates :email, presence: true, email: true
+  validates :email, presence: true, email: { strict_mode: true }
 
   validate :attributes_in_confirmed_state
 

@@ -66,8 +66,8 @@ RSpec.describe NewsletterSubscriber, type: :model do
   end
 
   describe '#email' do
-    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de'] }
-    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk'] }
+    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de', 'test+test@test.de'] }
+    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk', 'test\test@test.de'] }
 
     it { is_expected.to validate_presence_of(:email) }
 

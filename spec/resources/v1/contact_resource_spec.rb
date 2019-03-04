@@ -82,6 +82,13 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:primary_contact_address_text) }
   it { is_expected.to filter(:professional_title) }
 
+  it { is_expected.to have_sortable_field(:"compliance_detail.occupation_role") }
+  it { is_expected.to have_sortable_field(:"compliance_detail.occupation_title") }
+  it { is_expected.to have_sortable_field(:is_mandate_member) }
+  it { is_expected.to have_sortable_field(:is_mandate_owner) }
+  it { is_expected.to have_sortable_field(:legal_address_text) }
+  it { is_expected.to have_sortable_field(:primary_contact_address_text) }
+
   describe '#name' do
     context 'person' do
       let(:contact) { create(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
