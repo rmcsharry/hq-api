@@ -16,21 +16,68 @@ RSpec.describe USERS_ENDPOINT, type: :request do
     ]
   end
 
-  describe 'POST /v1/users/sign-in-ews-id' do
-    let!(:user) { create(:user, email: 'test@hqfinanz.de') }
+  describe 'POST /v1/users/sign-in-ews-id', bullet: false do
+    let!(:ews_user_id) { '008c2269-2676-42a2-9f5d-d2e60ed85b28' }
+    let!(:user) do
+      create(
+        :user,
+        email: 'test@hqfinanz.de',
+        ews_user_id: ews_user_id,
+        roles: %i[contacts_read]
+      )
+    end
+    let(:private_key) { OpenSSL::PKey::RSA.generate(2048) }
+    let(:public_key) { private_key.public_key }
+    let(:token_algorithm) { 'RS256' }
+    let(:token_headers) { { x5t: 'ID6_Y31siXaJqK9oPRjUmJMC3yM' } }
+    let(:valid_token_payload) do
+      {
+        'appctxsender' => '00000002-0000-0ff1-ce00-000000000000@vertical.root',
+        'aud' => 'https://localhost:3002/index.html',
+        'exp' => 1_534_258_438,
+        'isbrowserhostedapp' => 'True',
+        'iss' => '00000002-0000-0ff1-ce00-000000000000@vertical.root',
+        'nbf' => 1_534_229_638,
+        'appctx' => <<~APPCTX
+          {"msexchuid":"#{ews_user_id}","version":"ExIdTok.V1","amurl":"https://outlook.onvertical.com:443/autodiscover/metadata/json/1"}
+        APPCTX
+      }
+    end
+    let(:token_payload) { valid_token_payload }
+    let(:token) { JWT.encode(token_payload, private_key, token_algorithm, token_headers) }
     let(:auth_headers) do
       headers.merge(
-        'Authorization' => 'Bearer x.y.z'
+        'Authorization' => token
       )
     end
 
-    it 'signs the user in and flags the token for permission constraints' do
-      allow(AuthenticateEWSIdTokenService).to receive(:call) { user }
-      allow_any_instance_of(Warden::JWTAuth::TokenDecoder).to receive(:call) { {} }
+    before do
+      Timecop.freeze(Time.zone.local(2018, 8, 14, 12))
 
+      allow(ENV).to receive(:[]).and_call_original
+      allow(ENV).to receive(:[]).with('EWS_AUTH_PUBLIC_KEY').and_return(public_key.to_s)
+      allow(ENV).to receive(:[]).with('OUTLOOK_ORIGINS').and_return('localhost:3002')
+    end
+
+    after do
+      Timecop.return
+    end
+
+    it 'signs the user in, sets token scope to ews and remembers this scope for consecutively issued tokens' do
       post("#{USERS_ENDPOINT}/sign-in-ews-id", params: {}, headers: auth_headers)
 
-      allow_any_instance_of(Warden::JWTAuth::TokenDecoder).to receive(:call).and_call_original
+      expect(response).to have_http_status(200)
+      expect(response.headers['Authorization']).to start_with 'Bearer'
+
+      ews_scoped_auth_token = response.headers['Authorization'].split(' ').last
+      payload = Warden::JWTAuth::TokenDecoder.new.call(ews_scoped_auth_token)
+      expect(payload['scope']).to eq('ews')
+
+      ews_auth_headers = auth_headers.merge(
+        'Authorization' => "Bearer #{ews_scoped_auth_token}"
+      )
+
+      get(CONTACTS_ENDPOINT, params: {}, headers: ews_auth_headers)
 
       expect(response).to have_http_status(200)
       expect(response.headers['Authorization']).to start_with 'Bearer'

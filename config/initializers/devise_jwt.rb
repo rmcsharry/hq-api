@@ -14,4 +14,28 @@ module Devise
   end
 end
 
+# We are overriding the `find_user` method of the JWT authorization here
+# in order to remember manual scopes on consecutively issued JWT
+# For the original file, see:
+# https://github.com/waiting-for-dev/warden-jwt_auth/blob/master/lib/warden/jwt_auth/payload_user_helper.rb
+module Warden
+  module JWTAuth
+    # Helper functions to deal with user info present in a decode payload
+    module PayloadUserHelper
+      # Returns user encoded in given payload
+      #
+      # @param payload [Hash] JWT payload
+      # @return [Interfaces::User] an user, whatever it is
+      def self.find_user(payload)
+        config = JWTAuth.config
+        scope = payload['scp'].to_sym
+        user_repo = config.mappings[scope]
+        user = user_repo.find_for_jwt_authentication(payload['sub'])
+        user.authenticated_via_ews = payload['scope'] == 'ews'
+        user
+      end
+    end
+  end
+end
+
 Warden::JWTAuth::Strategy.prepend Devise::JWT::WardenStrategy
