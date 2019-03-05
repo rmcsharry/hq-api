@@ -22,7 +22,7 @@ module V1
     def get_fund_type(params:, required:)
       attributes = params.require(:data).require(:attributes)
       fund_type = required ? attributes.require('fund-type') : attributes['fund-type']
-      fund_type&.constantize
+      fund_type&.classify
     end
   end
 end

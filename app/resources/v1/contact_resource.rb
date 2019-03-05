@@ -311,10 +311,7 @@ module V1
       end
 
       def create_model(context)
-        type = context[:type]
-        raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless valid_type?(type: type)
-
-        type.new
+        find_klass(type: context[:type]).new
       end
 
       def updatable_fields(context)
@@ -323,8 +320,11 @@ module V1
 
       private
 
-      def valid_type?(type:)
-        Contact.subclasses.include? type
+      def find_klass(type:)
+        klass = Contact.subclasses.find { |k| k.name == type }
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless klass
+
+        klass
       end
     end
   end

@@ -95,23 +95,23 @@ module V1
       end
 
       def create_model(context)
-        type = context[:type]
-        raise JSONAPI::Exceptions::InvalidFieldValue.new('fund-type', type) unless valid_type?(type: type)
-
-        type.new
+        find_klass(type: context[:type]).new
       end
 
       private
 
-      def valid_type?(type:)
-        Fund.subclasses.include? type
+      def find_klass(type:)
+        klass = Fund.subclasses.find { |k| k.name == type }
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('fund-type', type) unless klass
+
+        klass
       end
     end
 
     private
 
     def build_document(params:)
-      params[:documentType].constantize.new(
+      DocumentResource.find_klass(type: params[:documentType]).new(
         category: params[:category],
         name: params[:name],
         owner: @model,

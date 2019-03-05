@@ -6,6 +6,9 @@
   - name: Run Rubocop
     service: api
     command: rubocop
+  - name: Run Brakeman
+    service: api
+    command: brakeman
 - name: Push to AWS ECR
   type: serial
   service: api
