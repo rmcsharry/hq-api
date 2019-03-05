@@ -83,9 +83,10 @@ module V1
 
     class << self
       def resource_for(model_record, context)
-        type = find_klass(type: context[:type])
+        type = context[:type]
         if type && context[:controller] == 'v1/funds'
-          model_record = model_record.becomes(type) if type != model_record.type
+          klass = find_klass(type: type)
+          model_record = model_record.becomes(klass) if klass != model_record.type
         end
         super
       end
