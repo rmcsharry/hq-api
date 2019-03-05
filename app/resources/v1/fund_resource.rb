@@ -2,6 +2,7 @@
 
 module V1
   # Defines the Fund resource for the API
+  # rubocop:disable Metrics/ClassLength
   class FundResource < BaseResource
     attributes(
       :fund_type,
@@ -122,4 +123,5 @@ module V1
       )
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end
