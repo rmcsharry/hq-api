@@ -14,7 +14,7 @@ namespace :data_import do
 
     categories = Mandate.category.values.map { |v| [v.text, v] }.to_h
     aasm_states = {
-      'Prospect' => :prospect,
+      'Prospect – Not Qualified' => :prospect_not_qualified,
       'Kunde' => :client,
       'Gekündigt' => :cancelled
     }

@@ -60,6 +60,50 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:prospect_fees_min_amount) }
   it { is_expected.to respond_to(:prospect_fees_percentage) }
 
+  describe 'aasm events' do
+    describe 'become_client' do
+      context 'when #primary_and_secondary_consultant_present? is true' do
+        %i[cancelled prospect_cold prospect_not_qualified prospect_warm].each do |state|
+          subject { build(:mandate, aasm_state: state) }
+          it { is_expected.to transition_from(state).to(:client).on_event(:become_client) }
+        end
+      end
+
+      context 'when #primary_and_secondary_consultant_present? is false' do
+        %i[cancelled prospect_cold prospect_not_qualified prospect_warm].each do |state|
+          subject { build(:mandate, aasm_state: state, primary_consultant: nil) }
+          it { is_expected.to_not allow_event(:become_client) }
+        end
+      end
+    end
+
+    describe 'cancel' do
+      %i[client prospect_cold prospect_not_qualified prospect_warm].each do |state|
+        it { is_expected.to transition_from(state).to(:cancelled).on_event(:cancel) }
+      end
+    end
+
+    describe 'become_prospect_not_qualified' do
+      %i[cancelled client prospect_cold prospect_warm].each do |state|
+        it {
+          is_expected.to transition_from(state).to(:prospect_not_qualified).on_event(:become_prospect_not_qualified)
+        }
+      end
+    end
+
+    describe 'become_prospect_cold' do
+      %i[cancelled client prospect_not_qualified prospect_warm].each do |state|
+        it { is_expected.to transition_from(state).to(:prospect_cold).on_event(:become_prospect_cold) }
+      end
+    end
+
+    describe 'become_prospect_warm' do
+      %i[cancelled client prospect_cold prospect_not_qualified].each do |state|
+        it { is_expected.to transition_from(state).to(:prospect_warm).on_event(:become_prospect_warm) }
+      end
+    end
+  end
+
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
     it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
@@ -108,8 +152,8 @@ RSpec.describe Mandate, type: :model do
       end
     end
 
-    context 'for prospect' do
-      subject { build(:mandate, aasm_state: :prospect, primary_consultant: nil) }
+    context 'for prospect_not_qualified' do
+      subject { build(:mandate, aasm_state: :prospect_not_qualified, primary_consultant: nil) }
       it 'is optional' do
         expect(subject).to belong_to(:primary_consultant).optional
       end

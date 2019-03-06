@@ -133,7 +133,7 @@ RSpec.describe 'authorization for', type: :request do
               'valid-from': '2004-05-29',
               'valid-to': '2015-12-27',
               category: 'wealth_management',
-              state: 'prospect'
+              state: 'prospect_not_qualified'
             },
             relationships: {
               'owners': {
