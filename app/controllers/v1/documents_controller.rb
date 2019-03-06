@@ -16,7 +16,7 @@ module V1
     def context
       if params[:action] == 'create'
         super.merge(
-          type: params.require(:data).require(:attributes).require('document-type').constantize
+          type: params.require(:data).require(:attributes).require('document-type').classify
         )
       else
         super

@@ -89,6 +89,7 @@ class User < ApplicationRecord
 
   PASSWORD_REGEX = /\A(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^\p{Alpha}\d]).{10,128}\z/.freeze
   validates :password, format: { with: PASSWORD_REGEX, message: :password_complexity }, if: :password_present?
+  validates :email, presence: true, email: { strict_mode: true }
 
   scope :with_user_group_count, lambda {
     from(

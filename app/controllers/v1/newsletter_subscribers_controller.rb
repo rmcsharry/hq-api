@@ -15,7 +15,7 @@ module V1
 
     def confirm_subscription
       subscriber = NewsletterSubscriber.confirm_by_token!(params[:confirmation_token])
-      if subscriber.present?
+      if subscriber.present? && WhitelistedUrl.whitelisted_url?(url: subscriber.confirmation_success_url)
         redirect_to subscriber.confirmation_success_url
       else
         redirect_to ENV['NEWSLETTER_SUBSCRIBER_CONFIRMATION_FAILURE_URL']

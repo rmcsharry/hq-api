@@ -1,0 +1,26 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Redirect",
+      "warning_code": 18,
+      "fingerprint": "e4040ad7ac470e728f711721e158e820ea4f6e76d1ee21e95f880fca1d5f1404",
+      "check_name": "Redirect",
+      "message": "Possible unprotected redirect",
+      "file": "app/controllers/v1/newsletter_subscribers_controller.rb",
+      "line": 19,
+      "link": "https://brakemanscanner.org/docs/warning_types/redirect/",
+      "code": "redirect_to(NewsletterSubscriber.confirm_by_token!(params[:confirmation_token]).confirmation_success_url)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "V1::NewsletterSubscribersController",
+        "method": "confirm_subscription"
+      },
+      "user_input": "NewsletterSubscriber.confirm_by_token!(params[:confirmation_token]).confirmation_success_url",
+      "confidence": "High",
+      "note": ""
+    }
+  ],
+  "updated": "2019-03-04 18:47:23 +0100",
+  "brakeman_version": "4.4.0"
+}

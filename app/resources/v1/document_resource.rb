@@ -82,10 +82,7 @@ module V1
       end
 
       def create_model(context)
-        type = context[:type]
-        raise JSONAPI::Exceptions::InvalidFieldValue.new('document-type', type) unless valid_type?(type: type)
-
-        type.new(uploader: context[:current_user])
+        find_klass(type: context[:type]).new(uploader: context[:current_user])
       end
 
       def updatable_fields(context)
@@ -96,10 +93,11 @@ module V1
         super(context) - [:file]
       end
 
-      private
+      def find_klass(type:)
+        klass = ([Document] + Document.subclasses).find { |k| k.name == type }
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('document-type', type) unless klass
 
-      def valid_type?(type:)
-        ([Document] + Document.subclasses).include? type
+        klass
       end
     end
   end

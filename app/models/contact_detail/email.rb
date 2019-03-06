@@ -29,7 +29,7 @@ class ContactDetail
       ContactDetailPolicy
     end
 
-    validates :value, email: true
+    validates :value, email: { strict_mode: true }
 
     before_validation :normalize_email
 

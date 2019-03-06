@@ -6,12 +6,13 @@ class NewsletterSubscriberMailer < ApplicationMailer
   def confirmation_instructions
     subscriber = params[:record].decorate
     confirm_email_url = "#{subscriber.confirmation_base_url}?confirmation_token=#{params[:confirmation_token]}"
+
     mail(
-      from: 'HQ Trust Service <service@hqtrust.de>',
+      from: sender(record: subscriber),
       to: subscriber.email,
       delivery_method_options: {
         version: 'v3.1',
-        'TemplateID' => 682_266,
+        'TemplateID' => template(record: subscriber).to_i,
         'TemplateLanguage' => true,
         'TemplateErrorReporting' => {
           'Email' => 'admin@shr.ps',
@@ -22,9 +23,35 @@ class NewsletterSubscriberMailer < ApplicationMailer
           confirmation_url: confirm_email_url
         }
       },
-      subject: 'HQ Trust: Bestätigen Sie Ihre E-Mail-Adresse',
+      subject: subject(record: subscriber),
       body: ''
     )
   end
   # rubocop:enable Metrics/MethodLength
+
+  private
+
+  def sender(record:)
+    if record.subscriber_context == 'hqt'
+      ENV['NEWSLETTER_SUBSCRIBER_HQT_SENDER']
+    else
+      ENV['NEWSLETTER_SUBSCRIBER_HQAM_SENDER']
+    end
+  end
+
+  def subject(record:)
+    if record.subscriber_context == 'hqt'
+      ENV['NEWSLETTER_SUBSCRIBER_HQT_SUBJECT']
+    else
+      ENV['NEWSLETTER_SUBSCRIBER_HQAM_SUBJECT']
+    end
+  end
+
+  def template(record:)
+    if record.subscriber_context == 'hqt'
+      ENV['NEWSLETTER_SUBSCRIBER_HQT_TEMPLATE_ID']
+    else
+      ENV['NEWSLETTER_SUBSCRIBER_HQAM_TEMPLATE_ID']
+    end
+  end
 end

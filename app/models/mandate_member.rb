@@ -34,6 +34,7 @@ class MandateMember < ApplicationRecord
     assistance
     attorney
     auditor
+    beneficial_owner
     beneficiary
     bookkeeper
     capital_management_company

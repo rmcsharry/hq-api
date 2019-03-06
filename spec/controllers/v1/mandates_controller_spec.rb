@@ -33,7 +33,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
               'valid-from': '2004-05-29',
               'valid-to': '2015-12-27',
               category: 'wealth_management',
-              state: 'prospect'
+              state: 'prospect_not_qualified'
             },
             relationships: {
               'owners': {
@@ -358,7 +358,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     let(:user3) { create(:user, first_name: 'Shelley', last_name: 'Stewart') }
     let(:original_comment) { 'Test Comment 1' }
     let(:original_mandate_number) { '001' }
-    let(:original_state) { 'prospect' }
+    let(:original_state) { 'prospect_not_qualified' }
     let(:updated_comment) { 'Test Comment 2' }
     let(:updated_mandate_number) { '002' }
     let(:updated_state) { 'client' }

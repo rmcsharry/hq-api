@@ -43,6 +43,7 @@
 #
 
 # Defines the Mandate model
+# rubocop:disable Metrics/ClassLength
 class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
@@ -89,19 +90,27 @@ class Mandate < ApplicationRecord
   )
 
   aasm do
-    state :prospect, initial: true
-    state :client, :cancelled
+    state :prospect_not_qualified, initial: true
+    state :prospect_cold, :prospect_warm, :client, :cancelled
 
     event :become_client, if: :primary_and_secondary_consultant_present? do
-      transitions from: %i[prospect cancelled], to: :client
+      transitions from: %i[prospect_not_qualified prospect_cold prospect_warm cancelled], to: :client
     end
 
     event :cancel do
-      transitions from: %i[prospect client], to: :cancelled
+      transitions from: %i[prospect_not_qualified prospect_cold prospect_warm client], to: :cancelled
     end
 
-    event :become_prospect do
-      transitions from: %i[client cancelled], to: :prospect
+    event :become_prospect_not_qualified do
+      transitions from: %i[prospect_cold prospect_warm client cancelled], to: :prospect_not_qualified
+    end
+
+    event :become_prospect_cold do
+      transitions from: %i[prospect_not_qualified prospect_warm client cancelled], to: :prospect_cold
+    end
+
+    event :become_prospect_warm do
+      transitions from: %i[prospect_not_qualified prospect_cold client cancelled], to: :prospect_warm
     end
   end
 
@@ -168,3 +177,4 @@ class Mandate < ApplicationRecord
       prospect_fees_min_amount.present?
   end
 end
+# rubocop:enable Metrics/ClassLength

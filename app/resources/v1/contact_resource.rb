@@ -81,6 +81,14 @@ module V1
       @save_needed = true
     end
 
+    def name_list
+      @model.decorate.name_list
+    end
+
+    def name
+      @model.decorate.name
+    end
+
     filters(
       :comment,
       :commercial_register_number,
@@ -212,6 +220,61 @@ module V1
       end
     }
 
+    sort :primary_contact_address_text, apply: lambda { |records, direction, _context|
+      records
+        .joins(
+          'INNER JOIN addresses AS pca ON contacts.primary_contact_address_id = pca.id'
+        ).order(
+          "pca.street_and_number || ', ' || pca.postal_code || ' ' || pca.city || ', ' || " \
+          "pca.country #{direction}"
+        )
+    }
+
+    sort :legal_address_text, apply: lambda { |records, direction, _context|
+      records
+        .joins(
+          'INNER JOIN addresses AS la ON contacts.legal_address_id = la.id'
+        ).order(
+          "la.street_and_number || ', ' || la.postal_code || ' ' || la.city || ', ' || " \
+          "la.country #{direction}"
+        )
+    }
+
+    sort :"compliance_detail.occupation_role", apply: lambda { |records, direction, _context|
+      records.joins(:compliance_detail).order("compliance_details.occupation_role #{direction}")
+    }
+
+    sort :"compliance_detail.occupation_title", apply: lambda { |records, direction, _context|
+      records.joins(:compliance_detail).order("compliance_details.occupation_title #{direction}")
+    }
+
+    sort :is_mandate_owner, apply: lambda { |records, direction, _context|
+      records.joins(
+        "
+          LEFT JOIN (
+            SELECT contact_id AS contact_id, COUNT(*) > 0
+            FROM mandate_members
+            WHERE member_type = 'owner'
+            GROUP BY contact_id
+          ) mandate_member_counts
+          ON contacts.id = mandate_member_counts.contact_id
+        "
+      ).order("mandate_member_counts #{direction}")
+    }
+
+    sort :is_mandate_member, apply: lambda { |records, direction, _context|
+      records.joins(
+        "
+          LEFT JOIN (
+            SELECT contact_id AS contact_id, COUNT(*) > 0
+            FROM mandate_members
+            GROUP BY contact_id
+          ) mandate_member_counts
+          ON contacts.id = mandate_member_counts.contact_id
+        "
+      ).order("mandate_member_counts #{direction}")
+    }
+
     def fetchable_fields
       super - %i[compliance_detail tax_detail]
     end
@@ -248,10 +311,7 @@ module V1
       end
 
       def create_model(context)
-        type = context[:type]
-        raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless valid_type?(type: type)
-
-        type.new
+        find_klass(type: context[:type]).new
       end
 
       def updatable_fields(context)
@@ -260,8 +320,11 @@ module V1
 
       private
 
-      def valid_type?(type:)
-        Contact.subclasses.include? type
+      def find_klass(type:)
+        klass = Contact.subclasses.find { |k| k.name == type }
+        raise JSONAPI::Exceptions::InvalidFieldValue.new('contact-type', type) unless klass
+
+        klass
       end
     end
   end

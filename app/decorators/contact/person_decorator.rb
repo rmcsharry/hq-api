@@ -8,13 +8,14 @@ class Contact
     # Returns the Person's full name
     # @return [String]
     def name
-      "#{first_name} #{last_name}"
+      [professional_title_text, first_name, nobility_title_text, last_name].compact.join(' ')
     end
 
     # Returns the Person's full name is list style
     # @return [String]
     def name_list
-      "#{last_name}, #{first_name}"
+      salutation = [professional_title_text, first_name, nobility_title_text].compact.join(' ')
+      "#{last_name}, #{salutation}"
     end
 
     # Returns formal salutation for the Person including

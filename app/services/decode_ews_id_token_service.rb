@@ -57,6 +57,8 @@ class DecodeEWSIdTokenService < ApplicationService
       appctx = JSON.parse(raw_appctx)
       raise JWT::InvalidPayload if appctx['version'] != 'ExIdTok.V1'
       raise JWT::InvalidPayload if appctx['amurl'] !~ URI::ABS_URI
+    rescue JSON::ParserError, TypeError => _
+      raise JWT::VerificationError
     end
   end
 end

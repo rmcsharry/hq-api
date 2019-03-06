@@ -49,7 +49,8 @@ module V1
     end
 
     def mandates_prospect_count
-      Mandate.associated_to_contact_with_id(@model.contact_id).where(state: :prospect).count
+      Mandate.associated_to_contact_with_id(@model.contact_id)
+             .where(state: %i[prospect_cold prospect_not_qualified prospect_warm]).count
     end
 
     def open_tasks_count

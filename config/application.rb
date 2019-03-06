@@ -15,6 +15,8 @@ require 'active_record/railtie'
 require 'active_storage/engine'
 require 'rails/test_unit/railtie'
 
+require File.expand_path('../lib/middleware/unknown_http_method', __dir__)
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -40,5 +42,7 @@ module HqtrustCoreApi
     config.generators do |g|
       g.orm :active_record, primary_key_type: :uuid
     end
+
+    config.middleware.insert_after(ActionDispatch::RequestId, ::Middleware::UnknownHttpMethod)
   end
 end

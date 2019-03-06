@@ -6,10 +6,16 @@
     host: 'api-core.dev.hqfinanz.de',
     host_url: 'https://api-core.dev.hqfinanz.de',
     sidekiq_monitor_host: 'sidekiq-monitor.dev.hqfinanz.de',
-    whitelisted_urls: 'https://app.dev.hqfinanz.de,https://www.hqtrust.dev.hqfinanz.de,https://www.hqassetmanagement.dev.hqfinanz.de',
+    whitelisted_urls: 'https://app.dev.hqfinanz.de,https://www.hqtrust.dev.hqfinanz.de,https://www.hqam.dev.hqfinanz.de',
     allowed_origins: 'app.dev.hqfinanz.de',
     outlook_origins: 'outlook-addin.dev.hqfinanz.de',
     replicas: 2,
-    newsletter_subscriber_confirmation_failure_url: 'https://www.hqtrust.dev.hqfinanz.de/confirmation-failure'
+    newsletter_subscriber_confirmation_failure_url: 'https://www.hqtrust.dev.hqfinanz.de/confirmation-failure',
+    newsletter_subscriber_hqt_sender: 'HQ Trust Service <service@hqtrust.de>',
+    newsletter_subscriber_hqam_sender: 'HQ Asset Management Service <service@hqam.com>',
+    newsletter_subscriber_hqt_subject: 'HQ Trust: Bestätigen Sie Ihre E-Mail-Adresse',
+    newsletter_subscriber_hqam_subject: 'HQ Asset Management: Bestätigen Sie Ihre E-Mail-Adresse',
+    newsletter_subscriber_hqt_template_id: 682266,
+    newsletter_subscriber_hqam_template_id: 682266
   )
 %>

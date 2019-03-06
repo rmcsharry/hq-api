@@ -23,6 +23,8 @@
 
 # Defines the Organization Member
 class OrganizationMember < ApplicationRecord
+  extend Enumerize
+
   belongs_to :organization, class_name: 'Contact::Organization', inverse_of: :contact_members
   belongs_to :contact, inverse_of: :organization_members
 
@@ -34,5 +36,54 @@ class OrganizationMember < ApplicationRecord
     skip: SKIPPED_ATTRIBUTES
   )
 
+  AVAILABLE_ROLES = %i[
+    account_manager_asset_manager
+    administrative_board_member
+    advisor
+    analyst
+    assistant
+    benefactor
+    beneficial_owner
+    beneficiary
+    bookkeeper
+    broker_insurance
+    broker_real_estate
+    ceo
+    cfo
+    chairman
+    cio
+    client_bank
+    client_wealth_management
+    consultant
+    consultant_bank
+    contact
+    contact_asset_manager
+    contact_contractor
+    contact_depot_bank
+    custodian_real_estate
+    customer_consultant
+    director
+    employee
+    family_officer
+    general_partner
+    hqt_contact
+    investment_manager
+    limited_partner
+    managing_director
+    managing_general_partner
+    managing_partner
+    mandate
+    mandate_lawyer
+    mandate_tax_advisor
+    member_investment_committee
+    portfolio_manager
+    portfolio_manager_alternative_investments
+    procurator
+    shareholder
+    spokesperson_of_the_board
+    supervisor
+  ].freeze
+
+  enumerize :role, in: AVAILABLE_ROLES, scope: true
   validates :role, presence: true
 end

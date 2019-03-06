@@ -20,6 +20,7 @@
 #  confirmation_sent_at     :datetime
 #  created_at               :datetime         not null
 #  updated_at               :datetime         not null
+#  subscriber_context       :string           default("hqt"), not null
 #
 
 require 'rails_helper'
@@ -30,6 +31,7 @@ RSpec.describe NewsletterSubscriber, type: :model do
   it { is_expected.to enumerize(:nobility_title) }
   it { is_expected.to enumerize(:professional_title) }
   it { is_expected.to enumerize(:gender) }
+  it { is_expected.to enumerize(:subscriber_context) }
 
   describe '#first_name' do
     context 'last_name is present' do
@@ -64,8 +66,8 @@ RSpec.describe NewsletterSubscriber, type: :model do
   end
 
   describe '#email' do
-    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de'] }
-    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk'] }
+    let(:valid_emails) { ['test@test.de', 'test@test.co.uk', 'test123-abc.abc@test.de', 'test+test@test.de'] }
+    let(:invalid_emails) { ['test test@test.de', 'test', 'test@test', '@test.co.uk', 'test\test@test.de'] }
 
     it { is_expected.to validate_presence_of(:email) }
 
