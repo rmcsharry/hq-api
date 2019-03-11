@@ -351,6 +351,21 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(body['data']['relationships']['mandate-groups-organizations']['data'].count).to eq 1
       end
     end
+
+    context 'requesting a nested relationship' do
+      let!(:mandate) { create(:mandate, :with_multiple_owners, mandate_groups: []) }
+
+      it 'does not fail if the include is missing' do
+        get(
+          "#{MANDATES_ENDPOINT}/#{mandate.id}/assistant",
+          params: {
+            # include: 'assistant' is missing on purpose
+          },
+          headers: auth_headers
+        )
+        expect(response).to have_http_status(200)
+      end
+    end
   end
 
   describe 'GET /v1/mandates/<mandate_id>/versions' do
