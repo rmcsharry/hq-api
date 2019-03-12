@@ -4,22 +4,24 @@
 #
 # Table name: investors
 #
-#  id                   :uuid             not null, primary key
-#  fund_id              :uuid
-#  mandate_id           :uuid
-#  legal_address_id     :uuid
-#  contact_address_id   :uuid
-#  contact_email_id     :uuid
-#  contact_phone_id     :uuid
-#  bank_account_id      :uuid
-#  primary_owner_id     :uuid
-#  aasm_state           :string           not null
-#  investment_date      :datetime
-#  amount_total         :decimal(20, 2)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  primary_contact_id   :uuid
-#  secondary_contact_id :uuid
+#  id                     :uuid             not null, primary key
+#  fund_id                :uuid
+#  mandate_id             :uuid
+#  legal_address_id       :uuid
+#  contact_address_id     :uuid
+#  contact_email_id       :uuid
+#  contact_phone_id       :uuid
+#  bank_account_id        :uuid
+#  primary_owner_id       :uuid
+#  aasm_state             :string           not null
+#  investment_date        :datetime
+#  amount_total           :decimal(20, 2)
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  primary_contact_id     :uuid
+#  secondary_contact_id   :uuid
+#  capital_account_number :string
+#  psplus_id              :string
 #
 # Indexes
 #
@@ -106,6 +108,7 @@ class Investor < ApplicationRecord
   validate :primary_contact_belongs_to_mandate
   validate :primary_owner_belongs_to_mandate
   validate :secondary_contact_belongs_to_mandate
+  validates :psplus_id, length: { maximum: 15 }
 
   def amount_called
     investor_cashflows.sum(&:capital_call_total_amount)

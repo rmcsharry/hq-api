@@ -4,22 +4,24 @@
 #
 # Table name: investors
 #
-#  id                   :uuid             not null, primary key
-#  fund_id              :uuid
-#  mandate_id           :uuid
-#  legal_address_id     :uuid
-#  contact_address_id   :uuid
-#  contact_email_id     :uuid
-#  contact_phone_id     :uuid
-#  bank_account_id      :uuid
-#  primary_owner_id     :uuid
-#  aasm_state           :string           not null
-#  investment_date      :datetime
-#  amount_total         :decimal(20, 2)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  primary_contact_id   :uuid
-#  secondary_contact_id :uuid
+#  id                     :uuid             not null, primary key
+#  fund_id                :uuid
+#  mandate_id             :uuid
+#  legal_address_id       :uuid
+#  contact_address_id     :uuid
+#  contact_email_id       :uuid
+#  contact_phone_id       :uuid
+#  bank_account_id        :uuid
+#  primary_owner_id       :uuid
+#  aasm_state             :string           not null
+#  investment_date        :datetime
+#  amount_total           :decimal(20, 2)
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  primary_contact_id     :uuid
+#  secondary_contact_id   :uuid
+#  capital_account_number :string
+#  psplus_id              :string
 #
 # Indexes
 #
@@ -45,6 +47,7 @@
 require 'rails_helper'
 
 RSpec.describe Investor, type: :model do
+  it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
   it { is_expected.to validate_presence_of(:amount_total) }
   it { is_expected.to validate_presence_of(:bank_account) }
   it { is_expected.to validate_presence_of(:contact_address) }

@@ -8,11 +8,13 @@ module V1
       :amount_open,
       :amount_total,
       :amount_total_distribution,
+      :capital_account_number,
       :created_at,
       :current_value,
       :dpi,
       :investment_date,
       :irr,
+      :psplus_id,
       :state,
       :tvpi,
       :updated_at
