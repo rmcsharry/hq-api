@@ -18,6 +18,7 @@ module V1
     model_hint model: ContactDetail::Website, resource: :contact_detail
     model_hint model: Document::FundSubscriptionAgreement, resource: :document
     model_hint model: Document::FundTemplate, resource: :document
+    model_hint model: Document::GeneratedDocument, resource: :document
     model_hint model: Fund::PrivateDebt, resource: :fund
     model_hint model: Fund::PrivateEquity, resource: :fund
     model_hint model: Fund::RealEstate, resource: :fund

@@ -194,13 +194,6 @@ ActiveRecord::Schema.define(version: 2019_03_11_170409) do
     t.index ["fund_id"], name: "index_fund_reports_on_fund_id"
   end
 
-  create_table "fund_reports_investors", id: false, force: :cascade do |t|
-    t.uuid "fund_report_id"
-    t.uuid "investor_id"
-    t.index ["fund_report_id"], name: "index_fund_reports_investors_on_fund_report_id"
-    t.index ["investor_id"], name: "index_fund_reports_investors_on_investor_id"
-  end
-
   create_table "funds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "duration"
     t.integer "duration_extension"
@@ -255,6 +248,13 @@ ActiveRecord::Schema.define(version: 2019_03_11_170409) do
     t.datetime "updated_at", null: false
     t.index ["fund_cashflow_id"], name: "index_investor_cashflows_on_fund_cashflow_id"
     t.index ["investor_id"], name: "index_investor_cashflows_on_investor_id"
+  end
+
+  create_table "investor_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "fund_report_id"
+    t.uuid "investor_id"
+    t.index ["fund_report_id"], name: "index_investor_reports_on_fund_report_id"
+    t.index ["investor_id"], name: "index_investor_reports_on_investor_id"
   end
 
   create_table "investors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -509,8 +509,6 @@ ActiveRecord::Schema.define(version: 2019_03_11_170409) do
   add_foreign_key "foreign_tax_numbers", "tax_details"
   add_foreign_key "fund_cashflows", "funds"
   add_foreign_key "fund_reports", "funds"
-  add_foreign_key "fund_reports_investors", "fund_reports"
-  add_foreign_key "fund_reports_investors", "investors"
   add_foreign_key "funds", "addresses", column: "legal_address_id"
   add_foreign_key "funds", "addresses", column: "primary_contact_address_id"
   add_foreign_key "funds", "contacts", column: "capital_management_company_id"
@@ -518,6 +516,8 @@ ActiveRecord::Schema.define(version: 2019_03_11_170409) do
   add_foreign_key "inter_person_relationships", "contacts", column: "target_person_id"
   add_foreign_key "investor_cashflows", "fund_cashflows"
   add_foreign_key "investor_cashflows", "investors"
+  add_foreign_key "investor_reports", "fund_reports"
+  add_foreign_key "investor_reports", "investors"
   add_foreign_key "investors", "addresses", column: "contact_address_id"
   add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"

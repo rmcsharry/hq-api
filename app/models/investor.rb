@@ -48,6 +48,7 @@
 # rubocop:disable Metrics/ClassLength
 class Investor < ApplicationRecord
   include AASM
+  include GeneratedDocument
 
   BELONG_TO_MANDATE = 'must belong to mandate'
   BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
@@ -64,7 +65,8 @@ class Investor < ApplicationRecord
   belongs_to(
     :secondary_contact, class_name: 'Contact', optional: true, inverse_of: :secondary_contact_investors
   )
-  has_and_belongs_to_many :fund_reports, -> { distinct }
+  has_many :investor_reports, dependent: :destroy
+  has_many :fund_reports, -> { distinct }, through: :investor_reports
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :investor_cashflows, dependent: :nullify
   has_one :fund_subscription_agreement,
@@ -146,15 +148,28 @@ class Investor < ApplicationRecord
     -1
   end
 
-  def subscription_agreement_context
+  def subscription_agreement_document_context
     Document::FundTemplate.fund_subscription_agreement_context(self)
   end
 
-  def quarterly_report_context(fund_report)
-    Document::FundTemplate.fund_quarterly_report_context(self, fund_report)
+  def subscription_agreement_document(current_user)
+    template = fund.subscription_agreement_template
+    find_or_create_document(
+      document_category: :generated_subscription_agreement_document,
+      name: subscription_agreement_document_name(template),
+      template: template,
+      template_context: subscription_agreement_document_context,
+      uploader: current_user
+    )
   end
 
   private
+
+  def subscription_agreement_document_name(template)
+    extension = Docx.docx?(template.file) ? 'docx' : 'pdf'
+    mandate_identifier = mandate.decorate.owner_name
+    "Zeichnungsschein_#{mandate_identifier}.#{extension}"
+  end
 
   # Validates presence of investment_date and fund_subscription_agreement if state is `signed`
   # @return [void]

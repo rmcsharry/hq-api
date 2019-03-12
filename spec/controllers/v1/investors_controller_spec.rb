@@ -22,7 +22,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
-  describe 'GET /v1/investors/:id/filled-fund-subscription-agreement' do
+  describe 'GET /v1/investors/:id/fund-subscription-agreement-document' do
     let(:primary_contact) { create(:contact_person) }
     let(:secondary_contact) { create(:contact_person) }
     let!(:mandate_member1) do
@@ -57,7 +57,11 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
 
     before do
-      get("#{INVESTORS_ENDPOINT}/#{investor.id}/filled-fund-subscription-agreement", params: {}, headers: auth_headers)
+      get(
+        "#{INVESTORS_ENDPOINT}/#{investor.id}/fund-subscription-agreement-document",
+        params: {},
+        headers: auth_headers
+      )
 
       tempfile = Tempfile.new 'filled-agreement'
       tempfile.binmode
@@ -67,7 +71,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
 
     context 'with actual template' do
-      let(:document_name) { '20181219-Zeichnungsschein_Vorlage.docx' }
+      let(:document_name) { 'Zeichnungsschein_Vorlage.docx' }
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
@@ -87,7 +91,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
     end
 
     context 'with missing funds permissions' do
-      let(:document_name) { '20181219-Zeichnungsschein_Vorlage.docx' }
+      let(:document_name) { 'Zeichnungsschein_Vorlage.docx' }
       let!(:user) do
         create(
           :user,
@@ -108,102 +112,6 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
         expect(response).to have_http_status(201)
 
         expect(@response_document.to_s).not_to match(/Encrypted password: [a-zA-Z0-9\$]+/)
-      end
-    end
-  end
-
-  describe 'GET /v1/investors/:id/filled-fund-quarterly-report' do
-    let!(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, fund: fund, mandate: mandate, primary_owner: primary_owner) }
-    let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
-    let!(:document) do
-      doc = create(
-        :fund_template_document,
-        category: :fund_quarterly_report_template,
-        owner: fund
-      )
-      doc.file.attach(
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)),
-        filename: 'sample.docx',
-        content_type: Mime[:docx].to_s
-      )
-      doc
-    end
-    let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
-
-    before do
-      get(
-        "#{INVESTORS_ENDPOINT}/#{investor.id}/filled-fund-quarterly-report?fund_report_id=#{fund_report.id}",
-        params: {},
-        headers: auth_headers
-      )
-    end
-
-    def response_document
-      tempfile = Tempfile.new 'filled-report'
-      tempfile.binmode
-      tempfile.write response.body
-      docx = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
-      tempfile.close
-      docx
-    end
-
-    context 'with person as primary owner' do
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
-
-      it 'downloads the filled template' do
-        expect(response).to have_http_status(201)
-        content = response_document.to_s
-
-        primary_owner = investor.primary_owner.decorate
-
-        expect(content).to include(fund.name)
-        expect(content).to include(primary_owner.name)
-      end
-    end
-
-    context 'with organization as primary owner' do
-      let(:primary_owner) { create(:contact_organization, :with_mandate, mandate: mandate) }
-
-      it 'downloads the filled template' do
-        expect(response).to have_http_status(201)
-        content = response_document.to_s
-
-        primary_owner = investor.primary_owner.decorate
-
-        expect(content).to include(fund.name)
-        expect(content).to include(primary_owner.name)
-      end
-    end
-
-    context 'with missing template' do
-      let(:document) { nil }
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
-
-      it 'returns `not_found` error code' do
-        expect(response).to have_http_status(404)
-      end
-    end
-
-    context 'with pdf template' do
-      let!(:document) do
-        doc = create(
-          :fund_template_document,
-          category: :fund_quarterly_report_template,
-          owner: fund
-        )
-        doc.file.attach(
-          io: File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')),
-          filename: 'sample.pdf',
-          content_type: Mime[:pdf].to_s
-        )
-        doc
-      end
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
-
-      it 'returns unmodified pdf document' do
-        expected_document = File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'))
-        expect(Base64.encode64(expected_document.read)).to eq(Base64.encode64(response.body))
       end
     end
   end

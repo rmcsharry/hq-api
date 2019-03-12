@@ -24,7 +24,8 @@
 # Defines the FundReport
 class FundReport < ApplicationRecord
   belongs_to :fund, inverse_of: :fund_reports, autosave: true
-  has_and_belongs_to_many :investors, -> { distinct }
+  has_many :investor_reports, dependent: :destroy
+  has_many :investors, -> { distinct }, through: :investor_reports
 
   has_paper_trail(
     meta: {
@@ -39,6 +40,11 @@ class FundReport < ApplicationRecord
   validates :fund, presence: true
 
   before_validation :assign_investors, on: :create
+
+  def archive_name
+    date_string = valuta_date.strftime('%d.%m.%Y')
+    "Quartalsberichte_#{fund.name}_#{date_string}.zip"
+  end
 
   private
 

@@ -33,6 +33,7 @@ module V1
     has_one :secondary_contact, class_name: 'Contact'
 
     has_many :documents
+    has_many :investor_reports
 
     filters(
       :fund_id,

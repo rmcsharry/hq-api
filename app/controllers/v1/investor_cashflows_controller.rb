@@ -3,7 +3,7 @@
 module V1
   # Defines the InvestorCashflows controller
   class InvestorCashflowsController < ApplicationController
-    include DocumentBuilder
+    include FileSender
 
     before_action :authenticate_user!
 
@@ -20,15 +20,15 @@ module V1
       render_response_document
     end
 
-    def filled_fund_template
+    def cashflow_document
       investor_cashflow = InvestorCashflow
-                          .includes(investor: :contact_address, fund_cashflow: :fund)
+                          .includes(:documents, investor: :contact_address, fund_cashflow: :fund)
                           .find(params.require(:id))
       authorize investor_cashflow, :show?
 
-      template = investor_cashflow.investor.fund.cashflow_template(investor_cashflow.fund_cashflow)
-      context = investor_cashflow.document_context
-      send_filled_template(template, context)
+      send_attachment(
+        investor_cashflow.cashflow_document(current_user).file
+      )
     end
 
     private

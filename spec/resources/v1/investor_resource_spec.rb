@@ -33,6 +33,7 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to have_one(:secondary_contact).with_class_name('Contact') }
 
   it { is_expected.to have_many :documents }
+  it { is_expected.to have_many :investor_reports }
 
   it { is_expected.to filter :fund_id }
   it { is_expected.to filter :mandate_id }

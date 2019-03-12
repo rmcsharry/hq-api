@@ -102,6 +102,11 @@ class FundCashflow < ApplicationRecord
     investor_cashflows.all?(&:finished?) ? :finished : :open
   end
 
+  def archive_name
+    cashflow_type = fund_cashflow_type == :distribution ? 'Ausschüttung' : 'Kapitalabruf'
+    "Anschreiben_#{cashflow_type}_#{number}_#{fund.name}.zip"
+  end
+
   private
 
   def assign_number

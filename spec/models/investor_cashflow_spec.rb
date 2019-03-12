@@ -78,7 +78,7 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
     end
   end
 
-  describe '#document_context' do
+  describe '#cashflow_document_context' do
     let(:fund) { create(:fund) }
     let!(:cashflow) { create(:fund_cashflow, fund: fund, number: 1) }
     let!(:investor) { create(:investor, :signed, fund: fund) }
@@ -96,7 +96,7 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
       let!(:cashflow_type) { :capital_call }
 
       it 'returns the capital_call context' do
-        expect(investor_cashflow.document_context.keys).to(
+        expect(investor_cashflow.cashflow_document_context.keys).to(
           match_array(
             %i[
               current_date
@@ -114,7 +114,7 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
       let!(:cashflow_type) { :distribution }
 
       it 'returns the distribution context' do
-        expect(investor_cashflow.document_context.keys).to(
+        expect(investor_cashflow.cashflow_document_context.keys).to(
           match_array(
             %i[
               current_date
@@ -126,6 +126,57 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
           )
         )
       end
+    end
+  end
+
+  describe '#cashflow_document', bullet: false do
+    let(:current_user) { create(:user) }
+    let(:fund) { create(:fund) }
+    let!(:investor) { create(:investor, :signed, fund: fund) }
+    let!(:fund_cashflow) { create(:fund_cashflow, fund: fund) }
+    let!(:investor_cashflow) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: 1,
+        distribution_dividends_amount: 0,
+        fund_cashflow: fund_cashflow,
+        investor: investor
+      )
+    end
+    let(:valid_template_name) { 'Kapitalabruf_Vorlage.docx' }
+    let(:invalid_template_name) { 'hqtrust_sample_unprivileged_access.docx' }
+    let!(:valid_template) do
+      doc = create(
+        :fund_template_document,
+        category: :fund_capital_call_template,
+        owner: fund
+      )
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', valid_template_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+    let!(:invalid_template_file) do
+      {
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', invalid_template_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      }
+    end
+
+    it 'is generated and persisted if absent' do
+      generated_document = investor_cashflow.cashflow_document(current_user)
+      document_content = docx_document_content(generated_document.file.download)
+
+      expect(document_content).to include(fund.name)
+
+      valid_template.file.attach(invalid_template_file)
+      subsequently_retrieved_document = investor_cashflow.cashflow_document(current_user)
+      subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
+
+      expect(subsequent_document_content).to eq(document_content)
     end
   end
 end

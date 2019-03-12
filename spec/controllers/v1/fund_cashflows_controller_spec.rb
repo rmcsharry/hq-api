@@ -137,7 +137,7 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
         owner: fund
       )
       doc.file.attach(
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', '20190122-Ausschuettung_Vorlage.docx')),
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', 'Ausschuettung_Vorlage.docx')),
         filename: 'distribution.docx',
         content_type: Mime[:docx].to_s
       )
