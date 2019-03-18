@@ -747,6 +747,7 @@ namespace :db do
   def create_bank_account(owner, bank, use_iban)
     BankAccount.new(
       account_type: BankAccount::ACCOUNT_TYPE.sample,
+      alternative_investments: true,
       bank: bank,
       bank_account_number: !use_iban ? Faker::Number.number(10) : nil,
       bank_routing_number: !use_iban ? Faker::Number.number(8) : nil,
