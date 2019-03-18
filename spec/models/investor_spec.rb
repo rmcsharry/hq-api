@@ -278,7 +278,7 @@ RSpec.describe Investor, type: :model do
   describe '#subscription_agreement_document', bullet: false do
     let(:current_user) { create(:user) }
     let(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, :signed, fund: fund) }
+    let!(:investor) { create(:investor, fund: fund) }
     let(:valid_template_name) { 'Zeichnungsschein_Vorlage.docx' }
     let(:invalid_template_name) { 'hqtrust_sample_unprivileged_access.docx' }
     let!(:valid_template) do
@@ -313,6 +313,46 @@ RSpec.describe Investor, type: :model do
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 
       expect(subsequent_document_content).to eq(document_content)
+    end
+
+    context 'when investor is "signed"' do
+      let(:current_user) { build(:user) }
+      let(:investor) { build(:investor, :signed) }
+
+      it 'returns the signed fund subscription agreement' do
+        expect(investor.subscription_agreement_document(current_user)).to be(investor.fund_subscription_agreement)
+      end
+    end
+  end
+
+  describe '#regenerated_subscription_agreement_document' do
+    let(:current_user) { build(:user) }
+    let(:generated_subscription_agreement) { create(:generated_subscription_agreement_document) }
+    let(:investor) { generated_subscription_agreement.owner }
+    let!(:fund) { create(:fund, investors: [investor]) }
+    let!(:template) do
+      doc = create(
+        :fund_template_document,
+        category: :fund_subscription_agreement_template,
+        owner: fund
+      )
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', 'Zeichnungsschein_Vorlage.docx')),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+
+    it 'destroys the existing subscription agreement' do
+      allow(investor).to receive(:find_generated_document_by_category) { generated_subscription_agreement }
+      expect(generated_subscription_agreement).to receive(:destroy!)
+      investor.regenerated_subscription_agreement_document(current_user)
+    end
+
+    it 'creates a new generated subscription agreement' do
+      new_generated_subscription_agreement = investor.regenerated_subscription_agreement_document(current_user)
+      expect(generated_subscription_agreement.id).not_to eq(new_generated_subscription_agreement.id)
     end
   end
 

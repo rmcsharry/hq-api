@@ -8,12 +8,22 @@ module V1
     before_action :authenticate_user!
 
     def fund_subscription_agreement_document
-      investor = Investor.find(params.require(:id))
-      authorize investor, :show?
-
       send_attachment(
-        investor.subscription_agreement_document(current_user).file
+        accessible_investor.subscription_agreement_document(current_user).file
       )
+    end
+
+    def regenerated_fund_subscription_agreement_document
+      send_attachment(
+        accessible_investor.regenerated_subscription_agreement_document(current_user).file
+      )
+    end
+
+    private
+
+    def accessible_investor
+      investor = Investor.find(params.require(:id))
+      investor if authorize investor, :show?
     end
   end
 end

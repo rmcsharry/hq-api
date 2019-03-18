@@ -25,5 +25,11 @@ FactoryBot.define do
       category { :fund_subscription_agreement }
       owner { create(:investor, documents: [@instance.presence], state: :signed) }
     end
+
+    factory :generated_subscription_agreement_document, class: Document::GeneratedDocument do
+      name { 'Zeichnungsschein.pdf' }
+      category { :generated_subscription_agreement_document }
+      owner { create(:investor, documents: [@instance.presence]) }
+    end
   end
 end

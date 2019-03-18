@@ -4,12 +4,26 @@
 module GeneratedDocument
   extend ActiveSupport::Concern
 
-  def find_or_create_document(document_category:, template:, template_context:, uploader:, name:)
-    document = documents.find_by(type: 'Document::GeneratedDocument', category: document_category)
-    return document unless document.nil?
-
+  def apply_template_and_persist_document(template:, template_context:, uploader:, document_category:, name:)
     file, content_type = apply_template(template, template_context)
     persist_document(uploader, file, content_type, document_category, name)
+  end
+
+  def find_generated_document_by_category(category)
+    documents.find_by(type: 'Document::GeneratedDocument', category: category)
+  end
+
+  def find_or_create_document(document_category:, template:, template_context:, uploader:, name:)
+    document = find_generated_document_by_category(document_category)
+    return document unless document.nil?
+
+    apply_template_and_persist_document(
+      template: template,
+      template_context: template_context,
+      uploader: uploader,
+      document_category: document_category,
+      name: name
+    )
   end
 
   private
