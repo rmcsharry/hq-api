@@ -76,6 +76,7 @@ class OrganizationMember < ApplicationRecord
     mandate_lawyer
     mandate_tax_advisor
     member_investment_committee
+    partner
     portfolio_manager
     portfolio_manager_alternative_investments
     procurator
