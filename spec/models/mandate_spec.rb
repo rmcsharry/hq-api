@@ -26,6 +26,7 @@
 #  prospect_fees_percentage         :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
+#  confidential                     :boolean          default(FALSE), not null
 #
 # Indexes
 #

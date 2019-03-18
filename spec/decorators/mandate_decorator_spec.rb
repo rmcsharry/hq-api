@@ -3,6 +3,16 @@
 require 'rails_helper'
 
 RSpec.describe MandateDecorator do
+  describe '#humanize_confidential' do
+    it 'returns confidential in words' do
+      expect(build(:mandate, confidential: true).decorate.humanize_confidential).to eq('Persönlich / Vertraulich')
+    end
+
+    it 'returns nil' do
+      expect(build(:mandate).decorate.humanize_confidential).to be_nil
+    end
+  end
+
   describe '#owner_name' do
     let!(:person1) { create(:contact_person, first_name: 'Thomas', last_name: 'Makait') }
     let!(:person2) { create(:contact_person, first_name: 'Maria', last_name: 'Makait') }

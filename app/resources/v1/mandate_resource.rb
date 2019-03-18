@@ -7,6 +7,7 @@ module V1
     attributes(
       :category,
       :comment,
+      :confidential,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,

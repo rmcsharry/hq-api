@@ -8,6 +8,7 @@ RSpec.describe V1::MandateResource, type: :resource do
 
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :comment }
+  it { is_expected.to have_attribute :confidential }
   it { is_expected.to have_attribute :datev_creditor_id }
   it { is_expected.to have_attribute :datev_debitor_id }
   it { is_expected.to have_attribute :default_currency }

@@ -73,6 +73,7 @@ class Document
       primary_owner = investor.primary_owner.decorate
       primary_address = investor.contact_address
       gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
+      mandate = investor.mandate.decorate
 
       current_date = Time.zone.now.strftime('%d.%m.%Y')
 
@@ -95,6 +96,7 @@ class Document
         },
         investor: {
           amount_total: investor.amount_total,
+          confidential: mandate.humanize_confidential,
           contact_address: {
             city: primary_address.city,
             postal_code: primary_address.postal_code,
@@ -154,6 +156,7 @@ class Document
       current_date = Time.zone.now.strftime('%d.%m.%Y')
       description = Quill::Delta.new(fund_report.description).to_s
       gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
+      mandate = investor.mandate.decorate
 
       {
         current_date: current_date,
@@ -166,6 +169,7 @@ class Document
         },
         investor: {
           amount_total: investor.amount_total,
+          confidential: mandate.humanize_confidential,
           contact_address: {
             city: primary_address.city,
             postal_code: primary_address.postal_code,
@@ -194,6 +198,7 @@ class Document
       primary_owner_birth_date = primary_owner.date_of_birth ? primary_owner.date_of_birth.strftime('%d.%m.%Y') : '-'
       legal_address = primary_owner.legal_address
       primary_fax = primary_owner.contact_details.find_by(type: 'ContactDetail::Fax', primary: true)&.value
+      mandate = investor.mandate.decorate
 
       {
         current_date: current_date,
@@ -207,6 +212,7 @@ class Document
             iban: bank_account.iban,
             routing_number: bank_account.bank_routing_number
           },
+          confidential: mandate.humanize_confidential,
           contact_phone: primary_owner.primary_phone&.value,
           legal_address: {
             addition: legal_address&.addition,
