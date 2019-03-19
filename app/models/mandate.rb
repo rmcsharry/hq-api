@@ -27,6 +27,7 @@
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
 #  confidential                     :boolean          default(FALSE), not null
+#  psplus_pe_id                     :string
 #
 # Indexes
 #
@@ -138,6 +139,7 @@ class Mandate < ApplicationRecord
   validates :primary_consultant, presence: true, if: :client?
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
+  validates :psplus_pe_id, length: { maximum: 15 }
   validates :default_currency, presence: true, if: :default_currency_required?
   validate :valid_to_greater_or_equal_valid_from
 

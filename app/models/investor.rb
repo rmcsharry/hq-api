@@ -21,7 +21,6 @@
 #  primary_contact_id     :uuid
 #  secondary_contact_id   :uuid
 #  capital_account_number :string
-#  psplus_id              :string
 #
 # Indexes
 #
@@ -110,7 +109,6 @@ class Investor < ApplicationRecord
   validate :primary_contact_belongs_to_mandate
   validate :primary_owner_belongs_to_mandate
   validate :secondary_contact_belongs_to_mandate
-  validates :psplus_id, length: { maximum: 15 }
 
   def amount_called
     investor_cashflows.sum(&:capital_call_total_amount)

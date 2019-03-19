@@ -21,7 +21,6 @@
 #  primary_contact_id     :uuid
 #  secondary_contact_id   :uuid
 #  capital_account_number :string
-#  psplus_id              :string
 #
 # Indexes
 #
@@ -47,7 +46,6 @@
 require 'rails_helper'
 
 RSpec.describe Investor, type: :model do
-  it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
   it { is_expected.to validate_presence_of(:amount_total) }
   it { is_expected.to validate_presence_of(:bank_account) }
   it { is_expected.to validate_presence_of(:contact_address) }

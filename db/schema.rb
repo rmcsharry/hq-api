@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_13_121722) do
+ActiveRecord::Schema.define(version: 2019_03_19_092103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -275,7 +275,6 @@ ActiveRecord::Schema.define(version: 2019_03_13_121722) do
     t.uuid "primary_contact_id"
     t.uuid "secondary_contact_id"
     t.string "capital_account_number"
-    t.string "psplus_id"
     t.index ["fund_id"], name: "index_investors_on_fund_id"
     t.index ["mandate_id"], name: "index_investors_on_mandate_id"
     t.index ["primary_contact_id"], name: "index_investors_on_primary_contact_id"
@@ -341,6 +340,7 @@ ActiveRecord::Schema.define(version: 2019_03_13_121722) do
     t.decimal "prospect_fees_fixed_amount", precision: 20, scale: 10
     t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
     t.boolean "confidential", default: false, null: false
+    t.string "psplus_pe_id"
     t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
     t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
     t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"

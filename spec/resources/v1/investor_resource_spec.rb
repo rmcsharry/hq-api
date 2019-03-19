@@ -15,7 +15,6 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to have_attribute :dpi }
   it { is_expected.to have_attribute :investment_date }
   it { is_expected.to have_attribute :irr }
-  it { is_expected.to have_attribute :psplus_id }
   it { is_expected.to have_attribute :state }
   it { is_expected.to have_attribute :tvpi }
   it { is_expected.to have_attribute :updated_at }

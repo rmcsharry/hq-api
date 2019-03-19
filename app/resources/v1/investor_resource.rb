@@ -14,7 +14,6 @@ module V1
       :dpi,
       :investment_date,
       :irr,
-      :psplus_id,
       :state,
       :tvpi,
       :updated_at

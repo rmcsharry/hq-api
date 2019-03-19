@@ -18,6 +18,7 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_attribute :prospect_fees_min_amount }
   it { is_expected.to have_attribute :prospect_fees_percentage }
   it { is_expected.to have_attribute :psplus_id }
+  it { is_expected.to have_attribute :psplus_pe_id }
   it { is_expected.to have_attribute :state }
   it { is_expected.to have_attribute :valid_from }
   it { is_expected.to have_attribute :valid_to }
@@ -59,6 +60,7 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to filter(:prospect_fees_percentage_max) }
   it { is_expected.to filter(:prospect_fees_percentage_min) }
   it { is_expected.to filter(:psplus_id) }
+  it { is_expected.to filter(:psplus_pe_id) }
   it { is_expected.to filter(:state) }
   it { is_expected.to filter(:valid_from_max) }
   it { is_expected.to filter(:valid_from_min) }
