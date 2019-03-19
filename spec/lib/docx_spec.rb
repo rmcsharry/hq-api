@@ -25,7 +25,7 @@ RSpec.describe Docx::Document, type: :util do
     end
 
     context 'with `Ausschuettung` template' do
-      let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+      let(:document_name) { 'Ausschuettung_Vorlage.docx' }
 
       it 'properly parses the template' do
         document = Docx::Document.new(file_path)
@@ -54,7 +54,7 @@ RSpec.describe Docx::Document, type: :util do
     end
 
     context 'with `Quartalsbericht` template' do
-      let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
+      let(:document_name) { 'Quartalsbericht_Vorlage.docx' }
 
       it 'properly parses the template' do
         document = Docx::Document.new(file_path)

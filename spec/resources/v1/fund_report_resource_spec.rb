@@ -13,6 +13,8 @@ RSpec.describe V1::FundReportResource, type: :resource do
 
   it { is_expected.to have_one :fund }
 
+  it { is_expected.to have_many :investor_reports }
+
   it { is_expected.to filter(:fund_id) }
 
   it { is_expected.to have_sortable_field :investor_count }

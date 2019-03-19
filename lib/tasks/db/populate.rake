@@ -268,6 +268,7 @@ namespace :db do
           prospect_fees_percentage:
             state == :prospect_not_qualified ? (Faker::Number.between(1, 250).to_f / 10_000).round(2) : nil,
           psplus_id: Faker::Number.number(9),
+          psplus_pe_id: Faker::Number.number(9),
           secondary_consultant: admin_user.contact,
           valid_from: valid_from,
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil
@@ -747,6 +748,7 @@ namespace :db do
   def create_bank_account(owner, bank, use_iban)
     BankAccount.new(
       account_type: BankAccount::ACCOUNT_TYPE.sample,
+      alternative_investments: true,
       bank: bank,
       bank_account_number: !use_iban ? Faker::Number.number(10) : nil,
       bank_routing_number: !use_iban ? Faker::Number.number(8) : nil,

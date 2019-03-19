@@ -8,6 +8,7 @@ module V1
       :amount_open,
       :amount_total,
       :amount_total_distribution,
+      :capital_account_number,
       :created_at,
       :current_value,
       :dpi,
@@ -31,6 +32,7 @@ module V1
     has_one :secondary_contact, class_name: 'Contact'
 
     has_many :documents
+    has_many :investor_reports
 
     filters(
       :fund_id,

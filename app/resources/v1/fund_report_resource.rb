@@ -12,6 +12,8 @@ module V1
 
     has_one :fund
 
+    has_many :investor_reports
+
     filter :fund_id
 
     sort :investor_count, apply: lambda { |records, direction, _context|

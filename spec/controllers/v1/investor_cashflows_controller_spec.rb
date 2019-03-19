@@ -49,7 +49,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
   end
 
-  describe 'GET /v1/investor-cashflows/:id/filled-fund-template', bullet: false do
+  describe 'GET /v1/investor-cashflows/:id/cashflow-document', bullet: false do
     let(:contact_person) { create(:contact_person, :with_contact_details) }
     let(:mandate) { create(:mandate) }
     let!(:mandate_member) do
@@ -105,7 +105,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
     before do
       get(
-        "#{INVESTOR_CASHFLOWS_ENDPOINT}/#{investor_cashflow.id}/filled-fund-template",
+        "#{INVESTOR_CASHFLOWS_ENDPOINT}/#{investor_cashflow.id}/cashflow-document",
         params: {},
         headers: auth_headers
       )
@@ -122,7 +122,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
-        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
+        let(:document_name) { 'Kapitalabruf_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -150,7 +150,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a distribution' do
         let!(:cashflow_type) { :distribution }
-        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+        let(:document_name) { 'Ausschuettung_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -181,7 +181,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
-        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
+        let(:document_name) { 'Kapitalabruf_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -201,7 +201,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       context 'with actual template for a distribution' do
         let!(:cashflow_type) { :distribution }
-        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+        let(:document_name) { 'Ausschuettung_Vorlage.docx' }
 
         it 'downloads the filled template' do
           expect(response).to have_http_status(201)
@@ -222,7 +222,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
     context 'with missing funds permissions' do
       let(:primary_owner) { create :contact_person, :with_contact_details, :with_mandate, mandate: mandate }
-      let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+      let(:document_name) { 'Ausschuettung_Vorlage.docx' }
       let!(:user) do
         create(
           :user,

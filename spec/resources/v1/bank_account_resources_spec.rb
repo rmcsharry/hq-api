@@ -13,7 +13,11 @@ RSpec.describe V1::BankAccountResource, type: :resource do
   it { is_expected.to have_attribute :iban }
   it { is_expected.to have_attribute :bic }
   it { is_expected.to have_attribute :currency }
+  it { is_expected.to have_attribute :alternative_investments }
 
   it { is_expected.to have_one(:owner) }
   it { is_expected.to have_one(:bank).with_class_name('Contact') }
+
+  it { is_expected.to filter(:alternative_investments) }
+  it { is_expected.to filter(:owner_id) }
 end

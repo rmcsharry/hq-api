@@ -7,6 +7,7 @@ module V1
     attributes(
       :category,
       :comment,
+      :confidential,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,
@@ -17,6 +18,7 @@ module V1
       :prospect_fees_min_amount,
       :prospect_fees_percentage,
       :psplus_id,
+      :psplus_pe_id,
       :state,
       :updated_at,
       :valid_from,
@@ -53,6 +55,7 @@ module V1
       :prospect_fees_min_amount,
       :prospect_fees_percentage,
       :psplus_id,
+      :psplus_pe_id,
       :state
     )
 

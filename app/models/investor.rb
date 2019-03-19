@@ -4,22 +4,23 @@
 #
 # Table name: investors
 #
-#  id                   :uuid             not null, primary key
-#  fund_id              :uuid
-#  mandate_id           :uuid
-#  legal_address_id     :uuid
-#  contact_address_id   :uuid
-#  contact_email_id     :uuid
-#  contact_phone_id     :uuid
-#  bank_account_id      :uuid
-#  primary_owner_id     :uuid
-#  aasm_state           :string           not null
-#  investment_date      :datetime
-#  amount_total         :decimal(20, 2)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  primary_contact_id   :uuid
-#  secondary_contact_id :uuid
+#  id                     :uuid             not null, primary key
+#  fund_id                :uuid
+#  mandate_id             :uuid
+#  legal_address_id       :uuid
+#  contact_address_id     :uuid
+#  contact_email_id       :uuid
+#  contact_phone_id       :uuid
+#  bank_account_id        :uuid
+#  primary_owner_id       :uuid
+#  aasm_state             :string           not null
+#  investment_date        :datetime
+#  amount_total           :decimal(20, 2)
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  primary_contact_id     :uuid
+#  secondary_contact_id   :uuid
+#  capital_account_number :string
 #
 # Indexes
 #
@@ -46,6 +47,7 @@
 # rubocop:disable Metrics/ClassLength
 class Investor < ApplicationRecord
   include AASM
+  include GeneratedDocument
 
   BELONG_TO_MANDATE = 'must belong to mandate'
   BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
@@ -62,7 +64,8 @@ class Investor < ApplicationRecord
   belongs_to(
     :secondary_contact, class_name: 'Contact', optional: true, inverse_of: :secondary_contact_investors
   )
-  has_and_belongs_to_many :fund_reports, -> { distinct }
+  has_many :investor_reports, dependent: :destroy
+  has_many :fund_reports, -> { distinct }, through: :investor_reports
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :investor_cashflows, dependent: :nullify
   has_one :fund_subscription_agreement,
@@ -143,15 +146,43 @@ class Investor < ApplicationRecord
     -1
   end
 
-  def subscription_agreement_context
+  def subscription_agreement_document_context
     Document::FundTemplate.fund_subscription_agreement_context(self)
   end
 
-  def quarterly_report_context(fund_report)
-    Document::FundTemplate.fund_quarterly_report_context(self, fund_report)
+  def subscription_agreement_document(current_user)
+    return fund_subscription_agreement if fund_subscription_agreement
+
+    template = fund.subscription_agreement_template
+    find_or_create_document(
+      document_category: :generated_subscription_agreement_document,
+      name: subscription_agreement_document_name(template),
+      template: template,
+      template_context: subscription_agreement_document_context,
+      uploader: current_user
+    )
+  end
+
+  def regenerated_subscription_agreement_document(current_user)
+    transaction do
+      template = fund.subscription_agreement_template
+      document = find_generated_document_by_category(:generated_subscription_agreement_document)
+      document&.destroy!
+      apply_template_and_persist_document(
+        template: template, template_context: subscription_agreement_document_context,
+        uploader: current_user, document_category: :generated_subscription_agreement_document,
+        name: subscription_agreement_document_name(template)
+      )
+    end
   end
 
   private
+
+  def subscription_agreement_document_name(template)
+    extension = Docx.docx?(template.file) ? 'docx' : 'pdf'
+    mandate_identifier = mandate.decorate.owner_name
+    "Zeichnungsschein_#{mandate_identifier}.#{extension}"
+  end
 
   # Validates presence of investment_date and fund_subscription_agreement if state is `signed`
   # @return [void]

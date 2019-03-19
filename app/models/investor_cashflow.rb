@@ -37,9 +37,11 @@
 # Defines the InvestorCashflow
 class InvestorCashflow < ApplicationRecord
   include AASM
+  include GeneratedDocument
 
   belongs_to :fund_cashflow, inverse_of: :investor_cashflows, autosave: true, optional: false
   belongs_to :investor, inverse_of: :investor_cashflows, autosave: true, optional: false
+  has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
 
   has_paper_trail(
     meta: {
@@ -87,7 +89,7 @@ class InvestorCashflow < ApplicationRecord
       capital_call_management_fees_amount
   end
 
-  def document_context
+  def cashflow_document_context
     if fund_cashflow.fund_cashflow_type == :capital_call
       Document::FundTemplate.fund_capital_call_context(self)
     else
@@ -95,7 +97,30 @@ class InvestorCashflow < ApplicationRecord
     end
   end
 
+  def cashflow_document(current_user)
+    template = investor.fund.cashflow_template(fund_cashflow)
+    find_or_create_document(
+      document_category: :generated_cashflow_document,
+      name: cashflow_document_name(template),
+      template: template,
+      template_context: cashflow_document_context,
+      uploader: current_user
+    )
+  end
+
   private
+
+  def cashflow_document_name(template)
+    return if template.nil?
+
+    extension = Docx.docx?(template.file) ? 'docx' : 'pdf'
+    mandate = investor.mandate.decorate
+    mandate_identifier = mandate.owner_name
+    fund_identifier = fund_cashflow.fund.name
+    cashflow_number = fund_cashflow.number
+    cashflow_type = cashflow_type == :capital_call ? 'Kapitalabruf' : 'Ausschüttung'
+    "Anschreiben_#{cashflow_type}_#{cashflow_number}_#{fund_identifier}_#{mandate_identifier}.#{extension}"
+  end
 
   # Validates that the investor belongs to the same fund as the fund cashflow
   # @return [void]

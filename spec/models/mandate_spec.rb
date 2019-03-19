@@ -26,6 +26,8 @@
 #  prospect_fees_percentage         :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
+#  confidential                     :boolean          default(FALSE), not null
+#  psplus_pe_id                     :string
 #
 # Indexes
 #
@@ -107,6 +109,11 @@ RSpec.describe Mandate, type: :model do
   describe '#psplus_id' do
     it { is_expected.to respond_to(:psplus_id) }
     it { is_expected.to validate_length_of(:psplus_id).is_at_most(15) }
+  end
+
+  describe '#psplus_pe_id' do
+    it { is_expected.to respond_to(:psplus_pe_id) }
+    it { is_expected.to validate_length_of(:psplus_pe_id).is_at_most(15) }
   end
 
   describe '#category' do

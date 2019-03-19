@@ -4,22 +4,23 @@
 #
 # Table name: investors
 #
-#  id                   :uuid             not null, primary key
-#  fund_id              :uuid
-#  mandate_id           :uuid
-#  legal_address_id     :uuid
-#  contact_address_id   :uuid
-#  contact_email_id     :uuid
-#  contact_phone_id     :uuid
-#  bank_account_id      :uuid
-#  primary_owner_id     :uuid
-#  aasm_state           :string           not null
-#  investment_date      :datetime
-#  amount_total         :decimal(20, 2)
-#  created_at           :datetime         not null
-#  updated_at           :datetime         not null
-#  primary_contact_id   :uuid
-#  secondary_contact_id :uuid
+#  id                     :uuid             not null, primary key
+#  fund_id                :uuid
+#  mandate_id             :uuid
+#  legal_address_id       :uuid
+#  contact_address_id     :uuid
+#  contact_email_id       :uuid
+#  contact_phone_id       :uuid
+#  bank_account_id        :uuid
+#  primary_owner_id       :uuid
+#  aasm_state             :string           not null
+#  investment_date        :datetime
+#  amount_total           :decimal(20, 2)
+#  created_at             :datetime         not null
+#  updated_at             :datetime         not null
+#  primary_contact_id     :uuid
+#  secondary_contact_id   :uuid
+#  capital_account_number :string
 #
 # Indexes
 #
@@ -255,12 +256,12 @@ RSpec.describe Investor, type: :model do
     end
   end
 
-  describe '#subscription_agreement_context', bullet: false do
+  describe '#subscription_agreement_document_context', bullet: false do
     let(:fund) { create(:fund) }
     let!(:investor) { create(:investor, :signed, fund: fund) }
 
-    it 'returns the subscription_agreement context' do
-      expect(investor.subscription_agreement_context.keys).to(
+    it 'returns the subscription_agreement_document context' do
+      expect(investor.subscription_agreement_document_context.keys).to(
         match_array(
           %i[
             current_date
@@ -272,22 +273,84 @@ RSpec.describe Investor, type: :model do
     end
   end
 
-  describe '#quarterly_report_context', bullet: false do
+  describe '#subscription_agreement_document', bullet: false do
+    let(:current_user) { create(:user) }
     let(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, :signed, fund: fund) }
-    let!(:report) { create(:fund_report, fund: fund) }
-
-    it 'returns the quarterly_report context' do
-      expect(investor.quarterly_report_context(report).keys).to(
-        match_array(
-          %i[
-            current_date
-            fund
-            fund_report
-            investor
-          ]
-        )
+    let!(:investor) { create(:investor, fund: fund) }
+    let(:valid_template_name) { 'Zeichnungsschein_Vorlage.docx' }
+    let(:invalid_template_name) { 'hqtrust_sample_unprivileged_access.docx' }
+    let!(:valid_template) do
+      doc = create(
+        :fund_template_document,
+        category: :fund_subscription_agreement_template,
+        owner: fund
       )
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', valid_template_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+    let!(:invalid_template_file) do
+      {
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', invalid_template_name)),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      }
+    end
+
+    it 'is generated and persisted if absent' do
+      generated_document = investor.subscription_agreement_document(current_user)
+      document_content = docx_document_content(generated_document.file.download)
+
+      expect(document_content).to include(fund.name)
+
+      valid_template.file.attach(invalid_template_file)
+      subsequently_retrieved_document = investor.subscription_agreement_document(current_user)
+      subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
+
+      expect(subsequent_document_content).to eq(document_content)
+    end
+
+    context 'when investor is "signed"' do
+      let(:current_user) { build(:user) }
+      let(:investor) { build(:investor, :signed) }
+
+      it 'returns the signed fund subscription agreement' do
+        expect(investor.subscription_agreement_document(current_user)).to be(investor.fund_subscription_agreement)
+      end
+    end
+  end
+
+  describe '#regenerated_subscription_agreement_document' do
+    let(:current_user) { build(:user) }
+    let(:generated_subscription_agreement) { create(:generated_subscription_agreement_document) }
+    let(:investor) { generated_subscription_agreement.owner }
+    let!(:fund) { create(:fund, investors: [investor]) }
+    let!(:template) do
+      doc = create(
+        :fund_template_document,
+        category: :fund_subscription_agreement_template,
+        owner: fund
+      )
+      doc.file.attach(
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', 'Zeichnungsschein_Vorlage.docx')),
+        filename: 'sample.docx',
+        content_type: Mime[:docx].to_s
+      )
+      doc
+    end
+
+    it 'destroys the existing subscription agreement' do
+      allow(investor).to receive(:find_generated_document_by_category) { generated_subscription_agreement }
+      expect(generated_subscription_agreement).to receive(:destroy!)
+      investor.regenerated_subscription_agreement_document(current_user)
+    end
+
+    it 'creates a new generated subscription agreement' do
+      new_generated_subscription_agreement = investor.regenerated_subscription_agreement_document(current_user)
+      expect(generated_subscription_agreement.id).not_to eq(new_generated_subscription_agreement.id)
     end
   end
 

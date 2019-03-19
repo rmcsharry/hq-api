@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_05_163311) do
+ActiveRecord::Schema.define(version: 2019_03_19_092103) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -94,6 +94,7 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "owner_type", null: false
+    t.boolean "alternative_investments", default: false, null: false
     t.index ["bank_id"], name: "index_bank_accounts_on_bank_id"
     t.index ["owner_type", "owner_id"], name: "index_bank_accounts_on_owner_type_and_owner_id"
   end
@@ -194,13 +195,6 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
     t.index ["fund_id"], name: "index_fund_reports_on_fund_id"
   end
 
-  create_table "fund_reports_investors", id: false, force: :cascade do |t|
-    t.uuid "fund_report_id"
-    t.uuid "investor_id"
-    t.index ["fund_report_id"], name: "index_fund_reports_investors_on_fund_report_id"
-    t.index ["investor_id"], name: "index_fund_reports_investors_on_investor_id"
-  end
-
   create_table "funds", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "duration"
     t.integer "duration_extension"
@@ -257,6 +251,13 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
     t.index ["investor_id"], name: "index_investor_cashflows_on_investor_id"
   end
 
+  create_table "investor_reports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "fund_report_id"
+    t.uuid "investor_id"
+    t.index ["fund_report_id"], name: "index_investor_reports_on_fund_report_id"
+    t.index ["investor_id"], name: "index_investor_reports_on_investor_id"
+  end
+
   create_table "investors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "fund_id"
     t.uuid "mandate_id"
@@ -273,6 +274,7 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
     t.datetime "updated_at", null: false
     t.uuid "primary_contact_id"
     t.uuid "secondary_contact_id"
+    t.string "capital_account_number"
     t.index ["fund_id"], name: "index_investors_on_fund_id"
     t.index ["mandate_id"], name: "index_investors_on_mandate_id"
     t.index ["primary_contact_id"], name: "index_investors_on_primary_contact_id"
@@ -337,6 +339,8 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
     t.decimal "prospect_fees_percentage", precision: 20, scale: 10
     t.decimal "prospect_fees_fixed_amount", precision: 20, scale: 10
     t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
+    t.boolean "confidential", default: false, null: false
+    t.string "psplus_pe_id"
     t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
     t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
     t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"
@@ -507,8 +511,6 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
   add_foreign_key "foreign_tax_numbers", "tax_details"
   add_foreign_key "fund_cashflows", "funds"
   add_foreign_key "fund_reports", "funds"
-  add_foreign_key "fund_reports_investors", "fund_reports"
-  add_foreign_key "fund_reports_investors", "investors"
   add_foreign_key "funds", "addresses", column: "legal_address_id"
   add_foreign_key "funds", "addresses", column: "primary_contact_address_id"
   add_foreign_key "funds", "contacts", column: "capital_management_company_id"
@@ -516,6 +518,8 @@ ActiveRecord::Schema.define(version: 2019_03_05_163311) do
   add_foreign_key "inter_person_relationships", "contacts", column: "target_person_id"
   add_foreign_key "investor_cashflows", "fund_cashflows"
   add_foreign_key "investor_cashflows", "investors"
+  add_foreign_key "investor_reports", "fund_reports"
+  add_foreign_key "investor_reports", "investors"
   add_foreign_key "investors", "addresses", column: "contact_address_id"
   add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"

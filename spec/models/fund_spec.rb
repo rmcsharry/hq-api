@@ -240,7 +240,7 @@ RSpec.describe Fund, type: :model do
       end
 
       context 'with existing template' do
-        let(:document_name) { '20190122-Ausschuettung_Vorlage.docx' }
+        let(:document_name) { 'Ausschuettung_Vorlage.docx' }
 
         it 'returns the template' do
           expect(fund.cashflow_template(cashflow)).to eq(template)
@@ -262,7 +262,7 @@ RSpec.describe Fund, type: :model do
       end
 
       context 'with existing template' do
-        let(:document_name) { '20190122-Kapitalabruf_Vorlage.docx' }
+        let(:document_name) { 'Kapitalabruf_Vorlage.docx' }
 
         it 'returns the template' do
           expect(fund.cashflow_template(cashflow)).to eq(template)
@@ -295,7 +295,7 @@ RSpec.describe Fund, type: :model do
     end
 
     context 'with existing template' do
-      let(:document_name) { '20181219-Quartalsbericht_Vorlage.docx' }
+      let(:document_name) { 'Quartalsbericht_Vorlage.docx' }
 
       it 'returns the template' do
         expect(fund.quarterly_report_template).to eq(template)
@@ -327,7 +327,7 @@ RSpec.describe Fund, type: :model do
     end
 
     context 'with existing template' do
-      let(:document_name) { '20181219-Zeichnungsschein_Vorlage.docx' }
+      let(:document_name) { 'Zeichnungsschein_Vorlage.docx' }
 
       it 'returns the template' do
         expect(fund.subscription_agreement_template).to eq(template)

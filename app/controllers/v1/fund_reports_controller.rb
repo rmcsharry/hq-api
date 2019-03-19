@@ -3,7 +3,7 @@
 module V1
   # Defines the FundReports controller
   class FundReportsController < ApplicationController
-    include DocumentBuilder
+    include FileSender
 
     before_action :authenticate_user!
 
@@ -13,27 +13,16 @@ module V1
                     .find(params.require(:id))
       authorize fund_report, :show?
 
-      send_archive build_documents(fund_report)
+      send_archive quarterly_report_document_map(fund_report), fund_report.archive_name
     end
 
     private
 
-    def build_documents(fund_report)
-      template = fund_report.fund.quarterly_report_template
-      is_docx = Docx.docx?(template.file)
-
-      fund_report.investors.each_with_object({}) do |investor, documents|
-        context = investor.quarterly_report_context(fund_report)
-        name = document_name(fund_report, investor, is_docx)
-        documents[name] = is_docx ? build_document(template, context) : template.file.download
+    def quarterly_report_document_map(fund_report)
+      fund_report.investor_reports.each_with_object({}) do |investor_report, documents|
+        file = investor_report.quarterly_report_document(current_user).file
+        documents[file.filename] = file.download
       end
-    end
-
-    def document_name(fund_report, investor, is_docx)
-      extension = is_docx ? 'docx' : 'pdf'
-      fund_identifier = fund_report.fund.name
-      mandate_identifier = investor.mandate.decorate.owner_name
-      "Quartalsbericht_#{fund_identifier}_#{mandate_identifier}.#{extension}"
     end
   end
 end

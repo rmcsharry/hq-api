@@ -24,7 +24,7 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
         owner: fund
       )
       doc.file.attach(
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', '20181219-Quartalsbericht_Vorlage.docx')),
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', 'Quartalsbericht_Vorlage.docx')),
         filename: 'report.docx',
         content_type: Mime[:docx].to_s
       )
