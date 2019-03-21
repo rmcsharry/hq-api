@@ -29,7 +29,7 @@ class Address < ApplicationRecord
   COUNTRIES = Carmen::Country.all.map(&:code)
   CATEGORIES = %i[home work vacation].freeze
 
-  attr_accessor :primary_contact_address, :legal_address
+  attr_accessor :legal_address, :owner_needs_save, :primary_contact_address
 
   belongs_to :owner, polymorphic: true, inverse_of: :addresses
 
@@ -55,6 +55,7 @@ class Address < ApplicationRecord
   before_save :set_primary_contact_address
   before_save :set_legal_address
   before_save :save_owner_if_not_persisted
+  after_save :save_owner_if_needed
 
   before_destroy :clear_primary_contact_address
   before_destroy :clear_legal_address
@@ -72,17 +73,27 @@ class Address < ApplicationRecord
   private
 
   def set_primary_contact_address
-    return unless primary_contact_address
+    return unless owner.persisted?
 
-    owner.primary_contact_address = self
-    owner.save!
+    if primary_contact_address
+      owner.primary_contact_address = self
+      self.owner_needs_save = true
+    elsif primary_contact_address == false && owner.primary_contact_address == self
+      owner.primary_contact_address = nil
+      self.owner_needs_save = true
+    end
   end
 
   def set_legal_address
-    return unless legal_address
+    return unless owner.persisted?
 
-    owner.legal_address = self
-    owner.save!
+    if legal_address
+      owner.legal_address = self
+      self.owner_needs_save = true
+    elsif legal_address == false && owner.legal_address == self
+      owner.legal_address = nil
+      self.owner_needs_save = true
+    end
   end
 
   def save_owner_if_not_persisted
@@ -90,6 +101,10 @@ class Address < ApplicationRecord
 
     owner.save!
     self.owner = owner.reload
+  end
+
+  def save_owner_if_needed
+    owner.save! if owner_needs_save
   end
 
   def clear_primary_contact_address

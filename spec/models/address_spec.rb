@@ -71,4 +71,42 @@ RSpec.describe Address, type: :model do
       expect(address.to_s).to eq('Oranienstraße 185, Aufgang 3, 10999, Berlin, DE')
     end
   end
+
+  context 'addresses marked as legal' do
+    let!(:address) { create(:address, legal_address: true, owner: owner) }
+    let(:owner) { create(:contact_person) }
+
+    it 'creates the legal address for the owner' do
+      expect(owner.legal_address).to be(address)
+    end
+
+    it 'does not remove the legal address implicitly for the owner' do
+      address.update(legal_address: nil)
+      expect(owner.legal_address).not_to be_nil
+    end
+
+    it 'removes the legal address for the owner' do
+      address.update(legal_address: false)
+      expect(owner.legal_address).to be_nil
+    end
+  end
+
+  context 'addresses marked as primary contact' do
+    let!(:address) { create(:address, primary_contact_address: true, owner: owner) }
+    let(:owner) { create(:contact_person) }
+
+    it 'creates the primary contact address for the owner' do
+      expect(owner.primary_contact_address).to be(address)
+    end
+
+    it 'does not remove the primary contact address implicitly for the owner' do
+      address.update(primary_contact_address: nil)
+      expect(owner.primary_contact_address).not_to be_nil
+    end
+
+    it 'removes the primary contact address for the owner' do
+      address.update(primary_contact_address: false)
+      expect(owner.primary_contact_address).to be_nil
+    end
+  end
 end
