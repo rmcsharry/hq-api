@@ -34,8 +34,27 @@ class Document < ApplicationRecord
   include Lockable
 
   CATEGORIES = %i[
-    contract_hq contract_general invoice performance_report bank_reports commercial_register tax insurance
-    legitimation warrant client_communication kyc bank_documents
+    bank_documents
+    bank_feeder
+    bank_reports
+    client_communication
+    commercial_register
+    commercial_register_feeder
+    contract_general
+    contract_hq
+    contracts_feeder
+    financial_statement
+    insurance
+    invoice
+    kyc
+    legitimation
+    performance_report
+    registration
+    signature_feeder
+    tax
+    tax_general
+    tax_declaration
+    warrant
   ].freeze
 
   belongs_to :uploader, class_name: 'User', inverse_of: :documents
