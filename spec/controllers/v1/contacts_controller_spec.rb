@@ -257,6 +257,71 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         )
       end
     end
+
+    context 'with multiple addresses and contact details', bullet: false do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            attributes: {
+              'contact-type': 'Contact::Person',
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              gender: 'male',
+              addresses: [
+                {
+                  addition: 'Gartenhaus',
+                  category: 'home',
+                  city: 'Berlin',
+                  country: 'DE',
+                  'postal-code': '12345',
+                  state: 'Berlin',
+                  'street-and-number': 'Wohnstraße 13'
+                }, {
+                  category: 'work',
+                  city: 'Hamburg',
+                  country: 'DE',
+                  'postal-code': '54321',
+                  state: 'Hamburg',
+                  'street-and-number': 'Arbeitsstraße 15'
+                }
+              ],
+              'contact-details': [
+                {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Phone',
+                  value: '030123456789'
+                }, {
+                  category: 'home',
+                  contact_detail_type: 'ContactDetail::Phone',
+                  value: '030987654321'
+                }, {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Fax',
+                  value: '030987654322'
+                }, {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Email',
+                  value: 'test@hqfinanz.de'
+                }
+              ]
+            }
+          }
+        }
+      end
+
+      it 'creates a new contact' do
+        is_expected.to change(Contact, :count).by(1)
+        is_expected.to change(Address, :count).by(2)
+        is_expected.to change(ContactDetail, :count).by(4)
+        expect(response).to have_http_status(201)
+        contact = Contact.find(JSON.parse(response.body)['data']['id'])
+        expect(contact.first_name).to eq 'Max'
+        expect(contact.last_name).to eq 'Mustermann'
+        expect(contact.addresses.count).to eq 2
+        expect(contact.contact_details.count).to eq 4
+      end
+    end
   end
 
   describe 'GET /v1/contacts' do
@@ -615,6 +680,91 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(contact.last_name).to eq 'Mustermann'
         expect(contact.compliance_detail.wphg_classification).to eq 'born_professional'
         expect(contact.tax_detail.de_tax_number).to eq '21/815/08150'
+      end
+    end
+
+    context 'with multiple addresses' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            id: contact.id,
+            attributes: {
+              'contact-type': 'Contact::Person',
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              gender: 'male',
+              addresses: [
+                {
+                  addition: 'Gartenhaus',
+                  category: 'home',
+                  city: 'Berlin',
+                  country: 'DE',
+                  'postal-code': '12345',
+                  state: 'Berlin',
+                  'street-and-number': 'Wohnstraße 13'
+                }, {
+                  category: 'work',
+                  city: 'Hamburg',
+                  country: 'DE',
+                  'postal-code': '54321',
+                  state: 'Hamburg',
+                  'street-and-number': 'Arbeitsstraße 15'
+                }
+              ]
+            }
+          }
+        }
+      end
+
+      it 'is not allowed' do
+        subject.call
+        expect(response).to have_http_status(400)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq('addresses is not allowed.')
+        is_expected.to change(Address, :count).by(0)
+      end
+    end
+
+    context 'with multiple contact details' do
+      let(:payload) do
+        {
+          data: {
+            type: 'contacts',
+            id: contact.id,
+            attributes: {
+              'contact-type': 'Contact::Person',
+              'first-name': 'Max',
+              'last-name': 'Mustermann',
+              gender: 'male',
+              'contact-details': [
+                {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Phone',
+                  value: '030123456789'
+                }, {
+                  category: 'home',
+                  contact_detail_type: 'ContactDetail::Phone',
+                  value: '030987654321'
+                }, {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Fax',
+                  value: '030987654322'
+                }, {
+                  category: 'work',
+                  contact_detail_type: 'ContactDetail::Email',
+                  value: 'test@hqfinanz.de'
+                }
+              ]
+            }
+          }
+        }
+      end
+
+      it 'is not allowed' do
+        subject.call
+        expect(response).to have_http_status(400)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq('contact-details is not allowed.')
+        is_expected.to change(ContactDetail, :count).by(0)
       end
     end
   end

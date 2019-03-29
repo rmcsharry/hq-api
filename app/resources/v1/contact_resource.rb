@@ -5,10 +5,12 @@ module V1
   # rubocop:disable Metrics/ClassLength
   class ContactResource < BaseResource
     attributes(
+      :addresses,
       :comment,
       :commercial_register_number,
       :commercial_register_office,
       :compliance_detail,
+      :contact_details,
       :contact_type,
       :date_of_birth,
       :date_of_death,
@@ -78,6 +80,24 @@ module V1
       @model.build_primary_contact_address(owner: @model) unless @model.primary_contact_address
       sanitized_params = sanitize_params(params, V1::AddressResource)
       @model.primary_contact_address.assign_attributes(sanitized_params)
+      @save_needed = true
+    end
+
+    def addresses=(params)
+      params.each do |address_params|
+        address = @model.addresses.build(owner: @model)
+        sanitized_params = sanitize_params(address_params, V1::AddressResource)
+        address.assign_attributes(sanitized_params)
+      end
+      @save_needed = true
+    end
+
+    def contact_details=(params)
+      params.each do |contact_detail_params|
+        contact_detail = @model.contact_details.build(contact: @model)
+        sanitized_params = sanitize_params(contact_detail_params, V1::ContactDetailResource)
+        contact_detail.assign_attributes(sanitized_params)
+      end
       @save_needed = true
     end
 
@@ -276,11 +296,11 @@ module V1
     }
 
     def fetchable_fields
-      super - %i[compliance_detail tax_detail]
+      super - %i[addresses contact_details compliance_detail tax_detail]
     end
 
     def fetchable_relationships
-      super + %i[compliance_detail tax_detail]
+      super + %i[addresses contact_details compliance_detail tax_detail]
     end
 
     class << self
@@ -315,7 +335,9 @@ module V1
       end
 
       def updatable_fields(context)
-        super(context) - %i[is_mandate_member is_mandate_owner legal_address_text primary_contact_address_text]
+        super(context) - %i[
+          is_mandate_member is_mandate_owner legal_address_text primary_contact_address_text addresses contact_details
+        ]
       end
 
       private
