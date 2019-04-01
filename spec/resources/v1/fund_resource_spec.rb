@@ -32,7 +32,10 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:fund_cashflows) }
+  it { is_expected.to have_many(:investor_cashflows) }
   it { is_expected.to have_many(:fund_reports) }
+  it { is_expected.to have_many(:investor_reports) }
   it { is_expected.to have_many(:fund_templates) }
   it { is_expected.to have_many(:investors) }
   it { is_expected.to have_one(:capital_management_company).with_class_name('Contact') }
