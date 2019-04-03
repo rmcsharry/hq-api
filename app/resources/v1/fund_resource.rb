@@ -116,13 +116,13 @@ module V1
     private
 
     def build_document(params:)
-      DocumentResource.find_klass(type: params[:documentType]).new(
+      DocumentResource.find_klass(type: params[:'document-type']).new(
         category: params[:category],
         name: params[:name],
         owner: @model,
         uploader: context[:current_user],
-        valid_from: params[:validFrom],
-        valid_to: params[:validTo]
+        valid_from: params[:'valid-from'],
+        valid_to: params[:'valid-to']
       )
     end
   end
