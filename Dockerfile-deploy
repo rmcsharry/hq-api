@@ -20,6 +20,7 @@ RUN set -x && \
     kubectl version --client
 
 RUN gem install kubernetes-deploy
+RUN ejson -v
 
 # Clean up
 RUN apk del build-base
