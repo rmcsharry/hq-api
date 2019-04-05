@@ -1,6 +1,6 @@
 FROM ruby:2.4.3-alpine3.7
 
-RUN apk update && apk add build-base
+RUN apk update && apk add build-base git
 
 # Install kubectl
 # Note: Latest version may be found on:
@@ -19,7 +19,8 @@ RUN set -x && \
     # Basic check it works.
     kubectl version --client
 
-RUN gem install kubernetes-deploy
+RUN gem install specific_install
+RUN gem specific_install -l http://github.com/HQTrust/kubernetes-deploy.git -b master
 
 # Clean up
 RUN apk del build-base
