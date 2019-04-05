@@ -10,3 +10,4 @@ echo "Deploying commit-$CI_COMMIT_ID"
 echo "Whitelisting IPs: $WHITELISTED_IPS"
 echo "Env: $ENVIRONMENT"
 REVISION=$CI_COMMIT_ID kubernetes-deploy $NAMESPACE $CLUSTER_NAME
+ls -la /tmp
