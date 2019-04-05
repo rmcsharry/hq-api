@@ -1,14 +1,14 @@
-# - type: parallel
-#   steps:
-#   - name: Run tests
-#     service: api
-#     command: bin/ci rspec
-#   - name: Run Rubocop
-#     service: api
-#     command: rubocop
-#   - name: Run Brakeman
-#     service: api
-#     command: brakeman
+- type: parallel
+  steps:
+  - name: Run tests
+    service: api
+    command: bin/ci rspec
+  - name: Run Rubocop
+    service: api
+    command: rubocop
+  - name: Run Brakeman
+    service: api
+    command: brakeman
 - name: Push to AWS ECR
   type: serial
   service: api
