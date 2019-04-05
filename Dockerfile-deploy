@@ -21,6 +21,7 @@ RUN set -x && \
 
 RUN gem install kubernetes-deploy
 RUN ejson -v
+RUN kubernetes-deploy -v
 
 # Clean up
 RUN apk del build-base
