@@ -19,9 +19,9 @@ RUN set -x && \
     # Basic check it works.
     kubectl version --client
 
+RUN gem install specific_install
 RUN gem install kubernetes-deploy
-RUN ejson -v
-RUN kubernetes-deploy -v
+RUN gem specific_install https://github.com/HQTrust/kubernetes-deploy.git
 
 # Clean up
 RUN apk del build-base
