@@ -46,6 +46,8 @@ class InterPersonRelationship < ApplicationRecord
     bank_advisor
     bank_advisor_client
     boss
+    bookkeeper
+    bookkeeper_mandate
     brother_sister
     cousin_cousin
     daughter_son
@@ -78,6 +80,8 @@ class InterPersonRelationship < ApplicationRecord
     private_equity_consultant_mandate
     real_estate_manager
     real_estate_manager_client
+    real_estate_broker
+    real_estate_broker_client
     renter
     tax_advisor
     tax_mandate
