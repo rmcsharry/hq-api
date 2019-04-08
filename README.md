@@ -38,6 +38,16 @@ To reset the database, run
 docker-compose run api rake db:drop db:create db:migrate
 ```
 
+To populate the database, run
+```
+docker-compose run api rake db:populate
+```
+
+This command can also be chained to reset and re-populate the database:
+```
+docker-compose run api rake db:drop db:create db:migrate db:populate
+```
+
 To debug, add `binding.pry` to the code to add a breakpoint at that line.
 
 ## Stack
