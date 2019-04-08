@@ -385,6 +385,162 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         expect(rendered_attributes).to eq(%w[contact-type first-name last-name name name-list])
       end
     end
+
+    context 'filter by phone number' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "phone.value": phone_number }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person) }
+      let!(:phone) { create(:phone, contact: contact, value: '+49691234567') }
+      let!(:primary_phone) { create(:phone, :primary, contact: contact, value: '+49697654321') }
+
+      describe 'with non-primary phone' do
+        let(:phone_number) { '+49691234567' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with primary phone' do
+        let(:phone_number) { '+49697654321' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with common part phone number' do
+        let(:phone_number) { '4969' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by fax number' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "fax.value": fax_number }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person) }
+      let!(:fax) { create(:fax, contact: contact, value: '+49691234567') }
+      let!(:primary_fax) { create(:fax, :primary, contact: contact, value: '+49697654321') }
+
+      describe 'with non-primary fax' do
+        let(:fax_number) { '+49691234567' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with primary fax' do
+        let(:fax_number) { '+49697654321' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with common part fax number' do
+        let(:fax_number) { '4969' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by email' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "email.value": email_value }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person) }
+      let!(:email) { create(:email, contact: contact, value: 'contact+non-primary@hqtrust.de') }
+      let!(:primary_email) { create(:email, :primary, contact: contact, value: 'contact+primary@hqtrust.de') }
+
+      describe 'with non-primary email' do
+        let(:email_value) { 'contact+non-primary@hqtrust.de' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with primary email' do
+        let(:email_value) { 'contact+primary@hqtrust.de' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+
+      describe 'with common part email' do
+        let(:email_value) { 'primary' }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
   end
 
   describe 'GET /v1/contacts/<contact_id>/versions' do

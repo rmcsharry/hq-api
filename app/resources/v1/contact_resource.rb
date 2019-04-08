@@ -190,6 +190,24 @@ module V1
       records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
     }
 
+    filter :"phone.value", apply: lambda { |records, value, _options|
+      records.where(
+        id: ContactDetail::Phone.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+      )
+    }
+
+    filter :"fax.value", apply: lambda { |records, value, _options|
+      records.where(
+        id: ContactDetail::Fax.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+      )
+    }
+
+    filter :"email.value", apply: lambda { |records, value, _options|
+      records.where(
+        id: ContactDetail::Email.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+      )
+    }
+
     filter :primary_contact_address_text, apply: lambda { |records, value, _options|
       records
         .joins(
