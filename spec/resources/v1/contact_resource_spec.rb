@@ -53,6 +53,9 @@ RSpec.describe ::V1::ContactResource, type: :resource do
 
   it { is_expected.to filter(:"compliance_detail.occupation_role") }
   it { is_expected.to filter(:"compliance_detail.occupation_title") }
+  it { is_expected.to filter(:"email.value") }
+  it { is_expected.to filter(:"fax.value") }
+  it { is_expected.to filter(:"phone.value") }
   it { is_expected.to filter(:"primary_email.value") }
   it { is_expected.to filter(:"primary_phone.value") }
   it { is_expected.to filter(:comment) }

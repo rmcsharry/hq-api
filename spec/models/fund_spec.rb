@@ -46,7 +46,11 @@ RSpec.describe Fund, type: :model do
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:bank_accounts) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_many(:fund_cashflows) }
+  it { is_expected.to have_many(:fund_reports) }
   it { is_expected.to have_many(:fund_templates) }
+  it { is_expected.to have_many(:investor_cashflows) }
+  it { is_expected.to have_many(:investor_reports) }
   it { is_expected.to have_many(:investors) }
 
   describe '#psplus_asset_id' do

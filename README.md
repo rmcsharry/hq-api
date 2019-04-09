@@ -38,7 +38,23 @@ To reset the database, run
 docker-compose run api rake db:drop db:create db:migrate
 ```
 
+To populate the database, run
+```
+docker-compose run api rake db:populate
+```
+
+This command can also be chained to reset and re-populate the database:
+```
+docker-compose run api rake db:drop db:create db:migrate db:populate
+```
+
+### Debugging
+
 To debug, add `binding.pry` to the code to add a breakpoint at that line.
+Then, start the project with the following command (instead of `docker-compose up`) so that it stops interatactively at your breakpoint:
+```
+bin/interactive-puma
+```
 
 ## Stack
 

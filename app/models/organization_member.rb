@@ -53,6 +53,8 @@ class OrganizationMember < ApplicationRecord
     chairman
     cio
     client_bank
+    client_holding_company
+    client_insurance
     client_wealth_management
     consultant
     consultant_bank
@@ -73,13 +75,18 @@ class OrganizationMember < ApplicationRecord
     managing_general_partner
     managing_partner
     mandate
+    mandate_bookkeeper
+    mandate_financial_auditor
     mandate_lawyer
+    mandate_mergers_acquisitions_advisor
+    mandate_notary
     mandate_tax_advisor
     member_investment_committee
     partner
     portfolio_manager
     portfolio_manager_alternative_investments
     procurator
+    renter
     shareholder
     spokesperson_of_the_board
     supervisor

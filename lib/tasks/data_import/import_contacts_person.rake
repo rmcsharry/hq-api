@@ -54,8 +54,8 @@ namespace :data_import do
           occupation_title: row['occupation_title'],
           retirement_age: row['retirement_age']
         )
-        TaxDetail.create!(
-          contact: contact,
+        tax_detail = contact.tax_detail
+        tax_detail.assign_attributes(
           common_reporting_standard: row['common_reporting_standard'] == 'Ja',
           de_church_tax: row['de_church_tax'] == 'Ja',
           de_health_insurance: row['de_health_insurance'] == 'Ja',
@@ -67,6 +67,7 @@ namespace :data_import do
           us_tax_form: us_tax_forms[row['us_tax_form']],
           us_tax_number: row['us_tax_number']
         )
+        tax_detail.save!
         row['foreign_tax_ids']&.split(',')&.each do |foreign_tax_id|
           contact.tax_detail.foreign_tax_numbers.create!(
             country: foreign_tax_id[0..1],
