@@ -11,6 +11,9 @@ namespace :data_import do
     file = decrypted_s3_tempfile(s3_key: args[:s3_key])
 
     import_count = 0
+    not_imported_roles = []
+    not_existing_organizations = []
+    not_existing_contacts = []
 
     ActiveRecord::Base.transaction do
       CSV.read(file, headers: CSV.read(file).third)[4..-1].each do |row|
@@ -18,8 +21,10 @@ namespace :data_import do
           "Parsing mandate member between organization ID #{row['organization_id']} and contact ID #{row['contact_id']}"
         )
         organization = Contact::Organization.find_by(import_id: row['organization_id'])
-        contact = Contact.find_by!(import_id: row['contact_id'])
-        role = person_relationship_roles[row['role']]
+        contact = Contact.find_by(import_id: row['contact_id'])
+        not_existing_organizations << row['organization_id'] if organization.nil?
+        not_existing_contacts << row['contact_id'] if contact.nil?
+        role = organization_member_roles[row['role']]
         not_imported_roles << row['role'] if organization.present? && contact.present? && role.nil?
         next if organization.nil? || contact.nil? || role.nil?
         next if OrganizationMember.where(
@@ -37,6 +42,8 @@ namespace :data_import do
 
     puts "Imported #{import_count} organization members of #{CSV.read(file)[4..-1].count} rows."
     puts "Not imported roles: #{not_imported_roles.uniq.join(', ')}."
+    puts "Not exisiting organizations: #{not_existing_organizations.uniq.join(', ')}."
+    puts "Not exisiting contacts: #{not_existing_contacts.uniq.join(', ')}."
   end
 end
 # rubocop:enable Metrics/BlockLength
@@ -67,7 +74,6 @@ def organization_member_roles
     'Kunde (Makler)' => :broker_real_estate, # orga is the client, person is the broker
     'Kunde (Vermögensverwaltung)' => :client_wealth_management,
     'Kunde (Versicherung)' => :client_insurance,
-    'Makler (Immobilien)' => :broker_real_estate, # orga is the client, person is the broker
     'Makler (Versicherung)' => :broker_insurance,
     'Mandant (M&A-Berater)' => :mandate_mergers_acquisitions_advisor,
     'Mandant (Notar)' => :mandate_notary,

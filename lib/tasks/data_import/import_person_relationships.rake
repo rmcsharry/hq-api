@@ -12,6 +12,7 @@ namespace :data_import do
 
     import_count = 0
     not_imported_roles = []
+    not_existing_contacts = []
 
     ActiveRecord::Base.transaction do
       CSV.read(file, headers: CSV.read(file).third)[4..-1].each do |row|
@@ -20,6 +21,8 @@ namespace :data_import do
         )
         source_person = Contact::Person.find_by(import_id: row['organization_id'])
         target_person = Contact::Person.find_by(import_id: row['contact_id'])
+        not_existing_contacts << row['organization_id'] if source_person.nil?
+        not_existing_contacts << row['contact_id'] if target_person.nil?
         role = person_relationship_roles[row['role']]
         not_imported_roles << row['role'] if source_person.present? && target_person.present? && role.nil?
         next if source_person.nil? || target_person.nil? || role.nil?
@@ -38,6 +41,7 @@ namespace :data_import do
 
     puts "Imported #{import_count} person relationships of #{CSV.read(file)[4..-1].count} rows."
     puts "Not imported roles: #{not_imported_roles.uniq.join(', ')}."
+    puts "Not exisiting contacts: #{not_existing_contacts.uniq.join(', ')}."
   end
 end
 # rubocop:enable Metrics/BlockLength
