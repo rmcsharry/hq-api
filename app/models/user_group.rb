@@ -43,7 +43,6 @@ class UserGroup < ApplicationRecord
     mandates_read
     mandates_write
     tasks
-    lists
   ].freeze
 
   scope :with_user_count, lambda {
