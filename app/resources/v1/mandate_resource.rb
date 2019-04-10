@@ -59,6 +59,13 @@ module V1
       :state
     )
 
+    filter :not_in_list_with_id, apply: lambda { |records, value, _options|
+      records.where(%(mandates.id NOT IN (
+        SELECT list_items.listable_id FROM list_items
+        WHERE list_items.list_id = ? AND list_items.listable_type = 'Mandate'
+      )), value)
+    }
+
     filter :mandate_group_id, apply: lambda { |records, value, _options|
       records.joins(:mandate_groups).where('mandate_groups.id = ?', value[0])
     }

@@ -23,6 +23,8 @@ Rails.application.routes.draw do
     jsonapi_resources :inter_person_relationships
     jsonapi_resources :investor_cashflows
     jsonapi_resources :investors
+    jsonapi_resources :list_items
+    jsonapi_resources :lists
     jsonapi_resources :mandate_groups
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates

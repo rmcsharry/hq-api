@@ -42,6 +42,7 @@ class UserGroup < ApplicationRecord
     funds_read
     funds_write
     tasks
+    lists
   ].freeze
 
   scope :with_user_count, lambda {
