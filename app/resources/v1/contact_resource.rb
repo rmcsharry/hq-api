@@ -258,6 +258,13 @@ module V1
       end
     }
 
+    filter :not_in_list_with_id, apply: lambda { |records, value, _options|
+      records.where(%(contacts.id NOT IN (
+        SELECT list_items.listable_id FROM list_items
+        WHERE list_items.list_id = ? AND list_items.listable_type = 'Contact'
+      )), value)
+    }
+
     sort :primary_contact_address_text, apply: lambda { |records, direction, _context|
       records
         .joins(

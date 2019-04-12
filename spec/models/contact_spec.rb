@@ -59,6 +59,8 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:primary_contact_investors) }
   it { is_expected.to have_many(:secondary_contact_investors) }
   it { is_expected.to have_many(:reminders) }
+  it { is_expected.to have_many(:list_items).class_name('List::Item').dependent(:destroy).inverse_of(:listable) }
+  it { is_expected.to have_many(:lists).through(:list_items) }
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }

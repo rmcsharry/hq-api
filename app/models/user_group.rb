@@ -33,14 +33,15 @@ class UserGroup < ApplicationRecord
     families_export
     families_read
     families_write
-    mandates_destroy
-    mandates_export
-    mandates_read
-    mandates_write
     funds_destroy
     funds_export
     funds_read
     funds_write
+    lists
+    mandates_destroy
+    mandates_export
+    mandates_read
+    mandates_write
     tasks
   ].freeze
 

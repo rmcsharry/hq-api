@@ -92,6 +92,8 @@ class Contact < ApplicationRecord
     :bookkeeper_mandates, class_name: 'Mandate', foreign_key: :bookkeeper_id, inverse_of: :bookkeeper,
                           dependent: :nullify
   )
+  has_many :list_items, as: :listable, class_name: 'List::Item', dependent: :destroy, inverse_of: :listable
+  has_many :lists, through: :list_items
   has_one :compliance_detail, dependent: :destroy, autosave: true
   has_one :tax_detail, dependent: :destroy, autosave: true
   has_one :user, dependent: :nullify

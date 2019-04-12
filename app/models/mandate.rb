@@ -70,6 +70,8 @@ class Mandate < ApplicationRecord
   has_many :owners, -> { where(member_type: 'owner') }, class_name: 'MandateMember', inverse_of: :mandate
   has_many :investments, class_name: 'Investor', dependent: :destroy
   has_many :task_links, class_name: 'Task', as: :linked_object, inverse_of: :linked_object, dependent: :destroy
+  has_many :list_items, as: :listable, class_name: 'List::Item', dependent: :destroy, inverse_of: :listable
+  has_many :lists, through: :list_items
   has_and_belongs_to_many :activities, -> { distinct }
   has_and_belongs_to_many :mandate_groups, -> { distinct }
   has_and_belongs_to_many(
@@ -118,10 +120,20 @@ class Mandate < ApplicationRecord
 
   scope :with_owner_name, lambda {
     from(
-      '(SELECT m.*, agg.name AS owner_name FROM mandates m LEFT JOIN (SELECT mm.mandate_id AS mandate_id, ' \
-      "string_agg(COALESCE(c.last_name || ', ' || c.first_name, c.organization_name), ', ') AS name FROM " \
-      "mandate_members mm LEFT JOIN contacts c ON mm.contact_id = c.id WHERE mm.member_type = 'owner' GROUP BY " \
-      'mm.mandate_id) agg ON m.id = agg.mandate_id) mandates'
+      %{
+        (
+          SELECT m.*, agg.name AS owner_name FROM mandates m LEFT JOIN (
+            SELECT mm.mandate_id AS mandate_id,
+              STRING_AGG(
+                COALESCE(c.last_name || ', ' || c.first_name, c.organization_name), ', '
+                ORDER BY c.last_name, c.first_name, c.organization_name
+              ) AS name
+            FROM mandate_members mm LEFT JOIN contacts c ON mm.contact_id = c.id
+            WHERE mm.member_type = 'owner'
+            GROUP BY mm.mandate_id
+          ) agg ON m.id = agg.mandate_id
+        ) mandates
+      }
     )
   }
 

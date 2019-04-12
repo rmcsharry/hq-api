@@ -77,6 +77,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:name_list) }
   it { is_expected.to filter(:nationality) }
   it { is_expected.to filter(:nobility_title) }
+  it { is_expected.to filter(:not_in_list_with_id) }
   it { is_expected.to filter(:organization_category) }
   it { is_expected.to filter(:organization_industry) }
   it { is_expected.to filter(:organization_name) }

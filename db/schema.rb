@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_19_092103) do
+ActiveRecord::Schema.define(version: 2019_03_21_135854) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -281,6 +281,27 @@ ActiveRecord::Schema.define(version: 2019_03_19_092103) do
     t.index ["secondary_contact_id"], name: "index_investors_on_secondary_contact_id"
   end
 
+  create_table "list_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "list_id", null: false
+    t.string "listable_type", null: false
+    t.uuid "listable_id", null: false
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id"], name: "index_list_items_on_list_id"
+    t.index ["listable_type", "listable_id"], name: "index_list_items_on_listable_type_and_listable_id"
+  end
+
+  create_table "lists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "user_id", null: false
+    t.string "aasm_state", default: "active", null: false
+    t.text "comment"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_lists_on_user_id"
+  end
+
   create_table "mandate_groups", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "group_type"
@@ -530,6 +551,8 @@ ActiveRecord::Schema.define(version: 2019_03_19_092103) do
   add_foreign_key "investors", "contacts", column: "secondary_contact_id"
   add_foreign_key "investors", "funds"
   add_foreign_key "investors", "mandates"
+  add_foreign_key "list_items", "lists"
+  add_foreign_key "lists", "users"
   add_foreign_key "mandate_groups_mandates", "mandate_groups"
   add_foreign_key "mandate_groups_mandates", "mandates"
   add_foreign_key "mandate_groups_user_groups", "mandate_groups"

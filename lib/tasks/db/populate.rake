@@ -61,6 +61,9 @@ namespace :db do
 
       puts 'Creating tasks and reminders'
       Rake::Task['db:populate:tasks_and_reminders'].invoke
+
+      puts 'Creating lists'
+      Rake::Task['db:populate:lists'].invoke
     end
   end
 
@@ -573,6 +576,29 @@ namespace :db do
         reminder = Task::ContactBirthdayReminder.new(subject: contact)
         reminder.assignees << admin_user
         reminder.save
+      end
+    end
+
+    task lists: :environment do
+      20.times do
+        items = []
+        user = User.all.sample
+
+        list = List.create!(
+          name: Faker::Lorem.words.join(' ').titleize,
+          comment: Faker::Lorem.sentences.join(' '),
+          user: user
+        )
+
+        Contact.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+          items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
+        end
+
+        Mandate.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+          items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
+        end
+
+        list.items = items
       end
     end
   end

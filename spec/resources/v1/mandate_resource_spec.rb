@@ -46,6 +46,7 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to filter(:mandate_group_id) }
   it { is_expected.to filter(:mandate_groups_organizations) }
   it { is_expected.to filter(:mandate_number) }
+  it { is_expected.to filter(:not_in_list_with_id) }
   it { is_expected.to filter(:owner_name) }
   it { is_expected.to filter(:prospect_assets_under_management) }
   it { is_expected.to filter(:prospect_assets_under_management_max) }

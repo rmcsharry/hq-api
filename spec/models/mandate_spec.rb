@@ -53,6 +53,8 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }
   it { is_expected.to have_many(:investments) }
+  it { is_expected.to have_many(:list_items).class_name('List::Item').dependent(:destroy).inverse_of(:listable) }
+  it { is_expected.to have_many(:lists).through(:list_items) }
 
   it { is_expected.to respond_to(:datev_creditor_id) }
   it { is_expected.to respond_to(:datev_debitor_id) }
@@ -229,7 +231,7 @@ RSpec.describe Mandate, type: :model do
       let(:owners) { [mandate_member1, mandate_member2, mandate_member3] }
       it 'responds with all names' do
         expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq(
-          'Makait, Thomas, Makait, Maria, Novo Investments UG'
+          'Makait, Maria, Makait, Thomas, Novo Investments UG'
         )
       end
     end
@@ -244,7 +246,7 @@ RSpec.describe Mandate, type: :model do
     context 'person1 and person2 are owners' do
       let(:owners) { [mandate_member1, mandate_member2] }
       it "responds with person1 and person2's names" do
-        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Makait, Thomas, Makait, Maria'
+        expect(Mandate.all.with_owner_name.find(subject.id).owner_name).to eq 'Makait, Maria, Makait, Thomas'
       end
     end
 
