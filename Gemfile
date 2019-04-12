@@ -100,5 +100,3 @@ group :test do
   gem 'timecop' # Provides time travel for tests
 end
 # rubocop:enable Metrics/LineLength
-
-# This line is a hack to invalidate caching for Codeship
