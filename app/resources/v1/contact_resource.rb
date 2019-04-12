@@ -187,18 +187,21 @@ module V1
     }
 
     filter :"primary_phone.value", apply: lambda { |records, value, _options|
-      records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
+      normalized_number = PhonyRails.normalize_number(value[0])
+      records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{normalized_number}%")
     }
 
     filter :"phone.value", apply: lambda { |records, value, _options|
+      normalized_number = PhonyRails.normalize_number(value[0])
       records.where(
-        id: ContactDetail::Phone.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+        id: ContactDetail::Phone.select(:contact_id).where('value ILIKE ?', "%#{normalized_number}%")
       )
     }
 
     filter :"fax.value", apply: lambda { |records, value, _options|
+      normalized_number = PhonyRails.normalize_number(value[0])
       records.where(
-        id: ContactDetail::Fax.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+        id: ContactDetail::Fax.select(:contact_id).where('value ILIKE ?', "%#{normalized_number}%")
       )
     }
 
