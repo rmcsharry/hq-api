@@ -41,6 +41,10 @@ class List < ApplicationRecord
     event :archive do
       transitions from: :active, to: :archived
     end
+
+    event :unarchive do
+      transitions from: :archived, to: :active
+    end
   end
 
   alias_attribute :state, :aasm_state

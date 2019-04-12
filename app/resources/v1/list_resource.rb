@@ -4,6 +4,7 @@ module V1
   # Defines the ListResource
   class ListResource < BaseResource
     custom_action :archive, level: :instance, type: :patch
+    custom_action :unarchive, level: :instance, type: :patch
 
     has_many :contacts
     has_many :mandates
@@ -57,6 +58,11 @@ module V1
 
     def mandate_count
       @model.mandates.count
+    end
+
+    def unarchive(_data)
+      @model.unarchive!
+      @model
     end
 
     def user_name

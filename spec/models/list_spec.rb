@@ -43,5 +43,10 @@ RSpec.describe List, type: :model do
       subject { build(:list, aasm_state: :active) }
       it { is_expected.to transition_from(:active).to(:archived).on_event(:archive) }
     end
+
+    describe 'unarchive event' do
+      subject { build(:list, aasm_state: :archived) }
+      it { is_expected.to transition_from(:archived).to(:active).on_event(:unarchive) }
+    end
   end
 end
