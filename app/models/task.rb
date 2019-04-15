@@ -54,12 +54,13 @@ class Task < ApplicationRecord
   )
 
   scope :associated_to_user_with_id, lambda { |user_id|
-    joins(
-      <<-SQL.squish
-        LEFT JOIN tasks_users tu
-        ON tasks.id = tu.task_id
-      SQL
-    )
+    distinct
+      .joins(
+        <<-SQL.squish
+          LEFT JOIN tasks_users tu
+          ON tasks.id = tu.task_id
+        SQL
+      )
       .where('tasks.creator_id = ? OR tasks.finisher_id = ? OR tu.user_id = ?', user_id, user_id, user_id)
   }
 

@@ -542,7 +542,7 @@ namespace :db do
       tasks = []
 
       Faker::Number.between(3, 6).times do
-        assignees = rand > 0.5 ? [] : User.all.sample(Faker::Number.between(1, 4))
+        assignees = User.order(Arel.sql('RANDOM()')).limit(Faker::Number.between(1, 4))
         due_at = rand > 0.5 ? nil : Faker::Date.between(0.days.from_now, 2.weeks.from_now)
 
         tasks << Task::Simple.new(
@@ -590,11 +590,11 @@ namespace :db do
           user: user
         )
 
-        Contact.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+        Contact.order(Arel.sql('RANDOM()')).limit(Random.rand(10)).map do |listable|
           items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
         end
 
-        Mandate.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+        Mandate.order(Arel.sql('RANDOM()')).limit(Random.rand(10)).map do |listable|
           items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
         end
 

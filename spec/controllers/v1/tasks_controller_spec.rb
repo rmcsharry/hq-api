@@ -22,4 +22,24 @@ RSpec.describe TASKS_ENDPOINT, type: :request do
       expect(body.dig('data', 'relationships', 'subject', 'data', 'id')).not_to be_nil
     end
   end
+
+  describe 'GET /v1/tasks' do
+    let!(:task) { create(:task_simple, assignees: [user, user.clone]) }
+
+    it 'returns distinct tasks' do
+      get(TASKS_ENDPOINT, headers: auth_headers)
+
+      meta = JSON.parse(response.body).to_hash['meta']
+      expect(meta['record-count']).to be(1)
+      expect(meta['total-record-count']).to be(1)
+    end
+
+    it 'gets along with filters and sort' do
+      get(TASKS_ENDPOINT, params: { filter: { state: 'created' }, sort: '-created-at' }, headers: auth_headers)
+
+      meta = JSON.parse(response.body).to_hash['meta']
+      expect(meta['record-count']).to be(1)
+      expect(meta['total-record-count']).to be(1)
+    end
+  end
 end

@@ -15,6 +15,7 @@ class TaskPolicy < ApplicationPolicy
     def self.accessible_records(target, scope, conditions = {})
       user_id = target.user.id
       scope
+        .select('DISTINCT(tasks.*)')
         .joins('LEFT JOIN tasks_users tu ON tasks.id = tu.task_id')
         .where(conditions)
         .where('tasks.creator_id = ? OR tu.user_id = ?', user_id, user_id)
