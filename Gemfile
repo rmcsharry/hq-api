@@ -36,9 +36,9 @@ gem 'aasm'                                                                      
 gem 'axlsx', github: 'randym/axlsx', ref: 'c593a08b2a929dac7aa8dc418b55e26b4c49dc34' # Wrapper for generation of .xlsx documents
 gem 'carmen'                                                                         # A repository of geographic regions for Ruby
 gem 'draper'                                                                         # Decorate models
-gem 'email_validator'                                                                # Validates Emails
+gem 'email_validator', '~> 1.6.0'                                                    # Validates Emails, locked to v1.6.0 to use strict mode
 gem 'enumerize'                                                                      # Advanced Enum handling
-gem 'faker', github: 'stympy/faker', branch: 'master'                                # A library for generating fake data such as names, addresses, and phone numbers.
+gem 'faker'                                                                          # A library for generating fake data such as names, addresses, and phone numbers.
 gem 'ibanizator'                                                                     # Validates IBAN
 gem 'jwt'                                                                            # Interact with Json-Web-Tokens
 gem 'mail'                                                                           # Parse, generate or send emails
@@ -63,7 +63,7 @@ gem 'pg', '~> 0.18'                                                 # Use postgr
 gem 'sidekiq'                                                       # Handle background jobs with sidekiq
 
 # Testing & Debugging
-gem 'pry', github: 'pry/pry', branch: 'master'
+gem 'pry'
 gem 'pry-rails'
 gem 'terminal-table'
 
@@ -96,7 +96,7 @@ end
 group :test do
   gem 'database_cleaner' # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
   gem 'jsonapi-resources-matchers', github: 'GabrielSandoval/jsonapi-resources-matchers', branch: 'ae-rails_5_upgrade_dependencies-155929975', require: false # Test matchers for jsonapi-resources
-  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master' # Collection of testing matchers extracted from Shoulda
+  gem 'shoulda-matchers' # Collection of testing matchers extracted from Shoulda
   gem 'timecop' # Provides time travel for tests
 end
 # rubocop:enable Metrics/LineLength

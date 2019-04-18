@@ -29,7 +29,7 @@ class DecodeEWSIdTokenService < ApplicationService
       id_token.split('.')[0..1].map do |part|
         begin
           JSON.parse(Base64.decode64(part))
-        rescue JSON::ParserError => _
+        rescue JSON::ParserError => _e # rubocop:disable Naming/RescuedExceptionsVariableName until v0.67.3
           {}
         end
       end

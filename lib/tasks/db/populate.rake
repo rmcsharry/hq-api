@@ -84,6 +84,27 @@ namespace :db do
           nationality: Faker::Address.country_code
         )
       end
+      arne = Contact::Person.new(
+        gender: :male,
+        first_name: 'Arne',
+        last_name: 'Zeising'
+      )
+      contacts << arne
+      contacts << Contact::Person.new(
+        gender: :male,
+        first_name: 'Jerome',
+        last_name: 'Burkhard'
+      )
+      contacts << Contact::Person.new(
+        gender: :male,
+        first_name: 'Sophia',
+        last_name: 'Burkhard'
+      )
+      contacts << Contact::Person.new(
+        gender: :male,
+        first_name: 'Jolina',
+        last_name: 'Badane'
+      )
       Contact::Person.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
@@ -94,6 +115,21 @@ namespace :db do
       Address.import!(addresses.flatten)
       Contact::Person.import!(
         contacts_with_addresses, on_duplicate_key_update: %i[primary_contact_address_id legal_address_id]
+      )
+      ContactDetail::Phone.create(
+        contact: arne,
+        category: :private,
+        value: '+4917098765432'
+      )
+      ContactDetail::Email.create(
+        contact: arne,
+        category: :private,
+        value: 'arne@shr.ps'
+      )
+      ContactDetail::Fax.create(
+        contact: arne,
+        category: :work,
+        value: '+493032101234'
       )
     end
 
@@ -109,6 +145,10 @@ namespace :db do
           commercial_register_office: Faker::Address.city
         )
       end
+      contacts << Contact::Organization.create(
+        organization_name: 'Sherpas Digital Ventures GmbH',
+        organization_type: :gmbh
+      )
       Contact::Organization.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|

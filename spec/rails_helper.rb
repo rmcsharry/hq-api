@@ -8,16 +8,17 @@ require File.expand_path('../config/environment', __dir__)
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
-require 'support/shared_examples/authorization'
-require 'support/shared_examples/simple_crud_authorization'
-require 'support/shared_examples/forbid_ews_users'
+require 'aasm/rspec'
+require 'jsonapi/resources/matchers'
+require 'shoulda/matchers'
 require 'support/authorization_helper'
 require 'support/docx_helper'
-require 'support/factory_bot'
 require 'support/endpoints'
-require 'shoulda/matchers'
-require 'jsonapi/resources/matchers'
-require 'aasm/rspec'
+require 'support/factory_bot'
+require 'support/shared_examples/authorization'
+require 'support/shared_examples/forbid_ews_users'
+require 'support/shared_examples/simple_crud_authorization'
+require 'support/v1/shoulda/matchers/active_record/uniqueness/test_models/contacu_resource'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are

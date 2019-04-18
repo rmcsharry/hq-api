@@ -38,7 +38,7 @@ RSpec.describe ContactDetail, type: :model do
     it { is_expected.to validate_presence_of(:value) }
   end
 
-  describe '#primary' do
+  describe '#primary', bullet: false do
     let(:contact) { create(:contact_person) }
     let!(:old_email) { create(:email, primary: true, contact: contact) }
     let!(:old_phone) { create(:phone, primary: true, contact: contact) }

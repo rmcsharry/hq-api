@@ -8,7 +8,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
-  describe 'POST /v1/addresses' do
+  describe 'POST /v1/addresses', bullet: false do
     let!(:contact) { create(:contact_person, :with_contact_details) }
     subject { -> { post(ADDRESSES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 

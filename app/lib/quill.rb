@@ -16,7 +16,7 @@ module Quill
 
     def parsed_delta
       parse JSON.parse(@delta_string)
-    rescue JSON::ParserError => _exception
+    rescue JSON::ParserError => _e # rubocop:disable Naming/RescuedExceptionsVariableName until v0.67.3
       @delta_string
     end
 

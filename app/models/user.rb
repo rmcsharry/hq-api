@@ -125,7 +125,7 @@ class User < ApplicationRecord
     decoded_token = DecodeEWSIdTokenService.call id_token
     appctx = JSON.parse(decoded_token['appctx'])
     update ews_user_id: appctx['msexchuid']
-  rescue JWT::DecodeError => _
+  rescue JWT::DecodeError => _e # rubocop:disable Naming/RescuedExceptionsVariableName until v0.67.3
     nil
   end
 
