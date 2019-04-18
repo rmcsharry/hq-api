@@ -6,6 +6,8 @@
 * A running Docker environment
 
 #### Certificates
+*The following step is needed only if you plan to develop against the HQ Trust Outlook Add-In.*
+
 The HQ Trust [Outlook Add-in](https://github.com/HQTrust/hq-outlook-addin) requires the API to be exposed via SSL also when running in development. That is because the add-in runs as an `iframe` in context of the [Outlook Web App](https://outlook.live.com) which is of course enforcing https.
 
 You can use mkcert in order to create such certificate on your system:
@@ -17,9 +19,12 @@ You can use mkcert in order to create such certificate on your system:
     1. Run `mkcert localhost` in this projects root create a certificate for localhost, signed by above ca certificate
 
 ### Install
-After cloning the project locally, run
+After cloning the project locally, install a Docker VM and docker-compose for your OS.
+
+Then, run
 ```
 docker-compose build
+docker-compose run api rake db:create db:migrate db:populate
 ```
 
 ### Develop
