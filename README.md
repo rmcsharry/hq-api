@@ -73,3 +73,7 @@ The API follows the [JSON API](http://jsonapi.org/) specification. It is impleme
 
 #### Authorization
 Authorization is handled by [JSONAPI::Authorization](https://github.com/venuu/jsonapi-authorization).
+
+## Wiki
+
+Find additional information about this project in our [Wiki](https://github.com/HQTrust/hqtrust-core-api/wiki).
