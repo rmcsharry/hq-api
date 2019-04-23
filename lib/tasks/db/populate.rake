@@ -100,11 +100,12 @@ namespace :db do
         first_name: 'Sophia',
         last_name: 'Burkhard'
       )
-      contacts << Contact::Person.new(
-        gender: :male,
+      jolina = Contact::Person.new(
+        gender: :female,
         first_name: 'Jolina',
         last_name: 'Badane'
       )
+      contacts << jolina
       Contact::Person.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
@@ -130,6 +131,11 @@ namespace :db do
         contact: arne,
         category: :work,
         value: '+493032101234'
+      )
+      ContactDetail::Phone.create(
+        contact: jolina,
+        category: :work,
+        value: '+49308054038'
       )
     end
 
