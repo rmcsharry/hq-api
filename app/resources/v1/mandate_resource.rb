@@ -228,12 +228,6 @@ module V1
         ]
       end
 
-      def construct_order_options(sort_params)
-        sort_params = default_sort if sort_params.blank?
-        sort_params << { field: 'owner_name', direction: sort_params.first[:direction] }
-        super
-      end
-
       private
 
       def order_by_name_of_contact(records, direction)
