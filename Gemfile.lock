@@ -482,6 +482,7 @@ DEPENDENCIES
   pry
   pry-byebug
   pry-rails
+  psych
   puma (~> 3.7)
   pundit (~> 1.1.0)
   r7insight

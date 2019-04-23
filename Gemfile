@@ -62,11 +62,6 @@ gem 'paper_trail'                                                   # Track chan
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 gem 'sidekiq'                                                       # Handle background jobs with sidekiq
 
-# Testing & Debugging
-gem 'pry'
-gem 'pry-rails'
-gem 'terminal-table'
-
 # Logging & Issue Management
 gem 'r7insight'                                                     # Logging with Logentries (Rapid7 Insight)
 gem 'sentry-raven'                                                  # Issue Management with Sentry
@@ -78,10 +73,14 @@ group :development, :test do
   gem 'bullet', '5.7.5'                                             # Detect N+1 queries, currently locked to 5.7.5 because of https://github.com/flyerhzm/bullet/issues/435
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
+  gem 'pry'
   gem 'pry-byebug'                                                  # Debugger
+  gem 'pry-rails'
+  gem 'psych'
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
   gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
+  gem 'terminal-table'
 end
 
 group :development do
