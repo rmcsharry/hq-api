@@ -67,6 +67,8 @@ gem 'r7insight'                                                     # Logging wi
 gem 'sentry-raven'                                                  # Issue Management with Sentry
 gem 'skylight'                                                      # Performance Management with Skylight.io
 
+gem 'psych'                                                         # Require psych to prevent double loading in prod
+
 group :development, :test do
   gem 'awesome_print'
   gem 'brakeman', require: false                                    # Static security tests
@@ -76,7 +78,6 @@ group :development, :test do
   gem 'pry'
   gem 'pry-byebug'                                                  # Debugger
   gem 'pry-rails'
-  gem 'psych'
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
   gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
