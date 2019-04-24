@@ -1,5 +1,11 @@
 # HQ Trust Core API
 
+## Build status
+
+**master**: [![Codeship Status for HQTrust/hqtrust-core-api](https://app.codeship.com/projects/c2459e30-e383-0135-bca6-623ae4419be6/status?branch=master)](https://app.codeship.com/projects/268637)
+
+**dev**: [![Codeship Status for HQTrust/hqtrust-core-api](https://app.codeship.com/projects/c2459e30-e383-0135-bca6-623ae4419be6/status?branch=dev)](https://app.codeship.com/projects/268637)
+
 ## Setup
 
 ### Prerequisites
