@@ -9,9 +9,9 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   let(:random_user) { create(:user) }
   let(:tax_detail) { create :tax_detail, de_tax_number: '21/815/08150' }
   let(:contact_person) do
-    create(:contact_person, :with_mandate, mandate: mandate, user: random_user, tax_detail: tax_detail)
+    create(:contact_person, user: random_user, tax_detail: tax_detail)
   end
-  let!(:mandate) { create(:mandate) }
+  let!(:mandate) { create(:mandate, :with_owner, owner: contact_person) }
   let!(:user) do
     create(
       :user,
@@ -21,6 +21,36 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   end
   let(:headers) { { 'Content-Type' => 'application/vnd.api+json', 'Accept' => 'application/vnd.api+json' } }
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
+
+  describe 'GET /v1/investors' do
+    let!(:investors) { create_list(:investor, 4, mandate: mandate, primary_owner: contact_person) }
+
+    context 'sort by joined associations' do
+      subject do
+        get(
+          INVESTORS_ENDPOINT,
+          params: {
+            sort: sorting_param,
+            page: { number: 1, size: 5 }
+          },
+          headers: auth_headers
+        )
+      end
+
+      describe 'sort by mandate.owner_name', bullet: false do
+        let(:sorting_param) { 'mandate.owner_name' }
+
+        it 'also returns all investors' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['data'].count).to eq 4
+          expect(body['meta']['record-count']).to eq 4
+        end
+      end
+    end
+  end
 
   [
     'fund-subscription-agreement-document',

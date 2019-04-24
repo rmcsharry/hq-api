@@ -25,9 +25,10 @@ module V1
     }
 
     sort :"mandate.owner_name", apply: lambda { |records, direction, _context|
-      records
-        .merge(Mandate.with_owner_name)
-        .joins('LEFT OUTER JOIN mandate_members as mandate_members ON mandates.id = mandate_members.mandate_id')
+      Mandate
+        .with_owner_name
+        .joins(:mandate_members)
+        .merge(records)
         .order("mandates.owner_name #{direction}")
     }
 
