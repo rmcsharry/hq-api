@@ -657,12 +657,13 @@ namespace :db do
 
   def build_address(owner)
     Address.new(
-      owner: owner,
-      postal_code: Faker::Address.zip_code,
-      city: Faker::Address.city,
-      country: Faker::Address.country_code,
       addition: rand > 0.6 ? Faker::Address.secondary_address : nil,
       category: Address::CATEGORIES.sample,
+      city: Faker::Address.city,
+      country: Faker::Address.country_code,
+      organization_name: rand > 0.6 ? Faker::Company.name : nil,
+      owner: owner,
+      postal_code: Faker::Address.zip_code,
       street_and_number: Faker::Address.street_address
     )
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_15_153117) do
+ActiveRecord::Schema.define(version: 2019_04_24_154210) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2019_04_15_153117) do
     t.string "category"
     t.string "street_and_number"
     t.string "owner_type", null: false
+    t.string "organization_name"
     t.index ["owner_type", "owner_id"], name: "index_addresses_on_owner_type_and_owner_id"
   end
 

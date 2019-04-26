@@ -22,6 +22,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
               category: 'home',
               city: 'Berlin',
               country: 'DE',
+              'organization-name': 'Musterfirma GmbH',
               'postal-code': '12345',
               state: 'Berlin',
               'street-and-number': 'Wohnstraße 13',
@@ -41,6 +42,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
         is_expected.to change(Address, :count).by(1)
         expect(response).to have_http_status(201)
         address = Address.find(JSON.parse(response.body)['data']['id'])
+        expect(address.organization_name).to eq 'Musterfirma GmbH'
         expect(address.street_and_number).to eq 'Wohnstraße 13'
         expect(address.city).to eq 'Berlin'
         expect(address.owner.legal_address).to eq address
@@ -64,6 +66,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
               category: 'home',
               city: 'Berlin',
               country: 'DE',
+              'organization-name': 'Musterfirma GmbH',
               'postal-code': '12345',
               state: 'Berlin',
               'street-and-number': 'Wohnstraße 13',
@@ -78,6 +81,7 @@ RSpec.describe ADDRESSES_ENDPOINT, type: :request do
         is_expected.to change(Address, :count).by(0)
         expect(response).to have_http_status(200)
         address.reload
+        expect(address.organization_name).to eq 'Musterfirma GmbH'
         expect(address.street_and_number).to eq 'Wohnstraße 13'
         expect(address.city).to eq 'Berlin'
         expect(address.owner.legal_address).to eq address

@@ -16,6 +16,7 @@
 #  category          :string
 #  street_and_number :string
 #  owner_type        :string           not null
+#  organization_name :string
 #
 # Indexes
 #
@@ -69,6 +70,20 @@ RSpec.describe Address, type: :model, bullet: false do
       )
 
       expect(address.to_s).to eq('Oranienstraße 185, Aufgang 3, 10999, Berlin, DE')
+    end
+
+    it 'serializes record with organization name' do
+      address = create(
+        :address,
+        addition: nil,
+        city: 'Berlin',
+        country: 'DE',
+        organization_name: 'Musterfirma GmbH',
+        postal_code: 10_999,
+        street_and_number: 'Oranienstraße 185'
+      )
+
+      expect(address.to_s).to eq('Musterfirma GmbH, Oranienstraße 185, 10999, Berlin, DE')
     end
   end
 
