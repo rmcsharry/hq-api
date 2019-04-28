@@ -4,23 +4,26 @@
 #
 # Table name: investors
 #
-#  id                     :uuid             not null, primary key
-#  fund_id                :uuid
-#  mandate_id             :uuid
-#  legal_address_id       :uuid
-#  contact_address_id     :uuid
-#  contact_email_id       :uuid
-#  contact_phone_id       :uuid
-#  bank_account_id        :uuid
-#  primary_owner_id       :uuid
-#  aasm_state             :string           not null
-#  investment_date        :datetime
-#  amount_total           :decimal(20, 2)
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  primary_contact_id     :uuid
-#  secondary_contact_id   :uuid
-#  capital_account_number :string
+#  id                                   :uuid             not null, primary key
+#  fund_id                              :uuid
+#  mandate_id                           :uuid
+#  legal_address_id                     :uuid
+#  contact_address_id                   :uuid
+#  contact_email_id                     :uuid
+#  contact_phone_id                     :uuid
+#  bank_account_id                      :uuid
+#  primary_owner_id                     :uuid
+#  aasm_state                           :string           not null
+#  investment_date                      :datetime
+#  amount_total                         :decimal(20, 2)
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
+#  primary_contact_id                   :uuid
+#  secondary_contact_id                 :uuid
+#  capital_account_number               :string
+#  contact_salutation_primary_owner     :boolean
+#  contact_salutation_primary_contact   :boolean
+#  contact_salutation_secondary_contact :boolean
 #
 # Indexes
 #

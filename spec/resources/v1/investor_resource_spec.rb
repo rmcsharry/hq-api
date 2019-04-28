@@ -11,6 +11,9 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to have_attribute :amount_total }
   it { is_expected.to have_attribute :amount_total_distribution }
   it { is_expected.to have_attribute :capital_account_number }
+  it { is_expected.to have_attribute :contactSalutationPrimaryOwner }
+  it { is_expected.to have_attribute :contactSalutationPrimaryContact }
+  it { is_expected.to have_attribute :contactSalutationSecondaryContact }
   it { is_expected.to have_attribute :current_value }
   it { is_expected.to have_attribute :dpi }
   it { is_expected.to have_attribute :investment_date }
