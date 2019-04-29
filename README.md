@@ -18,11 +18,11 @@ The HQ Trust [Outlook Add-in](https://github.com/HQTrust/hq-outlook-addin) requi
 
 You can use mkcert in order to create such certificate on your system:
 
-  1. Use mkcert:
-    1. [Install mkcert](https://github.com/FiloSottile/mkcert#installation) on your system
-    1. Run `CAROOT="$(pwd)/cert" mkcert -install` in this projects root to create and trust a ca certificate
-    1. Run `cd cert`
-    1. Run `mkcert localhost` in this projects root create a certificate for localhost, signed by above ca certificate
+  1. First install mkcert on your system: [Install mkcert](https://github.com/FiloSottile/mkcert#installation)
+  2. Now make sure you are in the root folder of this project on your local system (ie the `hq-trust-core-api` folder where you cloned it). You can type `pwd` to check your current path. To create a new local Certificate Authority (CA), run this: `CAROOT="$(pwd)/cert" mkcert -install`. 
+  Note that this will prompt for your password and install the local CA in your system trust store and also create the local CA in the `/cert` subfolder.
+  4. Now change into that subfolder, so run: `cd cert`
+  5. Finally run `mkcert localhost`. This will create a certificate for localhost, signed by the above CA certificate. You should get the response `The certificate is at "./localhost.pem" and the key at "./localhost-key.pem"`
 
 ### Install
 After cloning the project locally, install a Docker VM and docker-compose for your OS.
