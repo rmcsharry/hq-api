@@ -52,6 +52,7 @@ class Investor < ApplicationRecord
   include AASM
   include GeneratedDocument
 
+  BELONG_TO_CONTACTS = 'must belong to contacts (primary owner or primary/secondary contact'
   BELONG_TO_MANDATE = 'must belong to mandate'
   BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
 
@@ -105,7 +106,7 @@ class Investor < ApplicationRecord
   validates :amount_total, presence: true
   validate :attributes_in_signed_state
   validate :bank_account_belongs_to_mandate
-  validate :contact_address_belongs_to_primary_owner
+  validate :contact_address_belongs_to_contacts
   validate :contact_email_belongs_to_primary_owner
   validate :contact_phone_belongs_to_primary_owner
   validate :legal_address_belongs_to_primary_owner
@@ -219,10 +220,11 @@ class Investor < ApplicationRecord
     errors.add(:secondary_contact, BELONG_TO_MANDATE)
   end
 
-  def contact_address_belongs_to_primary_owner
-    return if contact_address.blank? || contact_address.owner == primary_owner
+  def contact_address_belongs_to_contacts
+    return if contact_address.blank? ||
+              [primary_owner, primary_contact, secondary_contact].compact.include?(contact_address.owner)
 
-    errors.add(:contact_address, BELONG_TO_PRIMARY_OWNER)
+    errors.add(:contact_address, BELONG_TO_CONTACTS)
   end
 
   def legal_address_belongs_to_primary_owner

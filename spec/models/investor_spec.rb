@@ -475,17 +475,36 @@ RSpec.describe Investor, type: :model do
 
     let(:mandate) { build(:mandate) }
     let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-    let(:contact_address) { build(:address, owner: primary_owner) }
 
     context 'is owned by primary owner' do
-      let(:address) { contact_address }
+      let(:address) { build(:address, owner: primary_owner) }
 
       it 'is valid' do
         expect(subject).to be_valid
       end
     end
 
-    context 'is not owned by primary owner' do
+    context 'is owned by primary contact' do
+      let(:primary_contact) { build(:contact_person, :with_mandate, mandate: mandate) }
+      let(:address) { build(:address, owner: primary_contact) }
+
+      it 'is valid' do
+        subject.primary_contact = primary_contact
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is owned by secondary contact' do
+      let(:secondary_contact) { build(:contact_person, :with_mandate, mandate: mandate) }
+      let(:address) { build(:address, owner: secondary_contact) }
+
+      it 'is valid' do
+        subject.secondary_contact = secondary_contact
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is not owned by primary owner or primary/secondary contact' do
       let(:address) { build(:address) }
 
       it 'is invalid' do
