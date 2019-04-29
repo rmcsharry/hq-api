@@ -9,6 +9,7 @@ module V1
       :city,
       :country,
       :legal_address,
+      :organization_name,
       :postal_code,
       :primary_contact_address,
       :state,
@@ -18,6 +19,10 @@ module V1
     has_one :owner, polymorphic: true
 
     filter :owner_id
+
+    sort :address_text, apply: lambda { |records, direction, _context|
+      records.order("CONCAT(organization_name, street_and_number, postal_code, city, country) #{direction}")
+    }
 
     def legal_address
       @model.owner.legal_address == @model

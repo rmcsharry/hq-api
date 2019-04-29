@@ -44,6 +44,21 @@ RSpec.describe Task, type: :model do
   it { is_expected.to belong_to(:linked_object).optional.inverse_of(:task_links) }
   it { is_expected.to have_and_belong_to_many(:assignees).class_name('User') }
 
+  describe '.associated_to_user_with_id' do
+    let(:user) { create(:user) }
+    let!(:task) { create(:task_simple, assignees: [user, user.clone]) }
+
+    subject { Task.associated_to_user_with_id(user.id) }
+
+    it 'returns all associated tasks' do
+      expect(subject.distinct(false)).to eq([task, task])
+    end
+
+    it 'returns distinct associated tasks' do
+      expect(subject).to eq([task])
+    end
+  end
+
   describe '#finish' do
     let(:task) { create :task }
     let(:finisher) { create :user }

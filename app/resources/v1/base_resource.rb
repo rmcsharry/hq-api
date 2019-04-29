@@ -69,5 +69,17 @@ module V1
         serialize_dependants!(attributes: dependant, hash: hash)
       end
     end
+
+    class << self
+      def construct_order_options(sort_params, table_alias = nil)
+        field = [table_alias, 'id'].compact.join('.')
+        sort_params = [{ field: field, direction: :asc }] if sort_params.blank?
+
+        if sort_params.none? { |param| param[:field] == 'id' || param[:field].end_with?('.id') }
+          sort_params << { field: field, direction: sort_params.first[:direction] }
+        end
+        super sort_params
+      end
+    end
   end
 end

@@ -355,6 +355,49 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
     end
 
+    context 'with includes' do
+      let!(:additional_contact_attributes) { attributes_for(:contact_person, gender: :female) }
+      let(:params) do
+        {
+          'page[size]': 10,
+          include: 'primary-email,primary-phone,compliance-detail',
+          sort: 'gender'
+        }
+      end
+
+      before do
+        20.times do |i|
+          Contact::Person.create!(
+            additional_contact_attributes.merge(
+              first_name: i,
+              last_name: i
+            )
+          )
+        end
+      end
+
+      it 'fetches the contacts with includes', bullet: false do
+        params['page[number]'] = 1
+        get(CONTACTS_ENDPOINT, params: params, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        first_page = JSON.parse(response.body)
+
+        params['page[number]'] = 2
+        get(CONTACTS_ENDPOINT, params: params, headers: auth_headers)
+        expect(response).to have_http_status(200)
+        second_page = JSON.parse(response.body)
+
+        first_page_ids = first_page['data'].map do |datum|
+          datum['id']
+        end
+        second_page_ids = second_page['data'].map do |datum|
+          datum['id']
+        end
+
+        expect((first_page_ids & second_page_ids).count).to eq(0)
+      end
+    end
+
     context 'with no pagination params' do
       let!(:additional_contacts) { create_list(:contact_person, 12) }
 
@@ -402,7 +445,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let!(:primary_phone) { create(:phone, :primary, contact: contact, value: '+49697654321') }
 
       describe 'with non-primary phone' do
-        let(:phone_number) { '+49691234567' }
+        let(:phone_number) { '0049 691 234 567' }
 
         it 'finds one contact' do
           subject
@@ -414,7 +457,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
 
       describe 'with primary phone' do
-        let(:phone_number) { '+49697654321' }
+        let(:phone_number) { '+49 69 765 432 1' }
 
         it 'finds one contact' do
           subject
@@ -454,7 +497,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let!(:primary_fax) { create(:fax, :primary, contact: contact, value: '+49697654321') }
 
       describe 'with non-primary fax' do
-        let(:fax_number) { '+49691234567' }
+        let(:fax_number) { '+49691 234 567' }
 
         it 'finds one contact' do
           subject
@@ -466,7 +509,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       end
 
       describe 'with primary fax' do
-        let(:fax_number) { '+49697654321' }
+        let(:fax_number) { '049 697654 321' }
 
         it 'finds one contact' do
           subject

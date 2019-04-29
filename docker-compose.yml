@@ -29,7 +29,7 @@ services:
       - development.env
   api:
     build: .
-    command: bundle exec rails s
+    command: puma -C config/puma.rb
     volumes:
       - .:/app
     ports:

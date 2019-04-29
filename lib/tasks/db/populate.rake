@@ -84,6 +84,28 @@ namespace :db do
           nationality: Faker::Address.country_code
         )
       end
+      arne = Contact::Person.new(
+        gender: :male,
+        first_name: 'Arne',
+        last_name: 'Zeising'
+      )
+      contacts << arne
+      contacts << Contact::Person.new(
+        gender: :male,
+        first_name: 'Jerome',
+        last_name: 'Burkhard'
+      )
+      contacts << Contact::Person.new(
+        gender: :male,
+        first_name: 'Sophia',
+        last_name: 'Burkhard'
+      )
+      jolina = Contact::Person.new(
+        gender: :female,
+        first_name: 'Jolina',
+        last_name: 'Badane'
+      )
+      contacts << jolina
       Contact::Person.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
@@ -94,6 +116,26 @@ namespace :db do
       Address.import!(addresses.flatten)
       Contact::Person.import!(
         contacts_with_addresses, on_duplicate_key_update: %i[primary_contact_address_id legal_address_id]
+      )
+      ContactDetail::Phone.create(
+        contact: arne,
+        category: :private,
+        value: '+4917098765432'
+      )
+      ContactDetail::Email.create(
+        contact: arne,
+        category: :private,
+        value: 'arne@shr.ps'
+      )
+      ContactDetail::Fax.create(
+        contact: arne,
+        category: :work,
+        value: '+493032101234'
+      )
+      ContactDetail::Phone.create(
+        contact: jolina,
+        category: :work,
+        value: '+49308054038'
       )
     end
 
@@ -109,6 +151,10 @@ namespace :db do
           commercial_register_office: Faker::Address.city
         )
       end
+      contacts << Contact::Organization.create(
+        organization_name: 'Sherpas Digital Ventures GmbH',
+        organization_type: :gmbh
+      )
       Contact::Organization.import!(contacts)
       addresses = []
       contacts_with_addresses = contacts.map do |contact|
@@ -542,7 +588,7 @@ namespace :db do
       tasks = []
 
       Faker::Number.between(3, 6).times do
-        assignees = rand > 0.5 ? [] : User.all.sample(Faker::Number.between(1, 4))
+        assignees = User.order(Arel.sql('RANDOM()')).limit(Faker::Number.between(1, 4))
         due_at = rand > 0.5 ? nil : Faker::Date.between(0.days.from_now, 2.weeks.from_now)
 
         tasks << Task::Simple.new(
@@ -590,11 +636,11 @@ namespace :db do
           user: user
         )
 
-        Contact.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+        Contact.order(Arel.sql('RANDOM()')).limit(Random.rand(10)).map do |listable|
           items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
         end
 
-        Mandate.order('RANDOM()').limit(Random.rand(10)).map do |listable|
+        Mandate.order(Arel.sql('RANDOM()')).limit(Random.rand(10)).map do |listable|
           items << List::Item.new(listable: listable, comment: Faker::Lorem.sentence)
         end
 
@@ -611,12 +657,13 @@ namespace :db do
 
   def build_address(owner)
     Address.new(
-      owner: owner,
-      postal_code: Faker::Address.zip_code,
-      city: Faker::Address.city,
-      country: Faker::Address.country_code,
       addition: rand > 0.6 ? Faker::Address.secondary_address : nil,
       category: Address::CATEGORIES.sample,
+      city: Faker::Address.city,
+      country: Faker::Address.country_code,
+      organization_name: rand > 0.6 ? Faker::Company.name : nil,
+      owner: owner,
+      postal_code: Faker::Address.zip_code,
       street_and_number: Faker::Address.street_address
     )
   end

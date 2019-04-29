@@ -56,6 +56,10 @@ module V1
     end
 
     class << self
+      def count(filters, options = {})
+        filter_records(filters, options).count
+      end
+
       def create(context)
         creator = context[:current_user]
         new(Task.new(creator: creator), context)

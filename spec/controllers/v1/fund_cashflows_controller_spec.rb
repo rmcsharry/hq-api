@@ -176,7 +176,7 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
           match_array(
             [
               'Anschreiben_Ausschüttung_1_Fund_Family, Fore und Guntersen, Thomas.docx',
-              'Anschreiben_Ausschüttung_1_Fund_Last, First und Guntersen, Thomas.docx'
+              'Anschreiben_Ausschüttung_1_Fund_Guntersen, Thomas und Last, First.docx'
             ]
           )
         )

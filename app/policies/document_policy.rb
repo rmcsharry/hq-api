@@ -115,8 +115,8 @@ class DocumentPolicy < ContactPolicy
 
   def request_data
     JSON.parse request.params.dig 'data'
-  rescue JSON::ParserError => exception
-    Raven.capture_exception(exception)
+  rescue JSON::ParserError => e
+    Raven.capture_exception(e)
     request.params.dig 'data'
   end
 end

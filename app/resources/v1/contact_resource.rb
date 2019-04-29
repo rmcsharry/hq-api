@@ -187,18 +187,21 @@ module V1
     }
 
     filter :"primary_phone.value", apply: lambda { |records, value, _options|
-      records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{value[0]}%")
+      normalized_number = PhonyRails.normalize_number(value[0])
+      records.joins(:primary_phone).where('contact_details.value ILIKE ?', "%#{normalized_number}%")
     }
 
     filter :"phone.value", apply: lambda { |records, value, _options|
+      normalized_number = PhonyRails.normalize_number(value[0])
       records.where(
-        id: ContactDetail::Phone.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+        id: ContactDetail::Phone.select(:contact_id).where('value ILIKE ?', "%#{normalized_number}%")
       )
     }
 
     filter :"fax.value", apply: lambda { |records, value, _options|
+      normalized_number = PhonyRails.normalize_number(value[0])
       records.where(
-        id: ContactDetail::Fax.select(:contact_id).where('value ILIKE ?', "%#{value[0]}%")
+        id: ContactDetail::Fax.select(:contact_id).where('value ILIKE ?', "%#{normalized_number}%")
       )
     }
 
@@ -211,10 +214,10 @@ module V1
     filter :primary_contact_address_text, apply: lambda { |records, value, _options|
       records
         .joins(
-          'INNER JOIN addresses AS pca ON contacts.primary_contact_address_id = pca.id'
+          'INNER JOIN addresses AS pa ON contacts.primary_contact_address_id = pa.id'
         ).where(
-          "pca.street_and_number || ', ' || pca.postal_code || ' ' || pca.city || ', ' || " \
-          'pca.country ILIKE ?', "%#{value[0]}%"
+          "CONCAT_WS(', ', pa.organization_name, pa.street_and_number, pa.postal_code, pa.city, pa.country) ILIKE ?",
+          "%#{value[0]}%"
         )
     }
 
@@ -223,8 +226,8 @@ module V1
         .joins(
           'INNER JOIN addresses AS la ON contacts.legal_address_id = la.id'
         ).where(
-          "la.street_and_number || ', ' || la.postal_code || ' ' || la.city || ', ' || " \
-          'la.country ILIKE ?', "%#{value[0]}%"
+          "CONCAT_WS(', ', la.organization_name, la.street_and_number, la.postal_code, la.city, la.country) ILIKE ?",
+          "%#{value[0]}%"
         )
     }
 
@@ -270,8 +273,7 @@ module V1
         .joins(
           'INNER JOIN addresses AS pca ON contacts.primary_contact_address_id = pca.id'
         ).order(
-          "pca.street_and_number || ', ' || pca.postal_code || ' ' || pca.city || ', ' || " \
-          "pca.country #{direction}"
+          "CONCAT(pca.organization_name, pca.street_and_number, pca.postal_code, pca.city, pca.country) #{direction}"
         )
     }
 
@@ -280,8 +282,7 @@ module V1
         .joins(
           'INNER JOIN addresses AS la ON contacts.legal_address_id = la.id'
         ).order(
-          "la.street_and_number || ', ' || la.postal_code || ' ' || la.city || ', ' || " \
-          "la.country #{direction}"
+          "CONCAT(la.organization_name, la.street_and_number, la.postal_code, la.city, la.country) #{direction}"
         )
     }
 

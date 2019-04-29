@@ -16,6 +16,7 @@
 #  category          :string
 #  street_and_number :string
 #  owner_type        :string           not null
+#  organization_name :string
 #
 # Indexes
 #
@@ -62,6 +63,7 @@ class Address < ApplicationRecord
 
   def to_s
     [
+      organization_name,
       street_and_number,
       addition,
       postal_code,

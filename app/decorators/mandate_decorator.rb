@@ -11,6 +11,9 @@ class MandateDecorator < Draper::Decorator
   # Returns the name of the Mandate owner(s)
   # @return [String]
   def owner_name
-    owners.map { |member| member.contact.decorate.name_list }.to_sentence(locale: :de)
+    owners
+      .map { |member| member.contact.decorate.name_list }
+      .sort
+      .to_sentence(locale: :de)
   end
 end

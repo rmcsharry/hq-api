@@ -36,9 +36,9 @@ gem 'aasm'                                                                      
 gem 'axlsx', github: 'randym/axlsx', ref: 'c593a08b2a929dac7aa8dc418b55e26b4c49dc34' # Wrapper for generation of .xlsx documents
 gem 'carmen'                                                                         # A repository of geographic regions for Ruby
 gem 'draper'                                                                         # Decorate models
-gem 'email_validator'                                                                # Validates Emails
+gem 'email_validator', '~> 1.6.0'                                                    # Validates Emails, locked to v1.6.0 to use strict mode
 gem 'enumerize'                                                                      # Advanced Enum handling
-gem 'faker', github: 'stympy/faker', branch: 'master'                                # A library for generating fake data such as names, addresses, and phone numbers.
+gem 'faker'                                                                          # A library for generating fake data such as names, addresses, and phone numbers.
 gem 'ibanizator'                                                                     # Validates IBAN
 gem 'jwt'                                                                            # Interact with Json-Web-Tokens
 gem 'mail'                                                                           # Parse, generate or send emails
@@ -62,15 +62,12 @@ gem 'paper_trail'                                                   # Track chan
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 gem 'sidekiq'                                                       # Handle background jobs with sidekiq
 
-# Testing & Debugging
-gem 'pry', github: 'pry/pry', branch: 'master'
-gem 'pry-rails'
-gem 'terminal-table'
-
 # Logging & Issue Management
 gem 'r7insight'                                                     # Logging with Logentries (Rapid7 Insight)
 gem 'sentry-raven'                                                  # Issue Management with Sentry
 gem 'skylight'                                                      # Performance Management with Skylight.io
+
+gem 'psych'                                                         # Require psych to prevent double loading in prod
 
 group :development, :test do
   gem 'awesome_print'
@@ -78,10 +75,13 @@ group :development, :test do
   gem 'bullet', '5.7.5'                                             # Detect N+1 queries, currently locked to 5.7.5 because of https://github.com/flyerhzm/bullet/issues/435
   gem 'colorize'
   gem 'factory_bot_rails'                                           # Factory for testing objects
+  gem 'pry'
   gem 'pry-byebug'                                                  # Debugger
+  gem 'pry-rails'
   gem 'rspec-rails'                                                 # Run RSpec tests
   gem 'rubocop', require: false                                     # Static code checks
   gem 'rubocop-rspec', require: false                               # Rubocop for Rspec
+  gem 'terminal-table'
 end
 
 group :development do
@@ -96,7 +96,7 @@ end
 group :test do
   gem 'database_cleaner' # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
   gem 'jsonapi-resources-matchers', github: 'GabrielSandoval/jsonapi-resources-matchers', branch: 'ae-rails_5_upgrade_dependencies-155929975', require: false # Test matchers for jsonapi-resources
-  gem 'shoulda-matchers', github: 'thoughtbot/shoulda-matchers', branch: 'master' # Collection of testing matchers extracted from Shoulda
+  gem 'shoulda-matchers' # Collection of testing matchers extracted from Shoulda
   gem 'timecop' # Provides time travel for tests
 end
 # rubocop:enable Metrics/LineLength

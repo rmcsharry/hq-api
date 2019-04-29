@@ -120,7 +120,7 @@ class Mandate < ApplicationRecord
 
   scope :with_owner_name, lambda {
     from(
-      %{
+      <<-SQL.squish
         (
           SELECT m.*, agg.name AS owner_name FROM mandates m LEFT JOIN (
             SELECT mm.mandate_id AS mandate_id,
@@ -133,7 +133,7 @@ class Mandate < ApplicationRecord
             GROUP BY mm.mandate_id
           ) agg ON m.id = agg.mandate_id
         ) mandates
-      }
+      SQL
     )
   }
 
