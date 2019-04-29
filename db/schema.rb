@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_28_070315) do
+ActiveRecord::Schema.define(version: 2019_04_29_210135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -264,8 +264,6 @@ ActiveRecord::Schema.define(version: 2019_04_28_070315) do
     t.uuid "mandate_id"
     t.uuid "legal_address_id"
     t.uuid "contact_address_id"
-    t.uuid "contact_email_id"
-    t.uuid "contact_phone_id"
     t.uuid "bank_account_id"
     t.uuid "primary_owner_id"
     t.string "aasm_state", null: false
@@ -548,8 +546,6 @@ ActiveRecord::Schema.define(version: 2019_04_28_070315) do
   add_foreign_key "investors", "addresses", column: "contact_address_id"
   add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"
-  add_foreign_key "investors", "contact_details", column: "contact_email_id"
-  add_foreign_key "investors", "contact_details", column: "contact_phone_id"
   add_foreign_key "investors", "contacts", column: "primary_contact_id"
   add_foreign_key "investors", "contacts", column: "primary_owner_id"
   add_foreign_key "investors", "contacts", column: "secondary_contact_id"

@@ -24,8 +24,6 @@ module V1
 
     has_one :bank_account
     has_one :contact_address, class_name: 'Address'
-    has_one :contact_email, class_name: 'ContactDetail'
-    has_one :contact_phone, class_name: 'ContactDetail'
     has_one :fund
     has_one :fund_subscription_agreement, class_name: 'Document'
     has_one :legal_address, class_name: 'Address'

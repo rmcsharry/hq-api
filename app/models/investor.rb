@@ -9,8 +9,6 @@
 #  mandate_id                           :uuid
 #  legal_address_id                     :uuid
 #  contact_address_id                   :uuid
-#  contact_email_id                     :uuid
-#  contact_phone_id                     :uuid
 #  bank_account_id                      :uuid
 #  primary_owner_id                     :uuid
 #  aasm_state                           :string           not null
@@ -36,8 +34,6 @@
 #
 #  fk_rails_...  (bank_account_id => bank_accounts.id)
 #  fk_rails_...  (contact_address_id => addresses.id)
-#  fk_rails_...  (contact_email_id => contact_details.id)
-#  fk_rails_...  (contact_phone_id => contact_details.id)
 #  fk_rails_...  (fund_id => funds.id)
 #  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
@@ -58,8 +54,6 @@ class Investor < ApplicationRecord
 
   belongs_to :bank_account, autosave: true
   belongs_to :contact_address, class_name: 'Address', autosave: true
-  belongs_to :contact_email, class_name: 'ContactDetail::Email', autosave: true
-  belongs_to :contact_phone, class_name: 'ContactDetail::Phone', autosave: true
   belongs_to :fund, inverse_of: :investors, autosave: true
   belongs_to :legal_address, class_name: 'Address', autosave: true
   belongs_to :mandate, inverse_of: :investments, autosave: true
@@ -107,8 +101,6 @@ class Investor < ApplicationRecord
   validate :attributes_in_signed_state
   validate :bank_account_belongs_to_mandate
   validate :contact_address_belongs_to_contacts
-  validate :contact_email_belongs_to_primary_owner
-  validate :contact_phone_belongs_to_primary_owner
   validate :legal_address_belongs_to_primary_owner
   validate :primary_contact_belongs_to_mandate
   validate :primary_owner_belongs_to_mandate
@@ -231,18 +223,6 @@ class Investor < ApplicationRecord
     return if legal_address.blank? || legal_address.owner == primary_owner
 
     errors.add(:legal_address, BELONG_TO_PRIMARY_OWNER)
-  end
-
-  def contact_email_belongs_to_primary_owner
-    return if contact_email.blank? || contact_email.contact == primary_owner
-
-    errors.add(:contact_email, BELONG_TO_PRIMARY_OWNER)
-  end
-
-  def contact_phone_belongs_to_primary_owner
-    return if contact_phone.blank? || contact_phone.contact == primary_owner
-
-    errors.add(:contact_phone, BELONG_TO_PRIMARY_OWNER)
   end
 
   def set_investment_date

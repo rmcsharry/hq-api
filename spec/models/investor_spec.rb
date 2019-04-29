@@ -9,8 +9,6 @@
 #  mandate_id                           :uuid
 #  legal_address_id                     :uuid
 #  contact_address_id                   :uuid
-#  contact_email_id                     :uuid
-#  contact_phone_id                     :uuid
 #  bank_account_id                      :uuid
 #  primary_owner_id                     :uuid
 #  aasm_state                           :string           not null
@@ -36,8 +34,6 @@
 #
 #  fk_rails_...  (bank_account_id => bank_accounts.id)
 #  fk_rails_...  (contact_address_id => addresses.id)
-#  fk_rails_...  (contact_email_id => contact_details.id)
-#  fk_rails_...  (contact_phone_id => contact_details.id)
 #  fk_rails_...  (fund_id => funds.id)
 #  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
@@ -52,16 +48,12 @@ RSpec.describe Investor, type: :model do
   it { is_expected.to validate_presence_of(:amount_total) }
   it { is_expected.to validate_presence_of(:bank_account) }
   it { is_expected.to validate_presence_of(:contact_address) }
-  it { is_expected.to validate_presence_of(:contact_email) }
-  it { is_expected.to validate_presence_of(:contact_phone) }
   it { is_expected.to validate_presence_of(:fund) }
   it { is_expected.to validate_presence_of(:legal_address) }
   it { is_expected.to validate_presence_of(:mandate) }
 
   it { is_expected.to belong_to(:bank_account) }
   it { is_expected.to belong_to(:contact_address) }
-  it { is_expected.to belong_to(:contact_email) }
-  it { is_expected.to belong_to(:contact_phone) }
   it { is_expected.to belong_to(:fund) }
   it { is_expected.to belong_to(:legal_address) }
   it { is_expected.to belong_to(:mandate) }
@@ -530,54 +522,6 @@ RSpec.describe Investor, type: :model do
 
     context 'is not owned by primary owner' do
       let(:address) { build(:address) }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-      end
-    end
-  end
-
-  describe '#contact_email' do
-    subject { build(:investor, mandate: mandate, primary_owner: primary_owner, contact_email: email) }
-
-    let(:mandate) { build(:mandate) }
-    let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-    let(:contact_email) { build(:email, contact: primary_owner) }
-
-    context 'is owned by primary owner' do
-      let(:email) { contact_email }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not owned by primary owner' do
-      let(:email) { build(:email) }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-      end
-    end
-  end
-
-  describe '#contact_phone' do
-    subject { build(:investor, mandate: mandate, primary_owner: primary_owner, contact_phone: phone) }
-
-    let(:mandate) { build(:mandate) }
-    let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-    let(:contact_phone) { build(:phone, contact: primary_owner) }
-
-    context 'is owned by primary owner' do
-      let(:phone) { contact_phone }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not owned by primary owner' do
-      let(:phone) { build(:phone) }
 
       it 'is invalid' do
         expect(subject).to be_invalid

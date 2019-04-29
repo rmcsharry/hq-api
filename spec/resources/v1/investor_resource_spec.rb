@@ -24,8 +24,6 @@ RSpec.describe V1::InvestorResource, type: :resource do
 
   it { is_expected.to have_one :bank_account }
   it { is_expected.to have_one :contact_address }
-  it { is_expected.to have_one :contact_email }
-  it { is_expected.to have_one :contact_phone }
   it { is_expected.to have_one :fund }
   it { is_expected.to have_one :fund_subscription_agreement }
   it { is_expected.to have_one :legal_address }
