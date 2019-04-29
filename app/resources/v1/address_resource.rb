@@ -18,6 +18,16 @@ module V1
 
     has_one :owner, polymorphic: true
 
+    filter :legal_address, apply: lambda { |records, _value, _options|
+      records.where(
+        <<-SQL.squish
+          addresses.id IN (
+            SELECT contacts.legal_address_id FROM contacts WHERE contacts.legal_address_id = addresses.id
+          )
+        SQL
+      )
+    }
+
     filter :owner_id
 
     sort :address_text, apply: lambda { |records, direction, _context|
