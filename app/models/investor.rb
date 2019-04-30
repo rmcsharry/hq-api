@@ -4,23 +4,24 @@
 #
 # Table name: investors
 #
-#  id                     :uuid             not null, primary key
-#  fund_id                :uuid
-#  mandate_id             :uuid
-#  legal_address_id       :uuid
-#  contact_address_id     :uuid
-#  contact_email_id       :uuid
-#  contact_phone_id       :uuid
-#  bank_account_id        :uuid
-#  primary_owner_id       :uuid
-#  aasm_state             :string           not null
-#  investment_date        :datetime
-#  amount_total           :decimal(20, 2)
-#  created_at             :datetime         not null
-#  updated_at             :datetime         not null
-#  primary_contact_id     :uuid
-#  secondary_contact_id   :uuid
-#  capital_account_number :string
+#  id                                   :uuid             not null, primary key
+#  fund_id                              :uuid
+#  mandate_id                           :uuid
+#  legal_address_id                     :uuid
+#  contact_address_id                   :uuid
+#  bank_account_id                      :uuid
+#  primary_owner_id                     :uuid
+#  aasm_state                           :string           not null
+#  investment_date                      :datetime
+#  amount_total                         :decimal(20, 2)
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
+#  primary_contact_id                   :uuid
+#  secondary_contact_id                 :uuid
+#  capital_account_number               :string
+#  contact_salutation_primary_owner     :boolean
+#  contact_salutation_primary_contact   :boolean
+#  contact_salutation_secondary_contact :boolean
 #
 # Indexes
 #
@@ -33,8 +34,6 @@
 #
 #  fk_rails_...  (bank_account_id => bank_accounts.id)
 #  fk_rails_...  (contact_address_id => addresses.id)
-#  fk_rails_...  (contact_email_id => contact_details.id)
-#  fk_rails_...  (contact_phone_id => contact_details.id)
 #  fk_rails_...  (fund_id => funds.id)
 #  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
@@ -49,13 +48,12 @@ class Investor < ApplicationRecord
   include AASM
   include GeneratedDocument
 
+  BELONG_TO_CONTACTS = 'must belong to contacts (primary owner or primary/secondary contact'
   BELONG_TO_MANDATE = 'must belong to mandate'
   BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
 
   belongs_to :bank_account, autosave: true
   belongs_to :contact_address, class_name: 'Address', autosave: true
-  belongs_to :contact_email, class_name: 'ContactDetail::Email', autosave: true
-  belongs_to :contact_phone, class_name: 'ContactDetail::Phone', autosave: true
   belongs_to :fund, inverse_of: :investors, autosave: true
   belongs_to :legal_address, class_name: 'Address', autosave: true
   belongs_to :mandate, inverse_of: :investments, autosave: true
@@ -102,9 +100,7 @@ class Investor < ApplicationRecord
   validates :amount_total, presence: true
   validate :attributes_in_signed_state
   validate :bank_account_belongs_to_mandate
-  validate :contact_address_belongs_to_primary_owner
-  validate :contact_email_belongs_to_primary_owner
-  validate :contact_phone_belongs_to_primary_owner
+  validate :contact_address_belongs_to_contacts
   validate :legal_address_belongs_to_primary_owner
   validate :primary_contact_belongs_to_mandate
   validate :primary_owner_belongs_to_mandate
@@ -216,28 +212,17 @@ class Investor < ApplicationRecord
     errors.add(:secondary_contact, BELONG_TO_MANDATE)
   end
 
-  def contact_address_belongs_to_primary_owner
-    return if contact_address.blank? || contact_address.owner == primary_owner
+  def contact_address_belongs_to_contacts
+    return if contact_address.blank? ||
+              [primary_owner, primary_contact, secondary_contact].compact.include?(contact_address.owner)
 
-    errors.add(:contact_address, BELONG_TO_PRIMARY_OWNER)
+    errors.add(:contact_address, BELONG_TO_CONTACTS)
   end
 
   def legal_address_belongs_to_primary_owner
     return if legal_address.blank? || legal_address.owner == primary_owner
 
     errors.add(:legal_address, BELONG_TO_PRIMARY_OWNER)
-  end
-
-  def contact_email_belongs_to_primary_owner
-    return if contact_email.blank? || contact_email.contact == primary_owner
-
-    errors.add(:contact_email, BELONG_TO_PRIMARY_OWNER)
-  end
-
-  def contact_phone_belongs_to_primary_owner
-    return if contact_phone.blank? || contact_phone.contact == primary_owner
-
-    errors.add(:contact_phone, BELONG_TO_PRIMARY_OWNER)
   end
 
   def set_investment_date

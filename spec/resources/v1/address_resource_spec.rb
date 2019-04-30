@@ -19,6 +19,7 @@ RSpec.describe V1::AddressResource, type: :resource do
 
   it { is_expected.to have_one(:owner) }
 
+  it { is_expected.to filter(:legal_address) }
   it { is_expected.to filter(:owner_id) }
 
   it { is_expected.to have_sortable_field(:address_text) }

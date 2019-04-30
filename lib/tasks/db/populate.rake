@@ -471,8 +471,6 @@ namespace :db do
             amount_total: Faker::Number.between(100_000, 100_000_000).round(2),
             bank_account: mandate.bank_accounts.sample,
             contact_address: primary_owner.primary_contact_address,
-            contact_email: primary_owner.primary_email,
-            contact_phone: primary_owner.primary_phone,
             fund: fund,
             investment_date: state == :signed ? Faker::Date.between(2.years.ago, 0.days.ago) : nil,
             legal_address: primary_owner.legal_address,

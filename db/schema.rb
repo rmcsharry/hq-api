@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_24_154210) do
+ActiveRecord::Schema.define(version: 2019_04_29_210135) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -264,8 +264,6 @@ ActiveRecord::Schema.define(version: 2019_04_24_154210) do
     t.uuid "mandate_id"
     t.uuid "legal_address_id"
     t.uuid "contact_address_id"
-    t.uuid "contact_email_id"
-    t.uuid "contact_phone_id"
     t.uuid "bank_account_id"
     t.uuid "primary_owner_id"
     t.string "aasm_state", null: false
@@ -276,6 +274,9 @@ ActiveRecord::Schema.define(version: 2019_04_24_154210) do
     t.uuid "primary_contact_id"
     t.uuid "secondary_contact_id"
     t.string "capital_account_number"
+    t.boolean "contact_salutation_primary_owner"
+    t.boolean "contact_salutation_primary_contact"
+    t.boolean "contact_salutation_secondary_contact"
     t.index ["fund_id"], name: "index_investors_on_fund_id"
     t.index ["mandate_id"], name: "index_investors_on_mandate_id"
     t.index ["primary_contact_id"], name: "index_investors_on_primary_contact_id"
@@ -545,8 +546,6 @@ ActiveRecord::Schema.define(version: 2019_04_24_154210) do
   add_foreign_key "investors", "addresses", column: "contact_address_id"
   add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"
-  add_foreign_key "investors", "contact_details", column: "contact_email_id"
-  add_foreign_key "investors", "contact_details", column: "contact_phone_id"
   add_foreign_key "investors", "contacts", column: "primary_contact_id"
   add_foreign_key "investors", "contacts", column: "primary_owner_id"
   add_foreign_key "investors", "contacts", column: "secondary_contact_id"

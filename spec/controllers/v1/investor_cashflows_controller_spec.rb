@@ -69,8 +69,6 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
         :investor,
         :signed,
         contact_address: primary_owner.primary_contact_address,
-        contact_email: primary_owner.primary_email,
-        contact_phone: primary_owner.primary_phone,
         fund: fund,
         legal_address: primary_owner.legal_address,
         mandate: mandate,
