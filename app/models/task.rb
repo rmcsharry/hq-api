@@ -41,6 +41,7 @@ class Task < ApplicationRecord
   belongs_to :finisher, inverse_of: :finished_by_user_tasks, class_name: 'User', autosave: true, optional: true
   belongs_to :subject, inverse_of: :reminders, polymorphic: true, optional: true
   belongs_to :linked_object, inverse_of: :task_links, polymorphic: true, optional: true
+  has_many :task_comments, dependent: :destroy
   has_and_belongs_to_many :assignees, -> { distinct }, join_table: :tasks_users, class_name: 'User'
 
   alias_attribute :task_type, :type

@@ -28,6 +28,14 @@ class InvestorReport < ApplicationRecord
 
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: proc { |investor_report| investor_report.fund_report.fund_id },
+      parent_item_type: 'Fund'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   def quarterly_report_document_context
     Document::FundTemplate.fund_quarterly_report_context(investor, fund_report)
   end

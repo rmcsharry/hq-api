@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     jsonapi_resources :mandates
     jsonapi_resources :newsletter_subscribers
     jsonapi_resources :organization_members
+    jsonapi_resources :task_comments
     jsonapi_resources :tasks
     jsonapi_resources :tax_details
     jsonapi_resources :user_groups

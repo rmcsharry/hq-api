@@ -11,15 +11,16 @@ RSpec.describe V1::TaskResource, type: :resource do
   it { is_expected.to have_attribute :due_at }
   it { is_expected.to have_attribute :finished_at }
   it { is_expected.to have_attribute :state }
+  it { is_expected.to have_attribute :task_comment_count }
   it { is_expected.to have_attribute :task_type }
   it { is_expected.to have_attribute :title }
 
+  it { is_expected.to have_many(:assignees) }
+  it { is_expected.to have_many(:task_comments) }
   it { is_expected.to have_one(:creator) }
   it { is_expected.to have_one(:finisher) }
-  it { is_expected.to have_one(:subject) }
   it { is_expected.to have_one(:linked_object) }
-
-  it { is_expected.to have_many(:assignees) }
+  it { is_expected.to have_one(:subject) }
 
   it { is_expected.to filter(:user_id) }
   it { is_expected.to filter(:creator_id) }

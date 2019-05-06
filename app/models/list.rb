@@ -31,6 +31,8 @@ class List < ApplicationRecord
   has_many :contacts, source: :listable, source_type: 'Contact', through: :items
   has_many :mandates, source: :listable, source_type: 'Mandate', through: :items
 
+  has_paper_trail(skip: SKIPPED_ATTRIBUTES)
+
   validates :user_id, presence: true
   validates :name, presence: true
 

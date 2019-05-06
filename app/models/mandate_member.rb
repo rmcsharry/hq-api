@@ -62,6 +62,14 @@ class MandateMember < ApplicationRecord
   belongs_to :mandate
   belongs_to :contact
 
+  has_paper_trail(
+    meta: {
+      parent_item_id: :mandate_id,
+      parent_item_type: 'Mandate'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
+
   validates :member_type, presence: true
   validates(
     :contact_id,

@@ -31,6 +31,7 @@ module V1
 
     has_one :contact
     has_many :user_groups
+    has_many :task_comments
 
     def roles
       roles = {}

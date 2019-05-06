@@ -14,6 +14,7 @@ module V1
       :description,
       :due_at,
       :finished_at,
+      :task_comment_count,
       :state,
       :task_type,
       :title
@@ -25,6 +26,7 @@ module V1
     has_one :linked_object, polymorphic: true, class_name: 'TaskLink'
 
     has_many :assignees, class_name: 'User'
+    has_many :task_comments
 
     filters(
       :creator_id,
@@ -55,6 +57,10 @@ module V1
       @model
     end
 
+    def task_comment_count
+      @model.task_comments.count
+    end
+
     class << self
       def count(filters, options = {})
         filter_records(filters, options).count
@@ -72,6 +78,7 @@ module V1
           finished
           finished_at
           finisher
+          task_comment_count
           task_type
         ]
       end

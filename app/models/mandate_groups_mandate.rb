@@ -23,4 +23,12 @@
 class MandateGroupsMandate < ApplicationRecord
   has_many :mandate_groups, dependent: :nullify
   has_many :mandates, dependent: :nullify
+
+  has_paper_trail(
+    meta: {
+      parent_item_id: :mandate_group_id,
+      parent_item_type: 'MandateGroup'
+    },
+    skip: SKIPPED_ATTRIBUTES
+  )
 end

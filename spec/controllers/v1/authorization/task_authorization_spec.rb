@@ -23,30 +23,6 @@ RSpec.describe 'authorization for', type: :request do
     let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, current_user) }
 
     describe '#index' do
-      let(:endpoint) do
-        ->(auth_headers) { get "#{TASKS_ENDPOINT}/#{task.id}", headers: auth_headers }
-      end
-
-      context 'of own task' do
-        let(:task) { own_task }
-
-        permit :tasks
-      end
-
-      context 'of assigned task' do
-        let(:task) { assigned_task }
-
-        permit :tasks
-      end
-
-      context 'of foreign task' do
-        let(:task) { foreign_task }
-
-        permit # none
-      end
-    end
-
-    describe '#index' do
       let(:endpoint) { ->(auth_headers) { get TASKS_ENDPOINT, headers: auth_headers } }
 
       permit :tasks

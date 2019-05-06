@@ -584,18 +584,28 @@ namespace :db do
     task tasks_and_reminders: :environment do
       admin_user = User.find_by(email: 'admin@hqfinanz.de')
       tasks = []
+      task_comments = []
 
       Faker::Number.between(3, 6).times do
         assignees = User.order(Arel.sql('RANDOM()')).limit(Faker::Number.between(1, 4))
         due_at = rand > 0.5 ? nil : Faker::Date.between(0.days.from_now, 2.weeks.from_now)
 
-        tasks << Task::Simple.new(
+        task = Task::Simple.new(
           assignees: assignees,
           creator: admin_user,
           description: Faker::Hacker.say_something_smart,
           due_at: due_at,
           title: Faker::Lebowski.quote
         )
+        tasks << task
+
+        Faker::Number.between(0, 6).times do
+          task_comments << TaskComment.new(
+            task: task,
+            user: ([admin_user] + assignees).sample,
+            comment: Faker::Hacker.say_something_smart
+          )
+        end
       end
 
       expiring_documents = Task::DocumentExpiryReminder.disregarded_documents_expiring_within(10.days)
@@ -609,6 +619,7 @@ namespace :db do
       end
 
       Task.import! tasks
+      TaskComment.import! task_comments
 
       Document.where.not(valid_to: nil).sample(2).each do |document|
         reminder = Task::DocumentExpiryReminder.new(subject: document)

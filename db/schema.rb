@@ -399,6 +399,16 @@ ActiveRecord::Schema.define(version: 2019_04_29_210135) do
     t.index ["organization_id"], name: "index_organization_members_on_organization_id"
   end
 
+  create_table "task_comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.text "comment"
+    t.uuid "task_id", null: false
+    t.uuid "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_id"], name: "index_task_comments_on_task_id"
+    t.index ["user_id"], name: "index_task_comments_on_user_id"
+  end
+
   create_table "tasks", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "creator_id"
     t.uuid "finisher_id"
@@ -564,6 +574,8 @@ ActiveRecord::Schema.define(version: 2019_04_29_210135) do
   add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
   add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
   add_foreign_key "organization_members", "contacts", column: "organization_id"
+  add_foreign_key "task_comments", "tasks"
+  add_foreign_key "task_comments", "users"
   add_foreign_key "tasks", "users", column: "creator_id"
   add_foreign_key "tasks", "users", column: "finisher_id"
   add_foreign_key "tasks_users", "tasks"

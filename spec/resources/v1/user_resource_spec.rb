@@ -23,6 +23,7 @@ RSpec.describe V1::UserResource, type: :resource do
 
   it { is_expected.to have_many(:user_groups) }
   it { is_expected.to have_one(:contact) }
+  it { is_expected.to have_many(:task_comments) }
 
   it { is_expected.to filter(:"contact.name") }
   it { is_expected.to filter(:confirmed_at_max) }
