@@ -151,7 +151,7 @@ namespace :db do
           commercial_register_office: Faker::Address.city
         )
       end
-      contacts << Contact::Organization.create(
+      contacts << Contact::Organization.new(
         organization_name: 'Sherpas Digital Ventures GmbH',
         organization_type: :gmbh
       )
