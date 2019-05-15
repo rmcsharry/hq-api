@@ -27,7 +27,7 @@
           <%= t('devise.mailer.confirmation_instructions.alternative') %>
         <% end %>
         <%= render 'standard_copy' do %>
-          <a href="<%= @confirm_email_url %>" target="_blank" style="color: #40789B;">
+          <a href="<%= @confirm_email_url %>" rel="notrack" target="_blank" style="color: #40789B;">
             <%= @confirm_email_url %>
           </a>
         <% end %>
