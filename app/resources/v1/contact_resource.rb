@@ -133,6 +133,16 @@ module V1
       records.associated_to_mandate_with_id(mandate_id)
     }
 
+    filter :mandate_member_by_mandate_id_and_type, apply: lambda { |records, value, _options|
+      mandate_id = value[0]
+      member_type = value[1]
+
+      records
+        .joins(:mandate_members)
+        .where('mandate_members.mandate_id = ?', mandate_id)
+        .where('mandate_members.member_type = ?', member_type)
+    }
+
     filter :place_of_birth, apply: lambda { |records, value, _options|
       records.where('contacts.place_of_birth ILIKE ?', "%#{value[0]}%")
     }

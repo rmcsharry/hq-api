@@ -73,6 +73,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:last_name) }
   it { is_expected.to filter(:legal_address_text) }
   it { is_expected.to filter(:maiden_name) }
+  it { is_expected.to filter(:mandate_member_by_mandate_id_and_type) }
   it { is_expected.to filter(:name) }
   it { is_expected.to filter(:name_list) }
   it { is_expected.to filter(:nationality) }
