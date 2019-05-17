@@ -4,20 +4,20 @@
 #
 # Table name: bank_accounts
 #
-#  id                      :uuid             not null, primary key
 #  account_type            :string
-#  owner_name              :string
-#  bank_account_number     :string
-#  bank_routing_number     :string
-#  iban                    :string
-#  bic                     :string
-#  currency                :string
-#  owner_id                :uuid             not null
-#  bank_id                 :uuid
-#  created_at              :datetime         not null
-#  updated_at              :datetime         not null
-#  owner_type              :string           not null
 #  alternative_investments :boolean          default(FALSE), not null
+#  bank_account_number     :string
+#  bank_id                 :uuid
+#  bank_routing_number     :string
+#  bic                     :string
+#  created_at              :datetime         not null
+#  currency                :string
+#  iban                    :string
+#  id                      :uuid             not null, primary key
+#  owner_id                :uuid             not null
+#  owner_name              :string
+#  owner_type              :string           not null
+#  updated_at              :datetime         not null
 #
 # Indexes
 #

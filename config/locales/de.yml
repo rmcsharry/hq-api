@@ -41,6 +41,8 @@ de:
           attributes:
             password:
               password_complexity: Ihr Passwort ist nicht sicher genug. Bitte verwenden Sie mindestens ein Sonderzeichen, eine Zahl sowie Groß- und Kleinbuchstaben. Das Passwort muss eine Gesamtlämnge von mindestens 10 Zeichen haben.
+      custom:
+        digits_attr_invalid: ist ungültig, %{length} zusammenhängende Zahlen erwartet.
   date:
     abbr_day_names:
     - So

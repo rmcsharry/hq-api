@@ -4,16 +4,16 @@
 #
 # Table name: activities
 #
-#  id          :uuid             not null, primary key
-#  type        :string
-#  started_at  :datetime
-#  ended_at    :datetime
-#  title       :string
-#  description :text
-#  creator_id  :uuid
 #  created_at  :datetime         not null
-#  updated_at  :datetime         not null
+#  creator_id  :uuid
+#  description :text
+#  ended_at    :datetime
 #  ews_id      :string
+#  id          :uuid             not null, primary key
+#  started_at  :datetime
+#  title       :string
+#  type        :string
+#  updated_at  :datetime         not null
 #
 # Indexes
 #

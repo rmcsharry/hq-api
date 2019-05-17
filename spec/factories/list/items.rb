@@ -4,12 +4,12 @@
 #
 # Table name: list_items
 #
-#  id            :uuid             not null, primary key
-#  list_id       :uuid             not null
-#  listable_type :string           not null
-#  listable_id   :uuid             not null
 #  comment       :text
 #  created_at    :datetime         not null
+#  id            :uuid             not null, primary key
+#  list_id       :uuid             not null
+#  listable_id   :uuid             not null
+#  listable_type :string           not null
 #  updated_at    :datetime         not null
 #
 # Indexes

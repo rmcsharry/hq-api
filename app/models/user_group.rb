@@ -4,12 +4,12 @@
 #
 # Table name: user_groups
 #
+#  comment    :text
+#  created_at :datetime         not null
 #  id         :uuid             not null, primary key
 #  name       :string
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  comment    :text
 #  roles      :string           default([]), is an Array
+#  updated_at :datetime         not null
 #
 
 # Defines the User Group

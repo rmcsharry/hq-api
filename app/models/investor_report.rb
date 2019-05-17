@@ -5,8 +5,8 @@
 # Table name: investor_reports
 #
 #  fund_report_id :uuid
-#  investor_id    :uuid
 #  id             :uuid             not null, primary key
+#  investor_id    :uuid
 #
 # Indexes
 #

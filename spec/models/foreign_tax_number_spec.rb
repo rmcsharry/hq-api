@@ -4,12 +4,12 @@
 #
 # Table name: foreign_tax_numbers
 #
-#  id            :uuid             not null, primary key
-#  tax_number    :string
 #  country       :string
 #  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id            :uuid             not null, primary key
 #  tax_detail_id :uuid
+#  tax_number    :string
+#  updated_at    :datetime         not null
 #
 # Indexes
 #

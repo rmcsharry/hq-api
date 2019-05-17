@@ -4,14 +4,14 @@
 #
 # Table name: mandate_members
 #
+#  contact_id  :uuid
+#  created_at  :datetime         not null
+#  end_date    :date
 #  id          :uuid             not null, primary key
+#  mandate_id  :uuid
 #  member_type :string
 #  start_date  :date
-#  end_date    :date
-#  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#  contact_id  :uuid
-#  mandate_id  :uuid
 #
 # Indexes
 #

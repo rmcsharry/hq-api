@@ -4,23 +4,23 @@
 #
 # Table name: newsletter_subscribers
 #
-#  id                       :uuid             not null, primary key
+#  aasm_state               :string
+#  confirmation_base_url    :string
+#  confirmation_sent_at     :datetime
+#  confirmation_success_url :string
+#  confirmation_token       :string
+#  confirmed_at             :datetime
+#  created_at               :datetime         not null
 #  email                    :string           not null
 #  first_name               :string
-#  last_name                :string
 #  gender                   :string
-#  professional_title       :string
-#  nobility_title           :string
-#  confirmation_token       :string
+#  id                       :uuid             not null, primary key
+#  last_name                :string
 #  mailjet_list_id          :string
-#  confirmation_base_url    :string
-#  confirmation_success_url :string
-#  aasm_state               :string
-#  confirmed_at             :datetime
-#  confirmation_sent_at     :datetime
-#  created_at               :datetime         not null
-#  updated_at               :datetime         not null
+#  nobility_title           :string
+#  professional_title       :string
 #  subscriber_context       :string           default("hqt"), not null
+#  updated_at               :datetime         not null
 #
 
 require 'rails_helper'

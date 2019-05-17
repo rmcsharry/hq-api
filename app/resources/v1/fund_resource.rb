@@ -27,7 +27,13 @@ module V1
       :total_open_amount,
       :total_signed_amount,
       :tvpi,
-      :updated_at
+      :updated_at,
+      :tax_office,
+      :tax_id,
+      :global_intermediary_identification_number,
+      :us_employer_identification_number,
+      :de_central_bank_id,
+      :de_foreign_trade_regulations_id
     )
 
     has_many :addresses

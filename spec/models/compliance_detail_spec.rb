@@ -4,16 +4,16 @@
 #
 # Table name: compliance_details
 #
+#  contact_id          :uuid
+#  created_at          :datetime         not null
 #  id                  :uuid             not null, primary key
-#  wphg_classification :string
 #  kagb_classification :string
-#  politically_exposed :boolean          default(FALSE), not null
 #  occupation_role     :string
 #  occupation_title    :string
+#  politically_exposed :boolean          default(FALSE), not null
 #  retirement_age      :integer
-#  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  contact_id          :uuid
+#  wphg_classification :string
 #
 # Indexes
 #

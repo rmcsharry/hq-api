@@ -4,19 +4,19 @@
 #
 # Table name: addresses
 #
-#  id                :uuid             not null, primary key
-#  owner_id          :uuid             not null
-#  postal_code       :string
+#  addition          :string
+#  category          :string
 #  city              :string
 #  country           :string
-#  addition          :string
-#  state             :string
 #  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  category          :string
-#  street_and_number :string
-#  owner_type        :string           not null
+#  id                :uuid             not null, primary key
 #  organization_name :string
+#  owner_id          :uuid             not null
+#  owner_type        :string           not null
+#  postal_code       :string
+#  state             :string
+#  street_and_number :string
+#  updated_at        :datetime         not null
 #
 # Indexes
 #

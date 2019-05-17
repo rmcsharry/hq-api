@@ -4,23 +4,23 @@
 #
 # Table name: investor_cashflows
 #
-#  id                                        :uuid             not null, primary key
 #  aasm_state                                :string
-#  distribution_repatriation_amount          :decimal(20, 10)  default(0.0), not null
-#  distribution_participation_profits_amount :decimal(20, 10)  default(0.0), not null
+#  capital_call_compensatory_interest_amount :decimal(20, 10)  default(0.0), not null
+#  capital_call_gross_amount                 :decimal(20, 10)  default(0.0), not null
+#  capital_call_management_fees_amount       :decimal(20, 10)  default(0.0), not null
+#  created_at                                :datetime         not null
+#  distribution_compensatory_interest_amount :decimal(20, 10)  default(0.0), not null
 #  distribution_dividends_amount             :decimal(20, 10)  default(0.0), not null
 #  distribution_interest_amount              :decimal(20, 10)  default(0.0), not null
 #  distribution_misc_profits_amount          :decimal(20, 10)  default(0.0), not null
+#  distribution_participation_profits_amount :decimal(20, 10)  default(0.0), not null
+#  distribution_recallable_amount            :decimal(20, 10)  default(0.0), not null
+#  distribution_repatriation_amount          :decimal(20, 10)  default(0.0), not null
 #  distribution_structure_costs_amount       :decimal(20, 10)  default(0.0), not null
 #  distribution_withholding_tax_amount       :decimal(20, 10)  default(0.0), not null
-#  distribution_recallable_amount            :decimal(20, 10)  default(0.0), not null
-#  distribution_compensatory_interest_amount :decimal(20, 10)  default(0.0), not null
-#  capital_call_gross_amount                 :decimal(20, 10)  default(0.0), not null
-#  capital_call_compensatory_interest_amount :decimal(20, 10)  default(0.0), not null
-#  capital_call_management_fees_amount       :decimal(20, 10)  default(0.0), not null
 #  fund_cashflow_id                          :uuid
+#  id                                        :uuid             not null, primary key
 #  investor_id                               :uuid
-#  created_at                                :datetime         not null
 #  updated_at                                :datetime         not null
 #
 # Indexes

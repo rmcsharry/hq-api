@@ -4,25 +4,31 @@
 #
 # Table name: funds
 #
-#  id                            :uuid             not null, primary key
-#  duration                      :integer
-#  duration_extension            :integer
-#  aasm_state                    :string           not null
-#  commercial_register_number    :string
-#  commercial_register_office    :string
-#  currency                      :string
-#  name                          :string           not null
-#  psplus_asset_id               :string
-#  region                        :string
-#  strategy                      :string
-#  comment                       :text
-#  capital_management_company_id :uuid
-#  legal_address_id              :uuid
-#  primary_contact_address_id    :uuid
-#  created_at                    :datetime         not null
-#  updated_at                    :datetime         not null
-#  issuing_year                  :integer
-#  type                          :string
+#  aasm_state                                :string           not null
+#  capital_management_company_id             :uuid
+#  comment                                   :text
+#  commercial_register_number                :string
+#  commercial_register_office                :string
+#  created_at                                :datetime         not null
+#  currency                                  :string
+#  de_central_bank_id                        :string
+#  de_foreign_trade_regulations_id           :string
+#  duration                                  :integer
+#  duration_extension                        :integer
+#  global_intermediary_identification_number :string
+#  id                                        :uuid             not null, primary key
+#  issuing_year                              :integer
+#  legal_address_id                          :uuid
+#  name                                      :string           not null
+#  primary_contact_address_id                :uuid
+#  psplus_asset_id                           :string
+#  region                                    :string
+#  strategy                                  :string
+#  tax_id                                    :string
+#  tax_office                                :string
+#  type                                      :string
+#  updated_at                                :datetime         not null
+#  us_employer_identification_number         :string
 #
 # Indexes
 #
@@ -87,6 +93,10 @@ class Fund < ApplicationRecord
   validates :name, presence: true
   validates :psplus_asset_id, length: { maximum: 15 }
   validates :strategy, presence: true
+  validates :global_intermediary_identification_number, digits: { exactly: 19 }
+  validates :us_employer_identification_number, digits: { exactly: 9 }
+  validates :de_central_bank_id, digits: { exactly: 8 }
+  validates :de_foreign_trade_regulations_id, digits: { exactly: 5 }
 
   enumerize :currency, in: CURRENCIES
   enumerize :region, in: REGIONS, scope: true

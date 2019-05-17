@@ -28,6 +28,12 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_attribute :total_signed_amount }
   it { is_expected.to have_attribute :tvpi }
   it { is_expected.to have_attribute :updated_at }
+  it { is_expected.to have_attribute :tax_office }
+  it { is_expected.to have_attribute :tax_id }
+  it { is_expected.to have_attribute :global_intermediary_identification_number }
+  it { is_expected.to have_attribute :us_employer_identification_number }
+  it { is_expected.to have_attribute :de_central_bank_id }
+  it { is_expected.to have_attribute :de_foreign_trade_regulations_id }
 
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:bank_accounts) }

@@ -4,18 +4,18 @@
 #
 # Table name: documents
 #
+#  aasm_state  :string           default("created"), not null
+#  category    :string           not null
+#  created_at  :datetime         not null
 #  id          :uuid             not null, primary key
 #  name        :string           not null
-#  category    :string           not null
+#  owner_id    :uuid
+#  owner_type  :string
+#  type        :string
+#  updated_at  :datetime         not null
+#  uploader_id :uuid             not null
 #  valid_from  :date
 #  valid_to    :date
-#  uploader_id :uuid             not null
-#  owner_type  :string
-#  owner_id    :uuid
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  type        :string
-#  aasm_state  :string           default("created"), not null
 #
 # Indexes
 #

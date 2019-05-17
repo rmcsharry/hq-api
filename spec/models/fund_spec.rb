@@ -4,25 +4,31 @@
 #
 # Table name: funds
 #
-#  id                            :uuid             not null, primary key
-#  duration                      :integer
-#  duration_extension            :integer
-#  aasm_state                    :string           not null
-#  commercial_register_number    :string
-#  commercial_register_office    :string
-#  currency                      :string
-#  name                          :string           not null
-#  psplus_asset_id               :string
-#  region                        :string
-#  strategy                      :string
-#  comment                       :text
-#  capital_management_company_id :uuid
-#  legal_address_id              :uuid
-#  primary_contact_address_id    :uuid
-#  created_at                    :datetime         not null
-#  updated_at                    :datetime         not null
-#  issuing_year                  :integer
-#  type                          :string
+#  aasm_state                                :string           not null
+#  capital_management_company_id             :uuid
+#  comment                                   :text
+#  commercial_register_number                :string
+#  commercial_register_office                :string
+#  created_at                                :datetime         not null
+#  currency                                  :string
+#  de_central_bank_id                        :string
+#  de_foreign_trade_regulations_id           :string
+#  duration                                  :integer
+#  duration_extension                        :integer
+#  global_intermediary_identification_number :string
+#  id                                        :uuid             not null, primary key
+#  issuing_year                              :integer
+#  legal_address_id                          :uuid
+#  name                                      :string           not null
+#  primary_contact_address_id                :uuid
+#  psplus_asset_id                           :string
+#  region                                    :string
+#  strategy                                  :string
+#  tax_id                                    :string
+#  tax_office                                :string
+#  type                                      :string
+#  updated_at                                :datetime         not null
+#  us_employer_identification_number         :string
 #
 # Indexes
 #
@@ -83,6 +89,70 @@ RSpec.describe Fund, type: :model do
   describe '#issuing_year' do
     it { is_expected.to respond_to(:issuing_year) }
     it { is_expected.to validate_presence_of(:issuing_year) }
+  end
+
+  describe '#tax_office' do
+    it { is_expected.to respond_to(:tax_office) }
+  end
+
+  describe '#tax_id' do
+    it { is_expected.to respond_to(:tax_id) }
+  end
+
+  describe '#global_intermediary_identification_number' do
+    it { is_expected.to respond_to(:global_intermediary_identification_number) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['0123456789123456789', '1234567890123456789', '5279318033432345701', ''] }
+      let(:invalid_examples) do
+        ['12345678901234567890', # 20 digits (too long, expects exactly 19)
+         'a', # 1 letter
+         'a12345678asdfj12345', # 19 chars but not all digits
+         '0 23456789999999999', # 19 length, all digits but a space
+         '12-6543219999999999', # 19 length, all digits but a dash
+         '0000000000000000000', # 19 digits but all zeros
+         '1.34567890123456789'] # 19 length, all digits but deimcal point
+      end
+
+      it { is_expected.to allow_values(*valid_examples).for(:global_intermediary_identification_number) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:global_intermediary_identification_number) }
+    end
+  end
+
+  describe '#us_employer_identification_number' do
+    it { is_expected.to respond_to(:us_employer_identification_number) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['012345678', '123456789', '527931803', ''] }
+      let(:invalid_examples) { ['1234567890', 'a', 'a12345678', '0 2345678', '12-654321', '000000000', '1.3456789'] }
+
+      it { is_expected.to allow_values(*valid_examples).for(:us_employer_identification_number) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:us_employer_identification_number) }
+    end
+  end
+
+  describe '#de_central_bank_id' do
+    it { is_expected.to respond_to(:de_central_bank_id) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['01234567', '12345678', '65279318', ''] }
+      let(:invalid_examples) { ['123456789', 'a', 'a123456', '1 345678', '12-654', '00000000', '1.345678'] }
+
+      it { is_expected.to allow_values(*valid_examples).for(:de_central_bank_id) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:de_central_bank_id) }
+    end
+  end
+
+  describe '#de_foreign_trade_regulations_id' do
+    it { is_expected.to respond_to(:de_foreign_trade_regulations_id) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['01234', '12345', '52793', ''] }
+      let(:invalid_examples) { ['123456', 'a', 'a1234', '1 345', '12-65', '00000', '1.345'] }
+
+      it { is_expected.to allow_values(*valid_examples).for(:de_foreign_trade_regulations_id) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:de_foreign_trade_regulations_id) }
+    end
   end
 
   describe '#commercial_register_office' do

@@ -4,20 +4,20 @@
 #
 # Table name: tasks
 #
-#  id                 :uuid             not null, primary key
-#  creator_id         :uuid
-#  finisher_id        :uuid
-#  subject_type       :string
-#  subject_id         :uuid
-#  linked_object_type :string
-#  linked_object_id   :uuid
 #  aasm_state         :string           not null
+#  created_at         :datetime         not null
+#  creator_id         :uuid
 #  description        :string
+#  due_at             :datetime
+#  finished_at        :datetime
+#  finisher_id        :uuid
+#  id                 :uuid             not null, primary key
+#  linked_object_id   :uuid
+#  linked_object_type :string
+#  subject_id         :uuid
+#  subject_type       :string
 #  title              :string           not null
 #  type               :string           not null
-#  finished_at        :datetime
-#  due_at             :datetime
-#  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #
 # Indexes

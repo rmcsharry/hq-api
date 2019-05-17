@@ -4,13 +4,13 @@
 #
 # Table name: lists
 #
-#  id         :uuid             not null, primary key
-#  user_id    :uuid             not null
 #  aasm_state :string           default("active"), not null
 #  comment    :text
-#  name       :string
 #  created_at :datetime         not null
+#  id         :uuid             not null, primary key
+#  name       :string
 #  updated_at :datetime         not null
+#  user_id    :uuid             not null
 #
 # Indexes
 #

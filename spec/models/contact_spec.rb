@@ -4,30 +4,30 @@
 #
 # Table name: contacts
 #
-#  id                         :uuid             not null, primary key
-#  first_name                 :string
-#  last_name                  :string
-#  created_at                 :datetime         not null
-#  updated_at                 :datetime         not null
-#  type                       :string
 #  comment                    :text
-#  gender                     :string
-#  nobility_title             :string
-#  professional_title         :string
-#  maiden_name                :string
-#  date_of_birth              :date
-#  date_of_death              :date
-#  nationality                :string
-#  organization_name          :string
-#  organization_type          :string
-#  organization_category      :string
-#  organization_industry      :string
 #  commercial_register_number :string
 #  commercial_register_office :string
-#  legal_address_id           :uuid
-#  primary_contact_address_id :uuid
+#  created_at                 :datetime         not null
+#  date_of_birth              :date
+#  date_of_death              :date
+#  first_name                 :string
+#  gender                     :string
+#  id                         :uuid             not null, primary key
 #  import_id                  :integer
+#  last_name                  :string
+#  legal_address_id           :uuid
+#  maiden_name                :string
+#  nationality                :string
+#  nobility_title             :string
+#  organization_category      :string
+#  organization_industry      :string
+#  organization_name          :string
+#  organization_type          :string
 #  place_of_birth             :string
+#  primary_contact_address_id :uuid
+#  professional_title         :string
+#  type                       :string
+#  updated_at                 :datetime         not null
 #
 # Indexes
 #

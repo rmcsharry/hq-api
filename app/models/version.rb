@@ -4,16 +4,16 @@
 #
 # Table name: versions
 #
-#  id               :uuid             not null, primary key
-#  item_type        :string           not null
-#  item_id          :uuid             not null
+#  created_at       :datetime
 #  event            :string           not null
-#  whodunnit        :uuid
+#  id               :uuid             not null, primary key
+#  item_id          :uuid             not null
+#  item_type        :string           not null
 #  object           :jsonb
 #  object_changes   :jsonb
-#  parent_item_type :string
 #  parent_item_id   :uuid
-#  created_at       :datetime
+#  parent_item_type :string
+#  whodunnit        :uuid
 #
 # Indexes
 #

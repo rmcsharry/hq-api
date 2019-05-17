@@ -4,11 +4,11 @@
 #
 # Table name: organization_members
 #
-#  id              :uuid             not null, primary key
-#  role            :string           not null
-#  organization_id :uuid             not null
 #  contact_id      :uuid             not null
 #  created_at      :datetime         not null
+#  id              :uuid             not null, primary key
+#  organization_id :uuid             not null
+#  role            :string           not null
 #  updated_at      :datetime         not null
 #
 # Indexes

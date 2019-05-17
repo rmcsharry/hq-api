@@ -4,24 +4,24 @@
 #
 # Table name: tax_details
 #
-#  id                        :uuid             not null, primary key
-#  de_tax_number             :string
-#  de_tax_id                 :string
-#  de_tax_office             :string
-#  de_retirement_insurance   :boolean          default(FALSE), not null
-#  de_unemployment_insurance :boolean          default(FALSE), not null
-#  de_health_insurance       :boolean          default(FALSE), not null
-#  de_church_tax             :boolean          default(FALSE), not null
-#  us_tax_number             :string
-#  us_tax_form               :string
-#  us_fatca_status           :string
 #  common_reporting_standard :boolean          default(FALSE), not null
+#  contact_id                :uuid
+#  created_at                :datetime         not null
+#  de_church_tax             :boolean          default(FALSE), not null
+#  de_health_insurance       :boolean          default(FALSE), not null
+#  de_retirement_insurance   :boolean          default(FALSE), not null
+#  de_tax_id                 :string
+#  de_tax_number             :string
+#  de_tax_office             :string
+#  de_unemployment_insurance :boolean          default(FALSE), not null
 #  eu_vat_number             :string
+#  id                        :uuid             not null, primary key
 #  legal_entity_identifier   :string
 #  transparency_register     :boolean          default(FALSE), not null
-#  created_at                :datetime         not null
 #  updated_at                :datetime         not null
-#  contact_id                :uuid
+#  us_fatca_status           :string
+#  us_tax_form               :string
+#  us_tax_number             :string
 #
 # Indexes
 #

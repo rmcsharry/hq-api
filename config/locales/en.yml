@@ -30,6 +30,11 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
+  activerecord:
+    errors:
+      custom:
+        digits_string_invalid: is invalid, expected %{length} contiguous digits.
+        digits_string_length_not_specified: is invalid, exact length not set.
   jsonapi-resources:
     exceptions:
       deactivate_self:

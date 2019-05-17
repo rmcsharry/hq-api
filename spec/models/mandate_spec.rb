@@ -4,30 +4,30 @@
 #
 # Table name: mandates
 #
-#  id                               :uuid             not null, primary key
 #  aasm_state                       :string
-#  category                         :string
-#  comment                          :text
-#  valid_from                       :date
-#  valid_to                         :date
-#  datev_creditor_id                :string
-#  datev_debitor_id                 :string
-#  mandate_number                   :string
-#  psplus_id                        :string
-#  created_at                       :datetime         not null
-#  updated_at                       :datetime         not null
-#  primary_consultant_id            :uuid
-#  secondary_consultant_id          :uuid
 #  assistant_id                     :uuid
 #  bookkeeper_id                    :uuid
-#  import_id                        :integer
+#  category                         :string
+#  comment                          :text
+#  confidential                     :boolean          default(FALSE), not null
+#  created_at                       :datetime         not null
+#  datev_creditor_id                :string
+#  datev_debitor_id                 :string
 #  default_currency                 :string
+#  id                               :uuid             not null, primary key
+#  import_id                        :integer
+#  mandate_number                   :string
+#  primary_consultant_id            :uuid
 #  prospect_assets_under_management :decimal(20, 10)
-#  prospect_fees_percentage         :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
-#  confidential                     :boolean          default(FALSE), not null
+#  prospect_fees_percentage         :decimal(20, 10)
+#  psplus_id                        :string
 #  psplus_pe_id                     :string
+#  secondary_consultant_id          :uuid
+#  updated_at                       :datetime         not null
+#  valid_from                       :date
+#  valid_to                         :date
 #
 # Indexes
 #

@@ -4,13 +4,13 @@
 #
 # Table name: fund_reports
 #
-#  id          :uuid             not null, primary key
-#  valuta_date :date
-#  irr         :decimal(20, 10)
+#  created_at  :datetime         not null
 #  description :text
 #  fund_id     :uuid
-#  created_at  :datetime         not null
+#  id          :uuid             not null, primary key
+#  irr         :decimal(20, 10)
 #  updated_at  :datetime         not null
+#  valuta_date :date
 #
 # Indexes
 #

@@ -4,11 +4,11 @@
 #
 # Table name: inter_person_relationships
 #
+#  created_at       :datetime         not null
 #  id               :uuid             not null, primary key
 #  role             :string           not null
-#  target_person_id :uuid             not null
 #  source_person_id :uuid             not null
-#  created_at       :datetime         not null
+#  target_person_id :uuid             not null
 #  updated_at       :datetime         not null
 #
 # Indexes

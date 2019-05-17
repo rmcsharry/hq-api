@@ -4,11 +4,11 @@
 #
 # Table name: mandate_groups
 #
-#  id         :uuid             not null, primary key
-#  name       :string
-#  group_type :string
 #  comment    :text
 #  created_at :datetime         not null
+#  group_type :string
+#  id         :uuid             not null, primary key
+#  name       :string
 #  updated_at :datetime         not null
 #
 

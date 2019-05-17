@@ -4,14 +4,14 @@
 #
 # Table name: contact_details
 #
-#  id         :uuid             not null, primary key
-#  type       :string
 #  category   :string
-#  value      :string
-#  primary    :boolean          default(FALSE), not null
 #  contact_id :uuid
 #  created_at :datetime         not null
+#  id         :uuid             not null, primary key
+#  primary    :boolean          default(FALSE), not null
+#  type       :string
 #  updated_at :datetime         not null
+#  value      :string
 #
 # Indexes
 #
