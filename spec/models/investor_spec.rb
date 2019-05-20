@@ -395,69 +395,41 @@ RSpec.describe Investor, type: :model do
   end
 
   describe '#primary_contact' do
-    subject { build(:investor, mandate: mandate, primary_contact: contact) }
+    subject { build(:investor, primary_contact: contact) }
 
-    let(:mandate) { build(:mandate) }
-    let(:primary_contact) { build(:contact_person) }
-    let(:mandate_member) { build(:mandate_member, mandate: mandate, contact: primary_contact) }
-
-    context 'is member of mandate' do
-      let(:contact) { primary_contact }
-
-      it 'is valid' do
-        mandate.mandate_members = [mandate_member]
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is bookkeeper of mandate' do
-      let(:contact) { mandate.bookkeeper }
-
-      it 'is valid' do
-        mandate.mandate_members = [mandate_member]
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not member of mandate' do
+    context 'is a person' do
       let(:contact) { build(:contact_person) }
 
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is an organization' do
+      let(:contact) { build(:contact_organization) }
+
       it 'is invalid' do
-        expect(subject).to be_invalid
+        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
       end
     end
   end
 
   describe '#secondary_contact' do
-    subject { build(:investor, mandate: mandate, secondary_contact: contact) }
+    subject { build(:investor, secondary_contact: contact) }
 
-    let(:mandate) { build(:mandate) }
-    let(:secondary_contact) { build(:contact_person) }
-    let(:mandate_member) { build(:mandate_member, mandate: mandate, contact: secondary_contact) }
-
-    context 'is member of mandate' do
-      let(:contact) { secondary_contact }
-
-      it 'is valid' do
-        mandate.mandate_members = [mandate_member]
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is primary consultant of mandate' do
-      let(:contact) { mandate.primary_consultant }
-
-      it 'is valid' do
-        mandate.mandate_members = [mandate_member]
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not member of mandate' do
+    context 'is a person' do
       let(:contact) { build(:contact_person) }
 
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is an organization' do
+      let(:contact) { build(:contact_organization) }
+
       it 'is invalid' do
-        expect(subject).to be_invalid
+        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
       end
     end
   end

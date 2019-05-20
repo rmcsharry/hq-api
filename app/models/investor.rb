@@ -58,9 +58,9 @@ class Investor < ApplicationRecord
   belongs_to :legal_address, class_name: 'Address', autosave: true
   belongs_to :mandate, inverse_of: :investments, autosave: true
   belongs_to :primary_owner, class_name: 'Contact', autosave: true
-  belongs_to :primary_contact, class_name: 'Contact', optional: true, inverse_of: :primary_contact_investors
+  belongs_to :primary_contact, class_name: 'Contact::Person', optional: true, inverse_of: :primary_contact_investors
   belongs_to(
-    :secondary_contact, class_name: 'Contact', optional: true, inverse_of: :secondary_contact_investors
+    :secondary_contact, class_name: 'Contact::Person', optional: true, inverse_of: :secondary_contact_investors
   )
   has_many :investor_reports, dependent: :destroy
   has_many :fund_reports, -> { distinct }, through: :investor_reports
@@ -102,9 +102,7 @@ class Investor < ApplicationRecord
   validate :bank_account_belongs_to_mandate
   validate :contact_address_belongs_to_contacts
   validate :legal_address_belongs_to_primary_owner
-  validate :primary_contact_belongs_to_mandate
   validate :primary_owner_belongs_to_mandate
-  validate :secondary_contact_belongs_to_mandate
 
   def amount_called
     investor_cashflows.sum(&:capital_call_total_amount)
@@ -200,18 +198,6 @@ class Investor < ApplicationRecord
     errors.add(:primary_owner, BELONG_TO_MANDATE)
   end
 
-  def primary_contact_belongs_to_mandate
-    return if primary_contact.blank? || valid_contacts.include?(primary_contact)
-
-    errors.add(:primary_contact, BELONG_TO_MANDATE)
-  end
-
-  def secondary_contact_belongs_to_mandate
-    return if secondary_contact.blank? || valid_contacts.include?(secondary_contact)
-
-    errors.add(:secondary_contact, BELONG_TO_MANDATE)
-  end
-
   def contact_address_belongs_to_contacts
     return if contact_address.blank? ||
               [primary_owner, primary_contact, secondary_contact].compact.include?(contact_address.owner)
@@ -227,12 +213,6 @@ class Investor < ApplicationRecord
 
   def set_investment_date
     self.investment_date = Time.zone.now if investment_date.nil?
-  end
-
-  def valid_contacts
-    mandate.mandate_members.map(&:contact) + [
-      mandate.primary_consultant, mandate.secondary_consultant, mandate.assistant, mandate.bookkeeper
-    ]
   end
 end
 # rubocop:enable Metrics/ClassLength
