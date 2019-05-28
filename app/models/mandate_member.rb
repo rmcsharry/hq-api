@@ -4,13 +4,12 @@
 #
 # Table name: mandate_members
 #
+#  comment     :text
 #  contact_id  :uuid
 #  created_at  :datetime         not null
-#  end_date    :date
 #  id          :uuid             not null, primary key
 #  mandate_id  :uuid
 #  member_type :string
-#  start_date  :date
 #  updated_at  :datetime         not null
 #
 # Indexes
@@ -28,35 +27,15 @@
 class MandateMember < ApplicationRecord
   extend Enumerize
 
-  MEMBER_TYPES = %i[
-    administrative_board_member
-    advisor
-    assistance
-    attorney
-    auditor
-    beneficial_owner
-    beneficiary
-    bookkeeper
-    capital_management_company
-    chairman
-    consultant
-    contact_depot_bank
-    contact_fund
-    employee
-    family_officer
-    investment
-    investment_manager
-    lawyer
-    managing_director
-    notary
+  NON_UNIQUE_MEMBER_TYPES = %i[
     owner
-    portfolio_manager
-    procurator
-    risk_manager
-    shareholder
-    supervisory_board_member
-    tax_advisor
-    wealth_manager
+  ].freeze
+
+  UNIQUE_MEMBER_TYPES = %i[
+    assistant
+    bookkeeper
+    primary_consultant
+    secondary_consultant
   ].freeze
 
   belongs_to :mandate
@@ -70,24 +49,25 @@ class MandateMember < ApplicationRecord
     skip: SKIPPED_ATTRIBUTES
   )
 
-  validates :member_type, presence: true
   validates(
     :contact_id,
-    uniqueness: { scope: %i[mandate_id member_type],
-                  message: 'should occur only once per mandate and member type', case_sensitive: false }
+    uniqueness: {
+      case_sensitive: false,
+      message: 'should occur only once per mandate and member type',
+      scope: %i[mandate_id member_type]
+    }
+  )
+  validates(
+    :member_type,
+    presence: true,
+    uniqueness: {
+      if: proc do |mandate_member|
+        UNIQUE_MEMBER_TYPES.include?(mandate_member.member_type&.to_sym)
+      end,
+      message: 'should occur only once per mandate',
+      scope: :mandate_id
+    }
   )
 
-  validate :end_date_greater_or_equal_start_date
-
-  enumerize :member_type, in: MEMBER_TYPES, scope: true
-
-  private
-
-  # Validates if start_date is before or on the same date as end_date if both are set
-  # @return [void]
-  def end_date_greater_or_equal_start_date
-    return if start_date.blank? || end_date.blank? || end_date >= start_date
-
-    errors.add(:end_date, "can't be before start_date")
-  end
+  enumerize :member_type, in: NON_UNIQUE_MEMBER_TYPES + UNIQUE_MEMBER_TYPES, scope: true
 end

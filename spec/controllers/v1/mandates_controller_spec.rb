@@ -23,8 +23,6 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           roles: %i[mandates_read mandates_write]
         )
       end
-      let(:primary_consultant) { create(:contact_person) }
-      let(:secondary_consultant) { create(:contact_person) }
       let(:payload) do
         {
           data: {
@@ -46,12 +44,6 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
                   { id: mandate_group1.id, type: 'mandate-groups' },
                   { id: mandate_group2.id, type: 'mandate-groups' }
                 ]
-              },
-              'primary-consultant': {
-                data: { id: primary_consultant.id, type: 'contacts' }
-              },
-              'secondary-consultant': {
-                data: { id: secondary_consultant.id, type: 'contacts' }
               }
             }
           }
@@ -65,8 +57,6 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         mandate = Mandate.find(JSON.parse(response.body)['data']['id'])
         expect(mandate.category).to eq 'wealth_management'
         expect(mandate.owners.map(&:contact)).to include(owner)
-        expect(mandate.primary_consultant).to eq primary_consultant
-        expect(mandate.secondary_consultant).to eq secondary_consultant
         expect(mandate.mandate_groups_organizations).to include(mandate_group1, mandate_group2)
       end
     end
@@ -156,7 +146,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           let(:sorting_param) { 'primaryConsultant.name' }
 
           before do
-            mandate1.update(primary_consultant_id: nil)
+            mandate1.update(primary_consultant: nil)
           end
 
           it 'also returns mandates without primary consultant' do
@@ -173,7 +163,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           let(:sorting_param) { 'secondaryConsultant.name' }
 
           before do
-            mandate1.update(secondary_consultant_id: nil)
+            mandate1.update(secondary_consultant: nil)
           end
 
           it 'also returns mandates without secondary consultant' do
@@ -190,7 +180,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           let(:sorting_param) { 'bookkeeper.name' }
 
           before do
-            mandate1.update(bookkeeper_id: nil)
+            mandate1.update(bookkeeper: nil)
           end
 
           it 'also returns mandates without bookkeeper' do
@@ -207,7 +197,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           let(:sorting_param) { 'assistant.name' }
 
           before do
-            mandate1.update(assistant_id: nil)
+            mandate1.update(assistant: nil)
           end
 
           it 'also returns mandates without assistant' do

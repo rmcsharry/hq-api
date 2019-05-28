@@ -47,15 +47,13 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:mandates) }
-  it { is_expected.to have_many(:organization_members) }
-  it { is_expected.to have_many(:organizations) }
-  it { is_expected.to have_many(:active_person_relationships) }
-  it { is_expected.to have_many(:passive_person_relationships) }
-  it { is_expected.to have_many(:actively_related_persons) }
-  it { is_expected.to have_many(:passively_related_persons) }
+  it { is_expected.to have_many(:active_contact_relationships) }
+  it { is_expected.to have_many(:passive_contact_relationships) }
+  it { is_expected.to have_many(:actively_related_people) }
+  it { is_expected.to have_many(:passively_related_people) }
+  it { is_expected.to have_many(:actively_related_organizations) }
+  it { is_expected.to have_many(:passively_related_organizations) }
   it { is_expected.to have_many(:investors) }
-  it { is_expected.to have_many(:primary_consultant_mandates) }
-  it { is_expected.to have_many(:secondary_consultant_mandates) }
   it { is_expected.to have_many(:primary_contact_investors) }
   it { is_expected.to have_many(:secondary_contact_investors) }
   it { is_expected.to have_many(:reminders) }
@@ -84,7 +82,7 @@ RSpec.describe Contact, type: :model do
 
   describe '#mandate_member?' do
     context 'as mandate member' do
-      let!(:mandate_member) { create(:mandate_member, member_type: 'advisor', contact: subject) }
+      let!(:mandate_member) { create(:mandate_member, member_type: 'assistant', contact: subject) }
 
       it 'returns true' do
         expect(subject.mandate_member?).to eq true
@@ -111,7 +109,7 @@ RSpec.describe Contact, type: :model do
     end
 
     context 'as no mandate owner' do
-      let!(:mandate_member) { create(:mandate_member, member_type: 'advisor', contact: subject) }
+      let!(:mandate_member) { create(:mandate_member, member_type: 'assistant', contact: subject) }
 
       it 'returns false' do
         expect(subject.mandate_owner?).to eq false
@@ -121,7 +119,7 @@ RSpec.describe Contact, type: :model do
   end
 
   describe '#associated_to_mandate_with_id?' do
-    let!(:mandate) { create :mandate }
+    let!(:mandate) { create :mandate, mandate_members: [] }
     let!(:person) { create :contact_person }
     let!(:uninvolved_person) { create :contact_person }
 

@@ -38,22 +38,20 @@ module V1
       :updated_at
     )
 
+    has_many :active_contact_relationships, class_name: 'ContactRelationship'
     has_many :addresses
     has_many :contact_details
-    has_many :contact_members, class_name: 'OrganizationMember'
-    has_many :contacts
     has_many :documents
-    has_many :mandate_members
-    has_many :organization_members
-    has_many :organizations, class_name: 'Contact'
-    has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_many :investors
+    has_many :mandate_members
+    has_many :passive_contact_relationships, class_name: 'ContactRelationship'
+    has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :compliance_detail
-    has_one :tax_detail
-    has_one :primary_contact_address, class_name: 'Address'
     has_one :legal_address, class_name: 'Address'
+    has_one :primary_contact_address, class_name: 'Address'
     has_one :primary_email, class_name: 'ContactDetail'
     has_one :primary_phone, class_name: 'ContactDetail'
+    has_one :tax_detail
 
     def compliance_detail=(params)
       @model.build_compliance_detail unless @model.compliance_detail

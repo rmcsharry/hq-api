@@ -124,6 +124,17 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
     t.index ["contact_id"], name: "index_contact_details_on_contact_id"
   end
 
+  create_table "contact_relationships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "role", null: false
+    t.uuid "source_contact_id", null: false
+    t.uuid "target_contact_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "comment"
+    t.index ["source_contact_id"], name: "index_contact_relationships_on_source_contact_id"
+    t.index ["target_contact_id"], name: "index_contact_relationships_on_target_contact_id"
+  end
+
   create_table "contacts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "first_name"
     t.string "last_name"
@@ -336,12 +347,11 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
 
   create_table "mandate_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "member_type"
-    t.date "start_date"
-    t.date "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.uuid "contact_id"
     t.uuid "mandate_id"
+    t.text "comment"
     t.index ["contact_id"], name: "index_mandate_members_on_contact_id"
     t.index ["mandate_id"], name: "index_mandate_members_on_mandate_id"
   end
@@ -358,10 +368,6 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
     t.string "psplus_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "primary_consultant_id"
-    t.uuid "secondary_consultant_id"
-    t.uuid "assistant_id"
-    t.uuid "bookkeeper_id"
     t.integer "import_id"
     t.string "default_currency"
     t.decimal "prospect_assets_under_management", precision: 20, scale: 10
@@ -370,10 +376,6 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
     t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
     t.boolean "confidential", default: false, null: false
     t.string "psplus_pe_id"
-    t.index ["assistant_id"], name: "index_mandates_on_assistant_id"
-    t.index ["bookkeeper_id"], name: "index_mandates_on_bookkeeper_id"
-    t.index ["primary_consultant_id"], name: "index_mandates_on_primary_consultant_id"
-    t.index ["secondary_consultant_id"], name: "index_mandates_on_secondary_consultant_id"
   end
 
   create_table "newsletter_subscribers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -544,6 +546,8 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
   add_foreign_key "bank_accounts", "contacts", column: "bank_id"
   add_foreign_key "compliance_details", "contacts"
   add_foreign_key "contact_details", "contacts"
+  add_foreign_key "contact_relationships", "contacts", column: "source_contact_id"
+  add_foreign_key "contact_relationships", "contacts", column: "target_contact_id"
   add_foreign_key "contacts", "addresses", column: "legal_address_id"
   add_foreign_key "contacts", "addresses", column: "primary_contact_address_id"
   add_foreign_key "documents", "users", column: "uploader_id"
@@ -575,10 +579,6 @@ ActiveRecord::Schema.define(version: 2019_04_30_170120) do
   add_foreign_key "mandate_groups_user_groups", "user_groups"
   add_foreign_key "mandate_members", "contacts"
   add_foreign_key "mandate_members", "mandates"
-  add_foreign_key "mandates", "contacts", column: "assistant_id"
-  add_foreign_key "mandates", "contacts", column: "bookkeeper_id"
-  add_foreign_key "mandates", "contacts", column: "primary_consultant_id"
-  add_foreign_key "mandates", "contacts", column: "secondary_consultant_id"
   add_foreign_key "organization_members", "contacts", column: "organization_id"
   add_foreign_key "task_comments", "tasks"
   add_foreign_key "task_comments", "users"

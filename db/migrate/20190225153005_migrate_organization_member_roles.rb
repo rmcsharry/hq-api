@@ -77,6 +77,9 @@ class MigrateOrganizationMemberRoles < ActiveRecord::Migration[5.2]
     'wirtschaftlicher Eigentümer' => :beneficial_owner
   }
 
+  class OrganizationMember < ApplicationRecord
+  end
+
   def change
     ROLES.each do |key, value|
       OrganizationMember.where(role: key).update_all(role: value)

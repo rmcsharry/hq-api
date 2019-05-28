@@ -35,8 +35,8 @@ namespace :db do
       puts 'Creating mandate members'
       Rake::Task['db:populate:mandate_members'].invoke
 
-      puts 'Creating organization members'
-      Rake::Task['db:populate:organization_members'].invoke
+      puts 'Creating contact relationships'
+      Rake::Task['db:populate:contact_relationships'].invoke
 
       puts 'Creating user groups'
       Rake::Task['db:populate:user_groups'].invoke
@@ -328,17 +328,37 @@ namespace :db do
     task mandate_members: :environment do
       contacts = Contact.all
       mandate_members = Mandate.all.map do |mandate|
-        generate_mandate_members(mandate: mandate, contacts: contacts)
+        MandateMember.new(contact: contacts.sample, mandate: mandate, member_type: :owner)
       end
-      MandateMember.import!(mandate_members.flatten)
+      MandateMember.import!(mandate_members)
     end
 
-    task organization_members: :environment do
-      contacts = Contact.all
-      organization_members = Contact::Organization.all.map do |organization|
-        generate_organization_members(organization: organization, contacts: contacts)
+    task contact_relationships: :environment do
+      relationships = []
+
+      Contact::Person.all.each do |source_person|
+        relationships << generate_contact_relationships(
+          source_contact: source_person,
+          target_class: Contact::Person,
+          valid_roles: ContactRelationship::PERSON_TO_PERSON_ROLES
+        )
+
+        relationships << generate_contact_relationships(
+          source_contact: source_person,
+          target_class: Contact::Organization,
+          valid_roles: ContactRelationship::PERSON_TO_ORGANIZATION_ROLES
+        )
       end
-      OrganizationMember.import!(organization_members.flatten)
+
+      Contact::Organization.all.each do |source_organization|
+        relationships << generate_contact_relationships(
+          source_contact: source_organization,
+          target_class: Contact::Organization,
+          valid_roles: ContactRelationship::ORGANIZATION_TO_ORGANIZATION_ROLES
+        )
+      end
+
+      ContactRelationship.import!(relationships.flatten)
     end
 
     task user_groups: :environment do
@@ -774,25 +794,13 @@ namespace :db do
     ComplianceDetail.import!(compliance_details)
   end
 
-  def generate_mandate_members(mandate:, contacts:)
-    owner = MandateMember.new(
-      contact: contacts.sample,
-      mandate: mandate,
-      member_type: :owner
-    )
-    other_mandate_members = Array.new(Faker::Number.between(0, 10)) do
-      start_date = rand > 0.8 ? Faker::Date.between(15.years.ago, 1.year.from_now) : nil
-      create_other_mandate_member(mandate: mandate, contacts: contacts, start_date: start_date)
-    end
-    [owner, other_mandate_members].flatten
-  end
-
-  def generate_organization_members(organization:, contacts:)
-    Array.new(Faker::Number.between(0, 10)) do
-      OrganizationMember.new(
-        contact: contacts.sample,
-        organization: organization,
-        role: OrganizationMember::AVAILABLE_ROLES.sample
+  def generate_contact_relationships(source_contact:, target_class:, valid_roles:)
+    target_class.all.sample(Faker::Number.between(0, 10)).map do |target_contact|
+      ContactRelationship.new(
+        comment: rand > 0.6 ? Faker::Company.catch_phrase : nil,
+        source_contact: source_contact,
+        target_contact: target_contact,
+        role: valid_roles.sample
       )
     end
   end
@@ -805,16 +813,6 @@ namespace :db do
       valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
       uploader: uploader,
       owner: owner
-    )
-  end
-
-  def create_other_mandate_member(mandate:, contacts:, start_date:)
-    MandateMember.new(
-      contact: contacts.sample,
-      mandate: mandate,
-      member_type: (MandateMember::MEMBER_TYPES - [:owner]).sample,
-      start_date: start_date,
-      end_date: start_date ? Faker::Date.between(start_date, 3.years.from_now) : nil
     )
   end
 

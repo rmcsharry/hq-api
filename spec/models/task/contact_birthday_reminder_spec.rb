@@ -117,7 +117,7 @@ RSpec.describe Task::ContactBirthdayReminder, type: :model do
 
     let!(:hq_contact_person) { create(:contact_person, user: user) }
     let!(:person) { create(:contact_person) }
-    let!(:mandate) { create(:mandate) }
+    let!(:mandate) { create(:mandate, mandate_members: []) }
     let!(:mandate_member) { create(:mandate_member, contact: person, mandate: mandate, member_type: 'owner') }
 
     it 'detects mandate primary_consultants' do

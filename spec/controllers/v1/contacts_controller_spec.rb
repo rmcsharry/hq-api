@@ -785,68 +785,70 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
     end
   end
 
-  describe 'DELETE /v1/contacts/<contact_id>/relationships/contact-members' do
+  describe 'DELETE /v1/contacts/<contact_id>/relationships/active-contact-relationships' do
     subject do
       lambda do
         delete(
-          "#{CONTACTS_ENDPOINT}/#{organization.id}/relationships/contact-members",
+          "#{CONTACTS_ENDPOINT}/#{source_contact.id}/relationships/active-contact-relationships",
           params: payload.to_json,
           headers: auth_headers
         )
       end
     end
 
-    let(:organization) { organization_member.organization }
+    let(:source_contact) { relationship.source_contact }
     let(:payload) do
       {
         data: [
           {
-            type: 'organization-members',
-            id: organization_member.id
+            type: 'contact-relationships',
+            id: relationship.id
           }
         ]
       }
     end
 
-    context 'with valid organization member' do
-      let!(:organization_member) { create(:organization_member) }
+    context 'with valid contact to contact relationship' do
+      let!(:relationship) { create(:contact_relationship) }
 
-      it 'deletes an organization member' do
-        is_expected.to change(OrganizationMember, :count).by(-1)
+      it 'deletes the contact relationship' do
+        is_expected.to change(ContactRelationship, :count).by(-1)
         expect(response).to have_http_status(204)
+        expect(ContactRelationship.exists?(relationship.id)).to be(false)
       end
     end
   end
 
-  describe 'DELETE /v1/contacts/<contact_id>/relationships/organization-members' do
+  describe 'DELETE /v1/contacts/<contact_id>/relationships/passive-contact-relationships' do
     subject do
       lambda do
         delete(
-          "#{CONTACTS_ENDPOINT}/#{contact.id}/relationships/organization-members",
+          "#{CONTACTS_ENDPOINT}/#{target_contact.id}/relationships/passive-contact-relationships",
           params: payload.to_json,
           headers: auth_headers
         )
       end
     end
 
-    let(:contact) { organization_member.contact }
+    let(:target_contact) { relationship.target_contact }
     let(:payload) do
       {
         data: [
           {
-            type: 'organization-members',
-            id: organization_member.id
+            type: 'contact-relationships',
+            id: relationship.id
           }
         ]
       }
     end
 
-    context 'with valid organization member' do
-      let!(:organization_member) { create(:organization_member) }
+    context 'with valid contact to contact relationship' do
+      let!(:relationship) { create(:contact_relationship) }
 
-      it 'deletes an organization member' do
-        is_expected.to change(OrganizationMember, :count).by(-1)
+      it 'deletes the contact relationship' do
+        is_expected.to change(ContactRelationship, :count).by(-1)
         expect(response).to have_http_status(204)
+        expect(ContactRelationship.exists?(relationship.id)).to be(false)
       end
     end
   end

@@ -134,7 +134,7 @@ RSpec.describe Task::DocumentExpiryReminder, type: :model do
     end
 
     context 'when document owner is a contact' do
-      let!(:mandate) { create(:mandate) }
+      let!(:mandate) { create(:mandate, mandate_members: []) }
       let!(:person) { create(:contact_person) }
       let!(:mandate_member) { create(:mandate_member, contact: person, mandate: mandate, member_type: 'owner') }
       let!(:document) { create(:document, owner: person) }
@@ -177,7 +177,7 @@ RSpec.describe Task::DocumentExpiryReminder, type: :model do
     end
 
     context 'when document owner is a mandate' do
-      let!(:mandate) { create(:mandate) }
+      let!(:mandate) { create(:mandate, mandate_members: []) }
       let!(:mandate_member) { create(:mandate_member, mandate: mandate, member_type: 'owner') }
       let!(:document) { create(:document, owner: mandate) }
 

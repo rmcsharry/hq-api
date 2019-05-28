@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
-  let!(:record) { create(:organization_member) }
+  let!(:record) { create(:person_person_relationship) }
   include_examples 'simple crud authorization',
-                   ORGANIZATION_MEMBERS_ENDPOINT,
-                   resource: 'organization-members',
+                   CONTACT_RELATIONSHIPS_ENDPOINT,
+                   resource: 'contact_relationships',
                    permissions: {
                      destroy: :contacts_destroy,
                      export: :contacts_export,
@@ -15,7 +15,7 @@ RSpec.describe 'authorization for', type: :request do
                    }
 
   include_examples 'forbid access for ews authenticated users',
-                   ORGANIZATION_MEMBERS_ENDPOINT,
-                   resource: 'organization-members',
+                   CONTACT_RELATIONSHIPS_ENDPOINT,
+                   resource: 'contact_relationships',
                    except: []
 end

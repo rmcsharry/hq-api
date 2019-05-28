@@ -48,9 +48,6 @@ RSpec.describe Contact::Organization, type: :model do
   it { is_expected.to enumerize(:organization_type) }
   it { is_expected.to validate_presence_of(:organization_type) }
 
-  it { is_expected.to have_many(:contact_members) }
-  it { is_expected.to have_many(:contacts) }
-
   describe '#commercial_register_office' do
     context 'commercial_register_number is present' do
       subject { build(:contact_organization, commercial_register_number: 'HRB 123456 B') }

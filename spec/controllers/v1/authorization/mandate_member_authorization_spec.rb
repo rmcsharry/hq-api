@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe 'authorization for', type: :request do
-  let!(:record) { create(:mandate_member) }
+  let!(:mandate) { create(:mandate, mandate_members: []) }
+  let!(:record) { create(:mandate_member, mandate: mandate) }
   include_examples 'simple crud authorization',
                    MANDATE_MEMBERS_ENDPOINT,
                    resource: 'mandate-members',
@@ -21,8 +22,8 @@ RSpec.describe 'authorization for', type: :request do
                    except: []
 
   context 'mandate-members' do
-    let!(:permitted_mandate) { create(:mandate) }
-    let!(:random_mandate) { create(:mandate) }
+    let!(:permitted_mandate) { create(:mandate, mandate_members: []) }
+    let!(:random_mandate) { create(:mandate, mandate_members: []) }
     let!(:contact) { create(:contact_person) }
     let!(:permitted_mandate_member) { create(:mandate_member, contact: contact, mandate: permitted_mandate) }
     let!(:forbidden_mandate_member) { create(:mandate_member, contact: contact, mandate: random_mandate) }

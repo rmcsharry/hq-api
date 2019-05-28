@@ -5,8 +5,6 @@
 # Table name: mandates
 #
 #  aasm_state                       :string
-#  assistant_id                     :uuid
-#  bookkeeper_id                    :uuid
 #  category                         :string
 #  comment                          :text
 #  confidential                     :boolean          default(FALSE), not null
@@ -17,31 +15,15 @@
 #  id                               :uuid             not null, primary key
 #  import_id                        :integer
 #  mandate_number                   :string
-#  primary_consultant_id            :uuid
 #  prospect_assets_under_management :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
 #  prospect_fees_percentage         :decimal(20, 10)
 #  psplus_id                        :string
 #  psplus_pe_id                     :string
-#  secondary_consultant_id          :uuid
 #  updated_at                       :datetime         not null
 #  valid_from                       :date
 #  valid_to                         :date
-#
-# Indexes
-#
-#  index_mandates_on_assistant_id             (assistant_id)
-#  index_mandates_on_bookkeeper_id            (bookkeeper_id)
-#  index_mandates_on_primary_consultant_id    (primary_consultant_id)
-#  index_mandates_on_secondary_consultant_id  (secondary_consultant_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (assistant_id => contacts.id)
-#  fk_rails_...  (bookkeeper_id => contacts.id)
-#  fk_rails_...  (primary_consultant_id => contacts.id)
-#  fk_rails_...  (secondary_consultant_id => contacts.id)
 #
 
 # Defines the Mandate model
@@ -56,12 +38,26 @@ class Mandate < ApplicationRecord
     alternative_investments institutional reporting other
   ].freeze
 
-  belongs_to :primary_consultant, class_name: 'Contact', optional: true, inverse_of: :primary_consultant_mandates
-  belongs_to(
-    :secondary_consultant, class_name: 'Contact', optional: true, inverse_of: :secondary_consultant_mandates
-  )
-  belongs_to :assistant, class_name: 'Contact', optional: true, inverse_of: :assistant_mandates
-  belongs_to :bookkeeper, class_name: 'Contact', optional: true, inverse_of: :bookkeeper_mandates
+  # rubocop:disable Rails/InverseOf
+  has_one :assistant_mandate_member,
+          -> { where(member_type: :assistant) },
+          class_name: 'MandateMember'
+  has_one :bookkeeper_mandate_member,
+          -> { where(member_type: :bookkeeper) },
+          class_name: 'MandateMember'
+  has_one :primary_consultant_mandate_member,
+          -> { where(member_type: :primary_consultant) },
+          class_name: 'MandateMember'
+  has_one :secondary_consultant_mandate_member,
+          -> { where(member_type: :secondary_consultant) },
+          class_name: 'MandateMember'
+  # rubocop:enable Rails/InverseOf
+
+  has_one :assistant, through: :assistant_mandate_member, source: :contact
+  has_one :bookkeeper, through: :bookkeeper_mandate_member, source: :contact
+  has_one :primary_consultant, through: :primary_consultant_mandate_member, source: :contact
+  has_one :secondary_consultant, through: :secondary_consultant_mandate_member, source: :contact
+
   has_many :bank_accounts, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contacts, through: :mandate_members
@@ -138,22 +134,18 @@ class Mandate < ApplicationRecord
   }
 
   scope :associated_to_contact_with_id, lambda { |contact_id|
-    where(
-      'primary_consultant_id = ? OR secondary_consultant_id = ? OR assistant_id = ? OR bookkeeper_id = ?',
-      contact_id,
-      contact_id,
-      contact_id,
-      contact_id
-    )
+    joins('LEFT JOIN mandate_members mm ON mandates.id = mm.mandate_id')
+      .where('mm.contact_id': contact_id)
+      .where('mm.member_type': %i[assistant bookkeeper primary_consultant secondary_consultant])
   }
 
   validates :category, presence: true
-  validates :primary_consultant, presence: true, if: :client?
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
   validates :psplus_pe_id, length: { maximum: 15 }
   validates :default_currency, presence: true, if: :default_currency_required?
   validate :valid_to_greater_or_equal_valid_from
+  validate :presence_of_primary_consultant, if: :client?
 
   enumerize :category, in: CATEGORIES, scope: true
   enumerize :default_currency, in: CURRENCIES
@@ -161,16 +153,21 @@ class Mandate < ApplicationRecord
   alias_attribute :state, :aasm_state
 
   def task_assignees
-    assigned_contact_ids = [
-      assistant_id,
-      primary_consultant_id,
-      secondary_consultant_id
-    ]
-
+    assigned_contact_ids = mandate_members
+                           .where(member_type: %i[assistant primary_consultant secondary_consultant])
+                           .pluck(:contact_id)
     User.where(contact_id: assigned_contact_ids)
   end
 
   private
+
+  # Validates if primary_consultant is present
+  # @return [void]
+  def presence_of_primary_consultant
+    return if member_type_present?(:primary_consultant)
+
+    errors.add(:mandate_members, 'have to contain a primary_consultant')
+  end
 
   # Validates if valid_from date is before or on the same date as valid_to if both are set
   # @return [void]
@@ -183,7 +180,11 @@ class Mandate < ApplicationRecord
   # Checks if primary and secondary consultant are present
   # @return [Boolean]
   def primary_and_secondary_consultant_present?
-    primary_consultant.present? && secondary_consultant.present?
+    member_type_present?(:primary_consultant) && member_type_present?(:secondary_consultant)
+  end
+
+  def member_type_present?(member_type)
+    mandate_members.find_by(member_type: member_type).present?
   end
 
   def default_currency_required?

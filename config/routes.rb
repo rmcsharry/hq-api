@@ -14,13 +14,13 @@ Rails.application.routes.draw do
     jsonapi_resources :bank_accounts
     jsonapi_resources :compliance_details
     jsonapi_resources :contact_details
+    jsonapi_resources :contact_relationships
     jsonapi_resources :contacts
     jsonapi_resources :documents
     jsonapi_resources :foreign_tax_numbers
     jsonapi_resources :fund_cashflows
     jsonapi_resources :fund_reports
     jsonapi_resources :funds
-    jsonapi_resources :inter_person_relationships
     jsonapi_resources :investor_cashflows
     jsonapi_resources :investors
     jsonapi_resources :list_items
@@ -29,7 +29,6 @@ Rails.application.routes.draw do
     jsonapi_resources :mandate_members
     jsonapi_resources :mandates
     jsonapi_resources :newsletter_subscribers
-    jsonapi_resources :organization_members
     jsonapi_resources :task_comments
     jsonapi_resources :tasks
     jsonapi_resources :tax_details

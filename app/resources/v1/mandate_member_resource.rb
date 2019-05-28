@@ -3,13 +3,17 @@
 module V1
   # Defines the Mandate Member resource for the API
   class MandateMemberResource < BaseResource
-    attributes(:member_type, :start_date, :end_date)
+    attributes(
+      :comment,
+      :member_type
+    )
 
     has_one :contact
     has_one :mandate
 
     filter :contact_id
     filter :mandate_id
+    filter :member_type
 
     filter :is_owner, apply: lambda { |records, value, _options|
       is_owner = ActiveRecord::Type::Boolean.new.cast(value[0])

@@ -5,8 +5,6 @@
 # Table name: mandates
 #
 #  aasm_state                       :string
-#  assistant_id                     :uuid
-#  bookkeeper_id                    :uuid
 #  category                         :string
 #  comment                          :text
 #  confidential                     :boolean          default(FALSE), not null
@@ -17,39 +15,20 @@
 #  id                               :uuid             not null, primary key
 #  import_id                        :integer
 #  mandate_number                   :string
-#  primary_consultant_id            :uuid
 #  prospect_assets_under_management :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
 #  prospect_fees_percentage         :decimal(20, 10)
 #  psplus_id                        :string
 #  psplus_pe_id                     :string
-#  secondary_consultant_id          :uuid
 #  updated_at                       :datetime         not null
 #  valid_from                       :date
 #  valid_to                         :date
-#
-# Indexes
-#
-#  index_mandates_on_assistant_id             (assistant_id)
-#  index_mandates_on_bookkeeper_id            (bookkeeper_id)
-#  index_mandates_on_primary_consultant_id    (primary_consultant_id)
-#  index_mandates_on_secondary_consultant_id  (secondary_consultant_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (assistant_id => contacts.id)
-#  fk_rails_...  (bookkeeper_id => contacts.id)
-#  fk_rails_...  (primary_consultant_id => contacts.id)
-#  fk_rails_...  (secondary_consultant_id => contacts.id)
 #
 
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
-  it { is_expected.to belong_to(:secondary_consultant).optional }
-  it { is_expected.to belong_to(:assistant).optional }
-  it { is_expected.to belong_to(:bookkeeper).optional }
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }
   it { is_expected.to have_many(:investments) }
@@ -75,7 +54,9 @@ RSpec.describe Mandate, type: :model do
 
       context 'when #primary_and_secondary_consultant_present? is false' do
         %i[cancelled prospect_cold prospect_not_qualified prospect_warm].each do |state|
-          subject { build(:mandate, aasm_state: state, primary_consultant: nil) }
+          subject do
+            build(:mandate, aasm_state: state, mandate_members: [])
+          end
           it { is_expected.to_not allow_event(:become_client) }
         end
       end
@@ -156,18 +137,41 @@ RSpec.describe Mandate, type: :model do
   describe '#primary_consultant' do
     context 'for client' do
       subject { build(:mandate, aasm_state: :client) }
+      let(:primary_consultant) { build :mandate_member, mandate: subject, member_type: :primary_consultant }
+      let(:primary_consultant_2) { build :mandate_member, mandate: subject, member_type: :primary_consultant }
+
       it 'is required' do
-        expect(subject).to validate_presence_of(:primary_consultant)
+        subject.mandate_members = []
+        expect(subject).not_to be_valid
+
+        subject.mandate_members << primary_consultant
+        expect(subject).to be_valid
+      end
+
+      it 'can only exist once' do
+        subject.mandate_members = []
+        expect(subject).not_to be_valid
+
+        subject.mandate_members << primary_consultant
+        subject.mandate_members << primary_consultant_2
+        expect(subject).not_to be_valid
       end
     end
 
     context 'for prospect_not_qualified' do
-      subject { build(:mandate, aasm_state: :prospect_not_qualified, primary_consultant: nil) }
+      subject { build(:mandate, aasm_state: :prospect_not_qualified, mandate_members: []) }
+      let(:primary_consultant) { build :mandate_member, mandate: subject, member_type: :primary_consultant }
+      let(:secondary_consultant) { build :mandate_member, mandate: subject, member_type: :secondary_consultant }
+
       it 'is optional' do
-        expect(subject).to belong_to(:primary_consultant).optional
+        subject.mandate_members = []
+        expect(subject).to be_valid
       end
+
       it 'can be converted to client if primary consultant is set' do
-        subject.primary_consultant = build(:contact_person)
+        subject.mandate_members << primary_consultant
+        subject.mandate_members << secondary_consultant
+        subject.save
         expect(subject.may_become_client?).to be_truthy
       end
     end
@@ -280,7 +284,7 @@ RSpec.describe Mandate, type: :model do
     end
 
     context 'when person is primary_consultant' do
-      let(:mandate) { create(:mandate, primary_consultant: person) }
+      let(:mandate) { create(:mandate, mandate_members: [], primary_consultant: person) }
 
       it 'finds associated mandate' do
         associated_mandates = Mandate.associated_to_contact_with_id(person.id)
@@ -290,7 +294,7 @@ RSpec.describe Mandate, type: :model do
     end
 
     context 'when person is secondary_consultant' do
-      let(:mandate) { create(:mandate, secondary_consultant: person) }
+      let(:mandate) { create(:mandate, mandate_members: [], secondary_consultant: person) }
 
       it 'finds associated mandate' do
         associated_mandates = Mandate.associated_to_contact_with_id(person.id)
@@ -300,7 +304,7 @@ RSpec.describe Mandate, type: :model do
     end
 
     context 'when person is assistant' do
-      let(:mandate) { create(:mandate, assistant: person) }
+      let(:mandate) { create(:mandate, mandate_members: [], assistant: person) }
 
       it 'finds associated mandate' do
         associated_mandates = Mandate.associated_to_contact_with_id(person.id)
@@ -310,7 +314,7 @@ RSpec.describe Mandate, type: :model do
     end
 
     context 'when person is bookkeeper' do
-      let(:mandate) { create(:mandate, bookkeeper: person) }
+      let(:mandate) { create(:mandate, mandate_members: [], bookkeeper: person) }
 
       it 'finds associated mandate' do
         associated_mandates = Mandate.associated_to_contact_with_id(person.id)

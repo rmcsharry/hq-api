@@ -60,10 +60,10 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
       let(:primary_contact) { create(:contact_person) }
       let(:secondary_contact) { create(:contact_person) }
       let!(:mandate_member1) do
-        create(:mandate_member, mandate: mandate, contact: primary_contact, member_type: :consultant)
+        create(:mandate_member, mandate: mandate, contact: primary_contact, member_type: :assistant)
       end
       let!(:mandate_member2) do
-        create(:mandate_member, mandate: mandate, contact: secondary_contact, member_type: :consultant)
+        create(:mandate_member, mandate: mandate, contact: secondary_contact, member_type: :bookkeeper)
       end
       let!(:fund) { create(:fund) }
       let!(:investor) do

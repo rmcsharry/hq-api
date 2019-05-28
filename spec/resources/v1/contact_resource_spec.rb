@@ -32,19 +32,17 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :professional_title }
   it { is_expected.to have_attribute :updated_at }
 
-  it { is_expected.not_to have_many(:active_person_relationships).with_class_name('InterPersonRelationship') }
-  it { is_expected.not_to have_many(:actively_related_persons).with_class_name('Contact') }
-  it { is_expected.not_to have_many(:passive_person_relationships).with_class_name('InterPersonRelationship') }
-  it { is_expected.not_to have_many(:passively_related_persons).with_class_name('Contact') }
+  it { is_expected.to have_many(:active_contact_relationships).with_class_name('ContactRelationship') }
+  it { is_expected.to have_many(:passive_contact_relationships).with_class_name('ContactRelationship') }
+  it { is_expected.not_to have_many(:actively_related_people).with_class_name('Contact::Person') }
+  it { is_expected.not_to have_many(:passively_related_people).with_class_name('Contact::Person') }
+  it { is_expected.not_to have_many(:actively_related_organizations).with_class_name('Contact::Organization') }
+  it { is_expected.not_to have_many(:passively_related_organizations).with_class_name('Contact::Organization') }
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:contact_details) }
-  it { is_expected.to have_many(:contact_members).with_class_name('OrganizationMember') }
-  it { is_expected.to have_many(:contacts) }
   it { is_expected.to have_many(:documents) }
   it { is_expected.to have_many(:investors) }
   it { is_expected.to have_many(:mandate_members) }
-  it { is_expected.to have_many(:organization_members) }
-  it { is_expected.to have_many(:organizations).with_class_name('Contact') }
   it { is_expected.to have_one(:compliance_detail) }
   it { is_expected.to have_one(:legal_address).with_class_name('Address') }
   it { is_expected.to have_one(:primary_contact_address).with_class_name('Address') }

@@ -4,13 +4,12 @@
 #
 # Table name: mandate_members
 #
+#  comment     :text
 #  contact_id  :uuid
 #  created_at  :datetime         not null
-#  end_date    :date
 #  id          :uuid             not null, primary key
 #  mandate_id  :uuid
 #  member_type :string
-#  start_date  :date
 #  updated_at  :datetime         not null
 #
 # Indexes
@@ -40,59 +39,43 @@ RSpec.describe MandateMember, type: :model do
     it { is_expected.to belong_to(:contact).required }
   end
 
-  describe '#end_date_greater_or_equal_start_date' do
-    subject { build(:mandate_member, start_date: start_date, end_date: end_date) }
-    let(:start_date) { 5.days.ago }
-    let(:end_date) { Time.zone.today }
-
-    context 'end_date after start_date' do
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'end_date is not set' do
-      let(:end_date) { nil }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'start_date is not set' do
-      let(:start_date) { nil }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'end_date before start_date' do
-      let(:end_date) { start_date - 1.day }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-        expect(subject.errors.messages[:end_date]).to include("can't be before start_date")
-      end
-    end
-
-    context 'end_date on start_date' do
-      let(:end_date) { start_date }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
+  describe '#comment' do
+    it { is_expected.to respond_to(:comment) }
   end
 
   describe '#mandate_contact_member_type_unique' do
     subject { build(:mandate_member) }
     it 'is_unique' do
       expect(subject).to(
-        validate_uniqueness_of(:contact_id).scoped_to(%i[mandate_id member_type])
-                                           .with_message('should occur only once per mandate and member type')
-                                           .case_insensitive
+        validate_uniqueness_of(:contact_id)
+          .scoped_to(%i[mandate_id member_type])
+          .with_message('should occur only once per mandate and member type')
+          .case_insensitive
       )
+    end
+  end
+
+  describe '#member_type' do
+    let(:mandate) { create(:mandate, mandate_members: []) }
+    subject { build(:mandate_member, mandate: mandate) }
+
+    it 'is unique if it is in MandateMember::UNIQUE_MEMBER_TYPES' do
+      MandateMember::UNIQUE_MEMBER_TYPES.each do |unique_member_type|
+        subject.member_type = unique_member_type
+        subject.save
+
+        expect(subject).to(
+          validate_uniqueness_of(:member_type)
+            .scoped_to(:mandate_id)
+            .with_message('should occur only once per mandate')
+        )
+      end
+    end
+
+    it 'is not unique if it is something else' do
+      subject.member_type = MandateMember::NON_UNIQUE_MEMBER_TYPES.sample
+
+      expect(subject).not_to validate_uniqueness_of(:member_type)
     end
   end
 end

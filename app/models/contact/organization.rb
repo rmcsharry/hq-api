@@ -53,13 +53,6 @@ class Contact
     ].freeze
 
     has_many :bank_accounts, foreign_key: :bank_id, dependent: :nullify, inverse_of: :bank
-    has_many(
-      :contact_members,
-      class_name: 'OrganizationMember',
-      foreign_key: :organization,
-      dependent: :destroy,
-      inverse_of: :organization
-    )
     has_many :contacts, through: :contact_members
 
     validates :organization_name, presence: true
