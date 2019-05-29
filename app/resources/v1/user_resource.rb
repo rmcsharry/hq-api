@@ -152,10 +152,10 @@ module V1
 
     def change_password(data)
       user = context[:current_user]
-      user.password = data.require(:attributes).require(:password)
-      user.save!
-      nil # return nil to not expose user information
-    rescue ActiveRecord::RecordInvalid
+      user_params = data.require(:attributes).permit(:current_password, :password)
+
+      return if user.update_with_password(user_params)
+
       raise JSONAPI::Exceptions::ValidationErrors, self.class.new(user, {})
     end
 

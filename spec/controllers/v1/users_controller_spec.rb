@@ -645,14 +645,17 @@ RSpec.describe USERS_ENDPOINT, type: :request do
         data: {
           type: 'users',
           attributes: {
+            current_password: current_password,
             password: password
           }
         }
       }
     end
 
-    context 'with a valid password' do
+    context 'with valid current_password' do
+      let(:current_password) { 'testmctest1A!' }
       let(:password) { 'testmctest2A!' }
+
       it 'responds with 202 and updates the password' do
         old_password = user.encrypted_password
         post("#{USERS_ENDPOINT}/set-password", params: payload.to_json, headers: auth_headers)
@@ -662,8 +665,23 @@ RSpec.describe USERS_ENDPOINT, type: :request do
       end
     end
 
+    context 'with invalid current_password' do
+      let(:current_password) { 'invalid' }
+      let(:password) { 'testmctest2A!' }
+
+      it 'responds with 422 and does not update the password' do
+        old_password = user.encrypted_password
+        post("#{USERS_ENDPOINT}/set-password", params: payload.to_json, headers: auth_headers)
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq('current-password - ist nicht gültig')
+        expect(user.reload.encrypted_password).to eq old_password
+      end
+    end
+
     context 'with an invalid password' do
+      let(:current_password) { 'testmctest1A!' }
       let(:password) { 'testmctest' }
+
       it 'responds with 400 and does not update the password' do
         old_password = user.encrypted_password
         post("#{USERS_ENDPOINT}/set-password", params: payload.to_json, headers: auth_headers)
