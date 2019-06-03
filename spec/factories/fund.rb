@@ -5,8 +5,11 @@ FactoryBot.define do
     type { 'Fund::PrivateEquity' }
     currency { 'EUR' }
     duration { 10 }
+    duration_extension { 1 }
     issuing_year { 2010 }
     name { 'HQT Merkur Multi IV GmbH & Co. KG' }
+    region { Fund::REGIONS.sample }
+    state { :open }
     strategy { :buyout }
 
     factory :fund_private_debt, class: Fund::PrivateDebt do

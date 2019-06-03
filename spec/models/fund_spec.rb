@@ -59,76 +59,35 @@ RSpec.describe Fund, type: :model do
   it { is_expected.to have_many(:investor_reports) }
   it { is_expected.to have_many(:investors) }
 
-  describe '#psplus_asset_id' do
-    it { is_expected.to respond_to(:psplus_asset_id) }
-    it { is_expected.to validate_length_of(:psplus_asset_id).is_at_most(15) }
-  end
-
-  describe '#type' do
-    it { is_expected.to validate_presence_of(:type) }
-  end
-
-  describe '#region' do
-    it { is_expected.to enumerize(:region) }
-  end
-
-  describe '#strategy' do
-    it { is_expected.to validate_presence_of(:strategy) }
-  end
-
   describe '#aasm_state' do
     it { is_expected.to respond_to(:aasm_state) }
     it { is_expected.to respond_to(:state) }
+    it { is_expected.to validate_presence_of(:state) }
   end
 
-  describe '#name' do
-    it { is_expected.to respond_to(:name) }
-    it { is_expected.to validate_presence_of(:name) }
-  end
+  describe '#commercial_register_office' do
+    context 'commercial_register_number is present' do
+      subject { build(:fund, commercial_register_number: 'HRB 123456 B') }
 
-  describe '#issuing_year' do
-    it { is_expected.to respond_to(:issuing_year) }
-    it { is_expected.to validate_presence_of(:issuing_year) }
-  end
-
-  describe '#tax_office' do
-    it { is_expected.to respond_to(:tax_office) }
-  end
-
-  describe '#tax_id' do
-    it { is_expected.to respond_to(:tax_id) }
-  end
-
-  describe '#global_intermediary_identification_number' do
-    it { is_expected.to respond_to(:global_intermediary_identification_number) }
-
-    context 'validates format' do
-      let(:valid_examples) { ['0123456789123456789', '1234567890123456789', '5279318033432345701', ''] }
-      let(:invalid_examples) do
-        ['12345678901234567890', # 20 digits (too long, expects exactly 19)
-         'a', # 1 letter
-         'a12345678asdfj12345', # 19 chars but not all digits
-         '0 23456789999999999', # 19 length, all digits but a space
-         '12-6543219999999999', # 19 length, all digits but a dash
-         '0000000000000000000', # 19 digits but all zeros
-         '1.34567890123456789'] # 19 length, all digits but deimcal point
+      it 'validates presence' do
+        expect(subject).to validate_presence_of(:commercial_register_office)
       end
-
-      it { is_expected.to allow_values(*valid_examples).for(:global_intermediary_identification_number) }
-      it { is_expected.not_to allow_values(*invalid_examples).for(:global_intermediary_identification_number) }
     end
   end
 
-  describe '#us_employer_identification_number' do
-    it { is_expected.to respond_to(:us_employer_identification_number) }
+  describe '#commercial_register_number' do
+    context 'commercial_register_office is present' do
+      subject { build(:fund, commercial_register_office: 'Amtsgericht Berlin-Charlottenburg') }
 
-    context 'validates format' do
-      let(:valid_examples) { ['012345678', '123456789', '527931803', ''] }
-      let(:invalid_examples) { ['1234567890', 'a', 'a12345678', '0 2345678', '12-654321', '000000000', '1.3456789'] }
-
-      it { is_expected.to allow_values(*valid_examples).for(:us_employer_identification_number) }
-      it { is_expected.not_to allow_values(*invalid_examples).for(:us_employer_identification_number) }
+      it 'validates presence' do
+        expect(subject).to validate_presence_of(:commercial_register_number)
+      end
     end
+  end
+
+  describe '#currency' do
+    it { is_expected.to respond_to(:currency) }
+    it { is_expected.to validate_presence_of(:currency) }
   end
 
   describe '#de_central_bank_id' do
@@ -155,23 +114,81 @@ RSpec.describe Fund, type: :model do
     end
   end
 
-  describe '#commercial_register_office' do
-    context 'commercial_register_number is present' do
-      subject { build(:fund, commercial_register_number: 'HRB 123456 B') }
+  describe '#duration' do
+    it { is_expected.to respond_to(:duration) }
+    it { is_expected.to validate_presence_of(:duration) }
+  end
 
-      it 'validates presence' do
-        expect(subject).to validate_presence_of(:commercial_register_office)
+  describe '#duration_extension' do
+    it { is_expected.to respond_to(:duration_extension) }
+    it { is_expected.to validate_presence_of(:duration_extension) }
+  end
+
+  describe '#global_intermediary_identification_number' do
+    it { is_expected.to respond_to(:global_intermediary_identification_number) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['0123456789123456789', '1234567890123456789', '5279318033432345701', ''] }
+      let(:invalid_examples) do
+        ['12345678901234567890', # 20 digits (too long, expects exactly 19)
+         'a', # 1 letter
+         'a12345678asdfj12345', # 19 chars but not all digits
+         '0 23456789999999999', # 19 length, all digits but a space
+         '12-6543219999999999', # 19 length, all digits but a dash
+         '0000000000000000000', # 19 digits but all zeros
+         '1.34567890123456789'] # 19 length, all digits but deimcal point
       end
+
+      it { is_expected.to allow_values(*valid_examples).for(:global_intermediary_identification_number) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:global_intermediary_identification_number) }
     end
   end
 
-  describe '#commercial_register_number' do
-    context 'commercial_register_office is present' do
-      subject { build(:fund, commercial_register_office: 'Amtsgericht Berlin-Charlottenburg') }
+  describe '#issuing_year' do
+    it { is_expected.to respond_to(:issuing_year) }
+    it { is_expected.to validate_presence_of(:issuing_year) }
+  end
 
-      it 'validates presence' do
-        expect(subject).to validate_presence_of(:commercial_register_number)
-      end
+  describe '#name' do
+    it { is_expected.to respond_to(:name) }
+    it { is_expected.to validate_presence_of(:name) }
+  end
+
+  describe '#psplus_asset_id' do
+    it { is_expected.to respond_to(:psplus_asset_id) }
+    it { is_expected.to validate_length_of(:psplus_asset_id).is_at_most(15) }
+  end
+
+  describe '#region' do
+    it { is_expected.to enumerize(:region) }
+    it { is_expected.to validate_presence_of(:region) }
+  end
+
+  describe '#strategy' do
+    it { is_expected.to validate_presence_of(:strategy) }
+  end
+
+  describe '#tax_id' do
+    it { is_expected.to respond_to(:tax_id) }
+  end
+
+  describe '#tax_office' do
+    it { is_expected.to respond_to(:tax_office) }
+  end
+
+  describe '#type' do
+    it { is_expected.to validate_presence_of(:type) }
+  end
+
+  describe '#us_employer_identification_number' do
+    it { is_expected.to respond_to(:us_employer_identification_number) }
+
+    context 'validates format' do
+      let(:valid_examples) { ['012345678', '123456789', '527931803', ''] }
+      let(:invalid_examples) { ['1234567890', 'a', 'a12345678', '0 2345678', '12-654321', '000000000', '1.3456789'] }
+
+      it { is_expected.to allow_values(*valid_examples).for(:us_employer_identification_number) }
+      it { is_expected.not_to allow_values(*invalid_examples).for(:us_employer_identification_number) }
     end
   end
 

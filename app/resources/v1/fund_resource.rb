@@ -10,10 +10,13 @@ module V1
       :commercial_register_number,
       :commercial_register_office,
       :currency,
+      :de_central_bank_id,
+      :de_foreign_trade_regulations_id,
       :documents,
       :dpi,
       :duration,
       :duration_extension,
+      :global_intermediary_identification_number,
       :holdings_last_update_at,
       :irr,
       :issuing_year,
@@ -22,18 +25,15 @@ module V1
       :region,
       :state,
       :strategy,
+      :tax_id,
+      :tax_office,
       :total_called_amount,
       :total_distributions_amount,
       :total_open_amount,
       :total_signed_amount,
       :tvpi,
       :updated_at,
-      :tax_office,
-      :tax_id,
-      :global_intermediary_identification_number,
-      :us_employer_identification_number,
-      :de_central_bank_id,
-      :de_foreign_trade_regulations_id
+      :us_employer_identification_number
     )
 
     has_many :addresses
