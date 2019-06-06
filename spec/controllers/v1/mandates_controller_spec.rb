@@ -13,6 +13,8 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
 
     context 'with valid payload' do
       let(:owner) { create(:contact_person) }
+      let(:primary_consultant) { create(:contact_person) }
+      let(:secondary_consultant) { create(:contact_person) }
       let(:mandate_group1) { create(:mandate_group, group_type: 'organization') }
       let(:mandate_group2) { create(:mandate_group, group_type: 'organization') }
       let!(:user_group) do
@@ -39,6 +41,18 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
                   { id: owner.id, type: 'mandate-members' }
                 ]
               },
+              'primary-consultant': {
+                data: {
+                  id: primary_consultant.id,
+                  type: 'contacts'
+                }
+              },
+              'secondary-consultant': {
+                data: {
+                  id: secondary_consultant.id,
+                  type: 'contacts'
+                }
+              },
               'mandate-groups-organizations': {
                 data: [
                   { id: mandate_group1.id, type: 'mandate-groups' },
@@ -52,10 +66,12 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
 
       it 'creates a new mandate' do
         is_expected.to change(Mandate, :count).by(1)
-        is_expected.to change(MandateMember, :count).by(1)
+        is_expected.to change(MandateMember, :count).by(3)
         expect(response).to have_http_status(201)
         mandate = Mandate.find(JSON.parse(response.body)['data']['id'])
         expect(mandate.category).to eq 'wealth_management'
+        expect(mandate.primary_consultant).to eq primary_consultant
+        expect(mandate.secondary_consultant).to eq secondary_consultant
         expect(mandate.owners.map(&:contact)).to include(owner)
         expect(mandate.mandate_groups_organizations).to include(mandate_group1, mandate_group2)
       end

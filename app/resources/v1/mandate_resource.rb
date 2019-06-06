@@ -45,6 +45,14 @@ module V1
       end
     end
 
+    def primary_consultant_id=(relationship_key_value)
+      @model.primary_consultant = Contact.find(relationship_key_value)
+    end
+
+    def secondary_consultant_id=(relationship_key_value)
+      @model.secondary_consultant = Contact.find(relationship_key_value)
+    end
+
     filters(
       :category,
       :datev_creditor_id,
