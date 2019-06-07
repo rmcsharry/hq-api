@@ -200,7 +200,7 @@ namespace :db do
           password: password,
           confirmed_at: 1.day.ago,
           contact: Contact.where(type: 'Contact::Person').sample,
-          comment: Faker::SiliconValley.quote
+          comment: Faker::TvShows::SiliconValley.quote
         )
       end
     end
@@ -414,7 +414,7 @@ namespace :db do
         ]
       }.each do |name, roles|
         UserGroup.create!(
-          comment: Faker::SiliconValley.quote,
+          comment: Faker::TvShows::SiliconValley.quote,
           mandate_groups: MandateGroup.organizations.sample(Faker::Number.between(4, 12)),
           name: name,
           roles: roles,
@@ -807,7 +807,7 @@ namespace :db do
 
   def generate_document(valid_from:, owner:, uploader:)
     Document.new(
-      name: Faker::SiliconValley.invention,
+      name: Faker::TvShows::SiliconValley.invention,
       category: Document::CATEGORIES.sample,
       valid_from: valid_from,
       valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil,
