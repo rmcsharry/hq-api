@@ -43,11 +43,29 @@ module V1
         .where('target_contacts.type = ?', value[0])
     }
 
-    sort :target_contact, apply: lambda { |records, direction, _context|
-      records.joins('LEFT OUTER JOIN contacts AS targets ON targets.id = contact_relationships.target_contact_id')
-             .order(
-               "(targets.last_name || ', ' || targets.first_name) #{direction}"
-             )
+    sort :target_contact, apply: lambda { |records, direction, context|
+      contact_id = context[:contact]&.id
+
+      records = records.joins(
+        'LEFT OUTER JOIN contacts AS targets ON targets.id = contact_relationships.target_contact_id'
+      ).joins(
+        'LEFT OUTER JOIN contacts AS sources ON sources.id = contact_relationships.source_contact_id'
+      )
+
+      if contact_id
+        records.order("
+          CASE WHEN(sources.id = \'#{contact_id}\'
+          )
+          THEN COALESCE(targets.last_name || ', ' || targets.first_name, targets.organization_name)
+          ELSE COALESCE(sources.last_name || ', ' || sources.first_name, sources.organization_name)
+          END #{direction}
+        ")
+      else
+        records.order("
+          COALESCE(targets.last_name || ', ' || targets.first_name, targets.organization_name) #{direction},
+          COALESCE(sources.last_name || ', ' || sources.first_name, sources.organization_name) #{direction}
+        ")
+      end
     }
   end
 end
