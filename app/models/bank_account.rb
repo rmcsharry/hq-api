@@ -32,6 +32,9 @@
 # Defines the Bank Account of a Mandate or Fund
 class BankAccount < ApplicationRecord
   extend Enumerize
+  strip_attributes only: %i[
+    owner_name bank_account_number bank_routing_number
+  ], collapse_spaces: true
 
   CURRENCIES = Money::Currency.map(&:iso_code)
   ACCOUNT_TYPE = %i[currency_account payments_account settlement_account].freeze

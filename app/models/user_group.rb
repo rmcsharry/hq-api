@@ -14,6 +14,8 @@
 
 # Defines the User Group
 class UserGroup < ApplicationRecord
+  strip_attributes only: :name, collapse_spaces: true
+
   has_and_belongs_to_many :mandate_groups, -> { distinct }
   has_and_belongs_to_many :users, -> { distinct }
 

@@ -15,6 +15,7 @@
 # Defines the Mandate Group
 class MandateGroup < ApplicationRecord
   extend Enumerize
+  strip_attributes only: :name, collapse_spaces: true
 
   GROUP_TYPES = %i[family organization].freeze
 

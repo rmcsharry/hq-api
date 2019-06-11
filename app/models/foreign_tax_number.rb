@@ -23,6 +23,7 @@
 # Defines the Forein Tax Number of a Tax Detail
 class ForeignTaxNumber < ApplicationRecord
   extend Enumerize
+  strip_attributes only: :tax_number, collapse_spaces: true
 
   belongs_to :tax_detail
 

@@ -35,6 +35,10 @@
 # Defines the Tax Details of a Contact
 class TaxDetail < ApplicationRecord
   extend Enumerize
+  strip_attributes only: %i[
+    de_tax_id de_tax_number de_tax_office eu_vat_number
+    legal_entity_identifier us_fatca_status us_tax_form us_tax_number
+  ], collapse_spaces: true
 
   US_TAX_FORMS = %i[none w_8ben w_8ben_e w_8imy w_8eci w_8exp w_9].freeze
   US_FATCA_STATUSES = %i[

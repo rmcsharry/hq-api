@@ -45,6 +45,10 @@
 class Contact < ApplicationRecord
   include ExportableAttributes
   extend Enumerize
+  strip_attributes only: %i[
+    commercial_register_number commercial_register_office first_name last_name maiden_name nationality
+    organization_category organization_industry organization_name organization_type place_of_birth
+  ], collapse_spaces: true
 
   belongs_to :legal_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
   belongs_to :primary_contact_address, class_name: 'Address', optional: true, inverse_of: :owner, autosave: true
@@ -140,7 +144,7 @@ class Contact < ApplicationRecord
   alias_attribute :contact_type, :type
 
   # Returns boolean to define whether the contact is an organization or not
-  # @return [Boolean] generaly false, overwritte in subclass
+  # @return [Boolean] generally false, overwritten in subclass
   def organization?
     false
   end

@@ -25,6 +25,7 @@
 class ContactDetail
   # Defines the Email of a Contact
   class Email < ContactDetail
+    strip_attributes only: :value, collapse_spaces: true
     def self.policy_class
       ContactDetailPolicy
     end

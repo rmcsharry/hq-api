@@ -31,6 +31,9 @@
 class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
+  strip_attributes only: %i[
+    datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id
+  ], collapse_spaces: true
 
   CURRENCIES = Money::Currency.map(&:iso_code)
   CATEGORIES = %i[

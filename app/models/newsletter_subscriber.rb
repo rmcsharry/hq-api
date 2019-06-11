@@ -27,6 +27,9 @@
 class NewsletterSubscriber < ApplicationRecord
   include AASM
   extend Enumerize
+  strip_attributes only: %i[
+    confirmation_base_url confirmation_success_url email first_name last_name
+  ], collapse_spaces: true
 
   has_paper_trail(
     meta: {

@@ -36,6 +36,7 @@
 # Defines the Task model
 class Task < ApplicationRecord
   include AASM
+  strip_attributes only: :title, collapse_spaces: true
 
   belongs_to :creator, inverse_of: :created_tasks, class_name: 'User', autosave: true, optional: true
   belongs_to :finisher, inverse_of: :finished_by_user_tasks, class_name: 'User', autosave: true, optional: true

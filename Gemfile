@@ -61,6 +61,7 @@ gem 'activerecord-import'                                           # Bulk impor
 gem 'paper_trail'                                                   # Track changes of models for auditing
 gem 'pg', '~> 0.18'                                                 # Use postgresql as the database for Active Record
 gem 'sidekiq'                                                       # Handle background jobs with sidekiq
+gem 'strip_attributes'                                              # Removes whitespace from model attributes
 
 # Logging & Issue Management
 gem 'r7insight'                                                     # Logging with Logentries (Rapid7 Insight)

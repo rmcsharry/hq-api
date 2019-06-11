@@ -25,6 +25,8 @@
 class ContactDetail
   # Defines the Website of a Contact
   class Website < ContactDetail
+    strip_attributes only: :value, collapse_spaces: true
+
     def self.policy_class
       ContactDetailPolicy
     end

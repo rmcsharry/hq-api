@@ -47,6 +47,7 @@
 class Investor < ApplicationRecord
   include AASM
   include GeneratedDocument
+  strip_attributes only: :capital_account_number, collapse_spaces: true
 
   BELONG_TO_CONTACTS = 'must belong to contacts (primary owner or primary/secondary contact'
   BELONG_TO_MANDATE = 'must belong to mandate'

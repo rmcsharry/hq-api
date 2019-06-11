@@ -27,6 +27,7 @@
 # Defines the Compliance Details of a Contact
 class ComplianceDetail < ApplicationRecord
   extend Enumerize
+  strip_attributes only: :occupation_title, collapse_spaces: true
 
   WPHG_CLASSIFICATIONS = %i[none private born_professional chosen_professional suitable_counterparty].freeze
   KAGB_CLASSIFICATIONS = %i[none private semi_professional professional].freeze

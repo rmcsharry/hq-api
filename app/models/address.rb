@@ -26,6 +26,9 @@
 # Defines the Address model
 class Address < ApplicationRecord
   extend Enumerize
+  strip_attributes only: %i[
+    addition city country postal_code state street_and_number organization_name
+  ], collapse_spaces: true
 
   COUNTRIES = Carmen::Country.all.map(&:code)
   CATEGORIES = %i[home work vacation].freeze

@@ -24,6 +24,7 @@
 # Defines the List
 class List < ApplicationRecord
   include AASM
+  strip_attributes only: :name, collapse_spaces: true
 
   belongs_to :user
 
