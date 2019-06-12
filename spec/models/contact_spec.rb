@@ -4,30 +4,32 @@
 #
 # Table name: contacts
 #
-#  comment                    :text
-#  commercial_register_number :string
-#  commercial_register_office :string
-#  created_at                 :datetime         not null
-#  date_of_birth              :date
-#  date_of_death              :date
-#  first_name                 :string
-#  gender                     :string
-#  id                         :uuid             not null, primary key
-#  import_id                  :integer
-#  last_name                  :string
-#  legal_address_id           :uuid
-#  maiden_name                :string
-#  nationality                :string
-#  nobility_title             :string
-#  organization_category      :string
-#  organization_industry      :string
-#  organization_name          :string
-#  organization_type          :string
-#  place_of_birth             :string
-#  primary_contact_address_id :uuid
-#  professional_title         :string
-#  type                       :string
-#  updated_at                 :datetime         not null
+#  comment                       :text
+#  commercial_register_number    :string
+#  commercial_register_office    :string
+#  created_at                    :datetime         not null
+#  data_integrity_missing_fields :string           default([]), is an Array
+#  data_integrity_score          :decimal(4, 3)    default(0.0)
+#  date_of_birth                 :date
+#  date_of_death                 :date
+#  first_name                    :string
+#  gender                        :string
+#  id                            :uuid             not null, primary key
+#  import_id                     :integer
+#  last_name                     :string
+#  legal_address_id              :uuid
+#  maiden_name                   :string
+#  nationality                   :string
+#  nobility_title                :string
+#  organization_category         :string
+#  organization_industry         :string
+#  organization_name             :string
+#  organization_type             :string
+#  place_of_birth                :string
+#  primary_contact_address_id    :uuid
+#  professional_title            :string
+#  type                          :string
+#  updated_at                    :datetime         not null
 #
 # Indexes
 #
@@ -55,6 +57,16 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:reminders) }
   it { is_expected.to have_many(:list_items).class_name('List::Item').dependent(:destroy).inverse_of(:listable) }
   it { is_expected.to have_many(:lists).through(:list_items) }
+
+  describe '#dataIntegrityScore' do
+    it { is_expected.to respond_to(:data_integrity_score) }
+    it { is_expected.to validate_presence_of(:data_integrity_score) }
+  end
+
+  describe '#dataIntegrityMissingFields' do
+    it { is_expected.to respond_to(:data_integrity_missing_fields) }
+    it { is_expected.to validate_presence_of(:data_integrity_missing_fields) }
+  end
 
   describe '#compliance_detail' do
     it { is_expected.to have_one(:compliance_detail) }

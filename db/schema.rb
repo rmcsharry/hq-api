@@ -159,6 +159,8 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.uuid "primary_contact_address_id"
     t.integer "import_id"
     t.string "place_of_birth"
+    t.decimal "data_integrity_score", precision: 4, scale: 3, default: "0.0"
+    t.string "data_integrity_missing_fields", default: [], array: true
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_contacts_on_primary_contact_address_id"
   end

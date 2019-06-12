@@ -4,30 +4,32 @@
 #
 # Table name: contacts
 #
-#  comment                    :text
-#  commercial_register_number :string
-#  commercial_register_office :string
-#  created_at                 :datetime         not null
-#  date_of_birth              :date
-#  date_of_death              :date
-#  first_name                 :string
-#  gender                     :string
-#  id                         :uuid             not null, primary key
-#  import_id                  :integer
-#  last_name                  :string
-#  legal_address_id           :uuid
-#  maiden_name                :string
-#  nationality                :string
-#  nobility_title             :string
-#  organization_category      :string
-#  organization_industry      :string
-#  organization_name          :string
-#  organization_type          :string
-#  place_of_birth             :string
-#  primary_contact_address_id :uuid
-#  professional_title         :string
-#  type                       :string
-#  updated_at                 :datetime         not null
+#  comment                       :text
+#  commercial_register_number    :string
+#  commercial_register_office    :string
+#  created_at                    :datetime         not null
+#  data_integrity_missing_fields :string           default([]), is an Array
+#  data_integrity_score          :decimal(4, 3)    default(0.0)
+#  date_of_birth                 :date
+#  date_of_death                 :date
+#  first_name                    :string
+#  gender                        :string
+#  id                            :uuid             not null, primary key
+#  import_id                     :integer
+#  last_name                     :string
+#  legal_address_id              :uuid
+#  maiden_name                   :string
+#  nationality                   :string
+#  nobility_title                :string
+#  organization_category         :string
+#  organization_industry         :string
+#  organization_name             :string
+#  organization_type             :string
+#  place_of_birth                :string
+#  primary_contact_address_id    :uuid
+#  professional_title            :string
+#  type                          :string
+#  updated_at                    :datetime         not null
 #
 # Indexes
 #
