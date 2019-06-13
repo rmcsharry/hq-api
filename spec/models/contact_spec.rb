@@ -58,16 +58,16 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:list_items).class_name('List::Item').dependent(:destroy).inverse_of(:listable) }
   it { is_expected.to have_many(:lists).through(:list_items) }
 
-  describe '#dataIntegrityScore' do
+  describe '#data_integrity_score' do
     it { is_expected.to respond_to(:data_integrity_score) }
     it { is_expected.to validate_presence_of(:data_integrity_score) }
 
     context 'validates' do
-      contact = Contact.new(data_integrity_missing_fields: [])
+      contact = Contact.create(data_integrity_missing_fields: [])
 
       it 'between 0 and 1 is valid' do
         contact.data_integrity_score = 0.5
-        expect(contact.data_integrity_score).to be_between(0, 1)
+        expect(contact.data_integrity_score).to be_between(0.0, 1.0)
       end
       it '> 1 is invalid' do
         contact.data_integrity_score = 1.1
