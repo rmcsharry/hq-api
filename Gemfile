@@ -33,6 +33,7 @@ gem 'rack-cors'                                                     # Use Rack C
 
 # Business Logic & Validation
 gem 'aasm'                                                                           # State machines for Ruby classes
+gem 'activerecord_json_validator'                                                    # Validate the format of JSONB objects
 gem 'axlsx', github: 'randym/axlsx', ref: 'c593a08b2a929dac7aa8dc418b55e26b4c49dc34' # Wrapper for generation of .xlsx documents
 gem 'carmen'                                                                         # A repository of geographic regions for Ruby
 gem 'draper'                                                                         # Decorate models
@@ -97,6 +98,7 @@ end
 group :test do
   gem 'database_cleaner' # Strategies for cleaning databases in Ruby. Can be used to ensure a clean state for testing.
   gem 'jsonapi-resources-matchers', github: 'GabrielSandoval/jsonapi-resources-matchers', branch: 'ae-rails_5_upgrade_dependencies-155929975', require: false # Test matchers for jsonapi-resources
+  gem 'rspec-json_expectations' # Helpers for RSpec to test JSON objects
   gem 'shoulda-matchers' # Collection of testing matchers extracted from Shoulda
   gem 'timecop' # Provides time travel for tests
 end

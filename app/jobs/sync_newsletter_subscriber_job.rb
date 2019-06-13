@@ -27,11 +27,23 @@ class SyncNewsletterSubscriberJob < ApplicationJob
             'gender' => subscriber.gender,
             'last_name' => subscriber.last_name,
             'nobility_title' => subscriber.nobility_title,
-            'professional_title' => subscriber.professional_title
+            'professional_title' => subscriber.professional_title,
+            **questionnaire_results(subscriber: subscriber)
           }
         }
       ]
     )
   end
   # rubocop:enable Metrics/MethodLength
+
+  def questionnaire_results(subscriber:)
+    return {} unless subscriber.questionnaire_results
+
+    questionnaire_id = subscriber.questionnaire_results['questionnaire-id']
+    subscriber.questionnaire_results['answers'].inject({}) do |result, answer|
+      key = "#{questionnaire_id}_#{answer['question-id']}"
+      result["#{key}_question_text"] = answer['question-text']
+      result["#{key}_answer_text"] = answer['selected-btn-text']
+    end
+  end
 end

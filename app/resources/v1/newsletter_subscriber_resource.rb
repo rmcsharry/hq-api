@@ -10,7 +10,6 @@ module V1
       :confirmation_sent_at,
       :confirmation_success_url,
       :confirmed_at,
-      :subscriber_context,
       :created_at,
       :email,
       :first_name,
@@ -19,7 +18,9 @@ module V1
       :mailjet_list_id,
       :nobility_title,
       :professional_title,
+      :questionnaire_results,
       :state,
+      :subscriber_context,
       :updated_at
     )
 

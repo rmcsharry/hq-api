@@ -19,6 +19,7 @@
 #  mailjet_list_id          :string
 #  nobility_title           :string
 #  professional_title       :string
+#  questionnaire_results    :jsonb
 #  subscriber_context       :string           default("hqt"), not null
 #  updated_at               :datetime         not null
 #

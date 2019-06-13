@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "questionnaire-id": { "type": "string" },
+    "answers": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/question" }
+    }
+  },
+  "required": ["questionnaire-id", "answers"],
+  "definitions": {
+    "question": {
+      "type": "object",
+      "properties": {
+        "question-id": { "type": "string" },
+        "question-text": { "type": "string" },
+        "question-value": { "type": "number" },
+        "section-id": { "type": "string" },
+        "section-text": { "type": "string" },
+        "selected-btn-key": { "type": "string" },
+        "selected-btn-text": { "type": "string" },
+        "selected-btn-value": { "type": "number" }
+      },
+      "required": [
+        "question-id",
+        "question-text",
+        "question-value",
+        "section-id",
+        "section-text",
+        "selected-btn-key",
+        "selected-btn-text",
+        "selected-btn-value"
+      ]
+    }
+  }
+}

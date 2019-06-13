@@ -192,6 +192,95 @@ RSpec.describe NEWSLETTER_SUBSCRIBERS_ENDPOINT, type: :request do
         )
       end
     end
+
+    context 'with questionnaire results' do
+      let(:payload) do
+        {
+          data: {
+            type: 'newsletter_subscribers',
+            attributes: {
+              email: email,
+              'mailjet-list-id': '1234',
+              'confirmation-base-url': confirmation_base_url,
+              'confirmation-success-url': confirmation_success_url,
+              'questionnaire-results': {
+                answers: [
+                  {
+                    'question-id': 'question-1-1',
+                    'question-text': 'What is the question?',
+                    'question-value': 20.0,
+                    'section-id': 'section-1',
+                    'section-text': 'Section 1',
+                    'selected-btn-key': 'unsure',
+                    'selected-btn-text': 'Unsicher',
+                    'selected-btn-value': 10.0
+                  }
+                ],
+                'questionnaire-id': '12'
+              }
+            }
+          }
+        }
+      end
+
+      it 'creates a new newsletter subscriber' do
+        is_expected.to change(NewsletterSubscriber, :count).by(1)
+        is_expected.to change { ActionMailer::Base.deliveries.size }.by(1)
+        expect(response).to have_http_status(201)
+        subscriber = NewsletterSubscriber.find(JSON.parse(response.body)['data']['id'])
+        expect(subscriber.email).to eq email
+        expect(subscriber.questionnaire_results['questionnaire-id']).to eq '12'
+        expect(subscriber.questionnaire_results['answers'].first.to_json).to include_json(
+          'question-id': 'question-1-1',
+          'question-text': 'What is the question?',
+          'question-value': 20.0,
+          'section-id': 'section-1',
+          'section-text': 'Section 1',
+          'selected-btn-key': 'unsure',
+          'selected-btn-text': 'Unsicher',
+          'selected-btn-value': 10.0
+        )
+      end
+    end
+
+    context 'with invalid questionnaire results' do
+      let(:payload) do
+        {
+          data: {
+            type: 'newsletter_subscribers',
+            attributes: {
+              email: email,
+              'mailjet-list-id': '1234',
+              'confirmation-base-url': confirmation_base_url,
+              'confirmation-success-url': confirmation_success_url,
+              'questionnaire-results': {
+                answers: [
+                  {
+                    'question-id': 'question-1-1',
+                    'question-text': 'What is the question?',
+                    'question-value': 20.0,
+                    'section-id': 'section-1',
+                    'section-text': 'Section 1',
+                    'selected-btn-key': 'unsure',
+                    'selected-btn-text': 'Unsicher'
+                  }
+                ]
+              }
+            }
+          }
+        }
+      end
+
+      it 'does not create a new newsletter subscriber' do
+        is_expected.to change(NewsletterSubscriber, :count).by(0)
+        is_expected.to change { ActionMailer::Base.deliveries.size }.by(0)
+        expect(response).to have_http_status(422)
+        expect(JSON.parse(response.body)['errors'].first['detail']).to eq(
+          "questionnaire-results - The property '#/answers/0' did not contain a required property of " \
+          "'selected-btn-value' in schema file:///app/config/schemas/questionnaire_results.json_schema#"
+        )
+      end
+    end
   end
 
   describe 'GET /v1/newsletter-subscribers/confirm-subscription' do

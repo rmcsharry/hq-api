@@ -19,6 +19,7 @@
 #  mailjet_list_id          :string
 #  nobility_title           :string
 #  professional_title       :string
+#  questionnaire_results    :jsonb
 #  subscriber_context       :string           default("hqt"), not null
 #  updated_at               :datetime         not null
 #
@@ -27,6 +28,9 @@
 class NewsletterSubscriber < ApplicationRecord
   include AASM
   extend Enumerize
+
+  QUESTIONNAIRE_RESULTS_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'questionnaire_results.json_schema').to_s
+
   strip_attributes only: %i[
     confirmation_base_url confirmation_success_url email first_name last_name
   ], collapse_spaces: true
@@ -67,6 +71,12 @@ class NewsletterSubscriber < ApplicationRecord
   validates :confirmation_base_url, presence: true
   validates :confirmation_success_url, presence: true
   validates :email, presence: true, email: { strict_mode: true }
+
+  validates(
+    :questionnaire_results,
+    json: { message: ->(errors) { errors }, schema: QUESTIONNAIRE_RESULTS_JSON_SCHEMA },
+    if: :questionnaire_results
+  )
 
   validate :attributes_in_confirmed_state
 
