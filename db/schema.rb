@@ -161,6 +161,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.string "place_of_birth"
     t.decimal "data_integrity_score", precision: 4, scale: 3, default: "0.0"
     t.string "data_integrity_missing_fields", default: [], array: true
+    t.index ["data_integrity_score"], name: "index_contacts_on_data_integrity_score"
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_contacts_on_primary_contact_address_id"
   end
@@ -243,6 +244,25 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.index ["capital_management_company_id"], name: "index_funds_on_capital_management_company_id"
     t.index ["legal_address_id"], name: "index_funds_on_legal_address_id"
     t.index ["primary_contact_address_id"], name: "index_funds_on_primary_contact_address_id"
+  end
+
+  create_table "integrity_weights", id: false, force: :cascade do |t|
+    t.string "model_name"
+    t.string "attribute_name"
+    t.decimal "weight", precision: 3, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attribute_name", "model_name"], name: "index_integrity_weights_on_attribute_name_and_model_name", unique: true
+  end
+
+  create_table "inter_person_relationships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "role", null: false
+    t.uuid "target_person_id", null: false
+    t.uuid "source_person_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_person_id"], name: "index_inter_person_relationships_on_source_person_id"
+    t.index ["target_person_id"], name: "index_inter_person_relationships_on_target_person_id"
   end
 
   create_table "investor_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -33,6 +33,7 @@
 #
 # Indexes
 #
+#  index_contacts_on_data_integrity_score        (data_integrity_score)
 #  index_contacts_on_legal_address_id            (legal_address_id)
 #  index_contacts_on_primary_contact_address_id  (primary_contact_address_id)
 #
