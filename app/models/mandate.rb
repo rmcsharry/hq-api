@@ -167,7 +167,7 @@ class Mandate < ApplicationRecord
   # Validates if primary_consultant is present
   # @return [void]
   def presence_of_primary_consultant
-    return if member_type_present?(:primary_consultant)
+    return if primary_consultant.present?
 
     errors.add(:mandate_members, 'have to contain a primary_consultant')
   end
@@ -183,11 +183,7 @@ class Mandate < ApplicationRecord
   # Checks if primary and secondary consultant are present
   # @return [Boolean]
   def primary_and_secondary_consultant_present?
-    member_type_present?(:primary_consultant) && member_type_present?(:secondary_consultant)
-  end
-
-  def member_type_present?(member_type)
-    mandate_members.find_by(member_type: member_type).present?
+    primary_consultant.present? && secondary_consultant.present?
   end
 
   def default_currency_required?
