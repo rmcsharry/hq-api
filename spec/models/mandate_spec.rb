@@ -145,7 +145,7 @@ RSpec.describe Mandate, type: :model do
         expect(subject).not_to be_valid
 
         subject.mandate_members << primary_consultant
-        expect(subject).to be_valid
+        expect(subject.reload).to be_valid
       end
 
       it 'can only exist once' do
