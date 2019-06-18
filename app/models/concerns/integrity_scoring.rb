@@ -40,7 +40,7 @@ module IntegrityScoring
     if self[@weight.name].present?
       @score += @weight.value
     else
-      @missing_fields << @weight.name
+      @missing_fields << @weight.name.camelize(:lower)
     end
   end
 
@@ -55,18 +55,18 @@ module IntegrityScoring
   end
 
   def search_relative
+    term = @weight.name.split(':')[1].to_s
     # apply weight if the related model has a record that matches the search
-    if record_present?
+    if record_present?(term)
       @score += @weight.value
     else
-      @missing_fields << "#{@weight.model_key}:#{@weight.name}"
+      @missing_fields << term.camelize(:lower)
     end
   end
 
-  def record_present?
+  def record_present?(search_term)
     field_to_search = @weight.name.split(':')[0]
-    term = @weight.name.split(':')[1].to_s
-    public_send(@weight.model_key).where("#{field_to_search} = ?", term).present?
+    public_send(@weight.model_key).where("#{field_to_search} = ?", search_term).present?
   end
 
   def direct_from_relative
@@ -82,7 +82,7 @@ module IntegrityScoring
     if public_send(@weight.model_key).present?
       @score += @weight.value
     else
-      @missing_fields << "#{@weight.model_key}:at least one"
+      @missing_fields << @weight.model_key
     end
   end
 
@@ -91,7 +91,7 @@ module IntegrityScoring
     if public_send(@weight.model_key)[@weight.name].present?
       @score += @weight.value
     else
-      @missing_fields << "#{@weight.model_key}:#{@weight.name}"
+      @missing_fields << @weight.name.camelize(:lower)
     end
   end
 end
