@@ -24,7 +24,9 @@ class SyncNewsletterSubscriberJob < ApplicationJob
     }
 
     # Only sync questionnair results if there are any present to not overwrite them in case the person signs up
-    # for a newsletter AFTER filling out the questionnaire.
+    # for a newsletter AFTER already having submitted and confirmed a questionnaire.
+    # A user might fill out the questionnaire one day and at some later time subscribe to the newsletter. In that case,
+    # we want to preserve those earlier questionnaire results, not overwrite them.
     questionnaire_results = { 'questionnaire_results': questionnaire_results(subscriber: subscriber).to_s }
     properties.merge(questionnaire_results) if subscriber.questionnaire_results
 
