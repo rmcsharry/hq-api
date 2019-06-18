@@ -28,7 +28,7 @@ class SyncNewsletterSubscriberJob < ApplicationJob
     # A user might fill out the questionnaire one day and at some later time subscribe to the newsletter. In that case,
     # we want to preserve those earlier questionnaire results, not overwrite them.
     questionnaire_results = { 'questionnaire_results': questionnaire_results(subscriber: subscriber).to_s }
-    properties.merge(questionnaire_results) if subscriber.questionnaire_results
+    properties.merge!(questionnaire_results) if subscriber.questionnaire_results
 
     Mailjet::Contactslist_managemanycontacts.create(
       id: subscriber.mailjet_list_id,
