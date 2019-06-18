@@ -14,6 +14,20 @@ class SyncNewsletterSubscriberJob < ApplicationJob
 
   # rubocop:disable Metrics/MethodLength
   def sync_to_mailjet(subscriber:)
+    properties = {
+      'first_name' => subscriber.first_name,
+      'formal_salutation' => subscriber.formal_salutation,
+      'gender' => subscriber.gender,
+      'last_name' => subscriber.last_name,
+      'nobility_title' => subscriber.nobility_title,
+      'professional_title' => subscriber.professional_title
+    }
+
+    # Only sync questionnair results if there are any present to not overwrite them in case the person signs up
+    # for a newsletter AFTER filling out the questionnaire.
+    questionnaire_results = { 'questionnaire_results': questionnaire_results(subscriber: subscriber).to_s }
+    properties.merge(questionnaire_results) if subscriber.questionnaire_results
+
     Mailjet::Contactslist_managemanycontacts.create(
       id: subscriber.mailjet_list_id,
       action: 'addforce',
@@ -21,15 +35,7 @@ class SyncNewsletterSubscriberJob < ApplicationJob
         {
           'Email' => subscriber.email,
           'Name' => subscriber.name,
-          'Properties' => {
-            'first_name' => subscriber.first_name,
-            'formal_salutation' => subscriber.formal_salutation,
-            'gender' => subscriber.gender,
-            'last_name' => subscriber.last_name,
-            'nobility_title' => subscriber.nobility_title,
-            'professional_title' => subscriber.professional_title,
-            **questionnaire_results(subscriber: subscriber)
-          }
+          'Properties' => properties
         }
       ]
     )
@@ -37,13 +43,14 @@ class SyncNewsletterSubscriberJob < ApplicationJob
   # rubocop:enable Metrics/MethodLength
 
   def questionnaire_results(subscriber:)
-    return {} unless subscriber.questionnaire_results
+    return '' unless subscriber.questionnaire_results
 
-    questionnaire_id = subscriber.questionnaire_results['questionnaire-id']
-    subscriber.questionnaire_results['answers'].inject({}) do |result, answer|
-      key = "#{questionnaire_id}_#{answer['question-id']}"
-      result["#{key}_question_text"] = answer['question-text']
-      result["#{key}_answer_text"] = answer['selected-btn-text']
-    end
+    answers = subscriber.questionnaire_results['answers']
+    total_points = answers.sum { |a| a['question-value'] }
+    scored_points = answers.sum { |a| a['selected-btn-value'] }
+    result = "#{scored_points} von #{total_points} Punkten ––– "
+    result + answers.map do |answer|
+      "#{answer['question-text']}: #{answer['selected-btn-text']}"
+    end.join(' // ')
   end
 end
