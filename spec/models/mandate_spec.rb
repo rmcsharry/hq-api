@@ -10,6 +10,8 @@
 #  confidential                     :boolean          default(FALSE), not null
 #  created_at                       :datetime         not null
 #  current_state_transition_id      :uuid
+#  data_integrity_missing_fields    :string           default([]), is an Array
+#  data_integrity_score             :decimal(4, 3)    default(0.0)
 #  datev_creditor_id                :string
 #  datev_debitor_id                 :string
 #  default_currency                 :string
@@ -36,8 +38,8 @@
 #
 #  fk_rails_...  (current_state_transition_id => state_transitions.id)
 #  fk_rails_...  (previous_state_transition_id => state_transitions.id)
+#  index_mandates_on_data_integrity_score  (data_integrity_score)
 #
-
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
