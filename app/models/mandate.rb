@@ -11,7 +11,7 @@
 #  created_at                       :datetime         not null
 #  current_state_transition_id      :uuid
 #  data_integrity_missing_fields    :string           default([]), is an Array
-#  data_integrity_score             :decimal(4, 3)    default(0.0)
+#  data_integrity_score             :decimal(5, 4)    default(0.0)
 #  datev_creditor_id                :string
 #  datev_debitor_id                 :string
 #  default_currency                 :string

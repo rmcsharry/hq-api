@@ -169,7 +169,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.uuid "primary_contact_address_id"
     t.integer "import_id"
     t.string "place_of_birth"
-    t.decimal "data_integrity_score", precision: 4, scale: 3, default: "0.0"
+    t.decimal "data_integrity_score", precision: 5, scale: 4, default: "0.0"
     t.string "data_integrity_missing_fields", default: [], array: true
     t.index ["data_integrity_score"], name: "index_contacts_on_data_integrity_score"
     t.index ["legal_address_id"], name: "index_contacts_on_legal_address_id"
@@ -397,10 +397,11 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.string "psplus_pe_id"
     t.uuid "previous_state_transition_id"
     t.uuid "current_state_transition_id"
-    t.decimal "data_integrity_score", precision: 4, scale: 3, default: "0.0"
+    t.decimal "data_integrity_score", precision: 5, scale: 4, default: "0.0"
     t.string "data_integrity_missing_fields", default: [], array: true    
     t.index ["current_state_transition_id"], name: "index_mandates_on_current_state_transition_id"
     t.index ["previous_state_transition_id"], name: "index_mandates_on_previous_state_transition_id"
+    t.string "data_integrity_missing_fields", default: [], array: true
     t.index ["data_integrity_score"], name: "index_mandates_on_data_integrity_score"
   end
 

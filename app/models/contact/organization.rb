@@ -9,7 +9,7 @@
 #  commercial_register_office    :string
 #  created_at                    :datetime         not null
 #  data_integrity_missing_fields :string           default([]), is an Array
-#  data_integrity_score          :decimal(4, 3)    default(0.0)
+#  data_integrity_score          :decimal(5, 4)    default(0.0)
 #  date_of_birth                 :date
 #  date_of_death                 :date
 #  first_name                    :string
