@@ -15,17 +15,9 @@ namespace :db do
       Rake::Task['db:seed_weights:mandate'].invoke
 
       puts 'Calculating contact scores'
-      Contact.where('type = ?', 'Contact::Organization').each do |contact|
-        # rubocop:disable Rails/SkipsModelValidations
-        contact.update_column(:data_integrity_score, contact.calculate_score)
-        # rubocop:enable Rails/SkipsModelValidations
-      end
+      Contact.all.each(&:calculate_score)
       puts 'Calculating mandate scores'
-      Mandate.all.each do |mandate|
-        # rubocop:disable Rails/SkipsModelValidations
-        mandate.update_column(:data_integrity_score, mandate.calculate_score)
-        # rubocop:enable Rails/SkipsModelValidations
-      end
+      Mandate.all.each(&:calculate_score)
     end
   end
 
@@ -57,7 +49,7 @@ namespace :db do
       person_weight('tax_detail', 'us_fatca_status', 0.0108)
       person_weight('tax_detail', 'us_tax_form', 0.0108)
       person_weight('tax_detail', 'us_tax_number', 0.0108)
-      person_weight('documents', 'kyc', 0.0542)
+      person_weight('documents', 'category:kyc', 0.0542)
       person_weight('activities', '', 0.17)
     end
 
@@ -81,9 +73,9 @@ namespace :db do
       organization_weight('contact_organization', 'us_tax_number', 0.0094)
       organization_weight('contact_organization', 'wphg_classification', 0.0472)
       organization_weight('activities', '', 0.1604)
-      organization_weight('documents', 'kyc', 0.0943)
-      organization_weight('passive_contact_relationships', 'beneficial_owner', 0.0755)
-      organization_weight('passive_contact_relationships', 'shareholder', 0.0755)
+      organization_weight('documents', 'category:kyc', 0.0943)
+      organization_weight('passive_contact_relationships', 'role:beneficial_owner', 0.0755)
+      organization_weight('passive_contact_relationships', 'role:shareholder', 0.0755)
       organization_weight('tax_detail', 'legal_entity_identifier', 0.0094)
     end
 
@@ -97,11 +89,12 @@ namespace :db do
       mandate_weight('mandate', 'valid_from', 0.0130)
       mandate_weight('activities', '', 0.2208)
       mandate_weight('bank_accounts', '', 0.0649)
-      mandate_weight('documents', 'contract_hq', 0.1948)
-      mandate_weight('mandate_members', 'assistant', 0.0649)
-      mandate_weight('mandate_members', 'bookkeeper', 0.0649)
-      mandate_weight('mandate_members', 'primary_consultant', 0.0649)
-      mandate_weight('mandate_members', 'secondary_consultant', 0.0649)
+      mandate_weight('documents', 'category:contract_hq', 0.1948)
+      mandate_weight('mandate_members', 'member_type:assistant', 0.0649)
+      mandate_weight('mandate_members', 'member_type:bookkeeper', 0.0649)
+      mandate_weight('mandate_members', 'member_type:owner', 0.0649)
+      mandate_weight('mandate_members', 'member_type:primary_consultant', 0.0649)
+      mandate_weight('mandate_members', 'member_type:secondary_consultant', 0.0649)
     end
 
     def person_weight(key, attribute, weight)
