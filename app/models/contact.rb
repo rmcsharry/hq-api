@@ -71,22 +71,6 @@ class Contact < ApplicationRecord
            dependent: :destroy,
            foreign_key: :target_contact_id,
            inverse_of: :target_contact
-  has_many :actively_related_people,
-           -> { where(type: 'Contact::Person') },
-           class_name: 'Contact::Person',
-           through: :active_contact_relationships
-  has_many :passively_related_people,
-           -> { where(type: 'Contact::Person') },
-           class_name: 'Contact::Person',
-           through: :passive_contact_relationships
-  has_many :actively_related_organizations,
-           -> { where(type: 'Contact::Organization') },
-           class_name: 'Contact::Organization',
-           through: :active_contact_relationships
-  has_many :passively_related_organizations,
-           -> { where(type: 'Contact::Organization') },
-           class_name: 'Contact::Organization',
-           through: :passive_contact_relationships
   has_many(
     :primary_contact_investors, class_name: 'Investor', foreign_key: :primary_contact_id,
                                 inverse_of: :primary_contact, dependent: :nullify

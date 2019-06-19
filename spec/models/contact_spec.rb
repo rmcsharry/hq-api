@@ -49,10 +49,6 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:mandates) }
   it { is_expected.to have_many(:active_contact_relationships) }
   it { is_expected.to have_many(:passive_contact_relationships) }
-  it { is_expected.to have_many(:actively_related_people) }
-  it { is_expected.to have_many(:passively_related_people) }
-  it { is_expected.to have_many(:actively_related_organizations) }
-  it { is_expected.to have_many(:passively_related_organizations) }
   it { is_expected.to have_many(:investors) }
   it { is_expected.to have_many(:primary_contact_investors) }
   it { is_expected.to have_many(:secondary_contact_investors) }

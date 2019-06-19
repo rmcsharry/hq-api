@@ -34,10 +34,6 @@ RSpec.describe ::V1::ContactResource, type: :resource do
 
   it { is_expected.to have_many(:active_contact_relationships).with_class_name('ContactRelationship') }
   it { is_expected.to have_many(:passive_contact_relationships).with_class_name('ContactRelationship') }
-  it { is_expected.not_to have_many(:actively_related_people).with_class_name('Contact::Person') }
-  it { is_expected.not_to have_many(:passively_related_people).with_class_name('Contact::Person') }
-  it { is_expected.not_to have_many(:actively_related_organizations).with_class_name('Contact::Organization') }
-  it { is_expected.not_to have_many(:passively_related_organizations).with_class_name('Contact::Organization') }
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:documents) }
