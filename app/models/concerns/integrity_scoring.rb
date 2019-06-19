@@ -46,12 +46,30 @@ module IntegrityScoring
 
   def from_relative
     # we need to either search the related model for a particular type of record
-    # or else check the model directly (for at least one record or given property)
-    if @weight.name.include?(':')
+    # or else check the model related directly
+    if @weight.model_key.include?('::')
+      search_by_child_type
+    elsif @weight.name.include?(':')
       search_relative
     else
       direct_from_relative
     end
+  end
+
+  def search_by_child_type
+    #  apply weight from a related class with many records, but one of the records is primary (eg. primary phone)
+    if child_type_has_record?
+      @score += @weight.value
+    else
+      @missing_fields << @weight.name
+    end
+  end
+
+  def child_type_has_record?
+    # true
+    owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
+    child = @weight.model_key.constantize
+    child.where("#{owner}": self, type: @weight.model_key).where(primary: true).present?
   end
 
   def search_relative
@@ -60,7 +78,9 @@ module IntegrityScoring
     if record_present?(term)
       @score += @weight.value
     else
-      @missing_fields << term.camelize(:lower)
+      # note that we do not camelize this missing field, since it is actually a value inside the attribute
+      # and not the attribute name itself
+      @missing_fields << term
     end
   end
 
@@ -70,6 +90,7 @@ module IntegrityScoring
   end
 
   def direct_from_relative
+    # relative either has a record or a specific given property has a value
     if @weight.name == ''
       with_at_least_one_record
     else
