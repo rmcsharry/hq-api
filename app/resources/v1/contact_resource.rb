@@ -12,6 +12,8 @@ module V1
       :compliance_detail,
       :contact_details,
       :contact_type,
+      :data_integrity_score,
+      :data_integrity_missing_fields,
       :date_of_birth,
       :date_of_death,
       :first_name,
@@ -97,6 +99,10 @@ module V1
         contact_detail.assign_attributes(sanitized_params)
       end
       @save_needed = true
+    end
+
+    def data_integrity_score
+      @model.decorate.data_integrity_score
     end
 
     def name_list

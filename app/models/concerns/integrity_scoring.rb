@@ -45,32 +45,50 @@ module IntegrityScoring
   end
 
   def from_relative
-    # we need to either search the related model for a particular type of record
     # or else check the model related directly
     if @weight.model_key.include?('::')
-      nil #search_by_child_type
+      search_by_child_type # search the related model for a particular type of record
     elsif @weight.name.include?('==')
-      search_related
+      # search_relative # search the related model for a particular instance of a record
     else
       direct_from_relative
     end
   end
 
-  # def search_by_child_type
-  #   #  apply weight from a related class with many records, but one of the records is primary (eg. primary phone)
-  #   if child_type_has_record?
+  # def search_by_model_type
+  #   # We need to search by model_type and find the record that satisfies the search request
+  #   # eg find which of the typed records is primary such as 'primary phone'
+  #   model, type = @weight.model_key.split(',')
+  #   if model_type_record_present?(model, type.split('==')[1])
   #     @score += @weight.value
   #   else
   #     @missing_fields << @weight.name
   #   end
   # end
 
-  # def child_type_has_record?
-  #   # true
+  # def model_type_record_present?(model_key, type_name)
   #   owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
-  #   child = @weight.model_key.constantize
-  #   child.where("#{owner}": self, type: @weight.model_key).where(primary: true).present?
+  #   term, value = @weight.name.split('==')
+  #   type_name.constantize.where("#{owner}": self, type: type_name).where("#{term}": value.to_s).present?
   # end
+
+  def search_by_child_type
+    #  apply weight from a related class with many records, but one of the records is primary (eg. primary phone)
+    if child_type_has_record?
+      @score += @weight.value
+    else
+      @missing_fields << @weight.name
+    end
+  end
+
+  # rubocop:disable Metrics/AbcSize
+  def child_type_has_record?
+    owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
+    field, value = @weight.name.split('==')
+    model = @weight.model_key.constantize
+    model.where("#{owner}": self, type: @weight.model_key).where("#{field}": value.to_s).present?
+  end
+  # rubocop:enable Metrics/AbcSize
 
   def search_related
     search_terms = @weight.name.split(',')
@@ -111,16 +129,16 @@ module IntegrityScoring
   # end
 
   def direct_from_relative
-    # relative either has a record or a specific given property has a value
+    # if no name provided, then find a record, else find specific attribute
     if @weight.name == ''
       with_at_least_one_record
     else
-      with_specific_property
+      with_specific_attribute
     end
   end
 
   def with_at_least_one_record
-    # apply weight for a related model if there is at least one record present
+    # apply weight for a related model if there is at least one record present (eg at least one bank account)
     if public_send(@weight.model_key).present?
       @score += @weight.value
     else
@@ -128,8 +146,8 @@ module IntegrityScoring
     end
   end
 
-  def with_specific_property
-    # apply weight for a specific property of a related model, if that property has a value
+  def with_specific_attribute
+    # apply weight for a specific attribute of a related model, if that attribute has a value
     if public_send(@weight.model_key)[@weight.name].present?
       @score += @weight.value
     else

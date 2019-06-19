@@ -12,6 +12,8 @@ module V1
       :confidential,
       :current_state_completed_tasks_count,
       :current_state_total_tasks_count,
+      :data_integrity_score,
+      :data_integrity_missing_fields,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,

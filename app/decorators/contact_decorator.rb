@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Defines the decorator for contacts
-class ContactDecorator < Draper::Decorator
+class ContactDecorator < ApplicationDecorator
   # Returns concatenated tax_numbers of the contact
   # @return [String]
   # rubocop:disable Metrics/AbcSize
@@ -20,5 +20,10 @@ class ContactDecorator < Draper::Decorator
   # @return [String]
   def name_with_gender
     name
+  end
+
+  def data_integrity_score
+    # format_percentage(object.data_integrity_score * 100)
+    helpers.number_to_percentage(object.data_integrity_score * 100, precision: 0, format: '%n')
   end
 end
