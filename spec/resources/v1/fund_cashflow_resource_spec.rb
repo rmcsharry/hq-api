@@ -6,6 +6,8 @@ RSpec.describe V1::FundCashflowResource, type: :resource do
   let(:fund_cashflow) { create(:fund_cashflow) }
   subject { described_class.new(fund_cashflow, {}) }
 
+  it { is_expected.to have_attribute :description_bottom }
+  it { is_expected.to have_attribute :description_top }
   it { is_expected.to have_attribute :investor_count }
   it { is_expected.to have_attribute :number }
   it { is_expected.to have_attribute :state }

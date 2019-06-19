@@ -6,11 +6,12 @@ class ApplicationDecorator < Draper::Decorator
     @helpers ||= ActionController::Base.helpers
   end
 
-  def format_currency(value, unit = '')
-    helpers.number_to_currency(value, unit: unit)
+  def format_currency(value, currency = 'EUR')
+    money = Money.from_amount(value, currency)
+    money.format(symbol: money.currency.to_s + ' ')
   end
 
-  def format_percentage(value)
-    helpers.number_to_percentage(value, precision: 2, format: '%n')
+  def format_percentage(value, precision = 2)
+    helpers.number_to_percentage(value, precision: precision, format: '%n')
   end
 end

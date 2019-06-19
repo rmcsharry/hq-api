@@ -7,9 +7,8 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   include ActiveJob::TestHelper
 
   let(:random_user) { create(:user) }
-  let(:tax_detail) { create :tax_detail, de_tax_number: '21/815/08150' }
   let(:contact_person) do
-    create(:contact_person, user: random_user, tax_detail: tax_detail)
+    create(:contact_person, user: random_user)
   end
   let!(:mandate) { create(:mandate, :with_owner, owner: contact_person) }
   let!(:user) do
@@ -117,7 +116,6 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
           expect(content).to include(primary_owner.name)
           expect(content).to include(primary_contact.decorate.name)
           expect(content).to include(secondary_contact.decorate.name)
-          expect(content).to include('DE 21/815/08150')
 
           # Check that there are no un-replaced templating tokens
           expect(content).not_to match(/\{[a-z_\.]+\}/)
@@ -136,16 +134,6 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
         it 'receives a 403' do
           expect(response).to have_http_status(403)
-        end
-      end
-
-      context 'with malicious template' do
-        let(:document_name) { 'hqtrust_sample_unprivileged_access.docx' }
-
-        it 'does not receive the encrypted password' do
-          expect(response).to have_http_status(201)
-
-          expect(@response_document.to_s).not_to match(/Encrypted password: [a-zA-Z0-9\$]+/)
         end
       end
     end

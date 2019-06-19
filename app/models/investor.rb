@@ -99,6 +99,7 @@ class Investor < ApplicationRecord
   validates :fund, presence: true
   validates :mandate, presence: true
   validates :amount_total, presence: true
+  validates :primary_owner, presence: true
   validate :attributes_in_signed_state
   validate :bank_account_belongs_to_mandate
   validate :contact_address_belongs_to_contacts

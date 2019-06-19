@@ -51,6 +51,7 @@ RSpec.describe Investor, type: :model do
   it { is_expected.to validate_presence_of(:fund) }
   it { is_expected.to validate_presence_of(:legal_address) }
   it { is_expected.to validate_presence_of(:mandate) }
+  it { is_expected.to validate_presence_of(:primary_owner) }
 
   it { is_expected.to belong_to(:bank_account) }
   it { is_expected.to belong_to(:contact_address) }
@@ -273,7 +274,7 @@ RSpec.describe Investor, type: :model do
     let(:fund) { create(:fund) }
     let!(:investor) { create(:investor, fund: fund) }
     let(:valid_template_name) { 'Zeichnungsschein_Vorlage.docx' }
-    let(:invalid_template_name) { 'hqtrust_sample_unprivileged_access.docx' }
+    let(:other_template_name) { 'zoomed_scrolled.docx' }
     let!(:valid_template) do
       doc = create(
         :fund_template_document,
@@ -287,9 +288,9 @@ RSpec.describe Investor, type: :model do
       )
       doc
     end
-    let!(:invalid_template_file) do
+    let!(:other_template_file) do
       {
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', invalid_template_name)),
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', other_template_name)),
         filename: 'sample.docx',
         content_type: Mime[:docx].to_s
       }
@@ -301,7 +302,7 @@ RSpec.describe Investor, type: :model do
 
       expect(document_content).to include(fund.name)
 
-      valid_template.file.attach(invalid_template_file)
+      valid_template.file.attach(other_template_file)
       subsequently_retrieved_document = investor.subscription_agreement_document(current_user)
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 

@@ -4,12 +4,14 @@
 #
 # Table name: fund_cashflows
 #
-#  created_at  :datetime         not null
-#  fund_id     :uuid
-#  id          :uuid             not null, primary key
-#  number      :integer
-#  updated_at  :datetime         not null
-#  valuta_date :date
+#  created_at         :datetime         not null
+#  description_bottom :text
+#  description_top    :text
+#  fund_id            :uuid
+#  id                 :uuid             not null, primary key
+#  number             :integer
+#  updated_at         :datetime         not null
+#  valuta_date        :date
 #
 # Indexes
 #

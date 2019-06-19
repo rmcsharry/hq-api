@@ -4,6 +4,8 @@ module V1
   # Defines the FundCashflow resource for the API
   class FundCashflowResource < BaseResource
     attributes(
+      :description_bottom,
+      :description_top,
       :fund_cashflow_type,
       :investor_cashflows,
       :investor_count,

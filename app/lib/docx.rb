@@ -4,6 +4,8 @@
 module Docx
   MIME_TYPE = Mime[:docx].to_s.freeze
 
+  class RenderError < StandardError; end
+
   def self.docx?(file)
     file.content_type == Docx::MIME_TYPE
   end
@@ -13,27 +15,30 @@ module Docx
     attr_reader :documents
 
     def initialize(path)
+      @document_path = path
       @documents = {}
-
-      parse_docx_file(path)
     end
 
     def commit(context)
-      @documents.each do |_file_name, document|
-        next unless document.instance_of? Nokogiri::XML::Document
-
-        reset_settings!
-        apply_context document.search('text()'), context
-      end
+      temp_path = Tempfile.new.path
+      Sablon.template(@document_path).render_to_file(temp_path, context)
+      @document_path = temp_path
+    rescue Sablon::TemplateError, Sablon::ContextError => e
+      raise Docx::RenderError, e.message
+    rescue NoMethodError => e
+      raise Docx::RenderError, "Failed executing operation: #{e.message}"
     end
 
     def to_s
+      parse_document!
       @documents.map do |_file_name, document|
         document.text if document.instance_of? Nokogiri::XML::Document
       end.compact.join("\n")
     end
 
     def render
+      parse_document!
+      reset_settings!
       Zip::OutputStream.write_buffer do |out|
         generate_output_file(out, @documents)
       end.string
@@ -45,69 +50,10 @@ module Docx
       zoom_node&.set_attribute('w:percent', '100')
     end
 
-    # Drill down into child text-nodes of given node and search
-    # for token in the form of {.*}. For found token, erase their
-    # container nodes contents and insert replacement from context
-    # if that token can be found in it
-    # rubocop:disable Metrics/CyclomaticComplexity
-    # rubocop:disable Metrics/PerceivedComplexity
-    # rubocop:disable Metrics/MethodLength
-    # rubocop:disable Metrics/AbcSize
-    def apply_context(text_nodes, context)
-      current_key = ''
-      current_nodes = []
-      # rubocop:disable Metrics/BlockLength
-      text_nodes.each do |text_node|
-        current_key += text_node.text
-        match = /\{(?<token>(.*))\}/.match(current_key)
-        current_nodes << text_node
-
-        next if match.nil?
-
-        replacement = context.dig(*match['token'].split('.').map(&:to_sym))
-        is_xml_replacement = replacement.to_s&.start_with?('<w:p>')
-
-        # match_string is the token with the containing curlies, e.g. "{contact.name}"
-        # the following loop iteratively deletes exactly the characters of said
-        # match_string and inserts `replacement` when visiting the first character "{"
-        match_string = match.to_s
-        first_node = nil
-        current_nodes.each do |intermediate_node|
-          break if match_string.length.zero?
-
-          intermediate_node.content = intermediate_node.content.chars.map do |char|
-            if char != match_string[0] || match_string.length.zero?
-              char
-            else
-              replaced_char = match_string[0]
-              match_string[0] = ''
-              if replaced_char == '{'
-                first_node = intermediate_node
-                is_xml_replacement ? '' : replacement
-              end
-            end
-          end.join
-        end
-
-        if is_xml_replacement
-          paragraph = first_node&.ancestors('//w:p')&.first
-          paragraph&.replace(replacement)
-        end
-
-        current_key = text_node.text
-        current_nodes = [text_node]
-      end
-      # rubocop:enable Metrics/BlockLength
-    end
-    # rubocop:enable Metrics/CyclomaticComplexity
-    # rubocop:enable Metrics/PerceivedComplexity
-    # rubocop:enable Metrics/MethodLength
-    # rubocop:enable Metrics/AbcSize
-
     # Find all files in the zipped directory and put them
     # into a hash
-    def parse_docx_file(path)
-      Zip::File.open(path) do |zip_file|
+    def parse_document!
+      Zip::File.open(@document_path) do |zip_file|
         zip_file.each do |entry|
           next unless entry.file?
 

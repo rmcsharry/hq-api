@@ -194,6 +194,8 @@ ActiveRecord::Schema.define(version: 2019_06_12_114625) do
     t.uuid "fund_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "description_bottom"
+    t.text "description_top"
     t.index ["fund_id"], name: "index_fund_cashflows_on_fund_id"
   end
 

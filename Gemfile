@@ -46,6 +46,7 @@ gem 'mail'                                                                      
 gem 'money'                                                                          # List of Currency
 gem 'phony_rails'                                                                    # Validates, displays and saves phone numbers
 gem 'rubyzip'                                                                        # reading and writing zip files
+gem 'sablon'                                                                         # mail merge (MS Word) processor
 gem 'steuernummer'                                                                   # Validates German tax numbers
 gem 'tzinfo-data'                                                                    # Timezone info for different OSs
 gem 'validate_url'                                                                   # Validates URLs

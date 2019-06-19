@@ -49,7 +49,7 @@ RSpec.describe InvestorReport, type: :model do
     let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
     let!(:investor_report) { InvestorReport.find_by! investor: investor, fund_report: fund_report }
     let(:valid_template_name) { 'Quartalsbericht_Vorlage.docx' }
-    let(:invalid_template_name) { 'hqtrust_sample_unprivileged_access.docx' }
+    let(:other_template_name) { 'zoomed_scrolled.docx' }
     let!(:valid_template) do
       doc = create(
         :fund_template_document,
@@ -63,9 +63,9 @@ RSpec.describe InvestorReport, type: :model do
       )
       doc
     end
-    let!(:invalid_template_file) do
+    let!(:other_template_file) do
       {
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', invalid_template_name)),
+        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', other_template_name)),
         filename: 'sample.docx',
         content_type: Mime[:docx].to_s
       }
@@ -77,7 +77,7 @@ RSpec.describe InvestorReport, type: :model do
 
       expect(document_content).to include(fund.name)
 
-      valid_template.file.attach(invalid_template_file)
+      valid_template.file.attach(other_template_file)
       subsequently_retrieved_document = investor_report.quarterly_report_document(current_user)
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 

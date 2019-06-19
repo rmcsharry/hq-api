@@ -6,7 +6,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   delegate_all
 
   def capital_call_management_fees_amount
-    format_amount(object.capital_call_management_fees_amount)
+    format_absolute_amount(object.capital_call_management_fees_amount)
   end
 
   def capital_call_management_fees_percentage
@@ -14,7 +14,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def capital_call_compensatory_interest_amount
-    format_amount(object.capital_call_compensatory_interest_amount)
+    format_absolute_amount(object.capital_call_compensatory_interest_amount)
   end
 
   def capital_call_compensatory_interest_percentage
@@ -22,7 +22,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def capital_call_gross_amount
-    format_amount(object.capital_call_gross_amount)
+    format_absolute_amount(object.capital_call_gross_amount)
   end
 
   def capital_call_gross_percentage
@@ -30,7 +30,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def capital_call_total_amount
-    format_amount(object.capital_call_total_amount)
+    format_absolute_amount(object.capital_call_total_amount)
   end
 
   def capital_call_total_percentage
@@ -38,7 +38,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_compensatory_interest_amount
-    format_amount(object.distribution_compensatory_interest_amount)
+    format_absolute_amount(object.distribution_compensatory_interest_amount)
   end
 
   def distribution_compensatory_interest_percentage
@@ -46,7 +46,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_dividends_amount
-    format_amount(object.distribution_dividends_amount)
+    format_absolute_amount(object.distribution_dividends_amount)
   end
 
   def distribution_dividends_percentage
@@ -54,7 +54,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_interest_amount
-    format_amount(object.distribution_interest_amount)
+    format_absolute_amount(object.distribution_interest_amount)
   end
 
   def distribution_interest_percentage
@@ -62,7 +62,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_misc_profits_amount
-    format_amount(object.distribution_misc_profits_amount)
+    format_absolute_amount(object.distribution_misc_profits_amount)
   end
 
   def distribution_misc_profits_percentage
@@ -70,7 +70,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_participation_profits_amount
-    format_amount(object.distribution_participation_profits_amount)
+    format_absolute_amount(object.distribution_participation_profits_amount)
   end
 
   def distribution_participation_profits_percentage
@@ -78,7 +78,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_recallable_amount
-    format_amount(object.distribution_recallable_amount)
+    format_absolute_amount(object.distribution_recallable_amount)
   end
 
   def distribution_recallable_percentage
@@ -86,7 +86,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_repatriation_amount
-    format_amount(object.distribution_repatriation_amount)
+    format_absolute_amount(object.distribution_repatriation_amount)
   end
 
   def distribution_repatriation_percentage
@@ -94,7 +94,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_structure_costs_amount
-    format_amount(object.distribution_structure_costs_amount)
+    format_absolute_amount(object.distribution_structure_costs_amount)
   end
 
   def distribution_structure_costs_percentage
@@ -102,7 +102,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_total_amount
-    format_amount(object.distribution_total_amount)
+    format_absolute_amount(object.distribution_total_amount)
   end
 
   def distribution_total_percentage
@@ -110,7 +110,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def distribution_withholding_tax_amount
-    format_amount(object.distribution_withholding_tax_amount)
+    format_absolute_amount(object.distribution_withholding_tax_amount)
   end
 
   def distribution_withholding_tax_percentage
@@ -118,7 +118,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def net_cashflow_amount
-    format_amount(object.net_cashflow_amount)
+    format_absolute_amount(object.net_cashflow_amount)
   end
 
   def net_cashflow_percentage
@@ -127,16 +127,23 @@ class InvestorCashflowDecorator < ApplicationDecorator
 
   private
 
-  def format_amount(amount)
-    format_currency(amount.abs)
+  def format_absolute_amount(amount)
+    return nil if amount.zero?
+
+    format_currency(amount.abs, fund_cashflow.fund.currency)
+  end
+
+  def format_percentage(value)
+    super(value, 1)
   end
 
   def percentage_of_total_investment(value)
-    value.abs / object.investor.amount_total * 100
-  end
+    return nil if value.zero?
 
-  def currency
-    fund_cashflow.fund.currency
+    rounded_percentage = (value.abs / object.investor.amount_total * 100).round(1)
+    return 'N/A' if rounded_percentage.zero?
+
+    rounded_percentage
   end
 end
 # rubocop:enable Metrics/ClassLength

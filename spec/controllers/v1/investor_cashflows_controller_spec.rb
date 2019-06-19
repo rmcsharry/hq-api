@@ -72,7 +72,9 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
         fund: fund,
         legal_address: primary_owner.legal_address,
         mandate: mandate,
-        primary_owner: primary_owner
+        primary_owner: primary_owner,
+        amount_total: 1,
+        contact_salutation_primary_owner: true
       )
     end
     let!(:cashflow_type) { :distribution }

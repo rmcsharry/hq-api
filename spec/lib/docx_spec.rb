@@ -16,11 +16,32 @@ RSpec.describe Docx::Document, type: :util do
         tempfile.binmode
         tempfile.write document.render
         rendered_document = Docx::Document.new(tempfile.path)
+        rendered_document.render
         tempfile.close
 
         settings = rendered_document.documents['word/settings.xml']
         zoom_node = settings.xpath('//w:zoom').first
         expect(zoom_node.attr('w:percent')).to eq('100')
+      end
+    end
+
+    context 'with an invalid conditional' do
+      let(:document_name) { 'invalid_conditional.docx' }
+      it 'fails gracefully' do
+        document = Docx::Document.new(file_path)
+        expect do
+          document.commit({})
+        end.to raise_error(Docx::RenderError, /Could not find end field/)
+      end
+    end
+
+    context 'with an invalid condition' do
+      let(:document_name) { 'invalid_condition.docx' }
+      it 'fails gracefully' do
+        document = Docx::Document.new(file_path)
+        expect do
+          document.commit({})
+        end.to raise_error(Docx::RenderError, /Failed executing operation/)
       end
     end
 
@@ -36,6 +57,38 @@ RSpec.describe Docx::Document, type: :util do
             primary_owner: {
               full_name: 'Test Name 123'
             }
+          },
+          investor_cashflow: {
+            capital_call_management_fees_amount: 0,
+            capital_call_management_fees_percentage: 0,
+            capital_call_compensatory_interest_amount: 0,
+            capital_call_compensatory_interest_percentage: 0,
+            capital_call_gross_amount: 0,
+            capital_call_gross_percentage: 0,
+            capital_call_total_amount: 0,
+            capital_call_total_percentage: 0,
+            distribution_compensatory_interest_amount: 0,
+            distribution_compensatory_interest_percentage: 0,
+            distribution_dividends_amount: 0,
+            distribution_dividends_percentage: 0,
+            distribution_interest_amount: 0,
+            distribution_interest_percentage: 0,
+            distribution_misc_profits_amount: 0,
+            distribution_misc_profits_percentage: 0,
+            distribution_participation_profits_amount: 0,
+            distribution_participation_profits_percentage: 0,
+            distribution_recallable_amount: 0,
+            distribution_recallable_percentage: 0,
+            distribution_repatriation_amount: 0,
+            distribution_repatriation_percentage: 0,
+            distribution_structure_costs_amount: 0,
+            distribution_structure_costs_percentage: 0,
+            distribution_total_amount: 0,
+            distribution_total_percentage: 0,
+            distribution_withholding_tax_amount: 0,
+            distribution_withholding_tax_percentage: 0,
+            net_cashflow_amount: 0,
+            net_cashflow_percentage: 0
           }
         )
 
@@ -80,14 +133,12 @@ RSpec.describe Docx::Document, type: :util do
             name: 'Fancy Foo Funds'
           },
           fund_report: {
-            description: description.to_s
+            description: Sablon.content(:word_ml, description.to_s)
           },
           investor: {
             amount_total: 1337,
             contact_address: {
-              city: 'Berlin',
-              postal_code: 10_997,
-              street_and_number: 'Visionsstr. 42'
+              full_address: 'Visionsstr. 42, 10997, Berlin'
             },
             primary_owner: {
               formal_salutation: 'Sehr geehrter Herr',
@@ -104,6 +155,7 @@ RSpec.describe Docx::Document, type: :util do
         tempfile.close
 
         content = rendered_document.to_s
+        expect(content).to include('Fancy Foo Funds')
         expect(content).to include('Zeichnungsbetrag: 1337')
         expect(content).to include('Quill text here.')
         expect(content).to include('first list entry')

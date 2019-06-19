@@ -530,8 +530,10 @@ namespace :db do
       Fund.all.each do |fund|
         Faker::Number.between(2, 5).times do |i|
           fund_cashflows << FundCashflow.new(
-            number: i + 1,
+            description_bottom: Faker::Movie.quote,
+            description_top: Faker::Movie.quote,
             fund: fund,
+            number: i + 1,
             valuta_date: Faker::Date.between(6.years.ago, 0.days.ago)
           )
         end
