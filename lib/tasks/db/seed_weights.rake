@@ -15,9 +15,9 @@ namespace :db do
       Rake::Task['db:seed_weights:mandate'].invoke
 
       puts 'Calculating contact scores'
-      Contact::Organization.all.each(&:calculate_score)
+      Contact.all.each(&:calculate_score)
       puts 'Calculating mandate scores'
-      # Mandate.all.each(&:calculate_score)
+      Mandate.all.each(&:calculate_score)
     end
   end
 
@@ -30,8 +30,8 @@ namespace :db do
       person_weight('contact_person', 'legal_address_id', 0.0542)
       person_weight('contact_person', 'nationality', 0.0542)
       person_weight('contact_person', 'primary_contact_address_id', 0.0542)
-      person_weight('ContactDetail::Email', 'primary:true', 0.0542)
-      person_weight('ContactDetail::Phone', 'primary:true', 0.0542)
+      person_weight('ContactDetail::Email', 'primary==true', 0.0542)
+      person_weight('ContactDetail::Phone', 'primary==true', 0.0542)
       person_weight('compliance_detail', 'kagb_classification', 0.0542)
       person_weight('compliance_detail', 'occupation_role', 0.0108)
       person_weight('compliance_detail', 'occupation_title', 0.0108)
@@ -54,30 +54,29 @@ namespace :db do
     end
 
     task contact_organization: :environment do
-      # organization_weight('contact_organization', 'commercial_register_number', 0.0472)
-      # organization_weight('contact_organization', 'commercial_register_office', 0.0472)
-      # organization_weight('contact_organization', 'de_tax_id', 0.0094)
-      # organization_weight('contact_organization', 'de_tax_number', 0.0094)
-      # organization_weight('contact_organization', 'de_tax_office', 0.0094)
-      # organization_weight('contact_organization', 'kagb_classification', 0.0472)
-      # organization_weight('contact_organization', 'legal_address_id', 0.0472)
-      # organization_weight('contact_organization', 'organization_category', 0.0472)
-      # organization_weight('contact_organization', 'organization_industry', 0.0472)
-      # organization_weight('contact_organization', 'organization_name', 0.0472)
-      # organization_weight('contact_organization', 'organization_type', 0.0472)
-      # organization_weight('contact_organization', 'primary_contact_address_id', 0.0472)
-      # organization_weight('contact_organization', 'transparency_register', 0.0094)
-      # organization_weight('contact_organization', 'us_fatca_status', 0.0094)
-      # organization_weight('contact_organization', 'us_tax_form', 0.0094)
-      # organization_weight('contact_organization', 'us_tax_number', 0.0094)
-      # organization_weight('contact_organization', 'wphg_classification', 0.0472)
+      organization_weight('contact_organization', 'commercial_register_number', 0.0472)
+      organization_weight('contact_organization', 'commercial_register_office', 0.0472)
+      organization_weight('contact_organization', 'de_tax_id', 0.0094)
+      organization_weight('contact_organization', 'de_tax_number', 0.0094)
+      organization_weight('contact_organization', 'de_tax_office', 0.0094)
+      organization_weight('contact_organization', 'kagb_classification', 0.0472)
+      organization_weight('contact_organization', 'legal_address_id', 0.0472)
+      organization_weight('contact_organization', 'organization_category', 0.0472)
+      organization_weight('contact_organization', 'organization_industry', 0.0472)
+      organization_weight('contact_organization', 'organization_name', 0.0472)
+      organization_weight('contact_organization', 'organization_type', 0.0472)
+      organization_weight('contact_organization', 'primary_contact_address_id', 0.0472)
+      organization_weight('contact_organization', 'transparency_register', 0.0094)
+      organization_weight('contact_organization', 'us_fatca_status', 0.0094)
+      organization_weight('contact_organization', 'us_tax_form', 0.0094)
+      organization_weight('contact_organization', 'us_tax_number', 0.0094)
+      organization_weight('contact_organization', 'wphg_classification', 0.0472)
       organization_weight('ContactDetail::Email', 'primary==true', 0.0472)
-      # organization_weight('ContactDetail::Email', 'primary:true', 0.0472)
-      # organization_weight('activities', '', 0.1604)
-      # organization_weight('documents', 'category==kyc', 0.0943)
-      # organization_weight('passive_contact_relationships', 'role==beneficial_owner', 0.0755)
-      # organization_weight('passive_contact_relationships', 'role==shareholder', 0.0755)
-      # organization_weight('tax_detail', 'legal_entity_identifier', 0.0094)
+      organization_weight('activities', '', 0.1604)
+      organization_weight('documents', 'category==kyc', 0.0943)
+      organization_weight('passive_contact_relationships', 'role==beneficial_owner', 0.0755)
+      organization_weight('passive_contact_relationships', 'role==shareholder', 0.0755)
+      organization_weight('tax_detail', 'legal_entity_identifier', 0.0094)
     end
 
     task mandate: :environment do
