@@ -6,18 +6,20 @@ module IntegrityScoring
   extend ActiveSupport::Concern
 
   included do
-    before_save :calculate_score, if: :has_changes_to_save?
+    after_save :calculate_score, if: :has_changes_to_save?
   end
 
   # expects a model instance (ie. one record) which is the 'business entity' we are processing
   def calculate_score
-    weights = AttributeWeight.where('entity = ?', self.class)
     @score = 0
     @missing_fields = []
+    weights = AttributeWeight.where('entity = ?', self.class)
+
     weights.each do |weight|
       @weight = weight
       calculate
     end
+
     # rubocop:disable Rails/SkipsModelValidations
     update_column(:data_integrity_score, @score)
     update_column(:data_integrity_missing_fields, @missing_fields)
@@ -45,95 +47,52 @@ module IntegrityScoring
   end
 
   def from_relative
-    # or else check the model related directly
     if @weight.model_key.include?('::')
-      search_by_child_type # search the related model for a particular type of record
+      search_for_child_type # search the relative for a particular child type of record
     elsif @weight.name.include?('==')
-      # search_relative # search the related model for a particular instance of a record
+      search_for_field # search the relative for a particular field
     else
-      direct_from_relative
+      direct_from_relative # directly check the relative
     end
   end
 
-  # def search_by_model_type
-  #   # We need to search by model_type and find the record that satisfies the search request
-  #   # eg find which of the typed records is primary such as 'primary phone'
-  #   model, type = @weight.model_key.split(',')
-  #   if model_type_record_present?(model, type.split('==')[1])
-  #     @score += @weight.value
-  #   else
-  #     @missing_fields << @weight.name
-  #   end
-  # end
-
-  # def model_type_record_present?(model_key, type_name)
-  #   owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
-  #   term, value = @weight.name.split('==')
-  #   type_name.constantize.where("#{owner}": self, type: type_name).where("#{term}": value.to_s).present?
-  # end
-
-  def search_by_child_type
-    #  apply weight from a related class with many records, but one of the records is primary (eg. primary phone)
-    if child_type_has_record?
+  def search_for_child_type
+    # apply weight from a related child type with many records, but only one of the records should match
+    # what we are searching for - eg it is marked primary, such as primary phone
+    if child_type_record_present?
       @score += @weight.value
     else
-      @missing_fields << @weight.name
+      # here the missing field is the model key itself (which is the related child type)
+      @missing_fields << @weight.model_key
     end
   end
 
   # rubocop:disable Metrics/AbcSize
-  def child_type_has_record?
+  def child_type_record_present?
     owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
     field, value = @weight.name.split('==')
     model = @weight.model_key.constantize
-    model.where("#{owner}": self, type: @weight.model_key).where("#{field}": value.to_s).present?
+    model.where("#{owner}": self, type: @weight.model_key).where("#{field}": value).present?
   end
   # rubocop:enable Metrics/AbcSize
 
-  def search_related
-    search_terms = @weight.name.split(',')
-    if record_present?(search_terms)
+  def search_for_field
+    # apply weight if the related model has a record that matches the provided search criteria
+    field, value = @weight.name.split('==')
+    if public_send(@weight.model_key).where("#{field}": value).present?
       @score += @weight.value
     else
-      # note that we do not camelize this missing field, since it is actually a value inside the attribute
-      # and not the attribute name itself
-      # if more than one search term, take the first one listed
-      @missing_fields << @weight.name.include?(',') ? search_terms[0].split('==')[1] : @weight.name.split('==')[0]
+      # here the missing field is a value inside the field and not the field name itself
+      @missing_fields << value
     end
   end
-
-  def record_present?(terms)
-    record = public_send(@weight.model_key)
-    terms.each do |term|
-      field, value = term.split('==')
-      record = record.where("#{@weight.model_key}.#{field} = ?", value)
-    end
-    record.present?
-  end
-
-  # def search_relative
-  #   term = @weight.name.split(':')[1].to_s
-  #   # apply weight if the related model has a record that matches the search
-  #   if record_present?(term)
-  #     @score += @weight.value
-  #   else
-  #     # note that we do not camelize this missing field, since it is actually a value inside the attribute
-  #     # and not the attribute name itself
-  #     @missing_fields << term
-  #   end
-  # end
-
-  # def record_present?(search_term)
-  #   field_to_search = @weight.name.split(':')[0]
-  #   public_send(@weight.model_key).where("#{field_to_search} = ?", search_term).present?
-  # end
 
   def direct_from_relative
-    # if no name provided, then find a record, else find specific attribute
+    # if no name provided, then check for at least one record, else check a specific field
     if @weight.name == ''
       with_at_least_one_record
     else
-      with_specific_attribute
+      with_specific_field
     end
   end
 
@@ -142,12 +101,13 @@ module IntegrityScoring
     if public_send(@weight.model_key).present?
       @score += @weight.value
     else
+      # here the missing field is the model key itself (since we are just checking it contains a record)
       @missing_fields << @weight.model_key
     end
   end
 
-  def with_specific_attribute
-    # apply weight for a specific attribute of a related model, if that attribute has a value
+  def with_specific_field
+    # apply weight for a specific field of a related model, if that field has a value
     if public_send(@weight.model_key)[@weight.name].present?
       @score += @weight.value
     else
