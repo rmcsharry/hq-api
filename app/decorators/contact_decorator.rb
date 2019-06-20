@@ -23,7 +23,6 @@ class ContactDecorator < ApplicationDecorator
   end
 
   def data_integrity_score
-    # format_percentage(object.data_integrity_score * 100)
-    helpers.number_to_percentage(object.data_integrity_score * 100, precision: 0, format: '%n')
+    format_percentage(object.data_integrity_score * 100, 0)
   end
 end
