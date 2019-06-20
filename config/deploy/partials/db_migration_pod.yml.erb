@@ -10,7 +10,7 @@ metadata:
     name: db-migration-<%= deployment_id %>
     app: hqtrust-db-migration
 spec:
-  activeDeadlineSeconds: 60
+  activeDeadlineSeconds: 600
   restartPolicy: Never
   containers:
     - name: hqtrust-core-api
