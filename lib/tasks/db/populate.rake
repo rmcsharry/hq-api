@@ -449,6 +449,7 @@ namespace :db do
           comment: Faker::Company.catch_phrase,
           commercial_register_number: Faker::Company.duns_number,
           commercial_register_office: Faker::Address.city,
+          company: rand > 0.5 ? "#{Faker::Company.name} #{Faker::Company.suffix}" : nil,
           currency: Fund::CURRENCIES.sample,
           duration: Faker::Number.between(5, 12),
           duration_extension: Faker::Number.between(0, 4),

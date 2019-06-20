@@ -10,6 +10,7 @@ RSpec.describe V1::FundResource, type: :resource do
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :commercial_register_number }
   it { is_expected.to have_attribute :commercial_register_office }
+  it { is_expected.to have_attribute :company }
   it { is_expected.to have_attribute :currency }
   it { is_expected.to have_attribute :de_central_bank_id }
   it { is_expected.to have_attribute :de_foreign_trade_regulations_id }

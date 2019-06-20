@@ -9,6 +9,7 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
+      :company,
       :currency,
       :de_central_bank_id,
       :de_foreign_trade_regulations_id,
@@ -73,6 +74,10 @@ module V1
 
     filter :name, apply: lambda { |records, value, _options|
       records.where('funds.name ILIKE ?', "%#{value[0]}%")
+    }
+
+    filter :company, apply: lambda { |records, value, _options|
+      records.where('funds.company ILIKE ?', "%#{value[0]}%")
     }
 
     filter :"capital_management_company.organization_name", apply: lambda { |records, value, _options|

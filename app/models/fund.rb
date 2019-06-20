@@ -9,6 +9,7 @@
 #  comment                                   :text
 #  commercial_register_number                :string
 #  commercial_register_office                :string
+#  company                                   :string
 #  created_at                                :datetime         not null
 #  currency                                  :string
 #  de_central_bank_id                        :string

@@ -94,6 +94,7 @@ class Document
             owner_name: bank_account&.owner_name,
             routing_number: bank_account&.bank_routing_number
           },
+          company: fund.company,
           currency: fund.currency,
           name: fund.name
         },
@@ -202,6 +203,7 @@ class Document
       {
         current_date: current_date,
         fund: {
+          company: fund.company,
           currency: fund.currency,
           name: fund.name
         },
@@ -273,6 +275,7 @@ class Document
       {
         current_date: current_date,
         fund: {
+          company: fund.company,
           name: fund.name
         },
         investor: {
