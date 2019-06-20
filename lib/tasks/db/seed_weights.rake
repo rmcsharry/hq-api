@@ -13,11 +13,6 @@ namespace :db do
       Rake::Task['db:seed_weights:contact_organization'].invoke
       puts 'Seeding mandate weights'
       Rake::Task['db:seed_weights:mandate'].invoke
-
-      puts 'Calculating contact scores'
-      Contact.all.each(&:calculate_score)
-      puts 'Calculating mandate scores'
-      Mandate.all.each(&:calculate_score)
     end
   end
 
@@ -80,9 +75,9 @@ namespace :db do
     end
 
     task mandate: :environment do
-      mandate_weight('mandate', 'category', 0.0694)
+      mandate_weight('mandate', 'category', 0.0649)
       mandate_weight('mandate', 'datev_creditor_id', 0.0130)
-      mandate_weight('mandate', 'datev_debtor_id', 0.0130)
+      mandate_weight('mandate', 'datev_debitor_id', 0.0130)
       mandate_weight('mandate', 'mandate_number', 0.0130)
       mandate_weight('mandate', 'psplus_id', 0.0130)
       mandate_weight('mandate', 'state', 0.0649)

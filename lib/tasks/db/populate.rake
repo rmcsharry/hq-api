@@ -5,6 +5,9 @@ namespace :db do
   desc 'Populate test data'
   task populate: [:environment, 'db:schema:load'] do
     ActiveRecord::Base.transaction do
+      puts 'Seed attribute_weights'
+      Rake::Task['db:seed_weights'].invoke
+
       puts 'Creating contact persons'
       Rake::Task['db:populate:contact_persons'].invoke
 
@@ -64,6 +67,9 @@ namespace :db do
 
       puts 'Creating lists'
       Rake::Task['db:populate:lists'].invoke
+
+      puts 'Seed attribute_weights and calculate data integrity scores'
+      Rake::Task['db:seed_weights'].invoke
     end
   end
 
@@ -285,6 +291,8 @@ namespace :db do
     end
 
     task mandates: :environment do
+      # Mandate._save_callbacks.select { |cb| cb.filter.eql?(:calculate_score) }.clear
+      # Contact::Person._save_callbacks.select { |cb| cb.filter.eql?(:calculate_score) }.clear
       contacts = Contact::Person.all
       admin_user = User.find_by(email: 'admin@hqfinanz.de')
       mandate_groups_organizations = MandateGroup.organizations

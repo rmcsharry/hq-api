@@ -6,7 +6,7 @@ module IntegrityScoring
   extend ActiveSupport::Concern
 
   included do
-    after_save :calculate_score, if: :has_changes_to_save?
+    before_save :calculate_score, if: :has_changes_to_save?
   end
 
   # expects a model instance (ie. one record) which is the 'business entity' we are processing
@@ -20,10 +20,8 @@ module IntegrityScoring
       calculate
     end
 
-    # rubocop:disable Rails/SkipsModelValidations
-    update_column(:data_integrity_score, @score)
-    update_column(:data_integrity_missing_fields, @missing_fields)
-    # rubocop:enable Rails/SkipsModelValidations
+    self.data_integrity_score = @score
+    self.data_integrity_missing_fields = @missing_fields
   end
 
   private
