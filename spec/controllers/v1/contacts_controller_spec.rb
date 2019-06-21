@@ -584,6 +584,30 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         end
       end
     end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "dataIntegrityScoreMin.value": data_integrity_score_min_value }
+          },
+          headers: auth_headers
+        )
+      end
+      
+      describe 'with no max value provided' do
+        let(:data_integrity_score_min_value) { '10' }
+
+        it 'finds one contact' do
+          subject
+          raise :not_implemented
+          # expect(response).to have_http_status(200)
+          # body = JSON.parse(response.body)
+          # expect(body.keys).to include 'data', 'meta', 'links'
+          # expect(body['meta']['record-count']).to eq 1
+        end
+      end
   end
 
   describe 'GET /v1/contacts/<contact_id>/versions' do

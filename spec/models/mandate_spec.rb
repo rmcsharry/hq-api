@@ -11,6 +11,7 @@
 #  created_at                       :datetime         not null
 #  current_state_transition_id      :uuid
 #  data_integrity_missing_fields    :string           default([]), is an Array
+#  data_integrity_partial_score     :decimal(5, 4)    default(0.0)
 #  data_integrity_score             :decimal(5, 4)    default(0.0)
 #  datev_creditor_id                :string
 #  datev_debitor_id                 :string
@@ -288,6 +289,55 @@ RSpec.describe Mandate, type: :model do
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }
+  end
+
+  describe '#data_integrity_missing_fields' do
+    it { is_expected.to respond_to(:data_integrity_missing_fields) }
+    it { is_expected.to validate_presence_of(:data_integrity_missing_fields) }
+  end
+
+  describe '#data_integrity_partial_score' do
+    it { is_expected.to respond_to(:data_integrity_partial_score) }
+    it { is_expected.to validate_presence_of(:data_integrity_partial_score) }
+
+    context 'validates' do
+      mandate = Mandate.create(data_integrity_missing_fields: [])
+
+      it 'between 0 and 1 is valid' do
+        mandate.data_integrity_partial_score = 0.5
+        expect(mandate.data_integrity_partial_score).to be_between(0.0, 1.0)
+      end
+      it '> 1 is invalid' do
+        mandate.data_integrity_partial_score = 1.1
+        expect(mandate).to be_invalid
+      end
+      it '< 0 is invalid' do
+        mandate.data_integrity_partial_score = -0.1
+        expect(mandate).to be_invalid
+      end
+    end
+  end
+
+  describe '#data_integrity_score' do
+    it { is_expected.to respond_to(:data_integrity_score) }
+    it { is_expected.to validate_presence_of(:data_integrity_score) }
+
+    context 'validates' do
+      mandate = Mandate.create(data_integrity_missing_fields: [])
+
+      it 'between 0 and 1 is valid' do
+        mandate.data_integrity_score = 0.5
+        expect(mandate.data_integrity_score).to be_between(0.0, 1.0)
+      end
+      it '> 1 is invalid' do
+        mandate.data_integrity_score = 1.1
+        expect(mandate).to be_invalid
+      end
+      it '< 0 is invalid' do
+        mandate.data_integrity_score = -0.1
+        expect(mandate).to be_invalid
+      end
+    end
   end
 
   describe '#default_currency' do

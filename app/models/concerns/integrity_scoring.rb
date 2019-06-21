@@ -19,12 +19,31 @@ module IntegrityScoring
       @weight = weight
       calculate
     end
-
-    self.data_integrity_score = @score
-    self.data_integrity_missing_fields = @missing_fields
+    assign_result
   end
 
   private
+
+  def assign_result
+    self.data_integrity_missing_fields = @missing_fields
+    if self.class.name == 'Mandate'
+      self.data_integrity_partial_score = @score
+      self.data_integrity_score = factor_owners_into_score
+    else
+      self.data_integrity_score = @score
+    end
+  end
+
+  def factor_owners_into_score
+    number_of_owners = 0
+    total = @score
+    owners.each do |owner|
+      number_of_owners += 1
+      total += owner.contact.data_integrity_score
+    end
+    # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
+    number_of_owners.zero? ? total / 2 : total / (number_of_owners + 1)
+  end
 
   def calculate
     if @weight.model_key == model_name.param_key

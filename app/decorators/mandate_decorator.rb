@@ -17,8 +17,11 @@ class MandateDecorator < ApplicationDecorator
       .to_sentence(locale: :de)
   end
 
+  def data_integrity_partial_score
+    format_percentage(object.data_integrity_partial_score * 100, 0)
+  end
+
   def data_integrity_score
     format_percentage(object.data_integrity_score * 100, 0)
-    # helpers.number_to_percentage(object.data_integrity_score * 100, precision: 0, format: '%n')
   end
 end

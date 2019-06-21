@@ -59,6 +59,11 @@ RSpec.describe Contact, type: :model do
   it { is_expected.to have_many(:list_items).class_name('List::Item').dependent(:destroy).inverse_of(:listable) }
   it { is_expected.to have_many(:lists).through(:list_items) }
 
+  describe '#data_integrity_missing_fields' do
+    it { is_expected.to respond_to(:data_integrity_missing_fields) }
+    it { is_expected.to validate_presence_of(:data_integrity_missing_fields) }
+  end
+
   describe '#data_integrity_score' do
     it { is_expected.to respond_to(:data_integrity_score) }
     it { is_expected.to validate_presence_of(:data_integrity_score) }
@@ -79,11 +84,6 @@ RSpec.describe Contact, type: :model do
         expect(contact).to be_invalid
       end
     end
-  end
-
-  describe '#dataIntegrityMissingFields' do
-    it { is_expected.to respond_to(:data_integrity_missing_fields) }
-    it { is_expected.to validate_presence_of(:data_integrity_missing_fields) }
   end
 
   describe '#compliance_detail' do
