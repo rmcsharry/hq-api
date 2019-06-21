@@ -595,7 +595,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           headers: auth_headers
         )
       end
-      
+
       describe 'with no max value provided' do
         let(:data_integrity_score_min_value) { '10' }
 
@@ -608,6 +608,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
           # expect(body['meta']['record-count']).to eq 1
         end
       end
+    end
   end
 
   describe 'GET /v1/contacts/<contact_id>/versions' do

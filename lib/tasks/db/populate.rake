@@ -68,8 +68,8 @@ namespace :db do
       puts 'Creating lists'
       Rake::Task['db:populate:lists'].invoke
 
-      puts 'Seed attribute_weights and calculate data integrity scores'
-      Rake::Task['db:seed_weights'].invoke
+      puts 'Calculate data integrity scores'
+      Rake::Task['db:calculate_scores'].invoke
     end
   end
 
