@@ -291,8 +291,6 @@ namespace :db do
     end
 
     task mandates: :environment do
-      # Mandate._save_callbacks.select { |cb| cb.filter.eql?(:calculate_score) }.clear
-      # Contact::Person._save_callbacks.select { |cb| cb.filter.eql?(:calculate_score) }.clear
       contacts = Contact::Person.all
       admin_user = User.find_by(email: 'admin@hqfinanz.de')
       mandate_groups_organizations = MandateGroup.organizations
