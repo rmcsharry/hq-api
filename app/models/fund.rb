@@ -96,8 +96,8 @@ class Fund < ApplicationRecord
   validates :commercial_register_number, presence: true, if: :commercial_register_office
   validates :commercial_register_office, presence: true, if: :commercial_register_number
   validates :currency, presence: true
-  validates :de_central_bank_id, digits: { exactly: 8 }
-  validates :de_foreign_trade_regulations_id, digits: { exactly: 5 }
+  validates :de_central_bank_id, digits: { exactly: 5 }
+  validates :de_foreign_trade_regulations_id, digits: { exactly: 8 }
   validates :duration, presence: true
   validates :duration_extension, presence: true
   validates :global_intermediary_identification_number, digits: { exactly: 19 }

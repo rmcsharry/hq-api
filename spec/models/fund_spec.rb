@@ -95,8 +95,8 @@ RSpec.describe Fund, type: :model do
     it { is_expected.to respond_to(:de_central_bank_id) }
 
     context 'validates format' do
-      let(:valid_examples) { ['01234567', '12345678', '65279318', ''] }
-      let(:invalid_examples) { ['123456789', 'a', 'a123456', '1 345678', '12-654', '00000000', '1.345678'] }
+      let(:valid_examples) { ['01234', '12345', '52793', ''] }
+      let(:invalid_examples) { ['123456', 'a', 'a1234', '1 345', '12-65', '00000', '1.345'] }
 
       it { is_expected.to allow_values(*valid_examples).for(:de_central_bank_id) }
       it { is_expected.not_to allow_values(*invalid_examples).for(:de_central_bank_id) }
@@ -107,8 +107,8 @@ RSpec.describe Fund, type: :model do
     it { is_expected.to respond_to(:de_foreign_trade_regulations_id) }
 
     context 'validates format' do
-      let(:valid_examples) { ['01234', '12345', '52793', ''] }
-      let(:invalid_examples) { ['123456', 'a', 'a1234', '1 345', '12-65', '00000', '1.345'] }
+      let(:valid_examples) { ['01234567', '12345678', '65279318', ''] }
+      let(:invalid_examples) { ['123456789', 'a', 'a123456', '1 345678', '12-654', '00000000', '1.345678'] }
 
       it { is_expected.to allow_values(*valid_examples).for(:de_foreign_trade_regulations_id) }
       it { is_expected.not_to allow_values(*invalid_examples).for(:de_foreign_trade_regulations_id) }
