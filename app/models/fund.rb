@@ -45,13 +45,13 @@
 #
 
 # Defines the Fund
+# rubocop:disable ClassLength
 class Fund < ApplicationRecord
   extend Enumerize
   include AASM
   strip_attributes only: %i[
     de_central_bank_id de_foreign_trade_regulations_id global_intermediary_identification_number
     name commercial_register_number commercial_register_office tax_office us_employer_identification_number
-
   ], collapse_spaces: true
 
   CURRENCIES = Money::Currency.map(&:iso_code)
@@ -92,6 +92,8 @@ class Fund < ApplicationRecord
     end
   end
 
+  GIIN_REGEX = /\A[A-NP-Z\d]{6}\.[A-NP-Z\d]{5}\.(?:LE|SL|ME|BR|SP)\.\d{3}\z/.freeze
+
   validates :type, presence: true
   validates :commercial_register_number, presence: true, if: :commercial_register_office
   validates :commercial_register_office, presence: true, if: :commercial_register_number
@@ -100,7 +102,8 @@ class Fund < ApplicationRecord
   validates :de_foreign_trade_regulations_id, digits: { exactly: 8 }
   validates :duration, presence: true
   validates :duration_extension, presence: true
-  validates :global_intermediary_identification_number, digits: { exactly: 19 }
+  validates :global_intermediary_identification_number,
+            format: { with: GIIN_REGEX }, if: -> { global_intermediary_identification_number.present? }
   validates :issuing_year, presence: true
   validates :name, presence: true
   validates :psplus_asset_id, length: { maximum: 15 }
@@ -173,3 +176,4 @@ class Fund < ApplicationRecord
     Document.find_by!(owner: self, category: :fund_subscription_agreement_template)
   end
 end
+# rubocop:enable ClassLength

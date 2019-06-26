@@ -561,7 +561,6 @@ ActiveRecord::Schema.define(version: 2019_06_20_082146) do
   add_foreign_key "mandate_groups_user_groups", "user_groups"
   add_foreign_key "mandate_members", "contacts"
   add_foreign_key "mandate_members", "mandates"
-  add_foreign_key "organization_members", "contacts", column: "organization_id"
   add_foreign_key "task_comments", "tasks"
   add_foreign_key "task_comments", "users"
   add_foreign_key "tasks", "users", column: "creator_id"

@@ -129,15 +129,18 @@ RSpec.describe Fund, type: :model do
     it { is_expected.to respond_to(:global_intermediary_identification_number) }
 
     context 'validates format' do
-      let(:valid_examples) { ['0123456789123456789', '1234567890123456789', '5279318033432345701', ''] }
+      let(:valid_examples) { ['123456.12345.LE.123', '000000.00000.SL.987', 'A1B2C3.ABCDE.ME.000'] }
       let(:invalid_examples) do
-        ['12345678901234567890', # 20 digits (too long, expects exactly 19)
+        ['123456.12345.LE.1234', # 20 digits (too long, expects exactly 19)
          'a', # 1 letter
-         'a12345678asdfj12345', # 19 chars but not all digits
-         '0 23456789999999999', # 19 length, all digits but a space
-         '12-6543219999999999', # 19 length, all digits but a dash
-         '0000000000000000000', # 19 digits but all zeros
-         '1.34567890123456789'] # 19 length, all digits but deimcal point
+         '123456 12345.LE.123', # missing 1st .
+         '123456.12345 LE.123', # missing 2nd .
+         '123456.12345.LE 123', # missing 3rd .
+         '123456.12345.le.123', # correct category code but lowercase
+         '123456.12345.AZ.123', # invalid category code
+         '123a56.12345.LE.123', # lowercase in first group
+         '123456.12z45.LE.123', # lowercase in second group
+         '123456.12345.LE.1A3'] # letter in last group
       end
 
       it { is_expected.to allow_values(*valid_examples).for(:global_intermediary_identification_number) }
