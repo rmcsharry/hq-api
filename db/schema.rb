@@ -240,16 +240,6 @@ ActiveRecord::Schema.define(version: 2019_06_20_082146) do
     t.index ["primary_contact_address_id"], name: "index_funds_on_primary_contact_address_id"
   end
 
-  create_table "inter_person_relationships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "role", null: false
-    t.uuid "target_person_id", null: false
-    t.uuid "source_person_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["source_person_id"], name: "index_inter_person_relationships_on_source_person_id"
-    t.index ["target_person_id"], name: "index_inter_person_relationships_on_target_person_id"
-  end
-
   create_table "investor_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "aasm_state"
     t.decimal "distribution_repatriation_amount", precision: 20, scale: 10, default: "0.0", null: false
@@ -399,16 +389,6 @@ ActiveRecord::Schema.define(version: 2019_06_20_082146) do
     t.datetime "updated_at", null: false
     t.string "subscriber_context", default: "hqt", null: false
     t.jsonb "questionnaire_results"
-  end
-
-  create_table "organization_members", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "role", null: false
-    t.uuid "organization_id", null: false
-    t.uuid "contact_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["contact_id"], name: "index_organization_members_on_contact_id"
-    t.index ["organization_id"], name: "index_organization_members_on_organization_id"
   end
 
   create_table "task_comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -561,8 +541,6 @@ ActiveRecord::Schema.define(version: 2019_06_20_082146) do
   add_foreign_key "funds", "addresses", column: "legal_address_id"
   add_foreign_key "funds", "addresses", column: "primary_contact_address_id"
   add_foreign_key "funds", "contacts", column: "capital_management_company_id"
-  add_foreign_key "inter_person_relationships", "contacts", column: "source_person_id"
-  add_foreign_key "inter_person_relationships", "contacts", column: "target_person_id"
   add_foreign_key "investor_cashflows", "fund_cashflows"
   add_foreign_key "investor_cashflows", "investors"
   add_foreign_key "investor_reports", "fund_reports"
