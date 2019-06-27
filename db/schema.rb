@@ -256,16 +256,6 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.index ["primary_contact_address_id"], name: "index_funds_on_primary_contact_address_id"
   end
 
-  create_table "inter_person_relationships", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "role", null: false
-    t.uuid "target_person_id", null: false
-    t.uuid "source_person_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["source_person_id"], name: "index_inter_person_relationships_on_source_person_id"
-    t.index ["target_person_id"], name: "index_inter_person_relationships_on_target_person_id"
-  end
-
   create_table "investor_cashflows", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "aasm_state"
     t.decimal "distribution_repatriation_amount", precision: 20, scale: 10, default: "0.0", null: false
