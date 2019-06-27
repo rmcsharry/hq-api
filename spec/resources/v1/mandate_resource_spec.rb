@@ -85,4 +85,5 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_sortable_field(:"secondary_consultant.name") }
   it { is_expected.to have_sortable_field(:"assistant.name") }
   it { is_expected.to have_sortable_field(:"bookkeeper.name") }
+  it { is_expected.to have_sortable_field(:data_integrity_score) }
 end
