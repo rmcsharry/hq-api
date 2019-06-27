@@ -293,34 +293,29 @@ RSpec.describe Mandate, type: :model do
 
   describe '#data_integrity_missing_fields' do
     it { is_expected.to respond_to(:data_integrity_missing_fields) }
-    it { is_expected.to validate_presence_of(:data_integrity_missing_fields) }
   end
 
   describe '#data_integrity_partial_score' do
     it { is_expected.to respond_to(:data_integrity_partial_score) }
-    it { is_expected.to validate_presence_of(:data_integrity_partial_score) }
 
-    context 'validates' do
-      mandate = Mandate.create(data_integrity_missing_fields: [])
-
+    context 'validates percent score' do
       it 'between 0 and 1 is valid' do
-        mandate.data_integrity_partial_score = 0.5
-        expect(mandate.data_integrity_partial_score).to be_between(0.0, 1.0)
+        subject.data_integrity_partial_score = 0.5
+        expect(subject.data_integrity_partial_score).to be_between(0.0, 1.0)
       end
       it '> 1 is invalid' do
-        mandate.data_integrity_partial_score = 1.1
-        expect(mandate).to be_invalid
+        subject.data_integrity_partial_score = 1.1
+        expect(subject).to be_invalid
       end
       it '< 0 is invalid' do
-        mandate.data_integrity_partial_score = -0.1
-        expect(mandate).to be_invalid
+        subject.data_integrity_partial_score = -0.1
+        expect(subject).to be_invalid
       end
     end
   end
 
   describe '#data_integrity_score' do
     it { is_expected.to respond_to(:data_integrity_score) }
-    it { is_expected.to validate_presence_of(:data_integrity_score) }
 
     context 'validates' do
       mandate = Mandate.create(data_integrity_missing_fields: [])

@@ -233,6 +233,8 @@ class Mandate < ApplicationRecord
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
   validates :psplus_pe_id, length: { maximum: 15 }
+  validates :data_integrity_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+  validates :data_integrity_partial_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
   validates :default_currency, presence: true, if: :default_currency_required?
   validate :valid_to_greater_or_equal_valid_from
   validate :presence_of_primary_consultant, if: :client?

@@ -128,7 +128,6 @@ class Contact < ApplicationRecord
   before_validation :assign_primary_contact_address, on: :create
 
   validates_associated :legal_address, :primary_contact_address, :compliance_detail, :tax_detail
-  validates :data_integrity_score, presence: true
   validates :data_integrity_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
   alias_attribute :contact_type, :type
 

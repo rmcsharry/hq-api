@@ -12,6 +12,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to have_attribute :contact_type }
   it { is_expected.to have_attribute :date_of_birth }
   it { is_expected.to have_attribute :date_of_death }
+  it { is_expected.to have_attribute :data_integrity_missing_fields }
+  it { is_expected.to have_attribute :data_integrity_score }
   it { is_expected.to have_attribute :first_name }
   it { is_expected.to have_attribute :gender }
   it { is_expected.to have_attribute :is_mandate_member }
@@ -56,6 +58,8 @@ RSpec.describe ::V1::ContactResource, type: :resource do
   it { is_expected.to filter(:commercial_register_number) }
   it { is_expected.to filter(:commercial_register_office) }
   it { is_expected.to filter(:contact_type) }
+  it { is_expected.to filter(:data_integrity_score_min) }
+  it { is_expected.to filter(:data_integrity_score_max) }
   it { is_expected.to filter(:date_of_birth_max) }
   it { is_expected.to filter(:date_of_birth_min) }
   it { is_expected.to filter(:date_of_death_max) }
@@ -83,6 +87,7 @@ RSpec.describe ::V1::ContactResource, type: :resource do
 
   it { is_expected.to have_sortable_field(:"compliance_detail.occupation_role") }
   it { is_expected.to have_sortable_field(:"compliance_detail.occupation_title") }
+  it { is_expected.to have_sortable_field(:data_integrity_score) }
   it { is_expected.to have_sortable_field(:is_mandate_member) }
   it { is_expected.to have_sortable_field(:is_mandate_owner) }
   it { is_expected.to have_sortable_field(:legal_address_text) }

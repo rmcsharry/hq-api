@@ -6,11 +6,18 @@ RSpec.describe V1::MandateResource, type: :resource do
   let(:mandate) { create(:mandate) }
   subject { described_class.new(mandate, {}) }
 
+  before do
+    allow(subject).to receive(:calculate_score).and_return(5)
+  end
+
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :confidential }
   it { is_expected.to have_attribute :current_state_completed_tasks_count }
   it { is_expected.to have_attribute :current_state_total_tasks_count }
+  it { is_expected.to have_attribute :data_integrity_missing_fields }
+  it { is_expected.to have_attribute :data_integrity_partial_score }
+  it { is_expected.to have_attribute :data_integrity_score }
   it { is_expected.to have_attribute :datev_creditor_id }
   it { is_expected.to have_attribute :datev_debitor_id }
   it { is_expected.to have_attribute :default_currency }
@@ -49,6 +56,8 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to filter(:"secondary_consultant.name") }
   it { is_expected.to filter(:category) }
   it { is_expected.to filter(:datev_creditor_id) }
+  it { is_expected.to filter(:data_integrity_score_min) }
+  it { is_expected.to filter(:data_integrity_score_max) }
   it { is_expected.to filter(:datev_debitor_id) }
   it { is_expected.to filter(:default_currency) }
   it { is_expected.to filter(:mandate_group_id) }
