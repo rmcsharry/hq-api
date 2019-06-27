@@ -6,10 +6,6 @@ RSpec.describe V1::MandateResource, type: :resource do
   let(:mandate) { create(:mandate) }
   subject { described_class.new(mandate, {}) }
 
-  before do
-    allow(subject).to receive(:calculate_score).and_return(5)
-  end
-
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :confidential }

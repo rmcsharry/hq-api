@@ -79,6 +79,8 @@ module V1
 
     filters(
       :category,
+      :data_integrity_score_min,
+      :data_integrity_score_max,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,
@@ -116,6 +118,13 @@ module V1
       records
         .joins(:current_state_transition)
         .where('state_transitions.created_at >= ?', Date.parse(value[0]))
+
+    filter :data_integrity_score_min, apply: lambda { |records, value, _options|
+      records.where('mandates.data_integrity_score >= ?', value[0].to_f / 100)
+    }
+
+    filter :data_integrity_score_max, apply: lambda { |records, value, _options|
+      records.where('mandates.data_integrity_score <= ?', value[0].to_f / 100)
     }
 
     filter :not_in_list_with_id, apply: lambda { |records, value, _options|
