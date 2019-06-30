@@ -599,6 +599,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let(:contact) { create(:contact_person, data_integrity_score: 0.95) }
 
       describe 'min (with no max)' do
+        # min value correspond to the range set in the factory
         let(:min) { 95 }
 
         it 'finds one contact' do
@@ -616,7 +617,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         get(
           CONTACTS_ENDPOINT,
           params: {
-            filter: { "data_integrity_score_max": max }
+            filter: { "dataIntegrityScoreMax": max }
           },
           headers: auth_headers
         )
@@ -625,6 +626,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
 
       describe 'max (with no min)' do
+        # max value correspond to the range set in the factory
         let(:max) { 10 }
 
         it 'finds one contact' do
@@ -642,7 +644,7 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         get(
           CONTACTS_ENDPOINT,
           params: {
-            filter: { "data_integrity_score_min": min, "data_integrity_score_max": max }
+            filter: { "dataIntegrityScoreMin": min, "dataIntegrityScoreMax": max }
           },
           headers: auth_headers
         )
@@ -651,10 +653,11 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
       let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
 
       describe 'min and max' do
+        # min max values correspond to the range set in the factory
         let(:min) { 20 }
         let(:max) { 80 }
 
-        it 'finds 10 contacts' do
+        it 'finds ten contacts' do
           subject
           expect(response).to have_http_status(200)
           body = JSON.parse(response.body)
