@@ -590,22 +590,76 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         get(
           CONTACTS_ENDPOINT,
           params: {
-            filter: { "dataIntegrityScoreMin.value": data_integrity_score_min_value }
+            filter: { "dataIntegrityScoreMin": min }
           },
           headers: auth_headers
         )
       end
 
-      describe 'with no max value provided' do
-        let(:data_integrity_score_min_value) { '10' }
+      let(:contact) { create(:contact_person, data_integrity_score: 0.95) }
+
+      describe 'min (with no max)' do
+        let(:min) { 95 }
 
         it 'finds one contact' do
           subject
-          raise :not_implemented
-          # expect(response).to have_http_status(200)
-          # body = JSON.parse(response.body)
-          # expect(body.keys).to include 'data', 'meta', 'links'
-          # expect(body['meta']['record-count']).to eq 1
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "data_integrity_score_max": max }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
+
+      describe 'max (with no min)' do
+        let(:max) { 10 }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "data_integrity_score_min": min, "data_integrity_score_max": max }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
+
+      describe 'min and max' do
+        let(:min) { 20 }
+        let(:max) { 80 }
+
+        it 'finds 10 contacts' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 10
         end
       end
     end
