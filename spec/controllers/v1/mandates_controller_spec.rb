@@ -400,7 +400,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
 
         describe 'min and max' do
           # min max values correspond to the range set in the factory
-          let(:min) { 10 }
+          let(:min) { 20 }
           let(:max) { 80 }
 
           it 'finds four mandate' do
@@ -408,7 +408,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
             expect(response).to have_http_status(200)
             body = JSON.parse(response.body)
             expect(body.keys).to include 'data', 'meta', 'links'
-            expect(body['meta']['record-count']).to eq 3
+            expect(body['meta']['record-count']).to eq 2
           end
         end
       end
