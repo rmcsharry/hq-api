@@ -2,6 +2,9 @@
 
 FactoryBot.define do
   factory :contact_organization, class: Contact::Organization do
+    # score uses a restrict range (ie. NOT 0 to 100%) so we can test filtering on min/max
+    data_integrity_score { rand(0.2..0.8) }
+
     transient do
       street_and_number { '875 South Bundy Drive' }
       phone { '+49301234567' }

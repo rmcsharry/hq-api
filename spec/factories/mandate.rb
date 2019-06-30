@@ -2,6 +2,8 @@
 
 FactoryBot.define do
   factory :mandate do
+    data_integrity_score { rand(0.2..0.8) }
+
     transient do
       owner { build(:contact_person) }
     end
