@@ -6,7 +6,7 @@ class CreateAttributeWeights < ActiveRecord::Migration[5.2]
       t.string :entity
       t.string :model_key
       t.string :name
-      t.decimal :value, precision: 5, scale: 2, default: 0
+      t.decimal :relative_weight, precision: 5, scale: 2, default: 0
 
       t.timestamps
 

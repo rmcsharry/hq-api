@@ -71,14 +71,14 @@ class InitialAttributeWeights < ActiveRecord::Migration[5.2]
       mandate_weight('mandate_members', 'member_type==primary_consultant', 5),
       mandate_weight('mandate_members', 'member_type==secondary_consultant', 5)      
     ]
-    puts "Inserting #{person_weights.count} person weights. Total: #{person_weights.sum(&:value)}"
+    puts "Inserting #{person_weights.count} person weights. Total: #{person_weights.sum(&:relative_weight)}"
     AttributeWeight.import(person_weights)
-    puts "Inserting #{organization_weights.count} organization weights. Total: #{organization_weights.sum(&:value)}"
+    puts "Inserting #{organization_weights.count} organization weights. Total: #{organization_weights.sum(&:relative_weight)}"
     AttributeWeight.import(organization_weights)
-    puts "Inserting #{mandate_weights.count}  mandate weights. Total: #{mandate_weights.sum(&:value)}"
+    puts "Inserting #{mandate_weights.count}  mandate weights. Total: #{mandate_weights.sum(&:relative_weight)}"
     AttributeWeight.import(mandate_weights)
 
-    # Rake::Task['db:calculate_scores'].invoke
+    Rake::Task['db:calculate_scores'].invoke
   end
 
   def down
@@ -91,14 +91,14 @@ class InitialAttributeWeights < ActiveRecord::Migration[5.2]
   end
 
   def person_weight(key, attribute, weight)
-    AttributeWeight.new(entity: 'Contact::Person', model_key: key, name: attribute, value: weight)
+    AttributeWeight.new(entity: 'Contact::Person', model_key: key, name: attribute, relative_weight: weight)
   end
 
   def organization_weight(key, attribute, weight)
-    AttributeWeight.new(entity: 'Contact::Organization', model_key: key, name: attribute, value: weight)
+    AttributeWeight.new(entity: 'Contact::Organization', model_key: key, name: attribute, relative_weight: weight)
   end
 
   def mandate_weight(key, attribute, weight)
-    AttributeWeight.new(entity: 'Mandate', model_key: key, name: attribute, value: weight)
+    AttributeWeight.new(entity: 'Mandate', model_key: key, name: attribute, relative_weight: weight)
   end
 end

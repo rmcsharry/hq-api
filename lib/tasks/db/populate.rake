@@ -5,9 +5,6 @@ namespace :db do
   desc 'Populate test data'
   task populate: [:environment, 'db:schema:load'] do
     ActiveRecord::Base.transaction do
-      puts 'Seed attribute_weights'
-      Rake::Task['db:seed_weights'].invoke
-
       puts 'Creating contact persons'
       Rake::Task['db:populate:contact_persons'].invoke
 
@@ -67,9 +64,6 @@ namespace :db do
 
       puts 'Creating lists'
       Rake::Task['db:populate:lists'].invoke
-
-      puts 'Calculate data integrity scores'
-      Rake::Task['db:calculate_scores'].invoke
     end
   end
 

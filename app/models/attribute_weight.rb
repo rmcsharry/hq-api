@@ -4,13 +4,13 @@
 #
 # Table name: attribute_weights
 #
-#  created_at :datetime         not null
-#  entity     :string
-#  id         :uuid             not null, primary key
-#  model_key  :string
-#  name       :string
-#  updated_at :datetime         not null
-#  value      :decimal(5, 2)    default(0.0)
+#  created_at      :datetime         not null
+#  entity          :string
+#  id              :uuid             not null, primary key
+#  model_key       :string
+#  name            :string
+#  relative_weight :decimal(5, 2)    default(0.0)
+#  updated_at      :datetime         not null
 #
 # Indexes
 #

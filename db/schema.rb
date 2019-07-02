@@ -86,7 +86,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.string "entity"
     t.string "model_key"
     t.string "name"
-    t.decimal "value", precision: 5, scale: 2, default: "0.0"
+    t.decimal "relative_weight", precision: 5, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "model_key", "entity"], name: "index_attribute_weights_uniqueness", unique: true
