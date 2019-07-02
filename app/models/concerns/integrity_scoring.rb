@@ -11,27 +11,13 @@ module IntegrityScoring
     before_save :calculate_score, if: :has_changes_to_save?
   end
 
-  class_methods do
-    # expects a class and relalculates scores for all instances of that class
-    def calculate_scores
-      all.find_each do |object|
-        object.calculate_score
-        object.save!
-      end
-    end
-  end
-
   # expects a model instance (ie. one record) which is the entity we will calculate the individual score for
   def calculate_score
     @score = 0
     @missing_fields = []
-    # weights = AttributeWeight.where('entity = ?', self.class)
-    # @relative_weights_total = weights.sum(&:relative_weight)
+    @relative_weights_total = self.class::WEIGHTS.map { |s| s[:relative_weight] }.reduce(0, :+)
 
-    weights = IntegrityWeight::WEIGHTS.collect { |weight| weight if weight[:entity]==self.class.name }.compact
-    @relative_weights_total = weights.map { |s| s[:relative_weight] }.reduce(0, :+)
-
-    weights.each do |weight|
+    self.class::WEIGHTS.each do |weight|
       @weight = weight
       accumulate_score_by_weight
     end
@@ -102,7 +88,7 @@ module IntegrityScoring
 
   # rubocop:disable Metrics/AbcSize
   def child_type_record_present?
-    owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
+    owner = self.class.name.include?('::') ? self.class.name.split('::')[0].downcase : self.class.name.downcase
     field, relative_weight = @weight['name'.to_sym].split('==')
     model = @weight['model_key'.to_sym].constantize
     model.where("#{owner}": self, type: @weight['model_key'.to_sym]).where("#{field}": relative_weight).present?
