@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
+# Concern to provide weight inputs to calculate data integrity scores for a person
 module PersonWeight
   extend ActiveSupport::Concern
-
-  # attr_reader entity, model_key, name, relative_weight
-  # attr_reader :weights
 
   WEIGHTS = [
     { model_key: 'contact_person', name: 'date_of_birth', relative_weight: 5 },
