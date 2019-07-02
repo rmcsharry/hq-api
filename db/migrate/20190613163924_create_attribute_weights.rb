@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-# NOTE: this is a pure standalone lookup table, no id needed
 class CreateAttributeWeights < ActiveRecord::Migration[5.2]
   def change
-    create_table :attribute_weights, id: false do |t|
+    create_table :attribute_weights, id: :uuid do |t|
       t.string :entity
       t.string :model_key
       t.string :name
-      t.decimal :value, precision: 5, scale: 4, default: 0
+      t.decimal :value, precision: 5, scale: 2, default: 0
 
       t.timestamps
 

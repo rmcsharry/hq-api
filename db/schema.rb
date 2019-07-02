@@ -82,11 +82,11 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.index ["owner_type", "owner_id"], name: "index_addresses_on_owner_type_and_owner_id"
   end
 
-  create_table "attribute_weights", id: false, force: :cascade do |t|
+  create_table "attribute_weights", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "entity"
     t.string "model_key"
     t.string "name"
-    t.decimal "value", precision: 5, scale: 4, default: "0.0"
+    t.decimal "value", precision: 5, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "model_key", "entity"], name: "index_attribute_weights_uniqueness", unique: true
