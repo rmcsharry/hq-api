@@ -25,8 +25,11 @@ module IntegrityScoring
   def calculate_score
     @score = 0
     @missing_fields = []
-    weights = AttributeWeight.where('entity = ?', self.class)
-    @relative_weights_total = weights.sum(&:relative_weight)
+    # weights = AttributeWeight.where('entity = ?', self.class)
+    # @relative_weights_total = weights.sum(&:relative_weight)
+
+    weights = IntegrityWeight::WEIGHTS.collect { |weight| weight if weight[:entity]==self.class.name }.compact
+    @relative_weights_total = weights.map { |s| s[:relative_weight] }.reduce(0, :+)
 
     weights.each do |weight|
       @weight = weight
@@ -59,7 +62,7 @@ module IntegrityScoring
   end
 
   def accumulate_score_by_weight
-    if @weight.model_key == model_name.param_key
+    if @weight['model_key'.to_sym] == model_name.param_key
       # apply weight when an attribute is on the model itself
       from_me
     else
@@ -69,17 +72,17 @@ module IntegrityScoring
   end
 
   def from_me
-    if self[@weight.name].present?
-      @score += (@weight.relative_weight / @relative_weights_total)
+    if self[@weight['name'.to_sym]].present?
+      @score += (@weight['relative_weight'.to_sym] / @relative_weights_total)
     else
-      @missing_fields << @weight.name.camelize(:lower)
+      @missing_fields << @weight['name'.to_sym].camelize(:lower)
     end
   end
 
   def from_relative
-    if @weight.model_key.include?('::')
+    if @weight['model_key'.to_sym].include?('::')
       search_for_child_type # search the relative for a particular child type of record
-    elsif @weight.name.include?('==')
+    elsif @weight['name'.to_sym].include?('==')
       search_for_field # search the relative for a particular field
     else
       direct_from_relative # directly check the relative
@@ -90,27 +93,27 @@ module IntegrityScoring
     # apply weight from a related child type with many records, but only one of the records should match
     # what we are searching for - eg it is marked primary, such as primary phone
     if child_type_record_present?
-      @score += (@weight.relative_weight / @relative_weights_total)
+      @score += (@weight['relative_weight'.to_sym] / @relative_weights_total)
     else
       # here the missing field is the model key itself (which is the related child type)
-      @missing_fields << @weight.model_key
+      @missing_fields << @weight['model_key'.to_sym]
     end
   end
 
   # rubocop:disable Metrics/AbcSize
   def child_type_record_present?
     owner = @weight.entity.include?('::') ? @weight.entity.split('::')[0].downcase : @weight.entity.downcase
-    field, relative_weight = @weight.name.split('==')
-    model = @weight.model_key.constantize
-    model.where("#{owner}": self, type: @weight.model_key).where("#{field}": relative_weight).present?
+    field, relative_weight = @weight['name'.to_sym].split('==')
+    model = @weight['model_key'.to_sym].constantize
+    model.where("#{owner}": self, type: @weight['model_key'.to_sym]).where("#{field}": relative_weight).present?
   end
   # rubocop:enable Metrics/AbcSize
 
   def search_for_field
     # apply weight if the related model has a record that matches the provided search criteria
-    field, value = @weight.name.split('==')
-    if public_send(@weight.model_key).where("#{field}": value).present?
-      @score += (@weight.relative_weight / @relative_weights_total)
+    field, value = @weight['name'.to_sym].split('==')
+    if public_send(@weight['model_key'.to_sym]).where("#{field}": value).present?
+      @score += (@weight['relative_weight'.to_sym] / @relative_weights_total)
     else
       # here the missing field is a value inside the field and not the field name itself
       @missing_fields << value
@@ -119,7 +122,7 @@ module IntegrityScoring
 
   def direct_from_relative
     # if no name provided, then check for at least one record, else check a specific field
-    if @weight.name == ''
+    if @weight['name'.to_sym] == ''
       with_at_least_one_record
     else
       with_specific_field
@@ -128,20 +131,20 @@ module IntegrityScoring
 
   def with_at_least_one_record
     # apply weight for a related model if there is at least one record present (eg at least one bank account)
-    if public_send(@weight.model_key).present?
-      @score += (@weight.relative_weight / @relative_weights_total)
+    if public_send(@weight['model_key'.to_sym]).present?
+      @score += (@weight['relative_weight'.to_sym] / @relative_weights_total)
     else
       # here the missing field is the model key itself (since we are just checking it contains a record)
-      @missing_fields << @weight.model_key
+      @missing_fields << @weight['model_key'.to_sym]
     end
   end
 
   def with_specific_field
     # apply weight for a specific field of a related model, if that field has a value
-    if public_send(@weight.model_key)[@weight.name].present?
-      @score += (@weight.relative_weight / @relative_weights_total)
+    if public_send(@weight['model_key'.to_sym])[@weight['name'.to_sym]].present?
+      @score += (@weight['relative_weight'.to_sym] / @relative_weights_total)
     else
-      @missing_fields << @weight.name.camelize(:lower)
+      @missing_fields << @weight['name'.to_sym].camelize(:lower)
     end
   end
 end
