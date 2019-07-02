@@ -87,9 +87,9 @@ module IntegrityScoring
   # rubocop:disable Metrics/AbcSize
   def child_type_record_present?
     owner = self.class.name.include?('::') ? self.class.name.split('::')[0].downcase : self.class.name.downcase
-    field, relative_weight = @weight[:name].split('==')
+    field, value = @weight[:name].split('==')
     model = @weight[:model_key].constantize
-    model.where("#{owner}": self, type: @weight[:model_key]).where("#{field}": relative_weight).present?
+    model.where("#{owner}": self, type: @weight[:model_key]).where("#{field}": value).present?
   end
   # rubocop:enable Metrics/AbcSize
 
