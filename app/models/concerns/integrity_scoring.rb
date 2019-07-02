@@ -31,8 +31,6 @@ module IntegrityScoring
     weights.each do |weight|
       @weight = weight
       accumulate_score_by_weight
-      puts @weight
-      puts @score
     end
     assign_result
   end
