@@ -270,6 +270,12 @@ class Mandate < ApplicationRecord
     reminders.where('created_at >= ?', current_state_transition.created_at)
   end
 
+  # After integrity scoring calculation runs, assign the newly calculated scores
+  def assign_score
+    self.data_integrity_partial_score = @score
+    self.data_integrity_score = factor_owners_into_score
+  end
+
   # Validates if primary_consultant is present
   # @return [void]
   def presence_of_primary_consultant

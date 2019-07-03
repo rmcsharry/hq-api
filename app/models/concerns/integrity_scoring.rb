@@ -14,8 +14,9 @@ module IntegrityScoring
   def calculate_score
     @score = 0
     @missing_fields = []
-    @relative_weights_total = self.class::WEIGHTS.map { |weight| weight[:relative_weight] }.reduce(0, :+)
+    @relative_weights_total = self.class::WEIGHTS.sum { |weight| weight[:relative_weight] }
 
+    # self.class::WEIGHTS.map { accumulate_score_by_weight(weight) }
     self.class::WEIGHTS.each do |weight|
       @weight = weight
       accumulate_score_by_weight
@@ -27,23 +28,36 @@ module IntegrityScoring
 
   def assign_result
     self.data_integrity_missing_fields = @missing_fields
-    if self.class.name == 'Mandate'
-      self.data_integrity_partial_score = @score
-      self.data_integrity_score = factor_owners_into_score
-    else
-      self.data_integrity_score = @score
-    end
+    assign_score
   end
 
+  def assign_score
+    self.data_integrity_score = @score
+  end
+
+  # def factor_owners_into_score
+  #   number_of_owners = 0
+  #   total = @score
+  #   owners.each do |owner|
+  #     number_of_owners += 1
+  #     total += owner.contact.data_integrity_score
+  #   end
+  #   # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
+  #   number_of_owners.zero? ? total / 2 : total / (number_of_owners + 1)
+  # end
+
+    # total = @score
+    # number_of_owners = owners.count
+    # total += owners.sum(&:data_integrity_score) unless number_of_owners.zero?
+    # number_of_owners.zero? ? total / 2 : total / (number_of_owners + 1)
+
   def factor_owners_into_score
-    number_of_owners = 0
-    total = @score
-    owners.each do |owner|
-      number_of_owners += 1
-      total += owner.contact.data_integrity_score
+    number_of_owners = owners.count
+    if number_of_owners.zero?
+      @score / 2
+    else
+      @score + owners.sum(&:data_integrity_score) / (number_of_owners + 1)
     end
-    # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
-    number_of_owners.zero? ? total / 2 : total / (number_of_owners + 1)
   end
 
   def accumulate_score_by_weight
