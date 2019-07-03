@@ -276,6 +276,15 @@ class Mandate < ApplicationRecord
     self.data_integrity_score = factor_owners_into_score
   end
 
+  def factor_owners_into_score
+    number_of_owners = owners.count
+    if number_of_owners.zero?
+      @score / 2
+    else
+      @score + owners.sum(&:data_integrity_score) / (number_of_owners + 1)
+    end
+  end
+
   # Validates if primary_consultant is present
   # @return [void]
   def presence_of_primary_consultant
