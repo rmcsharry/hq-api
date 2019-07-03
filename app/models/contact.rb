@@ -47,7 +47,6 @@
 # rubocop:disable Metrics/ClassLength
 class Contact < ApplicationRecord
   include ExportableAttributes
-  include IntegrityScoring
   extend Enumerize
   strip_attributes only: %i[
     commercial_register_number commercial_register_office first_name last_name maiden_name nationality
