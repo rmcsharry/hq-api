@@ -277,12 +277,9 @@ class Mandate < ApplicationRecord
   end
 
   def factor_owners_into_score
-    number_of_owners = owners.count
-    if number_of_owners.zero?
-      @score / 2
-    else
-      @score + owners.sum { |owner| owner.contact.data_integrity_score } / (number_of_owners + 1)
-    end
+    # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
+    owners_count = owners.count # note: don't move this to the ternary or you will get two DB reads
+    @score + owners.sum { |owner| owner.contact.data_integrity_score } / (owners_count.zero? ? 2 : owners_count + 1)
   end
 
   # Validates if primary_consultant is present
