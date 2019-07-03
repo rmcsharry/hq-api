@@ -2,6 +2,7 @@
 
 # Concern to calculate data integrity scores for an entity (eg. person, organisation, mandate)
 # including building up the list of attributes that are missing (and thus do not add to the score)
+# rubocop:disable Metrics/ModuleLength
 module IntegrityScoring
   extend ActiveSupport::Concern
 
@@ -136,3 +137,4 @@ module IntegrityScoring
     @weight[:relative_weight] / @relative_weights_total
   end
 end
+# rubocop:enable Metrics/ModuleLength
