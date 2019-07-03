@@ -47,6 +47,7 @@ class Contact
   # Defines the Contact model for organizations
   class Organization < Contact
     include OrganizationWeight
+    include IntegrityScoring
 
     def self.policy_class
       ContactPolicy
