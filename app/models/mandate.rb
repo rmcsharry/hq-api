@@ -281,7 +281,7 @@ class Mandate < ApplicationRecord
     if number_of_owners.zero?
       @score / 2
     else
-      @score + owners.sum(&:data_integrity_score) / (number_of_owners + 1)
+      @score + owners.sum { |owner| owner.contact.data_integrity_score } / (number_of_owners + 1)
     end
   end
 
