@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2019_07_15_160315) do
+=======
+ActiveRecord::Schema.define(version: 2019_07_03_064114) do
+>>>>>>> Removes superfluous migration
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -80,16 +84,6 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.string "owner_type", null: false
     t.string "organization_name"
     t.index ["owner_type", "owner_id"], name: "index_addresses_on_owner_type_and_owner_id"
-  end
-
-  create_table "attribute_weights", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "entity"
-    t.string "model_key"
-    t.string "name"
-    t.decimal "relative_weight", precision: 5, scale: 2, default: "0.0"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name", "model_key", "entity"], name: "index_attribute_weights_uniqueness", unique: true
   end
 
   create_table "bank_accounts", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
