@@ -301,7 +301,7 @@ RSpec.describe Mandate, type: :model do
     context 'validates percent score' do
       it 'between 0 and 1 is valid' do
         subject.data_integrity_partial_score = 0.5
-        expect(subject.data_integrity_partial_score).to be_between(0.0, 1.0)
+        expect(subject).to be_valid
       end
       it '> 1 is invalid' do
         subject.data_integrity_partial_score = 1.1
@@ -322,7 +322,7 @@ RSpec.describe Mandate, type: :model do
 
       it 'between 0 and 1 is valid' do
         mandate.data_integrity_score = 0.5
-        expect(mandate.data_integrity_score).to be_between(0.0, 1.0)
+        expect(mandate).to be_valid
       end
       it '> 1 is invalid' do
         mandate.data_integrity_score = 1.1
