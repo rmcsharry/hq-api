@@ -2,7 +2,7 @@
 
 # Concern to calculate data integrity scores for an entity (eg. person, organisation, mandate)
 # including building up the list of attributes that are missing (and thus do not add to the score)
-module IntegrityScoring
+module IntegrityScorer
   extend ActiveSupport::Concern
 
   class_methods do
@@ -20,9 +20,9 @@ module IntegrityScoring
   def calculate_score
     @integrity_score = 0
     @integrity_score = self.class::WEIGHT_RULES.sum do |rule|
-      weight = IntegrityWeight.new(object: self, rule: rule)
-      weight.score
+      WeightRuleProcessor.instance.score(object: self, rule: rule)
     end
+    # @integrity_score = self.class::WEIGHT_RULES.sum(&:score)
     assign_score
   end
 

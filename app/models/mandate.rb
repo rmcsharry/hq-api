@@ -48,6 +48,8 @@ class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
   include RememberStateTransitions
+  include MandateWeight
+  include IntegrityScorer
 
   strip_attributes only: %i[
     datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id

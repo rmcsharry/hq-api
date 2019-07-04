@@ -3,15 +3,14 @@
 # This class takes an object and a weight rule
 # The score method checks if the rule is true for the object, returning the score if so
 # If the rule does not apply, the missing fields for the object is updated and score returns 0
-class IntegrityWeight
-  def initialize(object:, rule:)
+class WeightRuleProcessor
+  include Singleton
+
+  def score(object:, rule:)
     @object = object
     @model = rule[:model_key]
     @property = rule[:name]
     @relative_weight = rule[:relative_weight]
-  end
-
-  def score
     return from_model if @model == @object.model_name.param_key # attribute is on the model itself
 
     from_relative # attribute is on a related model
