@@ -7,11 +7,13 @@ module IntegrityScoring
 
   class_methods do
     def relative_weights_total
+      # memoized at class level since WEIGHTS can only change via code deployment
       @relative_weights_total ||= self::WEIGHTS.sum { |weight| weight[:relative_weight] }
     end
   end
 
   included do
+    # NOTE: this callback is disabled in tests
     before_save :calculate_score, if: :has_changes_to_save?
   end
 
@@ -70,7 +72,7 @@ module IntegrityScoring
     if weight_name == ''
       absolute_weight(key, public_send(key).present?) # at least one record for relative
     else
-      absolute_weight(weight_name.camelize(:lower), public_send(key)[weight_name].present?) # specific field for relative
+      absolute_weight(weight_name.camelize(:lower), public_send(key)[weight_name].present?) # specific field
     end
   end
 
