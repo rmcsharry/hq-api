@@ -15,19 +15,11 @@ class InvestorDecorator < ApplicationDecorator
   # for the contact person / people
   # @return [String]
   def formal_salutation
-    salutation_contacts.map.with_index do |person, i|
-      salutation = person.decorate.formal_salutation
+    relevant_contacts(contacts: salutation_contacts).map.with_index do |contact, i|
+      salutation = contact.decorate.formal_salutation
       # Downcase first letter of subsequent salutations
       i.positive? ? salutation[0].downcase + salutation[1..-1] : salutation
     end.join(', ')
-  end
-
-  # Returns names of associated people relevant for contacting
-  # @return [Array<String>]
-  def contact_names
-    salutation_contacts.map do |person|
-      person.decorate.name
-    end
   end
 
   # Returns people relevant for salutations
@@ -38,5 +30,13 @@ class InvestorDecorator < ApplicationDecorator
       contact_salutation_primary_contact ? primary_contact : nil,
       contact_salutation_secondary_contact ? secondary_contact : nil
     ].compact
+  end
+
+  private
+
+  def relevant_contacts(contacts:)
+    person_contacts = contacts.select { |contact| contact.is_a? Contact::Person }
+    # In case there are no person contacts, we need to address "Sehr geehrte Damen und Herren" only once
+    person_contacts.any? ? person_contacts : [salutation_contacts.first].compact
   end
 end

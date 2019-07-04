@@ -15,6 +15,7 @@ class ApplicationController < JSONAPI::ResourceController
 
   before_action :set_paper_trail_whodunnit
   before_action :filter_inaccessible_fields!
+  before_action :set_carmen_locale
 
   respond_to :json
 
@@ -76,6 +77,10 @@ class ApplicationController < JSONAPI::ResourceController
 
   def pundit_user
     UserContext.new(current_user, request)
+  end
+
+  def set_carmen_locale
+    Carmen.i18n_backend.locale = :de
   end
 
   def filter_inaccessible_fields!

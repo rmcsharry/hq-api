@@ -15,4 +15,10 @@ class ContactDecorator < Draper::Decorator
     tax_numbers.join(', ')
   end
   # rubocop:enable Metrics/AbcSize
+
+  # Returns only the name for organizations
+  # @return [String]
+  def name_with_gender
+    name
+  end
 end

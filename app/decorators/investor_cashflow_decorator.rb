@@ -117,6 +117,22 @@ class InvestorCashflowDecorator < ApplicationDecorator
     format_percentage(percentage_of_total_investment(object.distribution_withholding_tax_amount))
   end
 
+  def investor_called_amount
+    format_absolute_amount(object.investor_called_amount)
+  end
+
+  def investor_called_percentage
+    format_percentage(object.investor_called_percentage)
+  end
+
+  def investor_open_amount
+    format_absolute_amount(object.investor_open_amount)
+  end
+
+  def investor_open_percentage
+    format_percentage(object.investor_open_percentage)
+  end
+
   def net_cashflow_amount
     format_absolute_amount(object.net_cashflow_amount)
   end

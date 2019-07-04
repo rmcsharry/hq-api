@@ -182,4 +182,69 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
       expect(subsequent_document_content).to eq(document_content)
     end
   end
+
+  describe 'investor called and open amounts and percentages' do
+    let(:fund) { create(:fund) }
+    let!(:investor) { create(:investor, :signed, fund: fund, amount_total: 5_000_000) }
+    let!(:fund_cashflow1) { create(:fund_cashflow, fund: fund, number: 1) }
+    let!(:investor_cashflow1) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: 1_000_000,
+        distribution_recallable_amount: 200_000,
+        fund_cashflow: fund_cashflow1,
+        investor: investor
+      )
+    end
+    let!(:fund_cashflow2) { create(:fund_cashflow, fund: fund, number: 2) }
+    let!(:investor_cashflow2) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: 1_500_000,
+        distribution_recallable_amount: 100_000,
+        fund_cashflow: fund_cashflow2,
+        investor: investor
+      )
+    end
+    let!(:fund_cashflow3) { create(:fund_cashflow, fund: fund, number: 3) }
+    let!(:investor_cashflow3) do
+      create(
+        :investor_cashflow,
+        capital_call_gross_amount: 2_000_000,
+        distribution_recallable_amount: 0,
+        fund_cashflow: fund_cashflow3,
+        investor: investor
+      )
+    end
+
+    context 'for cashflow #1' do
+      it 'calculates the called and open amounts correctly' do
+        expect(investor_cashflow1.investor_called_amount).to eq 1_000_000.0
+        expect(investor_cashflow1.investor_called_percentage).to eq 0.2
+        expect(investor_cashflow1.investor_open_amount).to eq 4_200_000.0
+        expect(investor_cashflow1.investor_open_percentage).to eq 0.84
+        expect(investor_cashflow1.investor_recallable_amount).to eq 200_000.0
+      end
+    end
+
+    context 'for cashflow #2' do
+      it 'calculates the called and open amounts correctly' do
+        expect(investor_cashflow2.investor_called_amount).to eq 2_500_000.0
+        expect(investor_cashflow2.investor_called_percentage).to eq 0.5
+        expect(investor_cashflow2.investor_open_amount).to eq 2_800_000.0
+        expect(investor_cashflow2.investor_open_percentage.to_f).to eq 0.56 # for some weird quirk, it requires .to_f
+        expect(investor_cashflow2.investor_recallable_amount).to eq 300_000.0
+      end
+    end
+
+    context 'for cashflow #3' do
+      it 'calculates the called and open amounts correctly' do
+        expect(investor_cashflow3.investor_called_amount).to eq 4_500_000.0
+        expect(investor_cashflow3.investor_called_percentage).to eq 0.9
+        expect(investor_cashflow3.investor_open_amount).to eq 800_000.0
+        expect(investor_cashflow3.investor_open_percentage).to eq 0.16
+        expect(investor_cashflow3.investor_recallable_amount).to eq 300_000.0
+      end
+    end
+  end
 end

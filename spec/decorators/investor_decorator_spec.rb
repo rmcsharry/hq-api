@@ -74,42 +74,35 @@ RSpec.describe InvestorDecorator do
           )
       end
     end
-  end
 
-  describe '#contact_names' do
-    context 'with primary owner but no contact people' do
+    context 'with primary owner being an organization and primary and secondary contact person' do
+      let!(:primary_owner) do
+        create(:contact_organization)
+      end
+
       let!(:contact_salutation_primary_owner) { true }
-
-      it 'renders name of primary owner' do
-        expect(subject.contact_names).to match_array ['Dr. Max Mustermann']
-      end
-    end
-
-    context 'with primary owner and primary contact person' do
-      let!(:contact_salutation_primary_owner) { true }
-      let!(:contact_salutation_primary_contact) { true }
-
-      it 'renders names of primary owner and primary contact person' do
-        expect(subject.contact_names).to match_array ['Dr. Max Mustermann', 'Prof. Dr. Maxi Musterfrau']
-      end
-    end
-
-    context 'with primary contact person' do
-      let!(:contact_salutation_primary_contact) { true }
-
-      it 'renders name of primary contact person' do
-        expect(subject.contact_names).to match_array ['Prof. Dr. Maxi Musterfrau']
-      end
-    end
-
-    context 'with primary and secondary contact person' do
       let!(:contact_salutation_primary_contact) { true }
       let!(:contact_salutation_secondary_contact) { true }
 
-      it 'renders names of both contact people' do
-        expect(subject.contact_names)
+      it 'renders salutation for both contact people but not for the organization' do
+        expect(subject.formal_salutation)
           .to(
-            match_array(['Prof. Dr. Maxi Musterfrau', 'Thomas Makait'])
+            eq('Sehr geehrte Frau Prof. Dr. Maxi Musterfrau, sehr geehrter Herr Thomas Makait')
+          )
+      end
+    end
+
+    context 'with primary owner being an organization' do
+      let!(:primary_owner) do
+        create(:contact_organization)
+      end
+
+      let!(:contact_salutation_primary_owner) { true }
+
+      it 'renders a generic salutation' do
+        expect(subject.formal_salutation)
+          .to(
+            eq('Sehr geehrte Damen und Herren')
           )
       end
     end

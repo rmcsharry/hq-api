@@ -82,7 +82,7 @@ class Document
       description_bottom = Quill::Delta.new(fund_cashflow.description_bottom).to_s
       description_top = Quill::Delta.new(fund_cashflow.description_top).to_s
 
-      current_date = Time.zone.now.strftime('%d.%m.%Y')
+      current_date = I18n.localize(Time.zone.now, format: '%d. %B %Y')
 
       {
         current_date: current_date,
@@ -90,9 +90,10 @@ class Document
           bank_account: {
             account_number: bank_account&.bank_account_number,
             bic: bank_account&.bic,
-            iban: bank_account&.iban,
+            iban: bank_account&.decorate&.formatted_iban,
             owner_name: bank_account&.owner_name,
-            routing_number: bank_account&.bank_routing_number
+            routing_number: bank_account&.bank_routing_number,
+            bank_name: bank_account&.bank&.decorate&.name
           },
           company: fund.company,
           currency: fund.currency,
@@ -102,21 +103,25 @@ class Document
           description_bottom: Sablon.content(:word_ml, description_bottom),
           description_top: Sablon.content(:word_ml, description_top),
           number: fund_cashflow.number,
-          valuta_date: fund_cashflow.valuta_date
+          valuta_date: format_date(date: Date.parse(fund_cashflow.valuta_date))
         },
         investor: {
           amount_total: investor.amount_total,
+          called_amount: investor_cashflow.investor_called_amount,
+          called_percentage: investor_cashflow.investor_called_percentage,
           confidential: mandate.humanize_confidential,
           contact_address: {
             city: primary_address.city,
-            full_address: primary_address&.letter_address(investor.contact_names),
+            full_address: primary_address&.letter_address(addressees: investor.salutation_contacts),
             postal_code: primary_address.postal_code,
             street_and_number: primary_address.street_and_number
           },
           formal_salutation: investor.formal_salutation,
           legal_address: {
-            full_address: legal_address&.letter_address(primary_owner.name)
+            full_address: legal_address&.letter_address(addressees: [primary_owner])
           },
+          open_amount: investor_cashflow.investor_open_amount,
+          open_percentage: investor_cashflow.investor_open_percentage,
           primary_consultant: {
             full_name: primary_consultant&.name,
             primary_email_address: primary_consultant&.primary_email,
@@ -191,7 +196,7 @@ class Document
       primary_owner = investor.primary_owner.decorate
       legal_address = primary_owner.legal_address&.decorate
       primary_address = investor.contact_address&.decorate
-      current_date = Time.zone.now.strftime('%d.%m.%Y')
+      current_date = format_date(date: Time.zone.now)
       description = Quill::Delta.new(fund_report.description).to_s
       gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
       mandate = investor.mandate.decorate
@@ -215,13 +220,13 @@ class Document
           confidential: mandate.humanize_confidential,
           contact_address: {
             city: primary_address.city,
-            full_address: primary_address&.letter_address(investor.contact_names),
+            full_address: primary_address&.letter_address(addressees: investor.salutation_contacts),
             postal_code: primary_address.postal_code,
             street_and_number: primary_address.street_and_number
           },
           formal_salutation: investor.formal_salutation,
           legal_address: {
-            full_address: legal_address&.letter_address(primary_owner.name)
+            full_address: legal_address&.letter_address(addressees: [primary_owner])
           },
           primary_consultant: {
             full_name: primary_consultant&.name,
@@ -263,8 +268,8 @@ class Document
       bank_account = investor.bank_account
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
-      current_date = Time.zone.now.strftime('%d.%m.%Y')
-      primary_owner_birth_date = primary_owner.date_of_birth ? primary_owner.date_of_birth.strftime('%d.%m.%Y') : '-'
+      current_date = format_date(date: Time.zone.now)
+      primary_owner_birth_date = primary_owner.date_of_birth ? format_date(date: primary_owner.date_of_birth) : '-'
       legal_address = primary_owner.legal_address&.decorate
       primary_fax = primary_owner.contact_details.find_by(type: 'ContactDetail::Fax', primary: true)&.value
       mandate = investor.mandate.decorate
@@ -282,12 +287,13 @@ class Document
           bank_account: {
             account_number: bank_account.bank_account_number,
             bic: bank_account.bic,
-            iban: bank_account.iban,
-            routing_number: bank_account.bank_routing_number
+            iban: bank_account.decorate.formatted_iban,
+            routing_number: bank_account.bank_routing_number,
+            bank_name: bank_account&.bank&.decorate&.name
           },
           confidential: mandate.humanize_confidential,
           contact_address: {
-            full_address: primary_address&.letter_address(investor.contact_names)
+            full_address: primary_address&.letter_address(addressees: investor.salutation_contacts)
           },
           contact_phone: primary_owner.primary_phone&.value,
           formal_salutation: investor.formal_salutation,
@@ -295,7 +301,7 @@ class Document
             addition: legal_address&.addition,
             city: legal_address&.city,
             country: legal_address&.country,
-            full_address: legal_address&.letter_address(primary_owner.name),
+            full_address: legal_address&.letter_address(addressees: [primary_owner]),
             postal_code: legal_address&.postal_code,
             state: legal_address&.state,
             street_and_number: legal_address&.street_and_number
@@ -336,6 +342,10 @@ class Document
     end
     # rubocop:enable Metrics/AbcSize
     # rubocop:enable Metrics/MethodLength
+
+    def self.format_date(date:)
+      I18n.localize(date, format: '%d. %B %Y')
+    end
 
     private
 

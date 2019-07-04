@@ -12,60 +12,83 @@ RSpec.describe AddressDecorator do
         addition: '2. Hinterhof',
         postal_code: 10_999,
         city: 'Berlin',
-        country: 'DE'
+        country: country
       ).decorate
     end
 
-    context 'with organization name' do
-      let(:organization_name) { 'Sherpas' }
+    let(:contact1) do
+      build(:contact_person, first_name: 'Max', gender: :male, last_name: 'Mustermann', professional_title: 'dr')
+    end
+    let(:contact2) do
+      build(
+        :contact_person, first_name: 'Maxi', gender: :female, last_name: 'Musterfrau', professional_title: 'prof_dr'
+      )
+    end
+    let(:organization_name) { 'Sherpas' }
+    let(:country) { 'DE' }
 
+    context 'with organization name' do
       it 'joins the addresses components with newline characters' do
-        expect(subject.letter_address('Addressed Person 1')).to(
+        expect(subject.letter_address(addressees: [contact1])).to(
           eq(
             <<~ADDRESS.chomp
               Sherpas
-              Addressed Person 1
+              Herr Dr. Max Mustermann
               Manteuffelstr. 77
               2. Hinterhof
-              10999
-              Berlin
-              Deutschland
+              10999 Berlin
             ADDRESS
           )
         )
       end
 
       it 'is capable of inserting multiple addressees' do
-        expect(subject.letter_address(['Addressed Person 1', 'Addressed Person 2'])).to(
+        expect(subject.letter_address(addressees: [contact1, contact2])).to(
           eq(
             <<~ADDRESS.chomp
               Sherpas
-              Addressed Person 1
-              Addressed Person 2
+              Herr Dr. Max Mustermann
+              Frau Prof. Dr. Maxi Musterfrau
               Manteuffelstr. 77
               2. Hinterhof
-              10999
-              Berlin
-              Deutschland
+              10999 Berlin
             ADDRESS
           )
         )
       end
     end
 
-    context 'without organization name' do
+    context 'without organization name and only one contact' do
       let(:organization_name) { nil }
 
       it 'joins the addresses components with newline characters' do
-        expect(subject.letter_address('Addressed Person 1')).to(
+        expect(subject.letter_address(addressees: [contact1])).to(
           eq(
             <<~ADDRESS.chomp
-              Addressed Person 1
+              Herr
+              Dr. Max Mustermann
               Manteuffelstr. 77
               2. Hinterhof
-              10999
-              Berlin
-              Deutschland
+              10999 Berlin
+            ADDRESS
+          )
+        )
+      end
+    end
+
+    context 'with country Austria' do
+      let(:country) { 'AT' }
+
+      it 'add the country name in German to the address' do
+        expect(subject.letter_address(addressees: [contact1])).to(
+          eq(
+            <<~ADDRESS.chomp
+              Sherpas
+              Herr Dr. Max Mustermann
+              Manteuffelstr. 77
+              2. Hinterhof
+              10999 Berlin
+              Österreich
             ADDRESS
           )
         )

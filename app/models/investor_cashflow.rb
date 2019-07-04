@@ -89,6 +89,26 @@ class InvestorCashflow < ApplicationRecord
       capital_call_management_fees_amount
   end
 
+  def investor_called_amount
+    previous_investor_cashflows.sum(&:capital_call_total_amount)
+  end
+
+  def investor_called_percentage
+    investor_called_amount / investor.amount_total
+  end
+
+  def investor_open_amount
+    investor.amount_total - investor_called_amount + investor_recallable_amount
+  end
+
+  def investor_open_percentage
+    investor_open_amount / investor.amount_total
+  end
+
+  def investor_recallable_amount
+    previous_investor_cashflows.sum(&:distribution_recallable_amount)
+  end
+
   def cashflow_document_context
     if fund_cashflow.fund_cashflow_type == :capital_call
       Document::FundTemplate.fund_capital_call_context(self)
@@ -136,5 +156,13 @@ class InvestorCashflow < ApplicationRecord
     return if investor&.signed?
 
     errors.add(:investor, 'has to have signed')
+  end
+
+  def previous_investor_cashflows
+    fund_cashflow.fund.fund_cashflows.where('number <= ?', fund_cashflow.number)
+    InvestorCashflow.joins(:fund_cashflow)
+                    .where(investor: investor)
+                    .where(fund_cashflows: { fund: fund_cashflow.fund })
+                    .where('fund_cashflows.number <= ?', fund_cashflow.number)
   end
 end

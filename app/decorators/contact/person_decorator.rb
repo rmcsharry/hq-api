@@ -38,6 +38,12 @@ class Contact
       Date.new(birthday_year, date_of_birth.month, date_of_birth.day)
     end
 
+    # Returns the name with gender, i.e. Frau Maria Mustermann
+    # @return [String]
+    def name_with_gender
+      "#{gender_text} #{name}"
+    end
+
     private
 
     def next_birthday_this_year?

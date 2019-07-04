@@ -13,5 +13,11 @@ class Contact
     def formal_salutation
       'Sehr geehrte Damen und Herren'
     end
+
+    # Returns nil for organizations so that it responds to gender_text as well
+    # @return [nil]
+    def gender_text
+      nil
+    end
   end
 end
