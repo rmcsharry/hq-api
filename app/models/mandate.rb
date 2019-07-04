@@ -49,6 +49,7 @@ class Mandate < ApplicationRecord
   include AASM
   include RememberStateTransitions
   include MandateWeight
+  include WeightRulesMandate
   include IntegrityScorer
 
   strip_attributes only: %i[

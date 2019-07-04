@@ -16,13 +16,12 @@ module IntegrityScorer
     before_save :calculate_score, if: :has_changes_to_save? # NOTE: this callback is disabled in tests
   end
 
-  # called by a model instance, which is the object we will calculate the total score for by applying all rules
+  # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES for its class
   def calculate_score
     @integrity_score = 0
     @integrity_score = self.class::WEIGHT_RULES.sum do |rule|
-      WeightRuleProcessor.instance.score(object: self, rule: rule)
+      WeightRulesProcessor.instance.score(object: self, rule: rule)
     end
-    # @integrity_score = self.class::WEIGHT_RULES.sum(&:score)
     assign_score
   end
 

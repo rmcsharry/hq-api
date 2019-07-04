@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Concern to provide weight inputs to calculate data integrity scores for an organization
-module OrganizationWeight
+module WeightRulesOrganization
   extend ActiveSupport::Concern
 
   WEIGHT_RULES = [

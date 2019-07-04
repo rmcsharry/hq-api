@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# This class takes an object and a weight rule
+# A Singleton that takes an object and a weight rule
 # The score method checks if the rule is true for the object, returning the score if so
 # If the rule does not apply, the missing fields for the object is updated and score returns 0
-class WeightRuleProcessor
+class WeightRulesProcessor
   include Singleton
 
   def score(object:, rule:)
