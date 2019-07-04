@@ -272,14 +272,14 @@ class Mandate < ApplicationRecord
 
   # After integrity scoring calculation runs, assign the newly calculated scores
   def assign_score
-    self.data_integrity_partial_score = @score
+    self.data_integrity_partial_score = @integrity_score
     self.data_integrity_score = factor_owners_into_score
   end
 
   def factor_owners_into_score
     # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
-    owners_count = owners.count # note: don't move this to the ternary or you will get two DB reads
-    @score + owners.sum { |owner| owner.contact.data_integrity_score } / (owners_count.zero? ? 2 : owners_count + 1)
+    count = owners.count # NOTE: don't move this to the ternary below or you will get two DB reads
+    @integrity_score + owners.sum { |owner| owner.contact.data_integrity_score } / (count.zero? ? 2 : count + 1)
   end
 
   # Validates if primary_consultant is present

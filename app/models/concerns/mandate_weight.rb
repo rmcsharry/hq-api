@@ -4,7 +4,7 @@
 module MandateWeight
   extend ActiveSupport::Concern
 
-  WEIGHTS = [
+  WEIGHT_RULES = [
     { model_key: 'mandate', name: 'category', relative_weight: 5 },
     { model_key: 'mandate', name: 'datev_creditor_id', relative_weight: 1 },
     { model_key: 'mandate', name: 'datev_debitor_id', relative_weight: 1 },

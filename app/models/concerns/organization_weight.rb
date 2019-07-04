@@ -4,7 +4,7 @@
 module OrganizationWeight
   extend ActiveSupport::Concern
 
-  WEIGHTS = [
+  WEIGHT_RULES = [
     { model_key: 'contact_organization', name: 'commercial_register_number', relative_weight: 5 },
     { model_key: 'contact_organization', name: 'commercial_register_office', relative_weight: 5 },
     { model_key: 'contact_organization', name: 'de_tax_id', relative_weight: 1 },

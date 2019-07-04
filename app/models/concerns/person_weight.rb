@@ -4,7 +4,7 @@
 module PersonWeight
   extend ActiveSupport::Concern
 
-  WEIGHTS = [
+  WEIGHT_RULES = [
     { model_key: 'contact_person', name: 'date_of_birth', relative_weight: 5 },
     { model_key: 'contact_person', name: 'first_name', relative_weight: 5 },
     { model_key: 'contact_person', name: 'gender', relative_weight: 5 },
