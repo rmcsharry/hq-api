@@ -147,6 +147,18 @@ RSpec.describe Document, type: :model do
         expect { subject.destroy! }.to raise_error(ActiveRecord::ReadOnlyRecord)
       end
     end
+
+    context 'generated document and older than 24 hours' do
+      subject do
+        Timecop.freeze(1.day.ago) do
+          create(:generated_subscription_agreement_document, created_at: 1.day.ago)
+        end
+      end
+
+      it 'can be deleted' do
+        expect(subject.destroy!).to be_truthy
+      end
+    end
   end
 
   describe 'prevent update after 24 hours' do

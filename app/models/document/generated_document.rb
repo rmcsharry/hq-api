@@ -41,5 +41,9 @@ class Document
     ].freeze
 
     enumerize :category, in: CATEGORIES, scope: true
+
+    def prevent_destruction
+      # override prevent_destruction for generated documents
+    end
   end
 end
