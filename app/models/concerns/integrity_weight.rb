@@ -6,13 +6,13 @@
 class IntegrityWeight
   def initialize(object:, rule:)
     @object = object
-    @key = rule[:model_key]
-    @name = rule[:name]
+    @model = rule[:model_key]
+    @property = rule[:name]
     @relative_weight = rule[:relative_weight]
   end
 
   def score
-    return from_model if @key == @object.model_name.param_key # attribute is on the model itself
+    return from_model if @model == @object.model_name.param_key # attribute is on the model itself
 
     from_relative # attribute is on a related model
   end
@@ -20,30 +20,30 @@ class IntegrityWeight
   private
 
   def from_model
-    field_name = @name.camelize(:lower)
-    if @object.class.method_defined?(@name)
-      absolute_weight(field_name, @object.public_send(@name).present?) # apply weight if method returns a value
+    field_name = @property.camelize(:lower)
+    if @object.class.method_defined?(@property)
+      absolute_weight(field_name, @object.public_send(@property).present?) # apply weight if method returns a value
     else
-      absolute_weight(field_name, @object[@name].present?) # apply weight if attribute returns a value
+      absolute_weight(field_name, @object[@property].present?) # apply weight if attribute returns a value
     end
   end
 
   def from_relative
-    return search_for_field if @name.include?('==') # search the relative for a particular field
+    return search_for_field if @property.include?('==') # search the relative for a particular field
 
     direct_from_relative # directly check the relative
   end
 
   def search_for_field
-    field, value = @name.split('==')
-    absolute_weight(field, @object.public_send(@key).where("#{field}": value).present?)
+    field, value = @property.split('==')
+    absolute_weight(field, @object.public_send(@model).where("#{field}": value).present?)
   end
 
   def direct_from_relative
-    if @name == ''
-      absolute_weight(@key, @object.public_send(@key).present?) # at least one record for relative
+    if @property == ''
+      absolute_weight(@model, @object.public_send(@model).present?) # at least one record for relative
     else
-      absolute_weight(@name.camelize(:lower), @object.public_send(@key)[@name].present?) # specific field
+      absolute_weight(@property.camelize(:lower), @object.public_send(@model)[@property].present?) # specific field
     end
   end
 
