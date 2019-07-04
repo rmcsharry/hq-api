@@ -8,7 +8,7 @@ module IntegrityScorer
   class_methods do
     def relative_weights_total
       # memoized at class level since WEIGHTS can only change via code deployment
-      @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }
+      @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f
     end
   end
 
@@ -18,16 +18,18 @@ module IntegrityScorer
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES for its class
   def calculate_score
-    @integrity_score = 0
-    @integrity_score = self.class::WEIGHT_RULES.sum do |rule|
-      WeightRulesProcessor.instance.score(object: self, rule: rule)
+    processor = WeightRulesProcessor.new(object: self)
+    @score = 0
+    @score = self.class::WEIGHT_RULES.sum do |rule|
+      processor.score(rule: rule)
     end
+    self.data_integrity_missing_fields = processor.missing_fields
     assign_score
   end
 
   private
 
   def assign_score
-    self.data_integrity_score = @integrity_score
+    self.data_integrity_score = @score
   end
 end

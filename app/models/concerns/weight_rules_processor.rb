@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
-# A Singleton that takes an object and a weight rule
+# This class takes an object and given a rule, returns the score for that rule
 # The score method checks if the rule is true for the object, returning the score if so
 # If the rule does not apply, the missing fields for the object is updated and score returns 0
 class WeightRulesProcessor
-  include Singleton
+  attr_reader :missing_fields
 
-  def score(object:, rule:)
+  def initialize(object:)
     @object = object
+    @missing_fields = []
+  end
+
+  def score(rule:)
     @model = rule[:model_key]
     @property = rule[:name]
     @relative_weight = rule[:relative_weight]
@@ -35,7 +39,7 @@ class WeightRulesProcessor
 
   def search_for_field
     field, value = @property.split('==')
-    absolute_weight(field, @object.public_send(@model).where("#{field}": value).present?)
+    absolute_weight(value, @object.public_send(@model).where("#{field}": value).present?)
   end
 
   def direct_from_relative
@@ -46,11 +50,11 @@ class WeightRulesProcessor
     end
   end
 
-  def absolute_weight(field, is_present)
+  def absolute_weight(missing_name, is_present)
     # if the value is present, calculate the absolute weight
-    return @relative_weight / @object.class.relative_weights_total if is_present
+    return (@relative_weight / @object.class.relative_weights_total) if is_present
 
-    @object.data_integrity_missing_fields << field
+    @missing_fields << missing_name
     0
   end
 end
