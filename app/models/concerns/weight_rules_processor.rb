@@ -55,6 +55,6 @@ class WeightRulesProcessor
     return (@relative_weight / @object.class.relative_weights_total) if is_present
 
     @missing_fields << missing_name
-    0
+    0.0
   end
 end
