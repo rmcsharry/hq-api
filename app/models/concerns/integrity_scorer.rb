@@ -7,13 +7,14 @@ module IntegrityScorer
 
   class_methods do
     def relative_weights_total
-      # memoized at class level since WEIGHTS can only change via code deployment
+      # memoized at class level since WEIGHT_RULES can only change via code deployment
       @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f
     end
   end
 
   included do
-    before_save :calculate_score, if: :has_changes_to_save? # NOTE: this callback is disabled in tests
+    before_save :calculate_score, if: :has_changes_to_save?
+    after_save :update_mandate_score, if: :owner_score_changed?
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES for its class
@@ -31,5 +32,18 @@ module IntegrityScorer
 
   def assign_score
     self.data_integrity_score = @score
+  end
+
+  def owner_score_changed?
+    respond_to?(:contact_type) && :saved_change_to_data_integrity_score? && :mandate_owner?
+  end
+
+  def update_mandate_score
+    # we just updated the score for a contact who is a mandate owner
+    # factor that new score into all mandates they own
+    mandate_members.where(member_type: 'owner').find_each do |owner|
+      owner.mandate.data_integrity_score = owner.mandate.factor_owners_into_score
+      owner.mandate.save!
+    end
   end
 end

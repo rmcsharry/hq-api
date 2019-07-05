@@ -263,6 +263,13 @@ class Mandate < ApplicationRecord
     tasks_associated_with_current_state.count
   end
 
+  def factor_owners_into_score
+    # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
+    count = owners.count # NOTE: don't move this to the ternary below or you will get two DB reads
+    total = (data_integrity_partial_score + owners.sum { |owner| owner.contact.data_integrity_score })
+    total / (count.zero? ? 2 : count + 1).to_f
+  end
+
   private
 
   # Tasks that have been created when or after the current state transition happened
@@ -277,13 +284,6 @@ class Mandate < ApplicationRecord
   def assign_score
     self.data_integrity_partial_score = @score
     self.data_integrity_score = factor_owners_into_score
-  end
-
-  def factor_owners_into_score
-    # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
-    count = owners.count # NOTE: don't move this to the ternary below or you will get two DB reads
-    total = (@score + owners.sum { |owner| owner.contact.data_integrity_score })
-    total / (count.zero? ? 2 : count + 1).to_f
   end
 
   # Validates if primary_consultant is present
