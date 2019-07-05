@@ -122,7 +122,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def investor_called_percentage
-    format_percentage(object.investor_called_percentage)
+    format_percentage((object.investor_called_percentage * 100).round(1))
   end
 
   def investor_open_amount
@@ -130,7 +130,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   end
 
   def investor_open_percentage
-    format_percentage(object.investor_open_percentage)
+    format_percentage((object.investor_open_percentage * 100).round(1))
   end
 
   def net_cashflow_amount
