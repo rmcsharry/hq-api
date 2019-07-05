@@ -94,7 +94,7 @@ class InvestorCashflow < ApplicationRecord
   end
 
   def investor_called_percentage
-    investor_called_amount / investor.amount_total
+    investor.amount_total.zero? ? 1.0 : investor_called_amount / investor.amount_total
   end
 
   def investor_open_amount
@@ -102,7 +102,7 @@ class InvestorCashflow < ApplicationRecord
   end
 
   def investor_open_percentage
-    investor_open_amount / investor.amount_total
+    investor.amount_total.zero? ? 0.0 : investor_open_amount / investor.amount_total
   end
 
   def investor_recallable_amount

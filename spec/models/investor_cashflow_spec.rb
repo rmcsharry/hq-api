@@ -246,5 +246,17 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
         expect(investor_cashflow3.investor_recallable_amount).to eq 300_000.0
       end
     end
+
+    context 'for investor amount total being 0' do
+      let!(:investor) { create(:investor, :signed, fund: fund, amount_total: 0) }
+
+      it 'calculates the called and open amounts correctly' do
+        expect(investor_cashflow1.investor_called_amount).to eq 1_000_000.0
+        expect(investor_cashflow1.investor_called_percentage).to eq 1.0
+        expect(investor_cashflow1.investor_open_amount).to eq(-800_000.0)
+        expect(investor_cashflow1.investor_open_percentage).to eq 0.0
+        expect(investor_cashflow1.investor_recallable_amount).to eq 200_000.0
+      end
+    end
   end
 end
