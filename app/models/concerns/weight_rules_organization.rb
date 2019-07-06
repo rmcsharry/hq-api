@@ -28,6 +28,5 @@ module WeightRulesOrganization
     { model_key: 'tax_detail', name: 'us_fatca_status', relative_weight: 1 },
     { model_key: 'tax_detail', name: 'us_tax_form', relative_weight: 1 },
     { model_key: 'tax_detail', name: 'us_tax_number', relative_weight: 1 }
-    
   ].freeze
 end

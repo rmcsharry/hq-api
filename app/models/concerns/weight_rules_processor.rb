@@ -15,42 +15,56 @@ class WeightRulesProcessor
     @model = rule[:model_key]
     @property = rule[:name]
     @relative_weight = rule[:relative_weight]
-    return from_model if @model == @object.model_name.param_key # attribute is on the model itself
+    return from_main_model if @model == @object.model_name.param_key # attribute is on the model itself
 
     from_relative # attribute is on a related model
   end
 
   private
 
-  def from_model
+  def from_main_model
     field_name = @property.camelize(:lower)
-    absolute_weight(field_name, @object.public_send(@property).present?) # apply weight if property returns a value
+    absolute_weight(field_name, :main_property_present?) # apply weight if property returns a value
   end
 
   def from_relative
-    return search_for_field if @property.include?('==') # search the relative for a particular field
+    return direct_from_relative if @property.exclude?('==') # directly check the relative
 
-    direct_from_relative # directly check the relative
-  end
-
-  def search_for_field
-    field, value = @property.split('==')
-    absolute_weight(value, @object.public_send(@model).where("#{field}": value).present?)
+    _, value = @property.split('==')
+    absolute_weight(value, :relative_field_value_present?) # search the relative for a particular field value
   end
 
   def direct_from_relative
     if @property.blank?
-      absolute_weight(@model, @object.public_send(@model).present?) # at least one record for relative
+      absolute_weight(@model, :relative_at_least_one_present?)
     else
-      absolute_weight(@property.camelize(:lower), @object.public_send(@model)[@property].present?) # specific field
+      absolute_weight(@property.camelize(:lower), :relative_specific_property_present?)
     end
   end
 
-  def absolute_weight(missing_name, is_present)
+  def absolute_weight(missing_name, presence_checker)
     # if the value is present, calculate the absolute weight
-    return (@relative_weight / @object.class.relative_weights_total) if is_present
+    return (@relative_weight / @object.class.relative_weights_total) if send(presence_checker)
 
     @missing_fields << missing_name
     0.0
+  end
+
+  # The following helper methods are the presence checkers passed to the absolute weight calculator
+  def main_property_present?
+    @object.public_send(@property).present?
+  end
+
+  def relative_field_value_present?
+    field, value = @property.split('==')
+    @object.public_send(@model).where("#{field}": value).present?
+  end
+
+  def relative_at_least_one_present?
+    @object.public_send(@model).present?
+  end
+
+  def relative_specific_property_present?
+    @object.public_send(@model)[@property].present?
   end
 end
