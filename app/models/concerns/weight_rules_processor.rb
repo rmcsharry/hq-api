@@ -24,11 +24,7 @@ class WeightRulesProcessor
 
   def from_model
     field_name = @property.camelize(:lower)
-    if @object.class.method_defined?(@property)
-      absolute_weight(field_name, @object.public_send(@property).present?) # apply weight if method returns a value
-    else
-      absolute_weight(field_name, @object[@property].present?) # apply weight if attribute returns a value
-    end
+    absolute_weight(field_name, @object.public_send(@property).present?) # apply weight if property returns a value
   end
 
   def from_relative
@@ -43,7 +39,7 @@ class WeightRulesProcessor
   end
 
   def direct_from_relative
-    if @property == ''
+    if @property.blank?
       absolute_weight(@model, @object.public_send(@model).present?) # at least one record for relative
     else
       absolute_weight(@property.camelize(:lower), @object.public_send(@model)[@property].present?) # specific field
