@@ -28,7 +28,8 @@ RSpec.describe WeightRulesOrganization do
     end
 
     it 'has 2 relationships rules' do
-      expect(described_class::WEIGHT_RULES.count { |rule| rule[:model_key] == 'passive_contact_relationships' }).to eql(2)
+      expect(described_class::WEIGHT_RULES.count { |rule| rule[:model_key] == 'passive_contact_relationships' })
+        .to eql(2)
     end
 
     it 'has 8 tax detail rules' do
