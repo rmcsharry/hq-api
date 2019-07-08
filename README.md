@@ -23,6 +23,7 @@ You can use mkcert in order to create such certificate on your system:
   Note that this will prompt for your password and install the local CA in your system trust store and also create the local CA in the `/cert` subfolder.
   4. Now change into that subfolder, so run: `cd cert`
   5. Finally run `mkcert localhost`. This will create a certificate for localhost, signed by the above CA certificate. You should get the response `The certificate is at "./localhost.pem" and the key at "./localhost-key.pem"`
+  6. Add a config `LOCAL_HTTPS=true` to your local development.env file to activate starting in Puma in an `http` mode on port 3000 and `https` mode on port 2999.
 
 ### Install
 After cloning the project locally, install a Docker VM and docker-compose for your OS.
