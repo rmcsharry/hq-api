@@ -89,6 +89,7 @@ RSpec.configure do |config|
     Contact::Person.skip_callback(:save, :before, :calculate_score)
     Contact::Organization.skip_callback(:save, :before, :calculate_score)
     Mandate.skip_callback(:save, :before, :calculate_score)
+    Mandate.skip_callback(:save, :after, :update_mandate_score)
   end
 
   config.around(:each) do |example|

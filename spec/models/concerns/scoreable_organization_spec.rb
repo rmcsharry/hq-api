@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe WeightRulesOrganization do
+RSpec.describe ScoreableOrganization do
   it 'has the correct number of weights' do
     expect(described_class::WEIGHT_RULES.count).to eql(23)
   end

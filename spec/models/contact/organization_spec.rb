@@ -46,8 +46,6 @@
 require 'rails_helper'
 
 RSpec.describe Contact::Organization, type: :model do
-  it_behaves_like 'scoreable'
-
   it { is_expected.to validate_presence_of(:organization_name) }
 
   it { is_expected.to enumerize(:organization_type) }

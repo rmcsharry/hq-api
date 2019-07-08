@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# Concern to provide weight inputs to calculate data integrity scores for a person
-module WeightRulesPerson
+# Concern to calculate data integrity scores for a person
+module ScoreablePerson
   extend ActiveSupport::Concern
 
   WEIGHT_RULES = [

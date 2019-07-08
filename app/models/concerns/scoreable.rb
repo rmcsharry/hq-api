@@ -14,7 +14,6 @@ module Scoreable
 
   included do
     before_save :calculate_score, if: :has_changes_to_save?
-    after_save :update_mandate_score, if: :owner_score_changed?
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
@@ -32,18 +31,5 @@ module Scoreable
 
   def assign_score
     self.data_integrity_score = @score
-  end
-
-  def owner_score_changed?
-    respond_to?(:contact_type) && :saved_change_to_data_integrity_score? && :mandate_owner?
-  end
-
-  def update_mandate_score
-    # we just updated the score for a contact who is a mandate owner
-    # factor that new score into all mandates they own
-    mandate_members.where(member_type: 'owner').find_each do |owner|
-      owner.mandate.data_integrity_score = owner.mandate.factor_owners_into_score
-      owner.mandate.save!
-    end
   end
 end
