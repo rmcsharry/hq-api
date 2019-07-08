@@ -7,6 +7,10 @@ RSpec.describe WeightRulesPerson do
     expect(described_class::WEIGHT_RULES.count).to eql(27)
   end
 
+  it 'has the correct total relative weight' do
+    expect(described_class::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f).to eql(92.25)
+  end
+
   context 'defines correct number of rule types' do
     it 'has 1 activities rule' do
       expect(described_class::WEIGHT_RULES.count { |rule| rule[:model_key] == 'activities' }).to eql(1)
