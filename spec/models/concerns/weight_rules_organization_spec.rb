@@ -6,9 +6,6 @@ RSpec.describe WeightRulesOrganization do
   it 'has the correct number of weights' do
     expect(described_class::WEIGHT_RULES.count).to eql(23)
   end
-  it 'has the correct total relative weight' do
-    expect(described_class::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f).to eql(106.0)
-  end
 
   context 'has correct number of different rule types' do
     it 'has 1 activities rule' do

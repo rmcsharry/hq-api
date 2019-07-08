@@ -45,6 +45,7 @@ require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
   include_examples 'state_transitions'
+  it_behaves_like 'scoreable'
 
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }

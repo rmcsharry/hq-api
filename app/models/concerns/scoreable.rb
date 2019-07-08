@@ -2,7 +2,7 @@
 
 # Concern to calculate data integrity scores for an entity (eg. person, organisation, mandate)
 # including building up the list of attributes that are missing (and thus do not add to the score)
-module IntegrityScorer
+module Scoreable
   extend ActiveSupport::Concern
 
   class_methods do
@@ -17,7 +17,7 @@ module IntegrityScorer
     after_save :update_mandate_score, if: :owner_score_changed?
   end
 
-  # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES for its class
+  # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
   def calculate_score
     processor = WeightRulesProcessor.new(object: self)
     @score = 0

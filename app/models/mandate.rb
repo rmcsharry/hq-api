@@ -50,7 +50,7 @@ class Mandate < ApplicationRecord
   include RememberStateTransitions
   include MandateWeight
   include WeightRulesMandate
-  include IntegrityScorer
+  include Scoreable
 
   strip_attributes only: %i[
     datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id

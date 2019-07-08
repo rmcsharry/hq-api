@@ -10,11 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2019_07_15_160315) do
-=======
-ActiveRecord::Schema.define(version: 2019_07_03_064114) do
->>>>>>> Removes superfluous migration
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"

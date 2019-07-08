@@ -44,8 +44,11 @@
 #
 
 require 'rails_helper'
+require 'scoreable'
 
 RSpec.describe Contact::Person, type: :model do
+  it_behaves_like 'scoreable'
+
   it { is_expected.to validate_presence_of(:first_name) }
   it { is_expected.to validate_presence_of(:last_name) }
   it { is_expected.to enumerize(:nobility_title) }

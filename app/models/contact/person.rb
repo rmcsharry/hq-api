@@ -47,7 +47,7 @@ class Contact
   # Defines the Contact model for natural persons
   class Person < Contact
     include WeightRulesPerson
-    include IntegrityScorer
+    include Scoreable
 
     def self.policy_class
       ContactPolicy
