@@ -295,7 +295,8 @@ GEM
       pry (>= 0.10.4)
     psych (3.1.0)
     public_suffix (3.0.3)
-    puma (3.12.1)
+    puma (4.0.0)
+      nio4r (~> 2.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     r7insight (2.7.6)
@@ -497,7 +498,7 @@ DEPENDENCIES
   pry-byebug
   pry-rails
   psych
-  puma (~> 3.7)
+  puma (~> 4.0)
   pundit (~> 1.1.0)
   r7insight
   rack-cors
