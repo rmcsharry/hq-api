@@ -29,6 +29,8 @@ class Activity < ApplicationRecord
   include Lockable
   strip_attributes only: :title, collapse_spaces: true
 
+  attr_accessor :contacts_to_recalculate
+
   belongs_to :creator, class_name: 'User', inverse_of: :activities
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_and_belongs_to_many :mandates, -> { distinct }
@@ -44,11 +46,41 @@ class Activity < ApplicationRecord
 
   alias_attribute :activity_type, :type
 
+  before_commit :mark_objects_for_rescoring, on: :create
+  before_destroy :mark_objects_for_rescoring
+  after_commit :rescore_objects, on: %i[create destroy]
+
+  after_initialize do
+    self.contacts_to_recalculate = []
+  end
+
   def task_assignees
     [creator]
   end
 
   private
+
+  def mark_objects_for_rescoring
+    contacts.each do |contact|
+      contacts_to_recalculate << contact.id if contact.activities.count == 1
+    end
+    mandates.each do |mandate|
+      mandates_to_recalculate << mandate.id if mandate.activities.count == 1
+    end
+  end
+
+  def rescore_objects
+    contacts_to_recalculate.each do |id|
+      contact = Contact.find(id)
+      contact.calculate_score
+      contact.save!
+    end
+    contacts_to_recalculate.each do |id|
+      mandate = Contact.find(id)
+      mandate.calculate_score
+      mandate.save!
+    end
+  end
 
   # Validates if started_at timestamp is before ended_at if ended_at is set
   # @return [void]
