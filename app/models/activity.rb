@@ -29,18 +29,18 @@ class Activity < ApplicationRecord
   include Lockable
   strip_attributes only: :title, collapse_spaces: true
 
-  attr_accessor :contacts_to_recalculate
+  attr_accessor :contacts_to_recalculate, :mandates_to_recalculate
 
   belongs_to :creator, class_name: 'User', inverse_of: :activities
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_and_belongs_to_many :mandates,
                           -> { distinct },
-                          after_add: :mandate_calculate_score,
-                          after_remove: :mandate_calculate_score
+                          after_add: :mandate_mark_for_rescoring,
+                          before_remove: :mandate_mark_for_resocring
   has_and_belongs_to_many :contacts,
                           -> { distinct },
-                          after_add: :contact_calculate_score,
-                          after_remove: :contact_calculate_score
+                          after_add: :contact_mark_for_rescoring,
+                          before_remove: :contact_mark_for_resocring
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 
@@ -54,10 +54,11 @@ class Activity < ApplicationRecord
 
   # before_commit :mark_objects_for_rescoring, on: :create
   # before_destroy :mark_objects_for_rescoring
-  # after_commit :rescore_objects, on: %i[create destroy]
+  after_commit :rescore_objects, on: %i[create destroy]
 
   after_initialize do
     self.contacts_to_recalculate = []
+    self.mandates_to_recalculate = []
   end
 
   def task_assignees
@@ -66,12 +67,12 @@ class Activity < ApplicationRecord
 
   private
 
-  def mandate_calculate_score(mandate)
-    mandate.calculate_score if mandate.activities.count == 1
+  def contact_mark_for_rescoring(contact)
+    contacts_to_recalculate << contact.id if contact.activities.count == 1
   end
 
-  def contact_calculate_score(contact)
-    contact.calculate_score if contact.activities.count == 1
+  def mandate_mark_for_rescoring(mandate)
+    mandates_to_recalculate << mandate.id if mandate.activities.count == 1
   end
 
   # def mark_objects_for_rescoring
@@ -83,18 +84,18 @@ class Activity < ApplicationRecord
   #   end
   # end
 
-  # def rescore_objects
-  #   contacts_to_recalculate.each do |id|
-  #     contact = Contact.find(id)
-  #     contact.calculate_score
-  #     contact.save!
-  #   end
-  #   contacts_to_recalculate.each do |id|
-  #     mandate = Contact.find(id)
-  #     mandate.calculate_score
-  #     mandate.save!
-  #   end
-  # end
+  def rescore_objects
+    contacts_to_recalculate.each do |id|
+      contact = Contact.find(id)
+      contact.calculate_score
+      contact.save!
+    end
+    mandates_to_recalculate.each do |id|
+      mandate = Contact.find(id)
+      mandate.calculate_score
+      mandate.save!
+    end
+  end
 
   # Validates if started_at timestamp is before ended_at if ended_at is set
   # @return [void]

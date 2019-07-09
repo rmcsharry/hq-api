@@ -97,6 +97,10 @@ class Contact < ApplicationRecord
           inverse_of: :contact
   has_and_belongs_to_many :activities, -> { distinct }
 
+  # def fuck(activity)
+  #   puts "FUCK((((((( #{activity}"
+  # end
+
   has_paper_trail(
     meta: {
       parent_item_id: :id,
