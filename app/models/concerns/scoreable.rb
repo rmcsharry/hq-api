@@ -25,7 +25,7 @@ module Scoreable
   end
 
   included do
-    # before_save :calculate_score, if: :has_changes_to_save?
+    before_save :calculate_score, if: :has_changes_to_save?
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
