@@ -47,6 +47,7 @@
 # rubocop:disable Metrics/ClassLength
 class Contact < ApplicationRecord
   include ExportableAttributes
+  include Scoreable
   extend Enumerize
   strip_attributes only: %i[
     commercial_register_number commercial_register_office first_name last_name maiden_name nationality
@@ -95,7 +96,7 @@ class Contact < ApplicationRecord
           -> { where(primary: true) },
           class_name: 'ContactDetail::Phone',
           inverse_of: :contact
-  include Scoreable
+  has_and_belongs_to_many :activities, -> { distinct }
 
   has_paper_trail(
     meta: {

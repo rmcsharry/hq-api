@@ -11,31 +11,21 @@ module Scoreable
       @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f
     end
 
-    def get_rule(class_name, key, name = '')
-      class_name::WEIGHT_RULES.find(key == :model_key && name == :name).first
+    def get_rule(key, name = '')
+      self::WEIGHT_RULES.find(key == :model_key && name == :name).first
     end
 
-    def process_single_rule(instance:, rule:)
-      processor = WeightRulesProcessor.new(object: instance)
-      instance.data_integrity_score += processor.score(rule: rule)
-      instance.data_integrity_missing_fields = processor.missing_fields
+    def process_rule(instance:, rule:, direction:)
+      processor = RuleProcessor.new(object: instance)
+      new_score = instance.data_integrity_score + (processor.score(rule: rule) * direction)
+      # instance.updatx_column(:data_integrity_score, new_score)
+      instance.data_integrity_score = new_score
+      instance.save!
     end
   end
 
   included do
-    before_save :calculate_score, if: :has_changes_to_save?
-    has_and_belongs_to_many :activities, -> { distinct }
-
-    after_add_for_activities << lambda do |_hook, object, _activity|
-      rule = get_rule(object.class, model_key: 'activities', name: '')
-      process_single_rule(instance: object, rule: rule) if object.activities.count == 1
-      object.save!
-    end
-    after_remove_for_activities << lambda do |_hook, object, _activity|
-      rule = get_rule(object.class, model_key: 'activities', name: '')
-      process_single_rule(instance: object, rule: rule) if object.activities.count.zero?
-      object.save!
-    end
+    # before_save :calculate_score, if: :has_changes_to_save?
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
