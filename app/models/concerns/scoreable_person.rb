@@ -5,14 +5,14 @@ module ScoreablePerson
   extend ActiveSupport::Concern
 
   included do
-    after_add_for_activities << lambda do |_hook, contact, _activity|
-      rule = get_rule(model_key: 'activities', name: '')
-      process_single_rule(instance: contact, rule: rule) if contact.activities.count == 1
-    end
-    after_remove_for_activities << lambda do |_hook, contact, _activity|
-      rule = get_rule(model_key: 'activities', name: '')
-      process_single_rule(instance: contact, rule: rule) if contact.activities.count.zero?
-    end
+    # after_add_for_activities << lambda do |_hook, contact, _activity|
+    #   rule = get_rule(model_key: 'activities', name: '')
+    #   process_single_rule(instance: contact, rule: rule) if contact.activities.count == 1
+    # end
+    # after_remove_for_activities << lambda do |_hook, contact, _activity|
+    #   rule = get_rule(model_key: 'activities', name: '')
+    #   process_single_rule(instance: contact, rule: rule) if contact.activities.count.zero?
+    # end
   end
 
   WEIGHT_RULES = [

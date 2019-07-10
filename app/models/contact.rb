@@ -95,11 +95,7 @@ class Contact < ApplicationRecord
           -> { where(primary: true) },
           class_name: 'ContactDetail::Phone',
           inverse_of: :contact
-  has_and_belongs_to_many :activities, -> { distinct }
-
-  # def fuck(activity)
-  #   puts "FUCK((((((( #{activity}"
-  # end
+  include Scoreable
 
   has_paper_trail(
     meta: {
