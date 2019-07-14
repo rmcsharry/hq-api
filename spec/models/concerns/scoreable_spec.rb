@@ -14,6 +14,7 @@ RSpec.describe Scoreable do
           # hence the lowest score for a contact is the weights for those three 3 fields (not zero)
           subject.calculate_score
 
+          expect(subject.data_integrity_missing_fields.length).to eq(24)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
         end
 
@@ -21,6 +22,7 @@ RSpec.describe Scoreable do
           subject.nationality = 'DE'
           subject.calculate_score
 
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.2168)
         end
 
@@ -28,21 +30,34 @@ RSpec.describe Scoreable do
           subject.compliance_detail = build(:compliance_detail, contact: subject)
           subject.calculate_score
 
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2954)
+          expect(subject.data_integrity_missing_fields).not_to include(
+            'kagb_classification',
+            'occupation_role',
+            'occupation_title',
+            'politically_exposed',
+            'retirement_age',
+            'wphg_classification'
+          )
+          expect(subject.data_integrity_missing_fields.length).to eq(18)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3062)
         end
 
         it 'scores correctly when rule: a related model has at least one record' do
           subject.activities << build(:activity)
           subject.calculate_score
 
+          expect(subject.data_integrity_missing_fields).not_to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
         end
 
         it 'scores correctly when rule: a related model is searched for a specific value' do
-          subject.documents << create(:document, category: 'kyc')
-          subject.save
+          subject.documents << build(:document, category: 'kyc')
+          subject.save # needed to ensure the document type is found by the algorithm
           subject.calculate_score
 
+          expect(subject.data_integrity_missing_fields).not_to include('kyc')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.271)
         end
       end
@@ -58,6 +73,7 @@ RSpec.describe Scoreable do
           subject.calculate_score
 
           expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
+          expect(subject.data_integrity_missing_fields.length).to eq(0)
         end
       end
 
