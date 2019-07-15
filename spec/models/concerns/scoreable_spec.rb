@@ -73,9 +73,24 @@ RSpec.describe Scoreable do
           subject.compliance_detail = build(:compliance_detail, contact: subject)
           subject.tax_detail = build(:tax_detail, :with_scoreable_person_data)
           subject.calculate_score
+          puts subject.data_integrity_missing_fields
 
           expect(subject.data_integrity_missing_fields.length).to eq(0)
           expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
+        end
+      end
+
+      context 'after related model changes' do
+        let!(:subject) { build(:contact_person) }
+
+        it 'is instantly correct when rule: a related model changed from 0 to 1 record' do
+          subject.calculate_score
+          subject.activities << build(:activity_note)
+          # build(:activity_note).contacts << subject
+          puts subject.data_integrity_missing_fields
+
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
         end
       end
 

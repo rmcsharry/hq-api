@@ -13,6 +13,7 @@ module Scoreable
 
     def get_rule(key, name = '')
       self::WEIGHT_RULES.find(key == :model_key && name == :name).first
+      # rule = subject.class::WEIGHT_RULES.select { |r| r[:name] == 'nationality' }[0]
     end
 
     def process_rule(instance:, rule:, direction:)
@@ -25,7 +26,25 @@ module Scoreable
   end
 
   included do
+    after_commit do |contact|
+      puts "AFTER CONTACT COMMIT"
+      binding.pry
+      if self.execute_after_related_commit
+        self.execute_after_related_commit.each do |callback|
+          callback.call
+        end
+      end
+    end
+
     before_save :calculate_score, if: :has_changes_to_save?
+  end
+
+  def execute_after_related_commit(&callback)
+    return unless callback
+
+    # puts "MAIN MODEL execute_after_related_commit"
+    @_execute_after_related_commit ||= []
+    @_execute_after_related_commit << callback
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
