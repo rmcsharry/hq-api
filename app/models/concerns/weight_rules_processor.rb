@@ -22,27 +22,6 @@ class WeightRulesProcessor
 
   private
 
-  # used internally to protect against trying to apply a weight rule for non existant properties
-  class Protector
-    def initialize(object)
-      @object = object
-    end
-
-    # Don't call super, as we would rather return a score of 0 than crash the app
-    # rubocop:disable Style/MethodMissingSuper
-    def method_missing(method, *args, &block)
-      @object.send(method, *args, &block)
-    rescue NoMethodError
-      respond_to_missing?(method)
-    end
-    # rubocop:enable Style/MethodMissingSuper
-
-    def respond_to_missing?(method_name)
-      Rails.logger.info "#{method_name} is undefined in the class #{@object.class}"
-      false
-    end
-  end
-
   def from_main_model
     field_name = @property.camelize(:lower)
     absolute_weight(field_name, :main_property_present?) # apply weight if property returns a value
@@ -73,8 +52,8 @@ class WeightRulesProcessor
 
   # The following helper methods are the presence checkers passed to the absolute weight calculator
   def main_property_present?
-    protector = Protector.new(@object)
-    protector.public_send(@property).present?
+    # no guard, because this should fail if dev is trying to score a non-existent property!
+    @object.public_send(@property).present?
   end
 
   def relative_field_value_present?
