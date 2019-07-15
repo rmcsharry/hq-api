@@ -24,5 +24,31 @@ FactoryBot.define do
       primary_phone { create(:phone, primary: true, value: phone, contact: @instance) }
       primary_email { create(:email, primary: true, contact: @instance) }
     end
+
+    trait :with_scoreable_data do
+      commercial_register_number { Faker::Company.duns_number }
+      commercial_register_office { Faker::Address.city }
+      organization_category { Faker::Company.type }
+      organization_industry { Faker::Company.industry }
+    end
+
+    trait :with_scoreable_relationships do
+      passive_contact_relationships do
+        [
+          create(
+            :contact_relationship,
+            role: 'shareholder',
+            source_contact: build(:contact_person),
+            target_contact: @instance
+          ),
+          create(
+            :contact_relationship,
+            role: 'beneficial_owner',
+            source_contact: build(:contact_person),
+            target_contact: @instance
+          )
+        ]
+      end
+    end
   end
 end

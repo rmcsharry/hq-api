@@ -25,5 +25,10 @@ FactoryBot.define do
       primary_phone { create(:phone, primary: true, value: phone, contact: @instance) }
       primary_email { create(:email, primary: true, contact: @instance) }
     end
+
+    trait :with_scoreable_data do
+      nationality { 'DE' }
+      date_of_birth { 50.years.ago }
+    end
   end
 end

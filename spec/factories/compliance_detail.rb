@@ -8,5 +8,6 @@ FactoryBot.define do
     occupation_role { :managing_director }
     occupation_title { Faker::Job.title }
     retirement_age { 64 }
+    politically_exposed { true }
   end
 end
