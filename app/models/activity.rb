@@ -26,7 +26,7 @@
 
 # Defines the Activity model
 class Activity < ApplicationRecord
-  # include Lockable
+  include Lockable
   include ScoreableActivity
   strip_attributes only: :title, collapse_spaces: true
 
