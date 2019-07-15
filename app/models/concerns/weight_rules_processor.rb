@@ -56,15 +56,21 @@ class WeightRulesProcessor
   end
 
   def relative_field_value_present?
+    return false if @object.public_send(@model).nil?
+
     field, value = @property.split('==')
     @object.public_send(@model).where("#{field}": value).present?
   end
 
   def relative_at_least_one_present?
+    return false if @object.public_send(@model).nil?
+
     @object.public_send(@model).present?
   end
 
   def relative_specific_property_present?
+    return false if @object.public_send(@model).nil?
+
     @object.public_send(@model)[@property].present?
   end
 end
