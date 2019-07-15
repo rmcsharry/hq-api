@@ -6,11 +6,11 @@ module ScoreableActivity
 
   attr_accessor :contacts_to_recalculate, :mandates_to_recalculate
 
-  included do
-    before_commit :mark_objects_for_rescoring, on: :create
-    before_destroy :mark_objects_for_rescoring
-    after_commit :rescore_objects, on: %i[create destroy]
-  end
+  # included do
+  #   before_commit :mark_objects_for_rescoring, on: :create
+  #   before_destroy :mark_objects_for_rescoring
+  #   after_commit :rescore_objects, on: %i[create destroy]
+  # end
 
   private
 
