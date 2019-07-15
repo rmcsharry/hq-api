@@ -10,12 +10,6 @@ module V1
     after_action :check_additional_data, only: :create
     # rubocop:enable Rails/LexicallyScopedActionFilter
 
-    # def create
-    #   ActiveRecord::Base.transaction do
-    #     super
-    #   end
-    # end
-
     private
 
     def check_additional_data
