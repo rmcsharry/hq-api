@@ -44,17 +44,22 @@ module GeneratedDocument
   end
 
   def generate_docx_document(template, context)
-    template_path = load_template(template).path
-    document = Docx::Document.new(template_path)
-    document.commit(context)
-    document.render
+    tempfile = load_template(template)
+    begin
+      document = Docx::Document.new(tempfile)
+      document.commit(context)
+      generated_document = document.render
+    ensure
+      tempfile.close
+      tempfile.unlink
+    end
+    generated_document
   end
 
   def load_template(template)
     tempfile = Tempfile.new
     tempfile.binmode
     tempfile.write template.file.download
-    tempfile.close
     tempfile
   end
 end

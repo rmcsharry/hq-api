@@ -146,7 +146,7 @@ class InvestorCashflowDecorator < ApplicationDecorator
   def format_absolute_amount(amount)
     return nil if amount.zero?
 
-    format_currency(amount.abs, fund_cashflow.fund.currency)
+    format_currency(value: amount.abs, currency: fund_cashflow.fund.currency)
   end
 
   def format_percentage(value)

@@ -4,8 +4,9 @@ module Quill
   # Defines an interface to parse QuillDelta
   # Documentation: https://quilljs.com/docs/delta/#delta
   class Delta
-    def initialize(delta_string)
+    def initialize(delta_string, justify_content = false)
       @delta_string = delta_string
+      @justify_content = justify_content
     end
 
     def to_s
@@ -21,7 +22,7 @@ module Quill
     end
 
     def parse(delta_object)
-      @paragraphs = [Quill::Paragraph.new]
+      @paragraphs = [Quill::Paragraph.new(nil, @justify_content)]
 
       delta_object['ops']&.each do |insertion|
         insert = insertion['insert']
@@ -41,7 +42,7 @@ module Quill
     # Set line-format for current paragraph
     def apply_line_format(attributes)
       @paragraphs.last.attributes = attributes
-      @paragraphs << Quill::Paragraph.new
+      @paragraphs << Quill::Paragraph.new(nil, @justify_content)
     end
 
     # Insert given text into current paragraph.
@@ -56,7 +57,7 @@ module Quill
         end
 
         line.scan("\n").count.times do
-          @paragraphs << Quill::Paragraph.new
+          @paragraphs << Quill::Paragraph.new(nil, @justify_content)
         end
       end
     end
@@ -69,16 +70,23 @@ module Quill
     attr_accessor :attributes
     attr_reader :text_runs
 
-    def initialize(text_run = nil)
+    def initialize(text_run = nil, justify_content = false)
       @text_runs = [text_run].compact
+      @justify_content = justify_content
     end
 
     def to_s
       text_runs = @text_runs.map(&:to_s)
-      "<w:p>#{attribute_tag}#{text_runs.join}</w:p>"
+      "<w:p>#{justify_content_tag}#{attribute_tag}#{text_runs.join}</w:p>"
     end
 
     private
+
+    def justify_content_tag
+      return nil unless @justify_content
+
+      "<w:pPr><w:jc w:val='both'/></w:pPr>"
+    end
 
     def attribute_tag
       return nil if @attributes.nil?

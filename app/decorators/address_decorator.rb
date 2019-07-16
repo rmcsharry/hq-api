@@ -26,7 +26,7 @@ class AddressDecorator < Draper::Decorator
   # If the contact address contains only one person and no company, show the gender in a separate row from the name
   def styled_addressees(addressees:)
     if organization_name.blank? && addressees.count == 1
-      [addressees.first.decorate.gender_text, addressees.first.decorate.name]
+      [addressees.first.decorate.gender_for_address, addressees.first.decorate.name]
     else
       addressees.map { |addressee| addressee.decorate.name_with_gender }
     end

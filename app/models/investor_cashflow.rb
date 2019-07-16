@@ -134,12 +134,16 @@ class InvestorCashflow < ApplicationRecord
     return if template.nil?
 
     extension = Docx.docx?(template.file) ? 'docx' : 'pdf'
-    mandate = investor.mandate.decorate
-    mandate_identifier = mandate.owner_name
-    fund_identifier = fund_cashflow.fund.name
-    cashflow_number = fund_cashflow.number
-    cashflow_type = cashflow_type == :capital_call ? 'Kapitalabruf' : 'Ausschüttung'
-    "Anschreiben_#{cashflow_type}_#{cashflow_number}_#{fund_identifier}_#{mandate_identifier}.#{extension}"
+    "#{cashflow_document_file_name}.#{extension}"
+  end
+
+  def cashflow_document_file_name
+    mandate_identifier = investor.mandate.decorate.owner_name
+    cashflow_type = fund_cashflow.fund_cashflow_type == :capital_call ? 'Kapitalabruf' : 'Ausschuettung'
+    date = fund_cashflow.valuta_date.strftime('%y%m%d')
+    # A randomized string at the end is needed to prevent two casfhlow documents in the same ZIP to have the same name
+    # This can happen if the same mandate has multiple investors on the same fund.
+    "#{date}_Anschreiben_#{cashflow_type}_#{fund_cashflow.fund.name}_#{mandate_identifier}_#{id[0..7]}"
   end
 
   # Validates that the investor belongs to the same fund as the fund cashflow

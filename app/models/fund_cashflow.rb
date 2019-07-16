@@ -105,8 +105,9 @@ class FundCashflow < ApplicationRecord
   end
 
   def archive_name
-    cashflow_type = fund_cashflow_type == :distribution ? 'Ausschüttung' : 'Kapitalabruf'
-    "Anschreiben_#{cashflow_type}_#{number}_#{fund.name}.zip"
+    cashflow_type = fund_cashflow_type == :distribution ? 'Ausschuettung' : 'Kapitalabruf'
+    date = valuta_date.strftime('%y%m%d')
+    "#{date}_Anschreiben_#{cashflow_type}_#{fund.name}.zip"
   end
 
   private

@@ -67,22 +67,22 @@ class Document
     def self.fund_distribution_context(investor_cashflow)
       investor_cashflow = investor_cashflow.decorate
       investor = investor_cashflow.investor.decorate
-      fund_cashflow = investor_cashflow.fund_cashflow.decorate
+      fund_cashflow = investor_cashflow.fund_cashflow
       fund = investor.fund
       bank_account = fund.bank_accounts.first
       primary_owner = investor.primary_owner.decorate
       legal_address = primary_owner.legal_address&.decorate
       primary_address = investor.contact_address&.decorate
-      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
+      gender_text = primary_owner.gender_text
       mandate = investor.mandate.decorate
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
       primary_consultant = mandate.primary_consultant&.decorate
       secondary_consultant = mandate.secondary_consultant&.decorate
-      description_bottom = Quill::Delta.new(fund_cashflow.description_bottom).to_s
-      description_top = Quill::Delta.new(fund_cashflow.description_top).to_s
+      description_bottom = Quill::Delta.new(fund_cashflow.description_bottom, true).to_s
+      description_top = Quill::Delta.new(fund_cashflow.description_top, true).to_s
 
-      current_date = I18n.localize(Time.zone.now, format: '%d. %B %Y')
+      current_date = format_date(date: Time.zone.now)
 
       {
         current_date: current_date,
@@ -103,7 +103,7 @@ class Document
           description_bottom: Sablon.content(:word_ml, description_bottom),
           description_top: Sablon.content(:word_ml, description_top),
           number: fund_cashflow.number,
-          valuta_date: format_date(date: Date.parse(fund_cashflow.valuta_date))
+          valuta_date: format_date(date: fund_cashflow.valuta_date)
         },
         investor: {
           amount_total: investor.amount_total,
@@ -116,7 +116,7 @@ class Document
             postal_code: primary_address.postal_code,
             street_and_number: primary_address.street_and_number
           },
-          formal_salutation: investor.formal_salutation,
+          formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
             full_address: legal_address&.letter_address(addressees: [primary_owner])
           },
@@ -133,7 +133,7 @@ class Document
             primary_phone: primary_contact&.primary_phone
           },
           primary_owner: {
-            formal_salutation: primary_owner.formal_salutation,
+            formal_salutation: primary_owner.formal_salutation(with_first_name: false),
             full_name: primary_owner.name,
             gender: gender_text
           },
@@ -191,14 +191,15 @@ class Document
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/MethodLength
     def self.fund_quarterly_report_context(investor, fund_report)
+      fund_report = fund_report.decorate
       investor = investor.decorate
       fund = investor.fund
       primary_owner = investor.primary_owner.decorate
       legal_address = primary_owner.legal_address&.decorate
       primary_address = investor.contact_address&.decorate
       current_date = format_date(date: Time.zone.now)
-      description = Quill::Delta.new(fund_report.description).to_s
-      gender_text = primary_owner.is_a?(Contact::Person) ? primary_owner.gender_text : ''
+      description = Quill::Delta.new(fund_report.description, true).to_s
+      gender_text = primary_owner.gender_text
       mandate = investor.mandate.decorate
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
@@ -213,7 +214,12 @@ class Document
           name: fund.name
         },
         fund_report: {
-          description: Sablon.content(:word_ml, description)
+          description: Sablon.content(:word_ml, description),
+          dpi: fund_report.dpi,
+          irr: fund_report.irr,
+          rvpi: fund_report.rvpi,
+          tvpi: fund_report.tvpi,
+          valuta_date: format_date(date: fund_report.valuta_date)
         },
         investor: {
           amount_total: investor.amount_total,
@@ -224,7 +230,7 @@ class Document
             postal_code: primary_address.postal_code,
             street_and_number: primary_address.street_and_number
           },
-          formal_salutation: investor.formal_salutation,
+          formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
             full_address: legal_address&.letter_address(addressees: [primary_owner])
           },
@@ -239,7 +245,7 @@ class Document
             primary_phone: primary_contact&.primary_phone
           },
           primary_owner: {
-            formal_salutation: primary_owner.formal_salutation,
+            formal_salutation: primary_owner.formal_salutation(with_first_name: false),
             full_name: primary_owner.name,
             gender: gender_text
           },
@@ -296,7 +302,7 @@ class Document
             full_address: primary_address&.letter_address(addressees: investor.salutation_contacts)
           },
           contact_phone: primary_owner.primary_phone&.value,
-          formal_salutation: investor.formal_salutation,
+          formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
             addition: legal_address&.addition,
             city: legal_address&.city,
@@ -344,7 +350,7 @@ class Document
     # rubocop:enable Metrics/MethodLength
 
     def self.format_date(date:)
-      I18n.localize(date, format: '%d. %B %Y')
+      I18n.localize(date, format: '%e. %B %Y')
     end
 
     private

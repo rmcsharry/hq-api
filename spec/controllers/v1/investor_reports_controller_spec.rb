@@ -54,7 +54,7 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
       tempfile = Tempfile.new 'filled-report'
       tempfile.binmode
       tempfile.write response.body
-      docx = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
+      docx = Docx::Document.new(tempfile) unless File.zero?(tempfile)
       tempfile.close
       docx
     end

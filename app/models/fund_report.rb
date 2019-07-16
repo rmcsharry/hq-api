@@ -6,9 +6,12 @@
 #
 #  created_at  :datetime         not null
 #  description :text
+#  dpi         :decimal(20, 10)
 #  fund_id     :uuid
 #  id          :uuid             not null, primary key
 #  irr         :decimal(20, 10)
+#  rvpi        :decimal(20, 10)
+#  tvpi        :decimal(20, 10)
 #  updated_at  :datetime         not null
 #  valuta_date :date
 #

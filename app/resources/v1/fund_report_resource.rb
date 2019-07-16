@@ -5,8 +5,11 @@ module V1
   class FundReportResource < BaseResource
     attributes(
       :description,
+      :dpi,
       :investor_count,
       :irr,
+      :rvpi,
+      :tvpi,
       :valuta_date
     )
 

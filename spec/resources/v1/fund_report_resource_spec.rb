@@ -7,8 +7,11 @@ RSpec.describe V1::FundReportResource, type: :resource do
   subject { described_class.new(fund_report, {}) }
 
   it { is_expected.to have_attribute :description }
+  it { is_expected.to have_attribute :dpi }
   it { is_expected.to have_attribute :investor_count }
   it { is_expected.to have_attribute :irr }
+  it { is_expected.to have_attribute :rvpi }
+  it { is_expected.to have_attribute :tvpi }
   it { is_expected.to have_attribute :valuta_date }
 
   it { is_expected.to have_one :fund }

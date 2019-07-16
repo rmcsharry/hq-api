@@ -111,7 +111,7 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
     let(:mandate2) { create(:mandate, :with_owner, owner: contact_person2) }
     let(:investor1) { create(:investor, :signed, fund: fund, mandate: mandate1) }
     let(:investor2) { create(:investor, :signed, fund: fund, mandate: mandate2) }
-    let!(:fund_cashflow) { create(:fund_cashflow, fund: fund, number: 1) }
+    let!(:fund_cashflow) { create(:fund_cashflow, fund: fund, number: 1, valuta_date: Date.new(2019, 3, 1)) }
     let!(:investor_cashflow1) do
       create(
         :investor_cashflow,
@@ -175,8 +175,10 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
         expect(file_names).to(
           match_array(
             [
-              'Anschreiben_Ausschüttung_1_Fund_Family, Fore und Guntersen, Thomas.docx',
-              'Anschreiben_Ausschüttung_1_Fund_Guntersen, Thomas und Last, First.docx'
+              '190301_Anschreiben_Ausschuettung_Fund_Family, Fore und Guntersen, Thomas_' \
+              "#{investor_cashflow2.id[0..7]}.docx",
+              '190301_Anschreiben_Ausschuettung_Fund_Guntersen, Thomas und Last, First_' \
+              "#{investor_cashflow1.id[0..7]}.docx"
             ]
           )
         )

@@ -33,7 +33,7 @@ RSpec.describe AddressDecorator do
           eq(
             <<~ADDRESS.chomp
               Sherpas
-              Herr Dr. Max Mustermann
+              Herrn Dr. Max Mustermann
               Manteuffelstr. 77
               2. Hinterhof
               10999 Berlin
@@ -47,7 +47,7 @@ RSpec.describe AddressDecorator do
           eq(
             <<~ADDRESS.chomp
               Sherpas
-              Herr Dr. Max Mustermann
+              Herrn Dr. Max Mustermann
               Frau Prof. Dr. Maxi Musterfrau
               Manteuffelstr. 77
               2. Hinterhof
@@ -65,7 +65,7 @@ RSpec.describe AddressDecorator do
         expect(subject.letter_address(addressees: [contact1])).to(
           eq(
             <<~ADDRESS.chomp
-              Herr
+              Herrn
               Dr. Max Mustermann
               Manteuffelstr. 77
               2. Hinterhof
@@ -84,7 +84,7 @@ RSpec.describe AddressDecorator do
           eq(
             <<~ADDRESS.chomp
               Sherpas
-              Herr Dr. Max Mustermann
+              Herrn Dr. Max Mustermann
               Manteuffelstr. 77
               2. Hinterhof
               10999 Berlin

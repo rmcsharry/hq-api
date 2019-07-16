@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_20_082146) do
+ActiveRecord::Schema.define(version: 2019_07_15_160315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -206,6 +206,9 @@ ActiveRecord::Schema.define(version: 2019_06_20_082146) do
     t.uuid "fund_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "tvpi", precision: 20, scale: 10
+    t.decimal "dpi", precision: 20, scale: 10
+    t.decimal "rvpi", precision: 20, scale: 10
     t.index ["fund_id"], name: "index_fund_reports_on_fund_id"
   end
 

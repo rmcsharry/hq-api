@@ -8,15 +8,15 @@ class InvestorDecorator < ApplicationDecorator
   # total investment amount
   # @return [String]
   def amount_total
-    format_currency object.amount_total, object.fund.currency
+    format_currency(value: object.amount_total, currency: object.fund.currency, no_cents: true)
   end
 
   # Returns formal salutation for the primary owner or, if present,
   # for the contact person / people
   # @return [String]
-  def formal_salutation
+  def formal_salutation(with_first_name: true)
     relevant_contacts(contacts: salutation_contacts).map.with_index do |contact, i|
-      salutation = contact.decorate.formal_salutation
+      salutation = contact.decorate.formal_salutation(with_first_name: with_first_name)
       # Downcase first letter of subsequent salutations
       i.positive? ? salutation[0].downcase + salutation[1..-1] : salutation
     end.join(', ')

@@ -22,7 +22,7 @@ RSpec.describe InvestorCashflowDecorator do
       let!(:cashflow_type) { :distribution }
 
       it 'renders abs of negative value and adds currency to it' do
-        expect(subject.net_cashflow_amount).to eq 'EUR 4,00'
+        expect(subject.net_cashflow_amount).to eq '4,00'
       end
     end
 
@@ -30,7 +30,7 @@ RSpec.describe InvestorCashflowDecorator do
       let!(:cashflow_type) { :capital_call }
 
       it 'renders value and adds currency to it' do
-        expect(subject.net_cashflow_amount).to eq 'EUR 2,00'
+        expect(subject.net_cashflow_amount).to eq '2,00'
       end
     end
   end

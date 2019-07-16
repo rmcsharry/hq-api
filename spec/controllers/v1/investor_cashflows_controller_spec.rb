@@ -113,7 +113,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
       tempfile = Tempfile.new
       tempfile.binmode
       tempfile.write response.body
-      @response_document = Docx::Document.new(tempfile.path) unless File.zero?(tempfile)
+      @response_document = Docx::Document.new(tempfile) unless File.zero?(tempfile)
       tempfile.close
     end
 

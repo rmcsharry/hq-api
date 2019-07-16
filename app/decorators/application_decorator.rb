@@ -6,9 +6,9 @@ class ApplicationDecorator < Draper::Decorator
     @helpers ||= ActionController::Base.helpers
   end
 
-  def format_currency(value, currency = 'EUR')
+  def format_currency(value:, currency: 'EUR', no_cents: false)
     money = Money.from_amount(value, currency)
-    money.format(symbol: money.currency.to_s + ' ')
+    money.format(symbol: '', no_cents: no_cents)
   end
 
   def format_percentage(value, precision = 2)

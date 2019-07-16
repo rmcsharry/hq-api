@@ -3,19 +3,19 @@
 require 'rails_helper'
 
 RSpec.describe Docx::Document, type: :util do
-  let(:file_path) { Rails.root.join('spec', 'fixtures', 'docx', document_name) }
+  let(:file) { File.open(Rails.root.join('spec', 'fixtures', 'docx', document_name)) }
 
   describe 'document parsing' do
     context 'with a zoomed and scrolled template' do
       let(:document_name) { 'zoomed_scrolled.docx' }
       it 'resets the zoom setting to 100%' do
-        document = Docx::Document.new(file_path)
+        document = Docx::Document.new(file)
         document.commit({})
 
         tempfile = Tempfile.new
         tempfile.binmode
         tempfile.write document.render
-        rendered_document = Docx::Document.new(tempfile.path)
+        rendered_document = Docx::Document.new(tempfile)
         rendered_document.render
         tempfile.close
 
@@ -28,7 +28,7 @@ RSpec.describe Docx::Document, type: :util do
     context 'with an invalid conditional' do
       let(:document_name) { 'invalid_conditional.docx' }
       it 'fails gracefully' do
-        document = Docx::Document.new(file_path)
+        document = Docx::Document.new(file)
         expect do
           document.commit({})
         end.to raise_error(Docx::RenderError, /Could not find end field/)
@@ -38,7 +38,7 @@ RSpec.describe Docx::Document, type: :util do
     context 'with an invalid condition' do
       let(:document_name) { 'invalid_condition.docx' }
       it 'fails gracefully' do
-        document = Docx::Document.new(file_path)
+        document = Docx::Document.new(file)
         expect do
           document.commit({})
         end.to raise_error(Docx::RenderError, /Failed executing operation/)
@@ -49,7 +49,7 @@ RSpec.describe Docx::Document, type: :util do
       let(:document_name) { 'Ausschuettung_Vorlage.docx' }
 
       it 'properly parses the template' do
-        document = Docx::Document.new(file_path)
+        document = Docx::Document.new(file)
         document.commit(
           current_date: '24.12.2018',
           investor: {
@@ -95,7 +95,7 @@ RSpec.describe Docx::Document, type: :util do
         tempfile = Tempfile.new
         tempfile.binmode
         tempfile.write document.render
-        rendered_document = Docx::Document.new(tempfile.path)
+        rendered_document = Docx::Document.new(tempfile)
         tempfile.close
 
         content = rendered_document.to_s
@@ -110,7 +110,7 @@ RSpec.describe Docx::Document, type: :util do
       let(:document_name) { 'Quartalsbericht_Vorlage.docx' }
 
       it 'properly parses the template' do
-        document = Docx::Document.new(file_path)
+        document = Docx::Document.new(file)
 
         description = Quill::Delta.new <<-QUILL.squish
           {
@@ -151,7 +151,7 @@ RSpec.describe Docx::Document, type: :util do
         tempfile = Tempfile.new
         tempfile.binmode
         tempfile.write document.render
-        rendered_document = Docx::Document.new(tempfile.path)
+        rendered_document = Docx::Document.new(tempfile)
         tempfile.close
 
         content = rendered_document.to_s

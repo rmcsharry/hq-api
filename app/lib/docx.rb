@@ -14,15 +14,15 @@ module Docx
   class Document
     attr_reader :documents
 
-    def initialize(path)
-      @document_path = path
+    def initialize(tempfile)
+      @tempfile = tempfile
       @documents = {}
     end
 
     def commit(context)
-      temp_path = Tempfile.new.path
-      Sablon.template(@document_path).render_to_file(temp_path, context)
-      @document_path = temp_path
+      tempfile = Tempfile.new
+      Sablon.template(@tempfile.path).render_to_file(tempfile.path, context)
+      @tempfile = tempfile
     rescue Sablon::TemplateError, Sablon::ContextError => e
       raise Docx::RenderError, e.message
     rescue NoMethodError => e
@@ -53,7 +53,7 @@ module Docx
     # Find all files in the zipped directory and put them
     # into a hash
     def parse_document!
-      Zip::File.open(@document_path) do |zip_file|
+      Zip::File.open(@tempfile.path) do |zip_file|
         zip_file.each do |entry|
           next unless entry.file?
 

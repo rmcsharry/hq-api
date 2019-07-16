@@ -6,9 +6,12 @@
 #
 #  created_at  :datetime         not null
 #  description :text
+#  dpi         :decimal(20, 10)
 #  fund_id     :uuid
 #  id          :uuid             not null, primary key
 #  irr         :decimal(20, 10)
+#  rvpi        :decimal(20, 10)
+#  tvpi        :decimal(20, 10)
 #  updated_at  :datetime         not null
 #  valuta_date :date
 #
@@ -30,6 +33,18 @@ RSpec.describe FundReport, type: :model do
 
   describe '#irr' do
     it { is_expected.to respond_to(:irr) }
+  end
+
+  describe '#rvpi' do
+    it { is_expected.to respond_to(:rvpi) }
+  end
+
+  describe '#tvpi' do
+    it { is_expected.to respond_to(:tvpi) }
+  end
+
+  describe '#dpi' do
+    it { is_expected.to respond_to(:dpi) }
   end
 
   describe '#description' do

@@ -111,8 +111,8 @@ RSpec.describe InvestorDecorator do
   describe '#amount_total' do
     let!(:contact_salutation_primary_owner) { true }
 
-    it 'renders total amount in accounting format' do
-      expect(subject.amount_total).to eq('EUR 100.000,00')
+    it 'renders total amount without currency code and cents' do
+      expect(subject.amount_total).to eq('100.000')
     end
   end
 end
