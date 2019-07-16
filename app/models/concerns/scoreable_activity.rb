@@ -19,14 +19,12 @@ module ScoreableActivity
       contact.execute_after_related_commit do
         contact.calculate_score && contact.save
       end
-      # rule = get_rule(model_key: 'activities', name: '')
-      # process_single_rule(instance: contact, rule: rule) if contact.activities.count == 1
+      # after_remove_for_contacts << lambda do |_hook, contact, _activity|
+      #   binding.pry
+      #   rule = get_rule(model_key: 'activities', name: '')
+      #   process_single_rule(instance: contact, rule: rule) if contact.activities.count.zero?
+      # end
     end
-    # after_remove_for_contacts << lambda do |_hook, contact, _activity|
-    #   binding.pry
-    #   rule = get_rule(model_key: 'activities', name: '')
-    #   process_single_rule(instance: contact, rule: rule) if contact.activities.count.zero?
-    # end
   end
 
   private

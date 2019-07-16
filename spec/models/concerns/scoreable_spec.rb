@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Scoreable do
+RSpec.describe Scoreable, bullet: false do
   describe '#calculate_score' do
     describe 'for contact_person' do
       context 'when some rules apply' do
@@ -91,8 +91,8 @@ RSpec.describe Scoreable do
           activity1.save
           subject.reload
 
-          # expect(subject.data_integrity_missing_fields).not_to include('activities')
-          # expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_missing_fields).not_to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
         end
 
@@ -103,8 +103,8 @@ RSpec.describe Scoreable do
           subject.activities.destroy(activity1)
           subject.reload
 
-          # expect(subject.data_integrity_missing_fields).not_to include('activities')
-          # expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_missing_fields).not_to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
         end
       end
