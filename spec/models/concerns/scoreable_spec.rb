@@ -82,13 +82,13 @@ RSpec.describe Scoreable, bullet: false do
 
       context 'when related model changes' do
         let!(:subject) { build(:contact_person) }
-        let!(:activity1) { build(:activity_note) }
+        let!(:activity) { build(:activity_note) }
 
         it 'scores correctly when initial activity is added' do
           subject.calculate_score
           # subject.activities << activity
-          activity1.contacts << subject
-          activity1.save
+          activity.contacts << subject
+          activity.save
           subject.reload
 
           expect(subject.data_integrity_missing_fields).not_to include('activities')
@@ -97,10 +97,10 @@ RSpec.describe Scoreable, bullet: false do
         end
 
         it 'scores correctly when final activity is removed' do
-          activity1.contacts << subject
-          activity1.save
+          activity.contacts << subject
+          activity.save
           subject.calculate_score
-          subject.activities.destroy(activity1)
+          subject.activities.destroy(activity)
           subject.reload
 
           expect(subject.data_integrity_missing_fields).not_to include('activities')
