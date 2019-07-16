@@ -80,17 +80,32 @@ RSpec.describe Scoreable do
         end
       end
 
-      context 'after related model changes' do
+      context 'when related model changes' do
         let!(:subject) { build(:contact_person) }
+        let!(:activity1) { build(:activity_note) }
 
-        it 'is instantly correct when rule: a related model changed from 0 to 1 record' do
+        it 'scores correctly when initial activity is added' do
           subject.calculate_score
-          subject.activities << build(:activity_note)
-          # build(:activity_note).contacts << subject
-          puts subject.data_integrity_missing_fields
+          # subject.activities << activity
+          activity1.contacts << subject
+          activity1.save
+          subject.reload
 
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          # expect(subject.data_integrity_missing_fields).not_to include('activities')
+          # expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+        end
+
+        it 'scores correctly when final activity is removed' do
+          activity1.contacts << subject
+          activity1.save
+          subject.calculate_score
+          subject.activities.destroy(activity1)
+          subject.reload
+
+          # expect(subject.data_integrity_missing_fields).not_to include('activities')
+          # expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
         end
       end
 
