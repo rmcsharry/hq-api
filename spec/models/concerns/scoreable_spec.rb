@@ -86,7 +86,6 @@ RSpec.describe Scoreable, bullet: false do
 
         it 'scores correctly when initial activity is added' do
           subject.calculate_score
-          # subject.activities << activity
           activity.contacts << subject
           activity.save
           subject.reload
@@ -97,14 +96,16 @@ RSpec.describe Scoreable, bullet: false do
         end
 
         it 'scores correctly when final activity is removed' do
+          subject.calculate_score
           activity.contacts << subject
           activity.save
-          subject.calculate_score
-          subject.activities.destroy(activity)
+
+          activity.destroy
+          activity.contacts.destroy(subject)
           subject.reload
 
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_missing_fields).to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(24)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
         end
       end
