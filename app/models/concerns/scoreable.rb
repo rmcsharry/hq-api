@@ -26,13 +26,11 @@ module Scoreable
   end
 
   included do
-    after_commit do |contact|
-      puts "AFTER CONTACT COMMIT"
-      binding.pry
-      if self.execute_after_related_commit
-        self.execute_after_related_commit.each do |callback|
-          callback.call
-        end
+    after_commit do
+      if @_execute_after_related_commit
+        callbacks = @_execute_after_related_commit
+        @_execute_after_related_commit = nil
+        callbacks.each(&:call)
       end
     end
 
