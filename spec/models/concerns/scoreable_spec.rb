@@ -81,13 +81,15 @@ RSpec.describe Scoreable, bullet: false do
       end
 
       context 'when related model changes' do
+        # NOTE
+        # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
+        # instead of the random score from the contact factory
         let!(:subject) { create(:contact_person) }
-        let!(:activity) { create(:activity_note) }
+        let!(:activity_1) { create(:activity_note) }
+        let!(:activity_2) { create(:activity_note) }
 
         it 'scores correctly when initial activity is added' do
-          subject.calculate_score
-          activity.contacts << subject
-          activity.save!
+          activity_1.contacts << subject
 
           expect(subject.data_integrity_missing_fields).not_to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(23)
@@ -95,11 +97,8 @@ RSpec.describe Scoreable, bullet: false do
         end
 
         it 'scores correctly when final activity is removed' do
-          subject.calculate_score
-          activity.contacts << subject
-          activity.save!
-          activity.contacts.destroy(subject)
-          subject.reload
+          activity_1.contacts << subject
+          activity_1.contacts.destroy(subject)
 
           expect(subject.data_integrity_missing_fields).to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(24)
@@ -107,14 +106,36 @@ RSpec.describe Scoreable, bullet: false do
         end
 
         it 'scores correctly when final activity itself is destroyed' do
-          activity.contacts << subject
-          activity.save!
-          activity.destroy!
-          subject.reload
+          activity_1.contacts << subject
+          activity_1.destroy!
 
           expect(subject.data_integrity_missing_fields).to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(24)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
+        end
+
+        it 'does not rescore when adding activites after the first one' do
+          activity_1.contacts << subject
+          activity_1.save!
+          stub_const('Contact', double)
+          activity_2.contacts << subject
+
+          expect(subject.data_integrity_missing_fields).not_to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+        end
+
+        it 'does not rescore when removing activites except one' do
+          activity_1.contacts << subject
+          activity_1.save!
+          activity_2.contacts << subject
+          activity_2.save!
+          stub_const('Contact', double)
+          activity_1.destroy!
+
+          expect(subject.data_integrity_missing_fields).not_to include('activities')
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
         end
       end
 
