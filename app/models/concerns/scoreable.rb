@@ -10,19 +10,6 @@ module Scoreable
       # memoized at class level since WEIGHT_RULES can only change via code deployment
       @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f
     end
-
-    def get_rule(key, name = '')
-      self::WEIGHT_RULES.find(key == :model_key && name == :name).first
-      # rule = subject.class::WEIGHT_RULES.select { |r| r[:name] == 'nationality' }[0]
-    end
-
-    def process_rule(instance:, rule:, direction:)
-      processor = RuleProcessor.new(object: instance)
-      new_score = instance.data_integrity_score + (processor.score(rule: rule) * direction)
-      # instance.updatx_column(:data_integrity_score, new_score)
-      instance.data_integrity_score = new_score
-      instance.save!
-    end
   end
 
   included do
@@ -54,6 +41,10 @@ module Scoreable
     end
     self.data_integrity_missing_fields = processor.missing_fields
     assign_score
+  end
+
+  def one_activity?
+    activities.count == 1
   end
 
   private
