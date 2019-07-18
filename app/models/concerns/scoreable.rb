@@ -34,12 +34,14 @@ module Scoreable
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
   def calculate_score
-    processor = WeightRulesProcessor.new(object: self)
     @score = 0
+    missing_fields = []
     @score = self.class::WEIGHT_RULES.sum do |rule|
-      processor.score(rule: rule)
+      result = RuleFactory.result(object: self, rule: rule)
+      missing_fields << result[:name] if result[:score].zero?
+      result[:score]
     end
-    self.data_integrity_missing_fields = processor.missing_fields
+    self.data_integrity_missing_fields = missing_fields
     assign_score
   end
 
