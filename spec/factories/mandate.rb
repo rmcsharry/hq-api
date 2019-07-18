@@ -50,8 +50,7 @@ FactoryBot.define do
           create(:mandate_member, mandate: @instance, member_type: :primary_consultant),
           create(:mandate_member, mandate: @instance, member_type: :secondary_consultant),
           create(:mandate_member, mandate: @instance, member_type: :assistant),
-          create(:mandate_member, mandate: @instance, member_type: :bookkeeper),
-          # create(:mandate_member, mandate: @instance, contact: owner)
+          create(:mandate_member, mandate: @instance, member_type: :bookkeeper)
         ]
       end
     end
