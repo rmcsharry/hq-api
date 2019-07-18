@@ -14,4 +14,8 @@ class ApplicationDecorator < Draper::Decorator
   def format_percentage(value, precision = 2)
     helpers.number_to_percentage(value, precision: precision, format: '%n')
   end
+
+  def format_decimal(value, precision = 2)
+    helpers.number_with_precision(value, precision: precision)
+  end
 end

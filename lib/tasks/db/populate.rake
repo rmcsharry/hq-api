@@ -517,11 +517,11 @@ namespace :db do
         Faker::Number.between(2, 5).times do
           FundReport.create(
             description: Faker::Movie.quote,
-            dpi: (Faker::Number.between(100, 650).to_f / 10_000).round(2),
+            dpi: (Faker::Number.between(100, 650).to_f / 100).round(2),
             fund: fund,
             irr: (Faker::Number.between(100, 650).to_f / 10_000).round(2),
-            rvpi: (Faker::Number.between(100, 650).to_f / 10_000).round(2),
-            tvpi: (Faker::Number.between(100, 650).to_f / 10_000).round(2),
+            rvpi: (Faker::Number.between(100, 650).to_f / 100).round(2),
+            tvpi: (Faker::Number.between(100, 650).to_f / 100).round(2),
             valuta_date: Faker::Date.between(6.years.ago, 0.days.ago)
           )
         end
