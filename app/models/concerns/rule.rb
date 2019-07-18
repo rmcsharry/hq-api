@@ -1,3 +1,19 @@
+# frozen_string_literal: true
+
+# Rule is an abstract factory class (not meant to be instantiated directly)
+# Used to build rules based on its descendant classes and apply those rules to objects (contacts, mandates etc)
+#
+# HOW TO USE
+# Call Rule.build and provide:
+#  1 an object
+#  2 a single rule
+#
+# RETURNS
+#  an instance of a descendant class matching the given rule type
+#
+# Calling 'result' on that instance returns a hash:
+# {score: x, name: field to show to user}
+# If the rule does not apply, the result will be {score: 0.0, name: field to show to user}
 class Rule
   def initialize(object:, rule:)
     @object = object
@@ -7,7 +23,7 @@ class Rule
   end
 
   def self.build(object:, rule:)
-    descendants.detect { |klass| klass.match?(rule) }.new(object: object, rule: rule)
+    descendants.detect { |klass| klass.name.demodulize == rule[:type] }.new(object: object, rule: rule)
   end
 
   def self.inherited(klass)
@@ -18,6 +34,8 @@ class Rule
     @descendants ||= []
   end
 
+  private
+
   def absolute_weight(field_name, presence_checker)
     if send(presence_checker)
       { score: (@relative_weight / @object.class.relative_weights_total), name: field_name }
@@ -27,11 +45,7 @@ class Rule
   end
 
   # rubocop:disable Style/Documentation
-  class FromMainModel < Rule
-    def self.match?(rule)
-      rule[:type] == 'A'
-    end
-
+  class MainProperty < Rule
     def result
       absolute_weight(@property.camelize(:lower), :main_property_present?)
     end
@@ -41,11 +55,7 @@ class Rule
     end
   end
 
-  class FromRelativeSpecificProperty < Rule
-    def self.match?(rule)
-      rule[:type] == 'B'
-    end
-
+  class RelativeProperty < Rule
     def result
       absolute_weight(@property.camelize(:lower), :specific_property_present?)
     end
@@ -57,11 +67,7 @@ class Rule
     end
   end
 
-  class FromRelativeFieldValue < Rule
-    def self.match?(rule)
-      rule[:type] == 'C'
-    end
-
+  class RelativeFieldValue < Rule
     def result
       absolute_weight(@property.split('==')[1], :field_value_present?)
     end
@@ -74,11 +80,7 @@ class Rule
     end
   end
 
-  class FromRelativeAtLeastOne < Rule
-    def self.match?(rule)
-      rule[:type] == 'D'
-    end
-
+  class RelativeAtLeastOne < Rule
     def result
       absolute_weight(@model, :at_least_one_present?)
     end
