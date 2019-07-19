@@ -5,12 +5,12 @@ module Scoreable
   # Designed so that rules send themselves to be scored
   #
   # INPUT
-  # Call Rule.build and provide:
+  # Call Score.build and provide:
   #  a single rule
   #
   # OUTPUT
-  #  {score: <x>, name: <field scored>}
-  #  {score: 0.0, name: <field scored>} -> if the rule is invalid or does not pass
+  #  {name: <attribute scored>, score: <x>}
+  #  {name: <attribute scored>, score: <0.0>} -> if the rule is invalid or does not pass
   class Score
     def initialize(rule)
       @rule = rule

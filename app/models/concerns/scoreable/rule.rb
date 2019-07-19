@@ -10,8 +10,8 @@ module Scoreable
   #  2 a single rule
   #
   # OUTPUT (the result of Score class)
-  #  {score: <x>, name: <field scored>}
-  #  {score: 0.0, name: <field scored>} -> if the rule is invalid or does not pass
+  #  {name: <attribute scored>, score: <x>}
+  #  {name: <attribute scored>, score: <0.0>} -> if the rule is invalid or does not pass
   class Rule
     attr_accessor :field_name, :relative_weight, :weights_total
 
