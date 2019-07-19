@@ -11,16 +11,14 @@
 # OUTPUT
 #  an instance of the descendant class that matches the given rule type
 #  call result on the instance -> returns hash: {score: x, name: field scored}
-# 
+#
 # If the rule does not apply, the result will be {score: 0.0, name: field scored}
 class Rule
   attr_accessor :field_name, :relative_weight, :weights_total
 
   def initialize(object:, rule:)
     @object = object
-    @model = rule[:model_key]
-    @property = rule[:name]
-    @relative_weight = rule[:relative_weight]
+    @model, @property, @relative_weight = rule[:model_key], rule[:name], rule[:relative_weight]
     @weights_total = object.class.relative_weights_total
   end
 
@@ -107,23 +105,19 @@ class Rule
       @descendants ||= []
     end
 
+    def result
+      { name: @rule.field_name, score: 0.0 }
+    end
+
     class InvalidZero < Score
       def self.match?(rule)
         !rule.valid?
-      end
-
-      def result
-        { name: @rule.field_name, score: 0.0 }
       end
     end
 
     class ValidZero < Score
       def self.match?(rule)
         rule.valid? && !rule.passed?
-      end
-
-      def result
-        { name: @rule.field_name, score: 0.0 }
       end
     end
 
