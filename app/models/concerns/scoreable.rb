@@ -37,7 +37,7 @@ module Scoreable
     @score = 0
     missing_fields = []
     @score = self.class::WEIGHT_RULES.sum do |rule|
-      result = Rule.build(object: self, rule: rule).result
+      result = Rule.build(object: self, rule: rule)
       missing_fields << result[:name] if result[:score].zero?
       result[:score]
     end

@@ -47,7 +47,7 @@ class Contact
   # Defines the Contact model for organizations
   class Organization < Contact
     include Scoreable
-    include ScoreableOrganization
+    include Scoreable::Organization
 
     def self.policy_class
       ContactPolicy

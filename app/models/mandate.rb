@@ -51,7 +51,7 @@ class Mandate < ApplicationRecord
   include MandateWeight
   include WeightRulesMandate
   include Scoreable
-  include ScoreableMandate
+  include Scoreable::Mandate
 
   strip_attributes only: %i[
     datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id

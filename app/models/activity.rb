@@ -27,7 +27,7 @@
 # Defines the Activity model
 class Activity < ApplicationRecord
   include Lockable
-  include ScoreableActivity
+  include Scoreable::Activity
   strip_attributes only: :title, collapse_spaces: true
 
   belongs_to :creator, class_name: 'User', inverse_of: :activities
