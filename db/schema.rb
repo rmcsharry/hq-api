@@ -372,6 +372,10 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
     t.boolean "confidential", default: false, null: false
     t.string "psplus_pe_id"
+    t.uuid "previous_state_transition_id"
+    t.uuid "current_state_transition_id"
+    t.index ["current_state_transition_id"], name: "index_mandates_on_current_state_transition_id"
+    t.index ["previous_state_transition_id"], name: "index_mandates_on_previous_state_transition_id"
   end
 
   create_table "newsletter_subscribers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -392,6 +396,18 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.datetime "updated_at", null: false
     t.string "subscriber_context", default: "hqt", null: false
     t.jsonb "questionnaire_results"
+  end
+
+  create_table "state_transitions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.boolean "is_successor"
+    t.string "event"
+    t.string "state", null: false
+    t.string "subject_type", null: false
+    t.uuid "subject_id", null: false
+    t.uuid "user_id"
+    t.datetime "created_at"
+    t.index ["subject_type", "subject_id", "created_at"], name: "index_state_transitions_on_subject_and_created_at"
+    t.index ["subject_type", "subject_id"], name: "index_state_transitions_on_subject_type_and_subject_id"
   end
 
   create_table "task_comments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -564,6 +580,8 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
   add_foreign_key "mandate_groups_user_groups", "user_groups"
   add_foreign_key "mandate_members", "contacts"
   add_foreign_key "mandate_members", "mandates"
+  add_foreign_key "mandates", "state_transitions", column: "current_state_transition_id"
+  add_foreign_key "mandates", "state_transitions", column: "previous_state_transition_id"
   add_foreign_key "task_comments", "tasks"
   add_foreign_key "task_comments", "users"
   add_foreign_key "tasks", "users", column: "creator_id"

@@ -35,9 +35,11 @@
 #
 
 # Defines the InvestorCashflow
+# rubocop:disable Metrics/ClassLength
 class InvestorCashflow < ApplicationRecord
   include AASM
   include GeneratedDocument
+  include RememberStateTransitions
 
   belongs_to :fund_cashflow, inverse_of: :investor_cashflows, autosave: true, optional: false
   belongs_to :investor, inverse_of: :investor_cashflows, autosave: true, optional: false
@@ -170,3 +172,4 @@ class InvestorCashflow < ApplicationRecord
                     .where('fund_cashflows.number <= ?', fund_cashflow.number)
   end
 end
+# rubocop:enable Metrics/ClassLength

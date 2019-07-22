@@ -18,16 +18,6 @@ module V1
       records.left_joins(:bank).order("contacts.organization_name #{direction}")
     }
 
-    # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160
-    def _replace_polymorphic_to_one_link(relationship_type, key_value, key_type, _options)
-      relationship = self.class._relationships[relationship_type.to_sym]
-
-      send("#{relationship.foreign_key}=", type: self.class.model_name_for_type(key_type), id: key_value)
-      @save_needed = true
-
-      :completed
-    end
-
     class << self
       def records(options)
         super.preload(:owner, :bank)

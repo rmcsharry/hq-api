@@ -27,6 +27,7 @@
 # Defines the Newsletter Subscriber model
 class NewsletterSubscriber < ApplicationRecord
   include AASM
+  include RememberStateTransitions
   extend Enumerize
 
   QUESTIONNAIRE_RESULTS_JSON_SCHEMA = Rails.root.join('config', 'schemas', 'questionnaire_results.json_schema').to_s

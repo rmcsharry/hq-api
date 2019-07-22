@@ -4,15 +4,21 @@ module V1
   # Defines the Mandate resource for the API
   # rubocop:disable Metrics/ClassLength
   class MandateResource < BaseResource
+    custom_action :update_state, type: :post, level: :instance
+
     attributes(
       :category,
       :comment,
       :confidential,
+      :current_state_completed_tasks_count,
+      :current_state_total_tasks_count,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,
       :mandate_number,
       :owner_name,
+      :permitted_predecessor_states,
+      :permitted_successor_states,
       :prospect_assets_under_management,
       :prospect_fees_fixed_amount,
       :prospect_fees_min_amount,
@@ -33,11 +39,14 @@ module V1
     has_many :mandate_groups_organizations, class_name: 'MandateGroup'
     has_many :mandate_members
     has_many :owners, class_name: 'MandateMember'
+    has_many :state_transitions
     has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :assistant, class_name: 'Contact'
     has_one :bookkeeper, class_name: 'Contact'
+    has_one :current_state_transition, class_name: 'StateTransition'
     has_one :primary_consultant, class_name: 'Contact'
     has_one :secondary_consultant, class_name: 'Contact'
+    has_one :previous_state_transition, class_name: 'StateTransition'
 
     def owner_ids=(relationship_key_values)
       relationship_key_values.each do |key|
@@ -53,6 +62,18 @@ module V1
       @model.secondary_consultant = Contact.find(relationship_key_value)
     end
 
+    def update_state(data)
+      event_name = data.dig('attributes', 'update_event_name')&.to_sym
+
+      unless @model.aasm.events(permitted: true).map(&:name).include?(event_name)
+        raise AASM::InvalidTransition.new(@model, event_name, :default, 'Event is not permitted.')
+      end
+
+      @model.public_send(event_name, context[:current_user])
+      @model.save
+      @model
+    end
+
     filters(
       :category,
       :datev_creditor_id,
@@ -66,6 +87,33 @@ module V1
       :psplus_pe_id,
       :state
     )
+
+    filter :last_state_update_direction, apply: lambda { |records, value, _options|
+      is_successor = value[0]
+
+      records
+        .includes(:current_state_transition)
+        .where(state_transitions: { is_successor: is_successor })
+    }
+
+    filter :last_state_update_by, apply: lambda { |records, value, _options|
+      records.joins(current_state_transition: { user: :contact }).where(
+        "COALESCE(contacts.first_name || ' ' || contacts.last_name, contacts.organization_name) ILIKE ?",
+        "%#{value[0]}%"
+      )
+    }
+
+    filter :last_state_update_date_max, apply: lambda { |records, value, _options|
+      records
+        .joins(:current_state_transition)
+        .where('state_transitions.created_at <= ?', Date.parse(value[0]))
+    }
+
+    filter :last_state_update_date_min, apply: lambda { |records, value, _options|
+      records
+        .joins(:current_state_transition)
+        .where('state_transitions.created_at >= ?', Date.parse(value[0]))
+    }
 
     filter :not_in_list_with_id, apply: lambda { |records, value, _options|
       records.where(%(mandates.id NOT IN (
@@ -212,6 +260,10 @@ module V1
       records.preload(:owners).with_owner_name.order("mandates.owner_name #{direction}")
     }
 
+    sort :last_state_update, apply: lambda { |records, direction, _context|
+      records.includes(:current_state_transition).order("state_transitions.created_at #{direction}")
+    }
+
     class << self
       def records(options)
         records = super
@@ -236,6 +288,14 @@ module V1
         ]
       end
 
+      def self.updatable_fields(context)
+        super - %i[current_state_completed_tasks_count current_state_total_tasks_count]
+      end
+
+      def self.creatable_fields(context)
+        super - %i[current_state_completed_tasks_count current_state_total_tasks_count]
+      end
+
       private
 
       def order_by_name_of_contact(records, direction)
@@ -245,7 +305,8 @@ module V1
       end
 
       def preload_includes(records:, options:)
-        %i[primary_consultant secondary_consultant bookkeeper assistant].each do |included_resource|
+        %i[primary_consultant secondary_consultant bookkeeper assistant \
+           current_state_transition previous_state_transition].each do |included_resource|
           records = records.preload(included_resource) if options.dig(:context, :includes)&.include? included_resource
         end
         if options.dig(:context, :request_method) == 'GET' && options.dig(:context, :controller) == 'v1/mandates'

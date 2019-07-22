@@ -38,6 +38,16 @@ module V1
       params.transform_keys { |key| key.to_s.underscore }.permit(resource._attributes.keys)
     end
 
+    # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160
+    def _replace_polymorphic_to_one_link(relationship_type, key_value, key_type, _options)
+      relationship = self.class._relationships[relationship_type.to_sym]
+
+      send("#{relationship.foreign_key}=", type: self.class.model_name_for_type(key_type), id: key_value)
+      @save_needed = true
+
+      :completed
+    end
+
     private
 
     def serialized_related_objects

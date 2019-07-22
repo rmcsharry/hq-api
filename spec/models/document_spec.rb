@@ -30,6 +30,8 @@
 require 'rails_helper'
 
 RSpec.describe Document, type: :model do
+  include_examples 'state_transitions'
+
   describe '#owner' do
     it { is_expected.to belong_to(:owner) }
   end

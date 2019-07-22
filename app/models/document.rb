@@ -32,6 +32,7 @@ class Document < ApplicationRecord
   extend Enumerize
   include AASM
   include Lockable
+  include RememberStateTransitions
 
   CATEGORIES = %i[
     bank_documents

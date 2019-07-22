@@ -36,6 +36,8 @@
 # Defines the Task model
 class Task < ApplicationRecord
   include AASM
+  include RememberStateTransitions
+
   strip_attributes only: :title, collapse_spaces: true
 
   belongs_to :creator, inverse_of: :created_tasks, class_name: 'User', autosave: true, optional: true

@@ -9,10 +9,14 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_attribute :category }
   it { is_expected.to have_attribute :comment }
   it { is_expected.to have_attribute :confidential }
+  it { is_expected.to have_attribute :current_state_completed_tasks_count }
+  it { is_expected.to have_attribute :current_state_total_tasks_count }
   it { is_expected.to have_attribute :datev_creditor_id }
   it { is_expected.to have_attribute :datev_debitor_id }
   it { is_expected.to have_attribute :default_currency }
   it { is_expected.to have_attribute :mandate_number }
+  it { is_expected.to have_attribute :permitted_predecessor_states }
+  it { is_expected.to have_attribute :permitted_successor_states }
   it { is_expected.to have_attribute :prospect_assets_under_management }
   it { is_expected.to have_attribute :prospect_fees_fixed_amount }
   it { is_expected.to have_attribute :prospect_fees_min_amount }
@@ -30,10 +34,14 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_many(:mandate_groups_families) }
   it { is_expected.to have_many(:mandate_groups_organizations) }
   it { is_expected.to have_many(:mandate_members) }
-  it { is_expected.to have_one(:primary_consultant).with_class_name('Contact') }
-  it { is_expected.to have_one(:secondary_consultant).with_class_name('Contact') }
+  it { is_expected.to have_many(:state_transitions) }
+
   it { is_expected.to have_one(:assistant).with_class_name('Contact') }
   it { is_expected.to have_one(:bookkeeper).with_class_name('Contact') }
+  it { is_expected.to have_one(:current_state_transition).with_class_name('StateTransition') }
+  it { is_expected.to have_one(:previous_state_transition).with_class_name('StateTransition') }
+  it { is_expected.to have_one(:primary_consultant).with_class_name('Contact') }
+  it { is_expected.to have_one(:secondary_consultant).with_class_name('Contact') }
 
   it { is_expected.to filter(:"assistant.name") }
   it { is_expected.to filter(:"bookkeeper.name") }

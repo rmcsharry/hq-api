@@ -9,12 +9,14 @@
 #  comment                          :text
 #  confidential                     :boolean          default(FALSE), not null
 #  created_at                       :datetime         not null
+#  current_state_transition_id      :uuid
 #  datev_creditor_id                :string
 #  datev_debitor_id                 :string
 #  default_currency                 :string
 #  id                               :uuid             not null, primary key
 #  import_id                        :integer
 #  mandate_number                   :string
+#  previous_state_transition_id     :uuid
 #  prospect_assets_under_management :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
@@ -25,12 +27,24 @@
 #  valid_from                       :date
 #  valid_to                         :date
 #
+# Indexes
+#
+#  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (current_state_transition_id => state_transitions.id)
+#  fk_rails_...  (previous_state_transition_id => state_transitions.id)
+#
 
 # Defines the Mandate model
 # rubocop:disable Metrics/ClassLength
 class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
+  include RememberStateTransitions
+
   strip_attributes only: %i[
     datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id
   ], collapse_spaces: true
@@ -54,6 +68,15 @@ class Mandate < ApplicationRecord
   has_one :secondary_consultant_mandate_member,
           -> { where(member_type: :secondary_consultant) },
           class_name: 'MandateMember'
+
+  belongs_to :current_state_transition,
+             class_name: 'StateTransition',
+             optional: true,
+             autosave: true
+  belongs_to :previous_state_transition,
+             class_name: 'StateTransition',
+             optional: true,
+             autosave: true
   # rubocop:enable Rails/InverseOf
 
   has_one :assistant, through: :assistant_mandate_member, source: :contact
@@ -62,6 +85,7 @@ class Mandate < ApplicationRecord
   has_one :secondary_consultant, through: :secondary_consultant_mandate_member, source: :contact
 
   has_many :bank_accounts, as: :owner, inverse_of: :owner, dependent: :destroy
+  has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :contacts, through: :mandate_members
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
@@ -92,30 +116,89 @@ class Mandate < ApplicationRecord
     skip: SKIPPED_ATTRIBUTES
   )
 
+  # rubocop:disable Metrics/BlockLength
   aasm do
+    after_all_transitions :remember_state_transition
+
     state :prospect_not_qualified, initial: true
-    state :prospect_cold, :prospect_warm, :client, :cancelled
+    state :prospect_cold,
+          :prospect_warm,
+          :prospect_investment_proposal_created,
+          :prospect_contract_draft_created,
+          :prospect_contract_draft_approved,
+          :prospect_contract_signed,
+          :prospect_contract_countersigned,
+          :prospect_contract_approved,
+          :client,
+          :cancelled
 
-    event :become_client, if: :primary_and_secondary_consultant_present? do
-      transitions from: %i[prospect_not_qualified prospect_cold prospect_warm cancelled], to: :client
-    end
-
-    event :cancel do
-      transitions from: %i[prospect_not_qualified prospect_cold prospect_warm client], to: :cancelled
-    end
-
-    event :become_prospect_not_qualified do
-      transitions from: %i[prospect_cold prospect_warm client cancelled], to: :prospect_not_qualified
-    end
+    # Possible next states
 
     event :become_prospect_cold do
-      transitions from: %i[prospect_not_qualified prospect_warm client cancelled], to: :prospect_cold
+      transitions from: %i[prospect_not_qualified], to: :prospect_cold
     end
 
     event :become_prospect_warm do
-      transitions from: %i[prospect_not_qualified prospect_cold client cancelled], to: :prospect_warm
+      transitions from: %i[prospect_not_qualified prospect_cold], to: :prospect_warm
+    end
+
+    event :become_prospect_investment_proposal_created do
+      transitions from: %i[prospect_cold prospect_warm], to: :prospect_investment_proposal_created
+    end
+
+    event :become_prospect_contract_draft_created do
+      transitions from: %i[prospect_investment_proposal_created], to: :prospect_contract_draft_created
+    end
+
+    event :become_prospect_contract_draft_approved do
+      transitions from: %i[prospect_contract_draft_created], to: :prospect_contract_draft_approved
+    end
+
+    event :become_prospect_contract_signed do
+      transitions from: %i[prospect_contract_draft_approved], to: :prospect_contract_signed
+    end
+
+    event :become_prospect_contract_countersigned do
+      transitions from: %i[prospect_contract_signed], to: :prospect_contract_countersigned
+    end
+
+    event :become_prospect_contract_approved do
+      transitions from: %i[prospect_contract_countersigned], to: :prospect_contract_approved
+    end
+
+    event :become_client, if: :primary_and_secondary_consultant_present? do
+      transitions from: %i[prospect_contract_approved], to: :client
+    end
+
+    event :become_cancelled do
+      transitions from: %i[client], to: :cancelled
+    end
+
+    # Possible previous states
+
+    event :degrade_to_prospect_not_qualified do
+      transitions from: %i[prospect_cold prospect_warm], to: :prospect_not_qualified
+    end
+
+    event :degrade_to_prospect_cold do
+      transitions from: %i[prospect_warm], to: :prospect_cold
+    end
+
+    event :degrade_to_prospect_contract_draft_created do
+      transitions from: %i[
+        prospect_contract_draft_approved
+        prospect_contract_signed
+        prospect_contract_countersigned
+        prospect_contract_approved
+        client
+      ], to: :prospect_contract_draft_created
+    end
+
+    event :degrade_to_client do
+      transitions from: %i[cancelled], to: :client
     end
   end
+  # rubocop:enable Metrics/BlockLength
 
   scope :with_owner_name, lambda {
     from(
@@ -149,6 +232,7 @@ class Mandate < ApplicationRecord
   validates :default_currency, presence: true, if: :default_currency_required?
   validate :valid_to_greater_or_equal_valid_from
   validate :presence_of_primary_consultant, if: :client?
+  validate :presence_of_current_state_transition, if: :previous_state_transition?
 
   enumerize :category, in: CATEGORIES, scope: true
   enumerize :default_currency, in: CURRENCIES
@@ -162,7 +246,23 @@ class Mandate < ApplicationRecord
     User.where(contact_id: assigned_contact_ids)
   end
 
+  def current_state_completed_tasks_count
+    tasks_associated_with_current_state.where(state: :finished).count
+  end
+
+  def current_state_total_tasks_count
+    tasks_associated_with_current_state.count
+  end
+
   private
+
+  # Tasks that have been created when or after the current state transition happened
+  # @return [ActiveRecord::Relation<Task>]
+  def tasks_associated_with_current_state
+    return reminders if current_state_transition.nil?
+
+    reminders.where('created_at >= ?', current_state_transition.created_at)
+  end
 
   # Validates if primary_consultant is present
   # @return [void]
@@ -170,6 +270,20 @@ class Mandate < ApplicationRecord
     return if primary_consultant.present?
 
     errors.add(:mandate_members, 'have to contain a primary_consultant')
+  end
+
+  # Validates if current_state_transition is present
+  # @return [void]
+  def presence_of_current_state_transition
+    return if current_state_transition.present?
+
+    errors.add(:current_state_transition, 'must exist')
+  end
+
+  # Returns whether or not a previous state transition is present
+  # @return [boolean]
+  def previous_state_transition?
+    previous_state_transition_id.present?
   end
 
   # Validates if valid_from date is before or on the same date as valid_to if both are set

@@ -31,7 +31,7 @@ module V1
     filters(
       :creator_id,
       :finisher_id,
-      :state
+      :subject_id
     )
 
     filter :state, apply: lambda { |records, value, _options|
@@ -59,6 +59,16 @@ module V1
 
     def task_comment_count
       @model.task_comments.count
+    end
+
+    # TODO: Can be removed when this issue is solved: https://github.com/cerebris/jsonapi-resources/issues/1160
+    def _replace_polymorphic_to_one_link(relationship_type, key_value, key_type, _options)
+      relationship = self.class._relationships[relationship_type.to_sym]
+
+      send("#{relationship.foreign_key}=", type: self.class.model_name_for_type(key_type), id: key_value)
+      @save_needed = true
+
+      :completed
     end
 
     class << self

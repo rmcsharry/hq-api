@@ -27,6 +27,8 @@
 require 'rails_helper'
 
 RSpec.describe NewsletterSubscriber, type: :model do
+  include_examples 'state_transitions'
+
   subject { build(:newsletter_subscriber) }
 
   it { is_expected.to enumerize(:nobility_title) }

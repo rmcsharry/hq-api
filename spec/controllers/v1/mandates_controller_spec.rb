@@ -79,6 +79,28 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
   end
 
   describe 'GET /v1/mandates' do
+    before do
+      Timecop.freeze(Time.zone.local(2019, 1, 1, 12, 0, 0))
+    end
+
+    before :each do
+      Timecop.freeze(2019, 1, 1, 12, 0, 1) do
+        mandate1.become_prospect_warm!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 2) do
+        mandate1.become_prospect_investment_proposal_created!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 3) do
+        mandate1.become_prospect_contract_draft_created!
+      end
+    end
+
+    after do
+      Timecop.return
+    end
+
     let(:contact) { create(:contact_person) }
     let(:owner_contact) { create(:contact_person, first_name: 'Max', last_name: 'Mustermann') }
     let!(:mandate1) do
@@ -118,7 +140,8 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           MANDATES_ENDPOINT,
           params: {
             filter: { user_id: user.id },
-            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant',
+            include: 'assistant,bookkeeper,mandate-groups-organizations,primary-consultant,secondary-consultant,'\
+                     'current-state-transition.user.contact,previous-state-transition.user.contact',
             sort: 'ownerName'
           },
           headers: auth_headers
@@ -127,12 +150,33 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         body = JSON.parse(response.body)
         expect(body.keys).to include 'data', 'meta', 'links', 'included'
         expect(body['meta']['record-count']).to eq 4
+
+        mandate_1_response = body['data'].select do |object|
+          object['id'] == mandate1.id
+        end.first
+
+        current_state_transition = StateTransition.find(
+          mandate_1_response.dig('relationships', 'current-state-transition', 'data', 'id')
+        )
+        previous_state_transition = StateTransition.find(
+          mandate_1_response.dig('relationships', 'previous-state-transition', 'data', 'id')
+        )
+
+        expect(previous_state_transition.state).to eq('prospect_investment_proposal_created')
+        expect(current_state_transition.state).to eq('prospect_contract_draft_created')
       end
 
       it 'only counts accessible records for total-record-count' do
         create_list :mandate, 10
 
-        get(MANDATES_ENDPOINT, params: { filter: { user_id: user.id } }, headers: auth_headers)
+        get(
+          MANDATES_ENDPOINT,
+          params: {
+            filter: { user_id: user.id },
+            include: 'current-state-transition'
+          },
+          headers: auth_headers
+        )
         body = JSON.parse(response.body)
 
         expect(body['meta']['total-record-count']).to eq 4
@@ -151,6 +195,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           get(
             MANDATES_ENDPOINT,
             params: {
+              include: 'current-state-transition',
               sort: sorting_param,
               page: { number: 1, size: 5 }
             },
@@ -233,6 +278,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
             MANDATES_ENDPOINT,
             params: {
               filter: { owner_name: owner_name },
+              include: 'current-state-transition',
               page: { number: 1, size: 5 }
             },
             headers: auth_headers
@@ -406,7 +452,7 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         mandate.mandate_number = updated_mandate_number
         mandate.save!
         PaperTrail.request.whodunnit = user3.id
-        mandate.become_client!
+        mandate.update! state: 'client'
       end
 
       it 'fetches the mandate versions' do
@@ -514,6 +560,42 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
         expect(change3['item-type']).to eq 'bank-accounts'
         expect(change3['changes']['iban']).to eq [nil, original_iban]
       end
+    end
+  end
+
+  describe 'POST /v1/mandates/<mandate_id>/update-state' do
+    subject do
+      -> { post("#{MANDATES_ENDPOINT}/#{mandate.id}/update-state", params: payload.to_json, headers: auth_headers) }
+    end
+
+    let(:mandate_group) { build(:mandate_group, group_type: 'organization') }
+    let!(:mandate) { create(:mandate, :with_multiple_owners, mandate_groups: []) }
+    let!(:user) do
+      create(
+        :user,
+        roles: %i[mandates_read mandates_write],
+        permitted_mandates: [mandate]
+      )
+    end
+    let(:payload) do
+      {
+        data: {
+          type: 'mandates',
+          attributes: {
+            'update_event_name': 'become_prospect_warm'
+          }
+        }
+      }
+    end
+
+    it 'alters mandate state and creates a new StateTransition' do
+      is_expected.to change(StateTransition, :count).by(1)
+      expect(response).to have_http_status(202)
+
+      mandate.reload
+      expect(mandate.state).to eq 'prospect_warm'
+      expect(mandate.current_state_transition.event).to eq 'become_prospect_warm'
+      expect(mandate.current_state_transition.user).to eq user
     end
   end
 end

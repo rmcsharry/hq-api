@@ -60,6 +60,7 @@ RSpec.describe User, type: :model do
   it { is_expected.to respond_to(:comment) }
 
   it { is_expected.to have_many(:task_comments) }
+  it { is_expected.to have_many(:created_state_transitions) }
 
   describe '#contact' do
     it { is_expected.to belong_to(:contact) }

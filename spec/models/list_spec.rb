@@ -24,6 +24,8 @@
 require 'rails_helper'
 
 RSpec.describe List, type: :model do
+  include_examples 'state_transitions'
+
   it { is_expected.to belong_to(:user) }
 
   it { is_expected.to have_many(:items).class_name('List::Item').dependent(:destroy).inverse_of(:list) }

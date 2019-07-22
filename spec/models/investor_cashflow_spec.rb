@@ -37,6 +37,8 @@
 require 'rails_helper'
 
 RSpec.describe InvestorCashflow, type: :model, bullet: false do
+  include_examples 'state_transitions'
+
   subject { create(:investor_cashflow, :capital_call, :distribution) }
 
   it { is_expected.to belong_to(:fund_cashflow).required }

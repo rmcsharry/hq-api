@@ -70,6 +70,7 @@ class User < ApplicationRecord
   has_many :documents, inverse_of: :uploader, foreign_key: :uploader_id, dependent: :nullify
   has_many :task_comments, dependent: :nullify
   has_many :created_versions, class_name: 'Version', inverse_of: :whodunnit, dependent: :nullify
+  has_many :created_state_transitions, class_name: 'StateTransition', inverse_of: :user, dependent: :nullify
   has_many(
     :created_tasks, class_name: 'Task', foreign_key: :creator_id, inverse_of: :creator,
                     dependent: :nullify

@@ -9,12 +9,14 @@
 #  comment                          :text
 #  confidential                     :boolean          default(FALSE), not null
 #  created_at                       :datetime         not null
+#  current_state_transition_id      :uuid
 #  datev_creditor_id                :string
 #  datev_debitor_id                 :string
 #  default_currency                 :string
 #  id                               :uuid             not null, primary key
 #  import_id                        :integer
 #  mandate_number                   :string
+#  previous_state_transition_id     :uuid
 #  prospect_assets_under_management :decimal(20, 10)
 #  prospect_fees_fixed_amount       :decimal(20, 10)
 #  prospect_fees_min_amount         :decimal(20, 10)
@@ -25,10 +27,22 @@
 #  valid_from                       :date
 #  valid_to                         :date
 #
+# Indexes
+#
+#  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (current_state_transition_id => state_transitions.id)
+#  fk_rails_...  (previous_state_transition_id => state_transitions.id)
+#
 
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
+  include_examples 'state_transitions'
+
   it { is_expected.to have_many(:mandate_members) }
   it { is_expected.to have_many(:contacts) }
   it { is_expected.to have_many(:investments) }
@@ -43,48 +57,218 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:prospect_fees_min_amount) }
   it { is_expected.to respond_to(:prospect_fees_percentage) }
 
-  describe 'aasm events' do
-    describe 'become_client' do
+  describe 'creation of a mandate' do
+    let(:initial_state) { Mandate.aasm.initial_state }
+    let(:mandate) { build(:mandate, aasm_state: initial_state) }
+
+    it 'creates an initial StateTransition' do
+      mandate.save
+
+      expect(mandate.current_state_transition.state.to_sym).to eq(initial_state)
+    end
+  end
+
+  describe '#current_state_transition and #previous_state_transition' do
+    let(:mandate) { build(:mandate, aasm_state: :prospect_not_qualified) }
+
+    it 'validates for presence of current_state_transition if previous_state_transition exists' do
+      Timecop.freeze(2019, 1, 1, 12, 0, 0) do
+        mandate.save!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 1) do
+        mandate.become_prospect_warm!
+      end
+
+      mandate.current_state_transition = nil
+      expect(mandate).not_to be_valid
+    end
+
+    it 'returns the current/previous state transition' do
+      Timecop.freeze(2019, 1, 1, 12, 0, 0) do
+        mandate.save!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 1) do
+        mandate.become_prospect_warm!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 2) do
+        mandate.become_prospect_investment_proposal_created!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 3) do
+        mandate.become_prospect_contract_draft_created!
+      end
+
+      mandate.reload
+
+      expect(mandate.state_transitions.count).to eq(4)
+      expect(mandate.current_state_transition.state.to_sym).to eq(:prospect_contract_draft_created)
+      expect(mandate.previous_state_transition.state.to_sym).to eq(:prospect_investment_proposal_created)
+    end
+  end
+
+  describe '#permitted_predecessor_states' do
+    let(:mandate) { create(:mandate) }
+
+    it 'returns prospect_not_qualified for state == prospect_cold' do
+      mandate.update state: :prospect_cold
+
+      expect(mandate.permitted_predecessor_states).to eq([:prospect_not_qualified])
+    end
+
+    it 'returns client for state == cancelled' do
+      mandate.update state: :cancelled
+
+      expect(mandate.permitted_predecessor_states).to eq([:client])
+    end
+  end
+
+  describe '#permitted_successor_states' do
+    let(:mandate) { create(:mandate) }
+
+    it 'returns prospect_warm for state == prospect_cold' do
+      mandate.update state: :prospect_cold
+
+      expect(mandate.permitted_successor_states).to eq(%i[prospect_warm prospect_investment_proposal_created])
+    end
+
+    it 'returns cancelled for state == client' do
+      mandate.update state: :client
+
+      expect(mandate.permitted_successor_states).to eq(%i[cancelled])
+    end
+
+    it 'returns no permitted successor states for state == cancelled' do
+      mandate.update state: :cancelled
+
+      expect(mandate.permitted_successor_states).to eq([])
+    end
+  end
+
+  describe 'aasm state' do
+    subject { create :mandate }
+
+    describe 'become_prospect_not_qualified' do
+      %i[prospect_cold prospect_warm].each do |state|
+        it do
+          is_expected.to transition_from(state).to(:prospect_not_qualified).on_event(:degrade_to_prospect_not_qualified)
+        end
+      end
+    end
+
+    describe 'prospect_cold' do
+      %i[prospect_not_qualified].each do |state|
+        it { is_expected.to transition_from(state).to(:prospect_cold).on_event(:become_prospect_cold) }
+      end
+
+      %i[prospect_warm].each do |state|
+        it { is_expected.to transition_from(state).to(:prospect_cold).on_event(:degrade_to_prospect_cold) }
+      end
+    end
+
+    describe 'become_prospect_warm' do
+      %i[prospect_cold prospect_not_qualified].each do |state|
+        it { is_expected.to transition_from(state).to(:prospect_warm).on_event(:become_prospect_warm) }
+      end
+    end
+
+    describe 'prospect_investment_proposal_created' do
+      %i[prospect_cold prospect_warm].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_investment_proposal_created)
+            .on_event(:become_prospect_investment_proposal_created)
+        end
+      end
+    end
+
+    describe 'prospect_contract_draft_created' do
+      %i[prospect_investment_proposal_created].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_draft_created)
+            .on_event(:become_prospect_contract_draft_created)
+        end
+      end
+
+      %i[
+        prospect_contract_draft_approved
+        prospect_contract_signed
+        prospect_contract_countersigned
+        prospect_contract_approved
+        client
+      ].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_draft_created)
+            .on_event(:degrade_to_prospect_contract_draft_created)
+        end
+      end
+    end
+
+    describe 'prospect_contract_draft_approved' do
+      %i[prospect_contract_draft_created].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_draft_approved)
+            .on_event(:become_prospect_contract_draft_approved)
+        end
+      end
+    end
+
+    describe 'prospect_contract_signed' do
+      %i[prospect_contract_draft_approved].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_signed)
+            .on_event(:become_prospect_contract_signed)
+        end
+      end
+    end
+
+    describe 'prospect_contract_countersigned' do
+      %i[prospect_contract_signed].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_countersigned)
+            .on_event(:become_prospect_contract_countersigned)
+        end
+      end
+    end
+
+    describe 'prospect_contract_approved' do
+      %i[prospect_contract_countersigned].each do |state|
+        it do
+          is_expected.to transition_from(state)
+            .to(:prospect_contract_approved)
+            .on_event(:become_prospect_contract_approved)
+        end
+      end
+    end
+
+    describe 'client' do
       context 'when #primary_and_secondary_consultant_present? is true' do
-        %i[cancelled prospect_cold prospect_not_qualified prospect_warm].each do |state|
+        %i[prospect_contract_approved].each do |state|
           subject { build(:mandate, aasm_state: state) }
           it { is_expected.to transition_from(state).to(:client).on_event(:become_client) }
         end
       end
 
       context 'when #primary_and_secondary_consultant_present? is false' do
-        %i[cancelled prospect_cold prospect_not_qualified prospect_warm].each do |state|
+        %i[prospect_contract_approved].each do |state|
           subject do
             build(:mandate, aasm_state: state, mandate_members: [])
           end
-          it { is_expected.to_not allow_event(:become_client) }
+          it { is_expected.not_to allow_event(:become_client) }
         end
       end
     end
 
-    describe 'cancel' do
-      %i[client prospect_cold prospect_not_qualified prospect_warm].each do |state|
-        it { is_expected.to transition_from(state).to(:cancelled).on_event(:cancel) }
-      end
-    end
-
-    describe 'become_prospect_not_qualified' do
-      %i[cancelled client prospect_cold prospect_warm].each do |state|
-        it {
-          is_expected.to transition_from(state).to(:prospect_not_qualified).on_event(:become_prospect_not_qualified)
-        }
-      end
-    end
-
-    describe 'become_prospect_cold' do
-      %i[cancelled client prospect_not_qualified prospect_warm].each do |state|
-        it { is_expected.to transition_from(state).to(:prospect_cold).on_event(:become_prospect_cold) }
-      end
-    end
-
-    describe 'become_prospect_warm' do
-      %i[cancelled client prospect_cold prospect_not_qualified].each do |state|
-        it { is_expected.to transition_from(state).to(:prospect_warm).on_event(:become_prospect_warm) }
+    describe 'cancelled' do
+      %i[client].each do |state|
+        it { is_expected.to transition_from(state).to(:cancelled).on_event(:become_cancelled) }
       end
     end
   end
@@ -159,7 +343,7 @@ RSpec.describe Mandate, type: :model do
     end
 
     context 'for prospect_not_qualified' do
-      subject { build(:mandate, aasm_state: :prospect_not_qualified, mandate_members: []) }
+      subject { build(:mandate, aasm_state: :prospect_contract_approved, mandate_members: []) }
       let(:primary_consultant) { build :mandate_member, mandate: subject, member_type: :primary_consultant }
       let(:secondary_consultant) { build :mandate_member, mandate: subject, member_type: :secondary_consultant }
 
@@ -171,8 +355,9 @@ RSpec.describe Mandate, type: :model do
       it 'can be converted to client if primary consultant is set' do
         subject.mandate_members << primary_consultant
         subject.mandate_members << secondary_consultant
+        subject.state = :prospect_contract_approved
         subject.save
-        expect(subject.may_become_client?).to be_truthy
+        expect(subject.reload.may_become_client?).to be_truthy
       end
     end
   end
@@ -320,6 +505,48 @@ RSpec.describe Mandate, type: :model do
         associated_mandates = Mandate.associated_to_contact_with_id(person.id)
         expect(associated_mandates.count).to eq(1)
         expect(associated_mandates.first).to eq(mandate)
+      end
+    end
+  end
+
+  describe 'task count associated to current state' do
+    let(:user) { build(:user) }
+    let(:mandate) { build(:mandate, aasm_state: :prospect_not_qualified) }
+    let(:task_1) { build(:task, subject: mandate) }
+    let(:task_2) { build(:task, subject: mandate) }
+    let(:task_3) { build(:task, subject: mandate) }
+
+    before do
+      Timecop.freeze(2019, 1, 1, 12, 0, 0) do
+        mandate.save!
+        task_1.save!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 1) do
+        mandate.become_prospect_warm!
+        task_2.save!
+        task_3.save!
+      end
+
+      Timecop.freeze(2019, 1, 1, 12, 0, 2) do
+        task_1.finish!(user)
+        task_2.finish!(user)
+      end
+    end
+
+    after do
+      Timecop.return
+    end
+
+    describe '#current_state_completed_tasks_count' do
+      it 'returns number of completed tasks of the current state' do
+        expect(mandate.current_state_completed_tasks_count).to eq(1)
+      end
+    end
+
+    describe '#current_state_total_tasks_count' do
+      it 'returns number of tasks of the current state' do
+        expect(mandate.current_state_total_tasks_count).to eq(2)
       end
     end
   end

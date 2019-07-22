@@ -47,6 +47,8 @@
 require 'rails_helper'
 
 RSpec.describe Fund, type: :model do
+  include_examples 'state_transitions'
+
   it { is_expected.to belong_to(:capital_management_company).optional }
   it { is_expected.to belong_to(:legal_address).optional }
   it { is_expected.to belong_to(:primary_contact_address).optional }

@@ -24,6 +24,8 @@
 # Defines the List
 class List < ApplicationRecord
   include AASM
+  include RememberStateTransitions
+
   strip_attributes only: :name, collapse_spaces: true
 
   belongs_to :user

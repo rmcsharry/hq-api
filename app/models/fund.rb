@@ -49,6 +49,8 @@
 class Fund < ApplicationRecord
   extend Enumerize
   include AASM
+  include RememberStateTransitions
+
   strip_attributes only: %i[
     de_central_bank_id de_foreign_trade_regulations_id global_intermediary_identification_number
     name commercial_register_number commercial_register_office tax_office us_employer_identification_number

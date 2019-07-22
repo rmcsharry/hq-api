@@ -45,6 +45,8 @@
 require 'rails_helper'
 
 RSpec.describe Investor, type: :model do
+  include_examples 'state_transitions'
+
   it { is_expected.to validate_presence_of(:amount_total) }
   it { is_expected.to validate_presence_of(:bank_account) }
   it { is_expected.to validate_presence_of(:contact_address) }
