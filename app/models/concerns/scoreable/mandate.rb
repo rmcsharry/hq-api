@@ -5,6 +5,7 @@ module Scoreable
   module Mandate
     extend ActiveSupport::Concern
 
+    # rubocop:disable Metrics/LineLength
     WEIGHT_RULES = [
       { type: 'MainProperty', model_key: 'mandate', name: 'category', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'mandate', name: 'datev_creditor_id', relative_weight: 1 },
@@ -22,6 +23,7 @@ module Scoreable
       { type: 'RelativeAtLeastOne', model_key: 'activities', name: '', relative_weight: 17 },
       { type: 'RelativeAtLeastOne', model_key: 'bank_accounts', name: '', relative_weight: 5 }
     ].freeze
+    # rubocop:enable Metrics/LineLength
 
     def factor_owners_into_score
       # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)

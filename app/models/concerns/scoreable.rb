@@ -14,9 +14,9 @@ module Scoreable
 
   included do
     after_commit do
-      if @_execute_after_related_commit
-        callbacks = @_execute_after_related_commit
-        @_execute_after_related_commit = nil
+      if @_execute_after_commit
+        callbacks = @_execute_after_commit
+        @_execute_after_commit = nil
         callbacks.each(&:call)
       end
     end
@@ -24,12 +24,11 @@ module Scoreable
     before_save :calculate_score, if: :has_changes_to_save?
   end
 
-  def execute_after_related_commit(&callback)
+  def execute_after_commit(&callback)
     return unless callback
 
-    # puts "MAIN MODEL execute_after_related_commit"
-    @_execute_after_related_commit ||= []
-    @_execute_after_related_commit << callback
+    @_execute_after_commit ||= []
+    @_execute_after_commit << callback
   end
 
   # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class

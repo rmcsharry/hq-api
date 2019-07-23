@@ -5,6 +5,7 @@ module Scoreable
   module Organization
     extend ActiveSupport::Concern
 
+    # rubocop:disable Metrics/LineLength
     WEIGHT_RULES = [
       { type: 'MainProperty', model_key: 'contact_organization', name: 'commercial_register_number', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'contact_organization', name: 'commercial_register_office', relative_weight: 5 },
@@ -31,4 +32,5 @@ module Scoreable
       { type: 'RelativeAtLeastOne', model_key: 'activities', name: '', relative_weight: 17 }
     ].freeze
   end
+  # rubocop:enable Metrics/LineLength
 end

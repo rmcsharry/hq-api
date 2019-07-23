@@ -1,38 +1,41 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Score activities when they are first added to or finally removed from a related object
+  # Score related objects (contct/mandate) when an activity is FIRST ADDED TO or FINALLY REMOVED FROM the related objects
   module Activity
     extend ActiveSupport::Concern
 
     included do
-      has_and_belongs_to_many :contacts, -> { distinct }
-      has_and_belongs_to_many :mandates, -> { distinct }
+      has_and_belongs_to_many :contacts, -> { distinct }, after_add: :rescore_contact, before_remove: :rescore_contact
+      has_and_belongs_to_many :mandates, -> { distinct }, after_add: :rescore_mandate, before_remove: :rescore_mandate
 
       before_destroy do
         contacts.each do |contact|
-          self.class.update_contact_after_commit(contact: contact) if contact.one_activity?
+          self.class.store_callback_to_rescore(contact) if contact.one_activity?
+        end
+        mandates.each do |mandate|
+          self.class.store_callback_to_rescore(mandate) if mandate.one_activity?
         end
       end
 
-      after_add_for_contacts << lambda do |_hook, _activity, contact|
-        update_contact_after_commit(contact: contact) if contact.one_activity?
+      def rescore_contact(contact)
+        self.class.store_callback_to_rescore(contact) if contact.one_activity?
       end
 
-      before_remove_for_contacts << lambda do |_hook, _activity, contact|
-        update_contact_after_commit(contact: contact) if contact.one_activity?
+      def rescore_mandate(mandate)
+        self.class.store_callback_to_rescore(mandate) if mandate.one_activity?
       end
     end
 
     class_methods do
-      def update_contact_after_commit(contact:)
-        contact.update(updated_at: Time.zone.now) # Alternative: contact.update(data_integrity_score: 0)
-        contact.execute_after_related_commit do
-          Contact.skip_callback(:save, :before, :calculate_score, raise: false)
-          contact.reload
-          contact.calculate_score
-          contact.save!
-          Contact.set_callback(:save, :before, :calculate_score, if: :has_changes_to_save?)
+      def store_callback_to_rescore(object)
+        object.update(updated_at: Time.zone.now) # Needed only for the execute callbacks on the related object to fire
+        object.execute_after_commit do
+          object.class.skip_callback(:save, :before, :calculate_score, raise: false)
+          object.reload
+          object.calculate_score
+          object.save!
+          object.class.set_callback(:save, :before, :calculate_score, if: :has_changes_to_save?)
         end
       end
     end
