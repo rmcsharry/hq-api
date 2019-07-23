@@ -61,7 +61,7 @@ module Scoreable
       end
     end
 
-    class RelativeFieldValue < Rule
+    class RelativePropertyValue < Rule
       def passed?
         field, value = @property.split('==')
         @object.public_send(@model).where("#{field}": value).present?

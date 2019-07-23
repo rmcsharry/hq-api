@@ -14,12 +14,12 @@ module Scoreable
       { type: 'MainProperty', model_key: 'mandate', name: 'psplus_id', relative_weight: 1 },
       { type: 'MainProperty', model_key: 'mandate', name: 'state', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'mandate', name: 'valid_from', relative_weight: 1 },
-      { type: 'RelativeFieldValue', model_key: 'mandate_members', name: 'member_type==assistant', relative_weight: 5 },
-      { type: 'RelativeFieldValue', model_key: 'mandate_members', name: 'member_type==bookkeeper', relative_weight: 5 },
-      { type: 'RelativeFieldValue', model_key: 'mandate_members', name: 'member_type==owner', relative_weight: 5 },
-      { type: 'RelativeFieldValue', model_key: 'mandate_members', name: 'member_type==primary_consultant', relative_weight: 5 },
-      { type: 'RelativeFieldValue', model_key: 'mandate_members', name: 'member_type==secondary_consultant', relative_weight: 5 },
-      { type: 'RelativeFieldValue', model_key: 'documents', name: 'category==contract_hq', relative_weight: 15 },
+      { type: 'RelativePropertyValue', model_key: 'mandate_members', name: 'member_type==assistant', relative_weight: 5 },
+      { type: 'RelativePropertyValue', model_key: 'mandate_members', name: 'member_type==bookkeeper', relative_weight: 5 },
+      { type: 'RelativePropertyValue', model_key: 'mandate_members', name: 'member_type==owner', relative_weight: 5 },
+      { type: 'RelativePropertyValue', model_key: 'mandate_members', name: 'member_type==primary_consultant', relative_weight: 5 },
+      { type: 'RelativePropertyValue', model_key: 'mandate_members', name: 'member_type==secondary_consultant', relative_weight: 5 },
+      { type: 'RelativePropertyValue', model_key: 'documents', name: 'category==contract_hq', relative_weight: 15 },
       { type: 'RelativeAtLeastOne', model_key: 'activities', name: '', relative_weight: 17 },
       { type: 'RelativeAtLeastOne', model_key: 'bank_accounts', name: '', relative_weight: 5 }
     ].freeze

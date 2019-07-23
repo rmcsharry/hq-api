@@ -31,7 +31,7 @@ module Scoreable
       { type: 'RelativeProperty', model_key: 'tax_detail', name: 'us_fatca_status', relative_weight: 1 },
       { type: 'RelativeProperty', model_key: 'tax_detail', name: 'us_tax_form', relative_weight: 1 },
       { type: 'RelativeProperty', model_key: 'tax_detail', name: 'us_tax_number', relative_weight: 1 },
-      { type: 'RelativeFieldValue', model_key: 'documents', name: 'category==kyc', relative_weight: 10 },
+      { type: 'RelativePropertyValue', model_key: 'documents', name: 'category==kyc', relative_weight: 10 },
       { type: 'RelativeAtLeastOne', model_key: 'activities', name: '', relative_weight: 17 }
     ].freeze
   end
