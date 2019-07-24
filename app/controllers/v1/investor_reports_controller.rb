@@ -15,7 +15,7 @@ module V1
       authorize fund_report, :show?
 
       send_attachment(
-        investor_report.quarterly_report_document(current_user).file
+        investor_report.quarterly_report_document(current_user: current_user).file
       )
     end
   end

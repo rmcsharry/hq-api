@@ -21,17 +21,25 @@ module V1
     end
 
     def cashflow_document
+      download_cashflow_document
+    end
+
+    def regenerated_cashflow_document
+      download_cashflow_document(regenerate: true)
+    end
+
+    private
+
+    def download_cashflow_document(regenerate: false)
       investor_cashflow = InvestorCashflow
                           .includes(:documents, investor: :contact_address, fund_cashflow: :fund)
                           .find(params.require(:id))
       authorize investor_cashflow, :show?
 
       send_attachment(
-        investor_cashflow.cashflow_document(current_user).file
+        investor_cashflow.cashflow_document(current_user: current_user, regenerate: regenerate).file
       )
     end
-
-    private
 
     def generate_investor_cashflow_response(
         investor_cashflow:, serializer: JSONAPI::ResourceSerializer.new(InvestorCashflowResource)

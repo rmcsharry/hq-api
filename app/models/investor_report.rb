@@ -40,18 +40,24 @@ class InvestorReport < ApplicationRecord
     Document::FundTemplate.fund_quarterly_report_context(investor, fund_report)
   end
 
-  def quarterly_report_document(current_user)
-    template = investor.fund.quarterly_report_template
-    find_or_create_document(
-      document_category: :generated_quarterly_report_document,
-      name: quarterly_report_document_name(template),
-      template: template,
-      template_context: quarterly_report_document_context,
-      uploader: current_user
-    )
+  def quarterly_report_document(current_user:, regenerate: false)
+    transaction do
+      template = investor.fund.quarterly_report_template
+      clean_up_existing_quarterly_report if regenerate
+      find_or_create_document(
+        document_category: :generated_quarterly_report_document, name: quarterly_report_document_name(template),
+        template: template, template_context: quarterly_report_document_context,
+        uploader: current_user
+      )
+    end
   end
 
   private
+
+  def clean_up_existing_quarterly_report
+    document = find_generated_document_by_category(:generated_quarterly_report_document)
+    document&.destroy!
+  end
 
   def quarterly_report_document_name(template)
     extension = Docx.docx?(template.file) ? 'docx' : 'pdf'

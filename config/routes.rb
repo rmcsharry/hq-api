@@ -49,9 +49,12 @@ Rails.application.routes.draw do
     get   'investors/:id/regenerated-fund-subscription-agreement-document', to: 'investors#regenerated_fund_subscription_agreement_document'
     post  'investor-cashflows/:id/finish',                                  to: 'investor_cashflows#finish'
     get   'investor-cashflows/:id/cashflow-document',                       to: 'investor_cashflows#cashflow_document'
+    get   'investor-cashflows/:id/regenerated-cashflow-document',           to: 'investor_cashflows#regenerated_cashflow_document'
     get   'investor-reports/:id/quarterly-report-document',                 to: 'investor_reports#quarterly_report_document'
     get   'fund-cashflows/:id/archived-documents',                          to: 'fund_cashflows#archived_documents'
+    get   'fund-cashflows/:id/regenerated-documents',                       to: 'fund_cashflows#regenerated_documents'
     get   'fund-reports/:id/archived-documents',                            to: 'fund_reports#archived_documents'
+    get   'fund-reports/:id/regenerated-documents',                         to: 'fund_reports#regenerated_documents'
   end
 
   root to: 'v1/users#index'

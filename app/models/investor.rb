@@ -148,25 +148,13 @@ class Investor < ApplicationRecord
     Document::FundTemplate.fund_subscription_agreement_context(self)
   end
 
-  def subscription_agreement_document(current_user)
-    return fund_subscription_agreement if fund_subscription_agreement
+  def subscription_agreement_document(current_user:, regenerate: false)
+    return fund_subscription_agreement if fund_subscription_agreement && !regenerate
 
-    template = fund.subscription_agreement_template
-    find_or_create_document(
-      document_category: :generated_subscription_agreement_document,
-      name: subscription_agreement_document_name(template),
-      template: template,
-      template_context: subscription_agreement_document_context,
-      uploader: current_user
-    )
-  end
-
-  def regenerated_subscription_agreement_document(current_user)
     transaction do
       template = fund.subscription_agreement_template
-      document = find_generated_document_by_category(:generated_subscription_agreement_document)
-      document&.destroy!
-      apply_template_and_persist_document(
+      clean_up_existing_subscription_agreement_document if regenerate
+      find_or_create_document(
         template: template, template_context: subscription_agreement_document_context,
         uploader: current_user, document_category: :generated_subscription_agreement_document,
         name: subscription_agreement_document_name(template)
@@ -175,6 +163,11 @@ class Investor < ApplicationRecord
   end
 
   private
+
+  def clean_up_existing_subscription_agreement_document
+    document = find_generated_document_by_category(:generated_quarterly_report_document)
+    document&.destroy!
+  end
 
   def subscription_agreement_document_name(template)
     extension = Docx.docx?(template.file) ? 'docx' : 'pdf'

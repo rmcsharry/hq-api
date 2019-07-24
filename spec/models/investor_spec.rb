@@ -277,6 +277,7 @@ RSpec.describe Investor, type: :model do
     let!(:investor) { create(:investor, fund: fund) }
     let(:valid_template_name) { 'Zeichnungsschein_Vorlage.docx' }
     let(:other_template_name) { 'zoomed_scrolled.docx' }
+    let(:generated_subscription_agreement) { create(:generated_subscription_agreement_document) }
     let!(:valid_template) do
       doc = create(
         :fund_template_document,
@@ -299,16 +300,29 @@ RSpec.describe Investor, type: :model do
     end
 
     it 'is generated and persisted if absent' do
-      generated_document = investor.subscription_agreement_document(current_user)
+      generated_document = investor.subscription_agreement_document(current_user: current_user)
       document_content = docx_document_content(generated_document.file.download)
 
       expect(document_content).to include(fund.name)
 
       valid_template.file.attach(other_template_file)
-      subsequently_retrieved_document = investor.subscription_agreement_document(current_user)
+      subsequently_retrieved_document = investor.subscription_agreement_document(current_user: current_user)
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 
       expect(subsequent_document_content).to eq(document_content)
+    end
+
+    it 'destroys the existing subscription agreement' do
+      allow(investor).to receive(:find_generated_document_by_category) { generated_subscription_agreement }
+      expect(generated_subscription_agreement).to receive(:destroy!)
+      investor.subscription_agreement_document(current_user: current_user, regenerate: true)
+    end
+
+    it 'creates a new generated subscription agreement' do
+      new_generated_subscription_agreement = investor.subscription_agreement_document(
+        current_user: current_user, regenerate: true
+      )
+      expect(generated_subscription_agreement.id).not_to eq(new_generated_subscription_agreement.id)
     end
 
     context 'when investor is "signed"' do
@@ -316,39 +330,10 @@ RSpec.describe Investor, type: :model do
       let(:investor) { build(:investor, :signed) }
 
       it 'returns the signed fund subscription agreement' do
-        expect(investor.subscription_agreement_document(current_user)).to be(investor.fund_subscription_agreement)
+        expect(investor.subscription_agreement_document(current_user: current_user)).to(
+          be(investor.fund_subscription_agreement)
+        )
       end
-    end
-  end
-
-  describe '#regenerated_subscription_agreement_document' do
-    let(:current_user) { build(:user) }
-    let(:generated_subscription_agreement) { create(:generated_subscription_agreement_document) }
-    let(:investor) { generated_subscription_agreement.owner }
-    let!(:fund) { create(:fund, investors: [investor]) }
-    let!(:template) do
-      doc = create(
-        :fund_template_document,
-        category: :fund_subscription_agreement_template,
-        owner: fund
-      )
-      doc.file.attach(
-        io: File.open(Rails.root.join('spec', 'fixtures', 'docx', 'Zeichnungsschein_Vorlage.docx')),
-        filename: 'sample.docx',
-        content_type: Mime[:docx].to_s
-      )
-      doc
-    end
-
-    it 'destroys the existing subscription agreement' do
-      allow(investor).to receive(:find_generated_document_by_category) { generated_subscription_agreement }
-      expect(generated_subscription_agreement).to receive(:destroy!)
-      investor.regenerated_subscription_agreement_document(current_user)
-    end
-
-    it 'creates a new generated subscription agreement' do
-      new_generated_subscription_agreement = investor.regenerated_subscription_agreement_document(current_user)
-      expect(generated_subscription_agreement.id).not_to eq(new_generated_subscription_agreement.id)
     end
   end
 

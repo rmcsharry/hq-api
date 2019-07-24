@@ -31,5 +31,17 @@ FactoryBot.define do
       category { :generated_subscription_agreement_document }
       owner { create(:investor, documents: [@instance.presence]) }
     end
+
+    factory :generated_cashflow_document, class: Document::GeneratedDocument do
+      name { 'InvestorCashflow.pdf' }
+      category { :generated_cashflow_document }
+      owner { create(:investor_cashflow, documents: [@instance.presence]) }
+    end
+
+    factory :generated_quarterly_report_document, class: Document::GeneratedDocument do
+      name { 'InvestorCashflow.pdf' }
+      category { :generated_quarterly_report_document }
+      owner { create(:investor_report, documents: [@instance.presence]) }
+    end
   end
 end

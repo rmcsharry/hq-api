@@ -45,6 +45,7 @@ RSpec.describe InvestorReport, type: :model do
   describe '#quarterly_report_document', bullet: false do
     let(:current_user) { create(:user) }
     let(:fund) { create(:fund) }
+    let(:generated_quarterly_report_document) { create(:generated_quarterly_report_document) }
     let!(:investor) { create(:investor, :signed, fund: fund) }
     let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
     let!(:investor_report) { InvestorReport.find_by! investor: investor, fund_report: fund_report }
@@ -72,16 +73,29 @@ RSpec.describe InvestorReport, type: :model do
     end
 
     it 'is generated and persisted if absent' do
-      generated_document = investor_report.quarterly_report_document(current_user)
+      generated_document = investor_report.quarterly_report_document(current_user: current_user)
       document_content = docx_document_content(generated_document.file.download)
 
       expect(document_content).to include(fund.name)
 
       valid_template.file.attach(other_template_file)
-      subsequently_retrieved_document = investor_report.quarterly_report_document(current_user)
+      subsequently_retrieved_document = investor_report.quarterly_report_document(current_user: current_user)
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 
       expect(subsequent_document_content).to eq(document_content)
+    end
+
+    it 'destroys the existing quarterly report document' do
+      allow(investor_report).to receive(:find_generated_document_by_category) { generated_quarterly_report_document }
+      expect(generated_quarterly_report_document).to receive(:destroy!)
+      investor_report.quarterly_report_document(current_user: current_user, regenerate: true)
+    end
+
+    it 'creates a new generated quarterly report document' do
+      new_generated_quarterly_report_document = investor_report.quarterly_report_document(
+        current_user: current_user, regenerate: true
+      )
+      expect(generated_quarterly_report_document.id).not_to eq(new_generated_quarterly_report_document.id)
     end
   end
 end

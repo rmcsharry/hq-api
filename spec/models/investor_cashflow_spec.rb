@@ -134,6 +134,7 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
   describe '#cashflow_document', bullet: false do
     let(:current_user) { create(:user) }
     let(:fund) { create(:fund) }
+    let(:generated_cashflow_document) { create(:generated_cashflow_document) }
     let!(:investor) { create(:investor, :signed, fund: fund) }
     let!(:fund_cashflow) { create(:fund_cashflow, fund: fund) }
     let!(:investor_cashflow) do
@@ -169,7 +170,7 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
     end
 
     it 'is generated and persisted if absent' do
-      generated_document = investor_cashflow.cashflow_document(current_user)
+      generated_document = investor_cashflow.cashflow_document(current_user: current_user)
       document_content = docx_document_content(generated_document.file.download)
 
       expect(document_content).to include(fund.name)
@@ -178,10 +179,23 @@ RSpec.describe InvestorCashflow, type: :model, bullet: false do
       expect(document_content).not_to include('Davon Sonstige Erträge')
 
       valid_template.file.attach(other_template_file)
-      subsequently_retrieved_document = investor_cashflow.cashflow_document(current_user)
+      subsequently_retrieved_document = investor_cashflow.cashflow_document(current_user: current_user)
       subsequent_document_content = docx_document_content(subsequently_retrieved_document.file.download)
 
       expect(subsequent_document_content).to eq(document_content)
+    end
+
+    it 'destroys the existing cashflow document' do
+      allow(investor_cashflow).to receive(:find_generated_document_by_category) { generated_cashflow_document }
+      expect(generated_cashflow_document).to receive(:destroy!)
+      investor_cashflow.cashflow_document(current_user: current_user, regenerate: true)
+    end
+
+    it 'creates a new generated cashflow document' do
+      new_generated_cashflow_document = investor_cashflow.cashflow_document(
+        current_user: current_user, regenerate: true
+      )
+      expect(generated_cashflow_document.id).not_to eq(new_generated_cashflow_document.id)
     end
   end
 

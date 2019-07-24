@@ -119,18 +119,24 @@ class InvestorCashflow < ApplicationRecord
     end
   end
 
-  def cashflow_document(current_user)
-    template = investor.fund.cashflow_template(fund_cashflow)
-    find_or_create_document(
-      document_category: :generated_cashflow_document,
-      name: cashflow_document_name(template),
-      template: template,
-      template_context: cashflow_document_context,
-      uploader: current_user
-    )
+  def cashflow_document(current_user:, regenerate: false)
+    transaction do
+      template = investor.fund.cashflow_template(fund_cashflow)
+      clean_up_existing_cashflow_document if regenerate
+      find_or_create_document(
+        document_category: :generated_cashflow_document, name: cashflow_document_name(template),
+        template: template, template_context: cashflow_document_context,
+        uploader: current_user
+      )
+    end
   end
 
   private
+
+  def clean_up_existing_cashflow_document
+    document = find_generated_document_by_category(:generated_cashflow_document)
+    document&.destroy!
+  end
 
   def cashflow_document_name(template)
     return if template.nil?
