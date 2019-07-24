@@ -26,6 +26,7 @@
 # Defines the Mandate Member
 class MandateMember < ApplicationRecord
   extend Enumerize
+  include Scoreable::MandateMember
 
   NON_UNIQUE_MEMBER_TYPES = %i[
     owner

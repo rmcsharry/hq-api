@@ -79,67 +79,19 @@ RSpec.describe Scoreable, bullet: false do
         end
       end
 
-      context 'when related model changes' do
-        # NOTE
-        # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
-        # instead of the random score from the contact factory
-        let!(:subject) { create(:contact_person) }
-        let!(:activity_1) { create(:activity_note) }
-        let!(:activity_2) { create(:activity_note) }
-
-        it 'scores correctly when initial activity is added' do
-          activity_1.contacts << subject
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
-        end
-
-        it 'scores correctly when final activity is removed' do
-          activity_1.contacts << subject
-          activity_1.contacts.destroy(subject)
-
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(24)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
-        end
-
-        it 'scores correctly when final activity itself is destroyed' do
-          activity_1.contacts << subject
-          activity_1.destroy!
-
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(24)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
-        end
-
-        it 'does not rescore when adding activites after the first one' do
-          activity_1.contacts << subject
-          activity_1.save!
-          stub_const('Contact', double)
-          activity_2.contacts << subject
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
-        end
-
-        it 'does not rescore when removing activites except one' do
-          activity_1.contacts << subject
-          activity_1.save!
-          activity_2.contacts << subject
-          activity_2.save!
-          stub_const('Contact', double)
-          activity_1.destroy!
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
-        end
-      end
-
       context 'when person is a mandate owner' do
+        let!(:subject) { build(:contact_person, :with_mandate) }
+
         it 'rescores the mandate when the owner score changes' do
+          subject.calculate_score
+          expect(subject.data_integrity_missing_fields.length).to eq(24)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
+
+          subject.nationality = 'DE'
+          subject.save!
+
+          expect(subject.data_integrity_missing_fields.length).to eq(23)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2168)
         end
       end
     end
@@ -219,61 +171,19 @@ RSpec.describe Scoreable, bullet: false do
         end
       end
 
-      context 'when related model changes' do
-        # NOTE
-        # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
-        # instead of the random score from the contact factory
-        let!(:subject) { create(:contact_organization) }
-        let!(:activity_1) { create(:activity_note) }
-        let!(:activity_2) { create(:activity_note) }
-
-        it 'scores correctly when initial activity is added' do
-          activity_1.contacts << subject
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(20)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2547)
-        end
-
-        it 'scores correctly when final activity is removed' do
-          activity_1.contacts << subject
-          activity_1.contacts.destroy(subject)
-
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(21)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.0943)
-        end
-
-        it 'scores correctly when final activity itself is destroyed' do
-          activity_1.contacts << subject
-          activity_1.destroy!
-
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(21)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.0943)
-        end
-
-        it 'does not rescore when adding activites after the first one' do
-          activity_1.contacts << subject
-          activity_1.save!
-
-          expect(subject).not_to receive(:calculate_score)
-          activity_2.contacts << subject
-        end
-
-        it 'does not rescore when removing activites except one' do
-          activity_1.contacts << subject
-          activity_1.save!
-          activity_2.contacts << subject
-          activity_2.save!
-
-          expect(subject).not_to receive(:calculate_score)
-          activity_1.destroy!
-        end
-      end
-
       context 'when organization is a mandate owner' do
+        let!(:subject) { build(:contact_organization, :with_mandate) }
+
         it 'rescores the mandate when the owner score changes' do
+          subject.calculate_score
+          expect(subject.data_integrity_missing_fields.length).to eq(21)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.0943)
+
+          subject.organization_category = Faker::Company.type
+          subject.save!
+
+          expect(subject.data_integrity_missing_fields.length).to eq(20)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1415)
         end
       end
     end
@@ -327,18 +237,18 @@ RSpec.describe Scoreable, bullet: false do
         let!(:subject) { create(:mandate, :with_bank_account, :with_scoreable_data) }
         let!(:contact) { create(:contact_person, :with_contact_details, :with_scoreable_data) }
 
-        it 'scores almost maximum with no owner' do
+        it 'is correct (both scores) when no owner' do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'contract_hq')
           subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(1)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.4676)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.9351)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.4676)
         end
 
-        it 'scores maximum partial score but less than 100% overall (with 1 owner not scored max)' do
+        it 'is correct (max partial score but lower overall score) when 1 owner added who is not scored max' do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'contract_hq')
           subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
@@ -347,11 +257,11 @@ RSpec.describe Scoreable, bullet: false do
 
           expect(subject.data_integrity_missing_fields).not_to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(0)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.7439)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.7439)
         end
 
-        it 'scores maximum scores (with 1 owner scored max)' do
+        it 'is correct (max for both scores) when 1 owner added who is scored max' do
           contact.activities << build(:activity_note)
           contact.documents << build(:document, category: 'kyc')
           contact.compliance_detail = build(:compliance_detail, contact: contact)
@@ -371,61 +281,24 @@ RSpec.describe Scoreable, bullet: false do
           subject.save!
 
           expect(subject.data_integrity_missing_fields.length).to eq(0)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
-        end
-      end
-
-      context 'when related model changes' do
-        # NOTE
-        # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
-        # instead of the random score from the contact factory
-        let!(:subject) { create(:mandate) }
-        let!(:activity_1) { create(:activity_note) }
-        let!(:activity_2) { create(:activity_note) }
-
-        it 'scores correctly when initial activity is added' do
-          activity_1.mandates << subject
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(10)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4805)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
         end
 
-        it 'scores correctly when final activity is removed' do
-          activity_1.mandates << subject
-          activity_1.mandates.destroy(subject)
+        it 'is correct (both scores) when owner is removed' do
+          subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
 
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(11)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.2597)
-        end
+          expect(subject.data_integrity_missing_fields).not_to include('owner')
+          expect(subject.data_integrity_missing_fields.length).to eq(2)
+          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.5844)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.5361) # (0.5844 + 0.4878) / 2
 
-        it 'scores correctly when final activity itself is destroyed' do
-          activity_1.mandates << subject
-          activity_1.destroy!
+          subject.mandate_members.find_by(member_type: :owner).destroy # <- this action is the focus of this test
 
-          expect(subject.data_integrity_missing_fields).to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(11)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.2597)
-        end
-
-        it 'does not rescore when adding activites after the first one' do
-          activity_1.mandates << subject
-          activity_1.save!
-
-          expect(subject).not_to receive(:calculate_score)
-          activity_2.mandates << subject
-        end
-
-        it 'does not rescore when removing activites except one' do
-          activity_1.mandates << subject
-          activity_1.save!
-          activity_2.mandates << subject
-          activity_2.save!
-
-          expect(subject).not_to receive(:calculate_score)
-          activity_1.destroy!
+          expect(subject.data_integrity_missing_fields).to include('owner')
+          expect(subject.data_integrity_missing_fields.length).to eq(3)
+          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.5195)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2598) # (0.5195 + 0.0) / 2
         end
       end
     end

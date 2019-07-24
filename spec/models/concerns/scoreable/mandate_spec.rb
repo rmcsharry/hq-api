@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ScoreableMandate do
+RSpec.describe Scoreable::Mandate do
   it 'has the correct number of weights' do
     expect(described_class::WEIGHT_RULES.count).to eql(15)
   end

@@ -28,6 +28,7 @@ module Scoreable
     def factor_owners_into_score
       # if no owners, then halve the score, else divide by the number of owners (+1 for the mandate itself)
       count = owners.count # NOTE: don't move this to the ternary below or you will get two DB reads
+      owners.reload
       total = (data_integrity_partial_score + owners.sum { |owner| owner.contact.data_integrity_score })
       total / (count.zero? ? 2 : count + 1).to_f
     end
