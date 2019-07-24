@@ -45,8 +45,8 @@ class FundReport < ApplicationRecord
   before_validation :assign_investors, on: :create
 
   def archive_name
-    date_string = valuta_date.strftime('%d.%m.%Y')
-    "Quartalsberichte_#{fund.name}_#{date_string}.zip"
+    date = valuta_date.strftime('%y%m%d')
+    "#{date}_Quartalsberichte_#{fund.name}.zip"
   end
 
   private

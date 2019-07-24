@@ -63,6 +63,7 @@ class InvestorReport < ApplicationRecord
     extension = Docx.docx?(template.file) ? 'docx' : 'pdf'
     fund_identifier = fund_report.fund.name
     mandate_identifier = investor.mandate.decorate.owner_name
-    "Quartalsbericht_#{fund_identifier}_#{mandate_identifier}.#{extension}"
+    date = fund_report.valuta_date.strftime('%y%m%d')
+    "#{date}_Quartalsbericht_#{fund_identifier}_#{mandate_identifier}_#{id[0..7]}.#{extension}"
   end
 end

@@ -20,7 +20,11 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
       let(:mandate2) { create(:mandate, :with_owner, owner: contact_person2) }
       let(:investor1) { create(:investor, :signed, fund: fund, mandate: mandate1) }
       let(:investor2) { create(:investor, :signed, fund: fund, mandate: mandate2) }
-      let(:fund_report) { create(:fund_report, fund: fund, investors: [investor1, investor2]) }
+      let(:fund_report) do
+        create(:fund_report, fund: fund, valuta_date: Date.new(2019, 3, 1))
+      end
+      let!(:investor_report1) { create(:investor_report, fund_report: fund_report, investor: investor1) }
+      let!(:investor_report2) { create(:investor_report, fund_report: fund_report, investor: investor2) }
       let!(:document) do
         doc = create(
           :fund_template_document,
@@ -66,8 +70,8 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
           expect(file_names).to(
             match_array(
               [
-                'Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas.docx',
-                'Quartalsbericht_Fund_Guntersen, Thomas und Last, First.docx'
+                "190301_Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas_#{investor_report2.id[0..7]}.docx",
+                "190301_Quartalsbericht_Fund_Guntersen, Thomas und Last, First_#{investor_report1.id[0..7]}.docx"
               ]
             )
           )
@@ -112,8 +116,8 @@ RSpec.describe FUND_REPORTS_ENDPOINT, type: :request do
           expect(file_names).to(
             match_array(
               [
-                'Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas.pdf',
-                'Quartalsbericht_Fund_Guntersen, Thomas und Last, First.pdf'
+                "190301_Quartalsbericht_Fund_Family, Fore und Guntersen, Thomas_#{investor_report2.id[0..7]}.pdf",
+                "190301_Quartalsbericht_Fund_Guntersen, Thomas und Last, First_#{investor_report1.id[0..7]}.pdf"
               ]
             )
           )
