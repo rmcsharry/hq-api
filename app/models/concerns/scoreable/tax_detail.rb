@@ -6,7 +6,7 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      before_save :rescore, if: :has_changes_to_save?
+      after_commit :rescore
     end
 
     def rescore

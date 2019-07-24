@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Score related objects (contct/mandate) when an activity is FIRST ADDED TO or FINALLY REMOVED FROM the related objects
+  # Score related objects (contct/mandate) when an activity
+  # is FIRST ADDED TO or FINALLY REMOVED FROM the related objects
   module Activity
     extend ActiveSupport::Concern
 

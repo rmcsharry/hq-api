@@ -27,41 +27,6 @@ RSpec.describe Scoreable, bullet: false do
           expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.2168)
         end
-
-        it 'is correct when rule: specific properties from a related model are filled' do
-          subject.compliance_detail = build(:compliance_detail, contact: subject)
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include(
-            'kagb_classification',
-            'occupation_role',
-            'occupation_title',
-            'politically_exposed',
-            'retirement_age',
-            'wphg_classification'
-          )
-          expect(subject.data_integrity_missing_fields.length).to eq(18)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3062)
-        end
-
-        it 'is correct when rule: a related model has at least one record' do
-          subject.activities << build(:activity)
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
-        end
-
-        it 'is correct when rule: a related model is searched for a specific value' do
-          subject.documents << build(:document, category: 'kyc')
-          subject.save # needed to ensure the document type is found by the algorithm
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('kyc')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.271)
-        end
       end
 
       context 'when all rules apply' do
@@ -72,6 +37,7 @@ RSpec.describe Scoreable, bullet: false do
           subject.documents << build(:document, category: 'kyc')
           subject.compliance_detail = build(:compliance_detail, contact: subject)
           subject.tax_detail = build(:tax_detail, :with_scoreable_person_data)
+          subject.save!
           subject.calculate_score
 
           expect(subject.data_integrity_missing_fields.length).to eq(0)
@@ -118,34 +84,6 @@ RSpec.describe Scoreable, bullet: false do
           expect(subject.data_integrity_missing_fields).not_to include('organization_category')
           expect(subject.data_integrity_missing_fields.length).to eq(20)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1415)
-        end
-
-        it 'is correct when rule: specific properties from a related model are filled' do
-          subject.compliance_detail = build(:compliance_detail, contact: subject)
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('kagb_classification', 'wphg_classification')
-          expect(subject.data_integrity_missing_fields.length).to eq(19)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
-        end
-
-        it 'is correct when rule: a related model has at least one record' do
-          subject.activities << build(:activity)
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(20)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2547)
-        end
-
-        it 'is correct when rule: a related model is searched for a specific value' do
-          subject.documents << build(:document, category: 'kyc')
-          subject.save # needed to ensure the document type is found by the algorithm
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('kyc')
-          expect(subject.data_integrity_missing_fields.length).to eq(20)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
         end
       end
 
@@ -213,23 +151,27 @@ RSpec.describe Scoreable, bullet: false do
           expect(subject.data_integrity_missing_fields.length).to eq(10)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.2727)
         end
+      end
 
-        it 'is correct when rule: a related model has at least one record' do
-          subject.activities << build(:activity_note)
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(10)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4805)
+      context 'when all rules apply' do
+        let!(:subject) do
+          create(
+            :mandate,
+            :with_owner,
+            :with_bank_account,
+            :with_scoreable_data
+          )
         end
 
-        it 'is correct when rule: a related model is searched for a specific value' do
+        it 'scores maximum' do
           subject.documents << build(:document, category: 'contract_hq')
+          subject.activities << build(:activity_note)
+          subject.mandate_members << create(:mandate_member, mandate: subject, contact: build(:contact_person))
+          subject.reload
           subject.calculate_score
 
-          expect(subject.data_integrity_missing_fields).not_to include('contract_hq')
-          expect(subject.data_integrity_missing_fields.length).to eq(10)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4545)
+          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
+          expect(subject.data_integrity_missing_fields.length).to eq(0)
         end
       end
 
