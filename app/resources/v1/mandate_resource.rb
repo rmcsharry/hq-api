@@ -118,6 +118,7 @@ module V1
       records
         .joins(:current_state_transition)
         .where('state_transitions.created_at >= ?', Date.parse(value[0]))
+    }
 
     filter :data_integrity_score_min, apply: lambda { |records, value, _options|
       records.where('mandates.data_integrity_score >= ?', value[0].to_f / 100)

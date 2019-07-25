@@ -33,13 +33,13 @@
 # Indexes
 #
 #  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_data_integrity_score          (data_integrity_score)
 #  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (current_state_transition_id => state_transitions.id)
 #  fk_rails_...  (previous_state_transition_id => state_transitions.id)
-#  index_mandates_on_data_integrity_score  (data_integrity_score)
 #
 
 # Defines the Mandate model
@@ -48,8 +48,6 @@ class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
   include RememberStateTransitions
-  include MandateWeight
-  include WeightRulesMandate
   include Scoreable
   include Scoreable::Mandate
 

@@ -20,7 +20,6 @@ require 'support/shared_examples/authorization'
 require 'support/shared_examples/forbid_ews_users'
 require 'support/shared_examples/simple_crud_authorization'
 require 'support/shared_examples/state_transitions'
-require 'support/shared_examples/scoreable'
 require 'support/v1/shoulda/matchers/active_record/uniqueness/test_models/contacu_resource'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

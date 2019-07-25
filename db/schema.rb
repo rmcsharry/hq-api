@@ -375,14 +375,14 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.decimal "prospect_fees_min_amount", precision: 20, scale: 10
     t.boolean "confidential", default: false, null: false
     t.string "psplus_pe_id"
-    t.uuid "previous_state_transition_id"
-    t.uuid "current_state_transition_id"
     t.decimal "data_integrity_score", precision: 5, scale: 4, default: "0.0"
     t.decimal "data_integrity_partial_score", precision: 5, scale: 4, default: "0.0"
     t.string "data_integrity_missing_fields", default: [], array: true
+    t.uuid "previous_state_transition_id"
+    t.uuid "current_state_transition_id"
     t.index ["current_state_transition_id"], name: "index_mandates_on_current_state_transition_id"
-    t.index ["previous_state_transition_id"], name: "index_mandates_on_previous_state_transition_id"
     t.index ["data_integrity_score"], name: "index_mandates_on_data_integrity_score"
+    t.index ["previous_state_transition_id"], name: "index_mandates_on_previous_state_transition_id"
   end
 
   create_table "newsletter_subscribers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
