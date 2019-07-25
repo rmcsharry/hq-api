@@ -9,6 +9,7 @@ RSpec.describe Scoreable::TaxDetail, bullet: false do
 
       it 'is correct when rule: specific properties from a related model are filled' do
         subject.tax_detail = create(:tax_detail, :with_scoreable_person_data, contact: subject)
+        subject.calculate_score
 
         expect(subject.data_integrity_missing_fields).not_to include(
           'de_church_tax',
@@ -31,6 +32,7 @@ RSpec.describe Scoreable::TaxDetail, bullet: false do
 
       it 'is correct when rule: specific properties from a related model are filled' do
         subject.tax_detail = create(:tax_detail, :with_scoreable_organization_data, contact: subject)
+        subject.calculate_score
 
         expect(subject.data_integrity_missing_fields).not_to include(
           'de_tax_id',

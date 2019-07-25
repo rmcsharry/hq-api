@@ -54,7 +54,7 @@ RSpec.describe Scoreable, bullet: false do
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
 
           subject.nationality = 'DE'
-          subject.save!
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.2168)
@@ -119,6 +119,7 @@ RSpec.describe Scoreable, bullet: false do
 
           subject.organization_category = Faker::Company.type
           subject.save!
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields.length).to eq(20)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1415)
@@ -193,7 +194,11 @@ RSpec.describe Scoreable, bullet: false do
         it 'is correct (max partial score but lower overall score) when 1 owner added who is not scored max' do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'contract_hq')
+          contact.calculate_score
+          contact.save!
+          # now the contact score is persisted, add the contact as the owner, and calculate the mandate score
           subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
+          subject.save!
           subject.reload
           subject.calculate_score
 
@@ -208,19 +213,19 @@ RSpec.describe Scoreable, bullet: false do
           contact.documents << build(:document, category: 'kyc')
           contact.compliance_detail = build(:compliance_detail, contact: contact)
           contact.tax_detail = build(:tax_detail, :with_scoreable_person_data)
-          contact.reload
           contact.calculate_score
           contact.save!
-          # ensure the contact is at max before doing the actual test
+          # ensure the contact is at max before running the actual test
           expect(contact.data_integrity_missing_fields.length).to eq(0)
           expect(contact.data_integrity_score).to be_within(0.0001).of(1.0)
 
+          # now max the mandate score, including the contact as owner
           subject.activities << create(:activity_note)
           subject.documents << create(:document, category: 'contract_hq')
           subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
+          subject.save!
           subject.reload
           subject.calculate_score
-          subject.save!
 
           expect(subject.data_integrity_missing_fields.length).to eq(0)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
@@ -228,14 +233,22 @@ RSpec.describe Scoreable, bullet: false do
         end
 
         it 'is correct (both scores) when owner is removed' do
+          contact.calculate_score
+          contact.save!
           subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
-
+          subject.save!
+          subject.reload
+          subject.calculate_score
+          binding.pry
           expect(subject.data_integrity_missing_fields).not_to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(2)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.5844)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.5361) # (0.5844 + 0.4878) / 2
 
           subject.mandate_members.find_by(member_type: :owner).destroy # <- this action is the focus of this test
+          subject.save!
+          subject.reload
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(3)
