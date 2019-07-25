@@ -239,7 +239,7 @@ RSpec.describe Scoreable, bullet: false do
           subject.save!
           subject.reload
           subject.calculate_score
-          binding.pry
+
           expect(subject.data_integrity_missing_fields).not_to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(2)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.5844)
