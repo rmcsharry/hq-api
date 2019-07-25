@@ -24,6 +24,7 @@ RSpec.describe Scoreable::Activity, bullet: false do
         it 'scores correctly when final activity is removed' do
           activity_1.contacts << subject
           activity_1.contacts.destroy(subject)
+          activity_1.save!
 
           expect(subject.data_integrity_missing_fields).to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(24)

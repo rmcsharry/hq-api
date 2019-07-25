@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Score related objects (contact/mandate) when a document of a given type
+  # Score related objects (mandate) when a bank account
   # is FIRST ADDED TO or FINALLY REMOVED FROM the related objects
-  module Document
+  module BankAccount
     extend ActiveSupport::Concern
   end
 end

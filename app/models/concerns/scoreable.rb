@@ -48,6 +48,10 @@ module Scoreable
     activities.count == 1
   end
 
+  def no_activities?
+    activities.count.zero?
+  end
+
   private
 
   def assign_score

@@ -47,7 +47,7 @@
 # rubocop:disable Metrics/ClassLength
 class Contact < ApplicationRecord
   include ExportableAttributes
-  include Scoreable::ScoreableContact
+  include ScoreableContact
   # include Scoreable::TaxDetail
   # include Scoreable::ComplianceDetail
   extend Enumerize
