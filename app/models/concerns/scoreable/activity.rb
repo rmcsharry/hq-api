@@ -19,29 +19,13 @@ module Scoreable
         end
       end
 
-      # def before_add_for_contacts(contact)
-      #   self.class.store_callback_to_rescore(contact) if contact.no_activities?
-      # end
-
-      # def after_remove_for_contacts(contact)
-      #   self.class.store_callback_to_rescore(contact) if contact.no_activities?
-      # end
-
-      # def before_add_for_mandates(mandate)
-      #   self.class.store_callback_to_rescore(mandate) if mandate.no_activities?
-      # end
-
-      # def after_remove_for_mandates(mandate)
-      #   self.class.store_callback_to_rescore(mandate) if mandate.no_activities?
-      # end
-
       def rescore_contact(contact)
         self.class.store_callback_to_rescore(contact) if contact.no_activities?
       end
 
       def rescore_mandate(mandate)
         self.class.store_callback_to_rescore(mandate) if mandate.no_activities?
-      end      
+      end
     end
 
     class_methods do
