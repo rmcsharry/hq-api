@@ -11,8 +11,7 @@ module Scoreable
     end
 
     def rescore
-      # only recalculate owner's score if the document added/remove matches the documents rule
-      return unless score_impacted?
+      return unless score_impacted? # no need to recalculate owner score if document does not match the score rule
 
       owner.class.skip_callback(:save, :before, :calculate_score, raise: false)
       owner.calculate_score
@@ -21,7 +20,7 @@ module Scoreable
     end
 
     def score_impacted?
-      # did we save changes that relate to the rule for this model?
+      # did we save changes that relate to the documents rule for the owner?
       rule = owner.class::SCORE_RULES.select { |r| r[:model_key] == 'documents' }[0]
       field, value = rule[:name].split('==')
       changes = saved_changes[field]
