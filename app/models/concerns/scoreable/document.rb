@@ -7,10 +7,11 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore#, if: :saved_change_to_category
+      after_commit :rescore
     end
 
     def rescore
+      # only recalculate owner's score if the document added/remove matches the documents rule
       return unless score_impacted?
 
       owner.class.skip_callback(:save, :before, :calculate_score, raise: false)
@@ -24,7 +25,7 @@ module Scoreable
       rule = owner.class::SCORE_RULES.select { |r| r[:model_key] == 'documents' }[0]
       field, value = rule[:name].split('==')
       changes = saved_changes[field]
-      changes.select { |change| change == value }.any? unless changes.nil?
+      changes&.select { |change| change == value }&.any?
     end
   end
 end
