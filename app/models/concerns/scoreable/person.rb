@@ -5,7 +5,7 @@ module Scoreable
   module Person
     extend ActiveSupport::Concern
 
-    WEIGHT_RULES = [
+    SCORE_RULES = [
       { type: 'MainProperty', model_key: 'contact_person', name: 'date_of_birth', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'contact_person', name: 'first_name', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'contact_person', name: 'gender', relative_weight: 5 },

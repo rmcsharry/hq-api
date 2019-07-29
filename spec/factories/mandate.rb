@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :mandate do
+    # score uses a restricted range (ie. NOT 0 to 100%) so we can test filtering on min/max
     data_integrity_score { rand(0.2..0.8) }
 
     transient do

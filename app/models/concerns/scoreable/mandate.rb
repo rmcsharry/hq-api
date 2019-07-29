@@ -6,7 +6,7 @@ module Scoreable
     extend ActiveSupport::Concern
 
     # rubocop:disable Metrics/LineLength
-    WEIGHT_RULES = [
+    SCORE_RULES = [
       { type: 'MainProperty', model_key: 'mandate', name: 'category', relative_weight: 5 },
       { type: 'MainProperty', model_key: 'mandate', name: 'datev_creditor_id', relative_weight: 1 },
       { type: 'MainProperty', model_key: 'mandate', name: 'datev_debitor_id', relative_weight: 1 },

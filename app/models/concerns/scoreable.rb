@@ -7,8 +7,8 @@ module Scoreable
 
   class_methods do
     def relative_weights_total
-      # memoized at class level since WEIGHT_RULES can only change via code deployment
-      @relative_weights_total ||= self::WEIGHT_RULES.sum { |rule| rule[:relative_weight] }.to_f
+      # memoized at class level since SCORE_RULES can only change via code deployment
+      @relative_weights_total ||= self::SCORE_RULES.sum { |rule| rule[:relative_weight] }.to_f
     end
   end
 
@@ -31,11 +31,11 @@ module Scoreable
     @_execute_after_commit << callback
   end
 
-  # called by an object, for which we will calculate the total score by applying all WEIGHT_RULES defined for its class
+  # called by an object, for which we will calculate the total score by applying all SCORE_RULES defined for its class
   def calculate_score
     @score = 0
     missing_fields = []
-    @score = self.class::WEIGHT_RULES.sum do |rule|
+    @score = self.class::SCORE_RULES.sum do |rule|
       result = Rule.build(object: self, rule: rule)
       missing_fields << result[:name] if result[:score].zero?
       result[:score]

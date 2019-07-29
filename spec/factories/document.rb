@@ -5,7 +5,7 @@ FactoryBot.define do
     name { 'Contracts' }
     category { :contract_hq }
     uploader { create(:user) }
-    owner { create(:mandate, documents: [@instance.presence]) }
+    # owner { create(:mandate, documents: [@instance.presence]) }
     after(:build) do |document|
       document.file.attach(
         io: File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf')),
