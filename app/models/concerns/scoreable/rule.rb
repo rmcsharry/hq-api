@@ -16,6 +16,7 @@ module Scoreable
     attr_accessor :field_name, :relative_weight, :weights_total
 
     def initialize(object:, rule:)
+      object.reload if object.id
       @object = object
       @model = rule[:model_key]
       @property = rule[:name]

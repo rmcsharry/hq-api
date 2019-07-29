@@ -8,9 +8,9 @@ RSpec.describe Scoreable::Document, bullet: false do
       let!(:subject) { create(:contact_person) }
       let!(:document) { build(:document, category: 'kyc') }
 
-      context 'when rule: a related model property has a specific value' do
+      context 'when rule: a related model property has a specific value (document category == kyc)' do
 
-        it 'is correct when that value is added' do
+        it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
 
@@ -19,7 +19,7 @@ RSpec.describe Scoreable::Document, bullet: false do
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.271)
         end
 
-        it 'is correct when that value is removed' do
+        it 'is correct when document is removed' do
           subject.documents << document
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.271)
           document.destroy
@@ -35,8 +35,8 @@ RSpec.describe Scoreable::Document, bullet: false do
       let!(:subject) { create(:contact_organization) }
       let!(:document) { build(:document, category: 'kyc') }
 
-      context 'when rule: a related model property has a specific value' do
-        it 'is correct when that value is added' do
+      context 'when rule: a related model property has a specific value (document category == kyc)' do
+        it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
 
@@ -45,7 +45,7 @@ RSpec.describe Scoreable::Document, bullet: false do
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
         end
 
-        it 'is correct when that value is removed' do
+        it 'is correct when document is removed' do
           subject.documents << document
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
           document.destroy
@@ -61,17 +61,18 @@ RSpec.describe Scoreable::Document, bullet: false do
       let!(:subject) { create(:mandate) }
       let!(:document) { build(:document, category: 'contract_hq') }
 
-      context 'when rule: a related model property has a specific value' do
-        it 'is correct when that value is added' do
+      context 'when rule: a related model property has a specific value (document category == contract_hq)' do
+        it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
 
           expect(subject.data_integrity_missing_fields).not_to include('contract_hq')
           expect(subject.data_integrity_missing_fields.length).to eq(10)
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2273)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4545)
         end
 
-        it 'is correct when that value is removed' do
+        it 'is correct when document is removed' do
           document.owner = subject
           subject.documents << document
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4545)
@@ -80,6 +81,7 @@ RSpec.describe Scoreable::Document, bullet: false do
           expect(subject.data_integrity_missing_fields).to include('contract_hq')
           expect(subject.data_integrity_missing_fields.length).to eq(11)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1299)
+          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.2597)
         end
       end
     end
