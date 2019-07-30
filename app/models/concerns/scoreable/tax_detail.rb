@@ -6,11 +6,14 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore
+      after_commit :rescore_contact
     end
 
-    def rescore
+    def rescore_contact
+      contact.class.skip_callback(:save, :before, :calculate_score, raise: false)
       contact.calculate_score
+      contact.save!
+      contact.class.set_callback(:save, :before, :calculate_score, if: :has_changes_to_save?)
     end
   end
 end

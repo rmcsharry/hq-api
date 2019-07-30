@@ -3,13 +3,14 @@
 require 'rails_helper'
 
 RSpec.describe Scoreable::TaxDetail, bullet: false do
-  describe 'scoreable#calculate_score' do
+  describe '#rescore_contact' do
     describe 'for contact_person' do
       let!(:subject) { build(:contact_person) }
+      let!(:tax_detail) { build(:tax_detail, :with_scoreable_person_data, contact: subject) }
 
       it 'is correct when rule: specific properties from a related model are filled' do
-        subject.tax_detail = create(:tax_detail, :with_scoreable_person_data, contact: subject)
-        subject.calculate_score
+        subject.tax_detail = tax_detail
+        tax_detail.rescore_contact
 
         expect(subject.data_integrity_missing_fields).not_to include(
           'de_church_tax',
@@ -29,10 +30,11 @@ RSpec.describe Scoreable::TaxDetail, bullet: false do
 
     describe 'for contact_organization' do
       let!(:subject) { build(:contact_organization) }
+      let!(:tax_detail) { build(:tax_detail, :with_scoreable_organization_data, contact: subject) }
 
       it 'is correct when rule: specific properties from a related model are filled' do
-        subject.tax_detail = create(:tax_detail, :with_scoreable_organization_data, contact: subject)
-        subject.calculate_score
+        subject.tax_detail = tax_detail
+        tax_detail.rescore_contact
 
         expect(subject.data_integrity_missing_fields).not_to include(
           'de_tax_id',
