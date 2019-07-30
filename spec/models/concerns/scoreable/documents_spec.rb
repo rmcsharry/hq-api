@@ -13,6 +13,7 @@ RSpec.describe Scoreable::Document, bullet: false do
         it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).not_to include('kyc')
           expect(subject.data_integrity_missing_fields.length).to eq(23)
@@ -21,8 +22,10 @@ RSpec.describe Scoreable::Document, bullet: false do
 
         it 'is correct when document is removed' do
           subject.documents << document
+          subject.calculate_score
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.271)
           document.destroy
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).to include('kyc')
           expect(subject.data_integrity_missing_fields.length).to eq(24)
@@ -39,6 +42,7 @@ RSpec.describe Scoreable::Document, bullet: false do
         it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).not_to include('kyc')
           expect(subject.data_integrity_missing_fields.length).to eq(20)
@@ -47,8 +51,10 @@ RSpec.describe Scoreable::Document, bullet: false do
 
         it 'is correct when document is removed' do
           subject.documents << document
+          subject.calculate_score
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
           document.destroy
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).to include('kyc')
           expect(subject.data_integrity_missing_fields.length).to eq(21)
@@ -65,6 +71,7 @@ RSpec.describe Scoreable::Document, bullet: false do
         it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).not_to include('contract_hq')
           expect(subject.data_integrity_missing_fields.length).to eq(10)
@@ -75,8 +82,10 @@ RSpec.describe Scoreable::Document, bullet: false do
         it 'is correct when document is removed' do
           document.owner = subject
           subject.documents << document
+          subject.calculate_score
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4545)
           document.destroy
+          subject.calculate_score
 
           expect(subject.data_integrity_missing_fields).to include('contract_hq')
           expect(subject.data_integrity_missing_fields.length).to eq(11)

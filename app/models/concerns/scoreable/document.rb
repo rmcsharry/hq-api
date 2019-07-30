@@ -7,7 +7,7 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      # after_commit :rescore
+      after_commit :rescore
     end
 
     def rescore
