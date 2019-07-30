@@ -28,6 +28,7 @@
 class ComplianceDetail < ApplicationRecord
   extend Enumerize
   include Scoreable::ComplianceDetail
+
   strip_attributes only: :occupation_title, collapse_spaces: true
 
   WPHG_CLASSIFICATIONS = %i[none private born_professional chosen_professional suitable_counterparty].freeze

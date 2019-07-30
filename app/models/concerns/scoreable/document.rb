@@ -13,11 +13,8 @@ module Scoreable
     def rescore_owner
       return unless score_impacted? # no need to recalculate owner score if document does not match the score rule
 
-      owner.class.skip_callback(:save, :before, :calculate_score, raise: false)
-      # NOTE if owner is a mandate, then this calculate_score will also trigger calling factor_owners_into_score
-      owner.calculate_score
+      owner.calculate_score # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
       owner.save!
-      owner.class.set_callback(:save, :before, :calculate_score, if: :has_changes_to_save?)
     end
 
     def score_impacted?

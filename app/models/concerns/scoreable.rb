@@ -21,7 +21,7 @@ module Scoreable
       end
     end
 
-    before_save :calculate_score, unless: :score_different?
+    before_save :calculate_score, unless: :score_already_changed?
   end
 
   def execute_after_commit(&callback)
@@ -54,17 +54,17 @@ module Scoreable
 
   private
 
-  def score_to_save?
-    return true if score_different? || only_score_changed?
+  # def score_to_save?
+  #   return true if score_different? || only_score_changed?
 
-    false
-  end
+  #   false
+  # end
 
-  def only_score_changed?
-    changes_to_save.count == 1 && changes_to_save['data_integrity_score']&.any?
-  end
+  # def only_score_changed?
+  #   changes_to_save.count == 1 && changes_to_save['data_integrity_score']&.any?
+  # end
 
-  def score_different?
+  def score_already_changed?
     changes_to_save['data_integrity_score'][1] != data_integrity_score unless changes_to_save['data_integrity_score'].nil?
   end
 
