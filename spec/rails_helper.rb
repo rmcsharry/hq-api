@@ -92,7 +92,7 @@ RSpec.configure do |config|
     MandateMember.skip_callback(:commit, :after, :rescore)
     # BankAccount.skip_callback(:commit, :after, :rescore)
     ComplianceDetail.skip_callback(:commit, :after, :rescore)
-    Document.skip_callback(:commit, :after, :rescore)
+    Document.skip_callback(:commit, :after, :rescore_owner)
   end
 
   config.around(:each) do |example|
