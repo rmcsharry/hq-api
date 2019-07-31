@@ -15,7 +15,7 @@ RSpec.describe Scoreable::BankAccount, bullet: false do
           bank_account.save!
           bank_account.rescore_owner
 
-          expect(subject.data_integrity_missing_fields).not_to include('bank_accounts')
+          expect(subject.data_integrity_missing_fields).not_to include('bank-accounts')
           expect(subject.data_integrity_missing_fields.length).to eq(10)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.3247)
         end
@@ -25,7 +25,7 @@ RSpec.describe Scoreable::BankAccount, bullet: false do
           bank_account.destroy
           bank_account.rescore_owner
 
-          expect(subject.data_integrity_missing_fields).to include('bank_accounts')
+          expect(subject.data_integrity_missing_fields).to include('bank-accounts')
           expect(subject.data_integrity_missing_fields.length).to eq(11)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.2597)
         end

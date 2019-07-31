@@ -79,7 +79,12 @@ module Scoreable
       end
 
       def result
-        @field_name = @model
+        @field_name =
+          if @model.include?('_')
+            @model.dasherize
+          else
+            @model
+          end
         Score.build(self)
       end
     end
