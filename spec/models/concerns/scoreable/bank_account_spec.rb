@@ -13,6 +13,7 @@ RSpec.describe Scoreable::BankAccount, bullet: false do
         it 'scores correctly when initial bank account is added' do
           bank_account.owner = subject
           bank_account.save!
+          subject.reload
           bank_account.rescore_owner
 
           expect(subject.data_integrity_missing_fields).not_to include('bank-accounts')
