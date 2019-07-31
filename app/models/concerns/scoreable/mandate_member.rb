@@ -6,10 +6,10 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore
+      after_commit :rescore_mandate
     end
 
-    def rescore
+    def rescore_mandate
       Bullet.enable = false
       mandate.calculate_score
       mandate.save!

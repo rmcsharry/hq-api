@@ -93,7 +93,7 @@ RSpec.configure do |config|
     TaxDetail.skip_callback(:commit, :after, :rescore_contact)
     Document.skip_callback(:commit, :after, :rescore_owner)
     BankAccount.skip_callback(:commit, :after, :rescore_owner)
-    MandateMember.skip_callback(:commit, :after, :rescore)
+    MandateMember.skip_callback(:commit, :after, :rescore_mandate)
   end
 
   config.around(:each) do |example|
