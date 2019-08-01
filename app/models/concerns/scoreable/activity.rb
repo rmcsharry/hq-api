@@ -30,13 +30,11 @@ module Scoreable
 
     class_methods do
       def store_callback_to_rescore(object)
-        object.update(updated_at: Time.zone.now) # Needed only for the execute callbacks on the related object to fire
+        object.update(updated_at: Time.zone.now) # Needed only so that the execute callbacks on the related object fire
         object.execute_after_commit do
-          object.class.skip_callback(:save, :before, :calculate_score, raise: false)
-          object.reload
+          object.reload # without this calculate_score will not see the activity changes
           object.calculate_score
           object.save!
-          object.class.set_callback(:save, :before, :calculate_score, if: :has_changes_to_save?)
         end
       end
     end

@@ -45,7 +45,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Contact, type: :model do
+RSpec.describe Contact, type: :model, bullet: false do
   it { is_expected.to have_many(:addresses) }
   it { is_expected.to have_many(:contact_details) }
   it { is_expected.to have_many(:mandate_members) }

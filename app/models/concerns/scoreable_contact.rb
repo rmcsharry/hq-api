@@ -6,7 +6,7 @@ module ScoreableContact
   extend ActiveSupport::Concern
 
   included do
-    after_save :update_mandate_score, if: :owner_score_changed?
+    after_commit :update_mandate_score, if: :owner_score_changed?
   end
 
   def owner_score_changed?

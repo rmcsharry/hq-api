@@ -13,15 +13,16 @@ module Scoreable
   end
 
   included do
-    after_commit do
-      if @_execute_after_commit
-        callbacks = @_execute_after_commit
-        @_execute_after_commit = nil
-        callbacks.each(&:call)
-      end
-    end
+    after_commit :run_after_commit_hooks
+    after_commit :calculate_score, unless: :already_saved_new_score?
+  end
 
-    before_save :calculate_score, unless: :already_saving_new_score?
+  def run_after_commit_hooks
+    return unless @_execute_after_commit
+
+    callbacks = @_execute_after_commit
+    @_execute_after_commit = nil
+    callbacks.each(&:call)
   end
 
   def execute_after_commit(&callback)
@@ -54,8 +55,8 @@ module Scoreable
 
   private
 
-  def already_saving_new_score?
-    score_changes = changes_to_save['data_integrity_score']
+  def already_saved_new_score?
+    score_changes = saved_changes['data_integrity_score']
     return score_changes[1] != data_integrity_score unless score_changes.nil?
 
     false
