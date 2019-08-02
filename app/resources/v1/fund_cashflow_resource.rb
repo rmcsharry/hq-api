@@ -37,6 +37,7 @@ module V1
     end
 
     def investor_cashflows=(params)
+      @model.investor_cashflows.destroy_all
       params.each do |param|
         sanitized_params = sanitize_params(param, V1::InvestorCashflowResource)
         @model.investor_cashflows.build(sanitized_params)

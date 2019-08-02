@@ -32,14 +32,20 @@ class ContactRelationship < ApplicationRecord
   belongs_to :source_contact, inverse_of: :active_contact_relationships, class_name: 'Contact'
 
   scope :indirectly_associating_mandates_to_contact_with_id, lambda { |contact_id|
-    joins('LEFT JOIN contacts c ON c.id = contact_relationships.source_contact_id OR ' \
-          'c.id = contact_relationships.target_contact_id')
-      .joins('LEFT JOIN mandate_members mm ON mm.contact_id = c.id')
-      .joins('LEFT JOIN mandates m ON m.id = mm.mandate_id')
-      .where('contact_relationships.source_contact_id = ? OR ' \
-             'contact_relationships.target_contact_id = ?', contact_id, contact_id)
-      .where('mm.member_type': :owner)
-      .where.not('mm.contact_id': contact_id)
+    where(
+      id:
+        ContactRelationship.joins(
+          'LEFT JOIN contacts c ON c.id = contact_relationships.source_contact_id OR ' \
+          'c.id = contact_relationships.target_contact_id'
+        ).joins(
+          'LEFT JOIN mandate_members mm ON mm.contact_id = c.id'
+        ).joins(
+          'LEFT JOIN mandates m ON m.id = mm.mandate_id'
+        ).where(
+          'contact_relationships.source_contact_id = ? OR ' \
+          'contact_relationships.target_contact_id = ?', contact_id, contact_id
+        ).where('mm.member_type': :owner).where.not('mm.contact_id': contact_id)
+    )
   }
 
   has_paper_trail(

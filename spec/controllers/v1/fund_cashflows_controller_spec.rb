@@ -204,4 +204,96 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'PATCH /v1/fund-cashflows/<id>', bullet: false do
+    subject do
+      lambda {
+        patch(
+          "#{FUND_CASHFLOWS_ENDPOINT}/#{fund_cashflow.id}",
+          params: payload.to_json,
+          headers: auth_headers
+        )
+      }
+    end
+
+    let(:fund) { create(:fund) }
+    let(:investor1) { create(:investor, :signed, fund: fund) }
+    let(:investor2) { create(:investor, :signed, fund: fund) }
+    let(:other_investor) { investor2 }
+    let(:fund_cashflow) { create(:fund_cashflow, fund: fund) }
+    let!(:investor_cashflow1) do
+      create(:investor_cashflow, :capital_call, fund_cashflow: fund_cashflow, investor: investor1)
+    end
+    let!(:investor_cashflow2) do
+      create(:investor_cashflow, :capital_call, fund_cashflow: fund_cashflow, investor: investor2)
+    end
+    let(:investor_cashflows) do
+      [
+        {
+          investorId: investor1.id,
+          capitalCallCompensatoryInterestAmount: 100_000,
+          capitalCallGrossAmount: 500_000,
+          capitalCallManagementFeesAmount: 50_000
+        },
+        {
+          investorId: other_investor.id,
+          capitalCallCompensatoryInterestAmount: 100_000,
+          capitalCallGrossAmount: 500_000,
+          capitalCallManagementFeesAmount: 50_000
+        }
+      ]
+    end
+
+    let(:payload) do
+      {
+        data: {
+          type: 'fund-cashflows',
+          id: fund_cashflow.id,
+          attributes: {
+            'investor-cashflows': investor_cashflows,
+            'valuta-date': Time.zone.today
+          },
+          relationships: {
+            fund: {
+              data: { id: fund.id, type: 'funds' }
+            }
+          }
+        }
+      }
+    end
+
+    context 'with valid payload' do
+      it 'updates the fund cashflow with both investor cashflows' do
+        expect(fund_cashflow.net_cashflow_amount).to eq(-600_000)
+        subject.call
+        is_expected.to change(FundCashflow, :count).by(0)
+        is_expected.to change(InvestorCashflow, :count).by(0)
+        expect(response).to have_http_status(200)
+        expect(fund_cashflow.reload.net_cashflow_amount).to eq(-1_300_000)
+      end
+    end
+
+    context 'with empty investor cashflows' do
+      let(:investor_cashflows) { [] }
+
+      it 'throws an error' do
+        subject.call
+        is_expected.to change(FundCashflow, :count).by(0)
+        expect(response).to have_http_status(200)
+        expect(InvestorCashflow.count).to eq 0
+        expect(fund_cashflow.reload.net_cashflow_amount).to eq 0
+      end
+    end
+
+    context 'with investor being from another fund' do
+      let(:other_investor) { create(:investor, :signed) }
+
+      it 'throws an error' do
+        subject.call
+        is_expected.to change(FundCashflow, :count).by(0)
+        is_expected.to change(InvestorCashflow, :count).by(0)
+        expect(response).to have_http_status(422)
+      end
+    end
+  end
 end

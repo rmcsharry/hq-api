@@ -85,7 +85,7 @@ module Quill
     def justify_content_tag
       return nil unless @justify_content
 
-      "<w:pPr><w:jc w:val='both'/></w:pPr>"
+      "<w:pPr><w:jc w:val='both'/><w:spacing w:before='270' w:after='270' w:line='270' w:lineRule='exact' /></w:pPr>"
     end
 
     def attribute_tag
@@ -119,7 +119,7 @@ module Quill
     end
 
     def to_s
-      "<w:r>#{attribute_tag}<w:t xml:space=\"preserve\">#{@text}</w:t></w:r>"
+      "<w:r>#{attribute_tag}<w:t xml:space=\"preserve\">#{@text.gsub('&', '&amp;')}</w:t></w:r>"
     end
 
     private

@@ -7,6 +7,12 @@ module V1
 
     before_action :authenticate_user!
 
+    def update
+      FundCashflow.transaction do
+        super
+      end
+    end
+
     def archived_documents
       download_documents
     end
