@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 # Shared logic for scoring contacts
 module ScoreableContact
   extend ActiveSupport::Concern

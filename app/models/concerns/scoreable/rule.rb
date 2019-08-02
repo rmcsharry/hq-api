@@ -16,9 +16,6 @@ module Scoreable
     attr_accessor :field_name, :relative_weight, :weights_total
 
     def initialize(object:, rule:)
-      # if object.class.name == 'Mandate' && object.mandate_members.length.zero?
-      #   binding.pry 
-      # end
       @object = object
       @model = rule[:model_key]
       @property = rule[:name]
