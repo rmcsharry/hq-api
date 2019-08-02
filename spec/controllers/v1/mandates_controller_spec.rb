@@ -403,12 +403,14 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
           let(:min) { 20 }
           let(:max) { 80 }
 
-          it 'finds four mandate' do
+          it 'finds four mandates' do
+            Bullet.enable = false
             subject
             expect(response).to have_http_status(200)
             body = JSON.parse(response.body)
             expect(body.keys).to include 'data', 'meta', 'links'
             expect(body['meta']['record-count']).to eq 2
+            Bullet.enable = true
           end
         end
       end
