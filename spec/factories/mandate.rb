@@ -35,7 +35,7 @@ FactoryBot.define do
     trait :with_bank_account do
       bank_accounts do
         [
-          create(:bank_account, owner: @instance, iban: 'DE12500105170648489890' )
+          create(:bank_account, owner: @instance, iban: 'DE12500105170648489890')
         ]
       end
     end

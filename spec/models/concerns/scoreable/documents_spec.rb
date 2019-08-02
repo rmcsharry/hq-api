@@ -9,7 +9,6 @@ RSpec.describe Scoreable::Document, bullet: false do
       let!(:document) { build(:document, category: 'kyc') }
 
       context 'when rule: a related model property has a specific value (document category == kyc)' do
-
         it 'is correct when document is added' do
           document.owner = subject
           subject.documents << document
