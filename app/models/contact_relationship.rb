@@ -27,6 +27,7 @@
 # rubocop:disable Metrics/ClassLength
 class ContactRelationship < ApplicationRecord
   extend Enumerize
+  include Scoreable::ContactRelationship
 
   belongs_to :target_contact, inverse_of: :passive_contact_relationships, class_name: 'Contact'
   belongs_to :source_contact, inverse_of: :active_contact_relationships, class_name: 'Contact'
