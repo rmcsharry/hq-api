@@ -36,6 +36,7 @@ RSpec.describe ContactRelationship, type: :model do
     it { is_expected.to enumerize(:role) }
 
     it 'validates uniqueness per role and contact set' do
+      Bullet.enable = false
       first_parent_relationship = ContactRelationship.create!(
         source_contact: parent,
         target_contact: child,
@@ -90,6 +91,7 @@ RSpec.describe ContactRelationship, type: :model do
     let!(:second_mm) { create :mandate_member, mandate: second_mandate, contact: tax_advisor, member_type: :bookkeeper }
 
     it 'returns contact_relationships to contacts who are owner of a mandate' do
+      Bullet.enable = false
       indirect_relationships = ContactRelationship.indirectly_associating_mandates_to_contact_with_id(parent.id)
 
       expect(indirect_relationships).to match_array([indirect_mandate_relationship])
