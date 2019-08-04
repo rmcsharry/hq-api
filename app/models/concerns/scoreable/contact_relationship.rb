@@ -7,8 +7,8 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_create :rescore_owner, if: -> { only_one_role? }
-      before_destroy :rescore_owner, if: -> { only_one_role? }
+      after_create :rescore_owner, if: -> { only_one_relationship_for_role? }
+      after_destroy :rescore_owner, if: -> { no_relationships_for_role? }
     end
 
     def rescore_owner
@@ -20,8 +20,12 @@ module Scoreable
 
     private
 
-    def only_one_role?
+    def only_one_relationship_for_role?
       target_contact.passive_contact_relationships.where('role = ?', role).count == 1
+    end
+
+    def no_relationships_for_role?
+      target_contact.passive_contact_relationships.where('role = ?', role).count.zero?
     end
 
     def score_impacted?

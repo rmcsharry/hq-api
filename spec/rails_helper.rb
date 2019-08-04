@@ -91,7 +91,7 @@ RSpec.configure do |config|
     Contact.skip_callback(:commit, :after, :update_mandate_score, if: :owner_score_changed?)
     ComplianceDetail.skip_callback(:commit, :after, :rescore_contact)
     TaxDetail.skip_callback(:commit, :after, :rescore_contact)
-    Document.skip_callback(:commit, :after, :rescore_owner)
+    # Document.skip_callback(:commit, :after, :rescore_owner)
     BankAccount.skip_callback(:commit, :after, :rescore_owner)
     MandateMember.skip_callback(:commit, :after, :rescore_mandate)
   end

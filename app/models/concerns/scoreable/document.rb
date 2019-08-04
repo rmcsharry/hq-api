@@ -7,7 +7,8 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore_owner
+      after_save :rescore_owner, if: -> { only_one_document_for_category? }
+      after_destroy :rescore_owner, if: -> { no_documents_for_category? }
     end
 
     def rescore_owner
@@ -15,6 +16,16 @@ module Scoreable
 
       owner.calculate_score # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
       owner.save!
+    end
+
+    private
+
+    def only_one_document_for_category?
+      owner.documents.where('category = ?', category).count == 1
+    end
+
+    def no_documents_for_category?
+      owner.documents.where('category = ?', category).count.zero?
     end
 
     def score_impacted?

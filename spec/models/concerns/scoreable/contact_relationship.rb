@@ -20,7 +20,7 @@ RSpec.describe Scoreable::ContactRelationship do
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1698)
         end
 
-        it 'is not rescored when existing relationship is added again' do
+        it 'is not rescored when existing role is added again' do
           relationship_1.target_contact = subject
           subject.passive_contact_relationships << relationship_1
 
@@ -29,7 +29,7 @@ RSpec.describe Scoreable::ContactRelationship do
           subject.passive_contact_relationships << relationship_2
         end
 
-        it 'is not rescored when a non-rule relationship is added' do
+        it 'is not rescored when a non-rule role is added' do
           expect(subject).not_to receive(:calculate_score)
           relationship_3.target_contact = subject
           subject.passive_contact_relationships << relationship_3

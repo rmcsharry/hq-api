@@ -36,6 +36,7 @@ RSpec.describe Scoreable::Document, bullet: false do
     describe 'for contact_organization' do
       let!(:subject) { create(:contact_organization) }
       let!(:document) { build(:document, category: 'kyc') }
+      let!(:document_2) { build(:document, category: 'kyc') }
 
       context 'when rule: a related model property has a specific value (document category == kyc)' do
         it 'is correct when document is added' do
@@ -53,11 +54,21 @@ RSpec.describe Scoreable::Document, bullet: false do
           subject.calculate_score
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
           document.destroy
-          document.rescore_owner
+          # document.rescore_owner
 
           expect(subject.data_integrity_missing_fields).to include('kyc')
           expect(subject.data_integrity_missing_fields.length).to eq(21)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.0943)
+        end
+
+        it 'is not rescored when existing document category is added again' do
+          subject.documents << document
+          subject.calculate_score
+          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1887)
+
+          expect(subject).not_to receive(:calculate_score)
+          subject.documents << document_2
+          document_2.save!
         end
       end
     end
