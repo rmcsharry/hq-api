@@ -25,8 +25,9 @@
 
 require 'rails_helper'
 
-RSpec.describe ContactRelationship, type: :model, bullet: false do
+RSpec.describe ContactRelationship, type: :model do
   describe '#role' do
+    Bullet.enable = false
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }
     let(:another_child) { create :contact_person }
@@ -35,7 +36,6 @@ RSpec.describe ContactRelationship, type: :model, bullet: false do
     it { is_expected.to enumerize(:role) }
 
     it 'validates uniqueness per role and contact set' do
-      Bullet.enable = false
       first_parent_relationship = ContactRelationship.create!(
         source_contact: parent,
         target_contact: child,
@@ -56,8 +56,8 @@ RSpec.describe ContactRelationship, type: :model, bullet: false do
         role: :parent
       )
       expect(relationship_duplicate).not_to be_valid
-      Bullet.enable
     end
+    Bullet.enable = true
   end
 
   describe '#target_contact' do
