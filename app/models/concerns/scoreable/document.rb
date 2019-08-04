@@ -7,9 +7,10 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_save :rescore_owner, if: -> { only_one_document_for_category? }
-      after_destroy :rescore_owner, if: -> { no_documents_for_category? }
+      after_commit :rescore_owner, unless: -> { already_has_document_category? }
     end
+
+    private
 
     def rescore_owner
       return unless score_impacted? # no need to recalculate owner score if document does not match the score rule
@@ -18,14 +19,8 @@ module Scoreable
       owner.save!
     end
 
-    private
-
-    def only_one_document_for_category?
-      owner.documents.where('category = ?', category).count == 1
-    end
-
-    def no_documents_for_category?
-      owner.documents.where('category = ?', category).count.zero?
+    def already_has_document_category?
+      owner.documents.where('category = ?', category).count > 1
     end
 
     def score_impacted?

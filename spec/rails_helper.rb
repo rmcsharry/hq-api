@@ -84,15 +84,15 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
-    # In tests we don't want scores to be automatically recalculated on save (ie. cannot test moving scores!)
+    # In most tests we don't want scores to be automatically recalculated on save (ie. cannot test moving scores!)
+    BankAccount.skip_callback(:commit, :after, :rescore_owner)
+    ComplianceDetail.skip_callback(:commit, :after, :rescore_contact)
+    Contact.skip_callback(:commit, :after, :update_mandate_score, if: :owner_score_changed?)
     Contact::Person.skip_callback(:commit, :after, :calculate_score)
     Contact::Organization.skip_callback(:commit, :after, :calculate_score)
     Mandate.skip_callback(:commit, :after, :calculate_score)
-    Contact.skip_callback(:commit, :after, :update_mandate_score, if: :owner_score_changed?)
-    ComplianceDetail.skip_callback(:commit, :after, :rescore_contact)
-    TaxDetail.skip_callback(:commit, :after, :rescore_contact)
-    BankAccount.skip_callback(:commit, :after, :rescore_owner)
     MandateMember.skip_callback(:commit, :after, :rescore_mandate)
+    TaxDetail.skip_callback(:commit, :after, :rescore_contact)
   end
 
   config.around(:each) do |example|
