@@ -25,7 +25,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ContactRelationship, type: :model do
+RSpec.describe ContactRelationship, type: :model, bullet: false do
   describe '#role' do
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }
@@ -56,7 +56,7 @@ RSpec.describe ContactRelationship, type: :model do
         role: :parent
       )
       expect(relationship_duplicate).not_to be_valid
-      Bullet.enable = true
+      Bullet.enable
     end
   end
 
@@ -73,6 +73,7 @@ RSpec.describe ContactRelationship, type: :model do
   end
 
   describe 'indirect mandate relationships' do
+    Bullet.enable = false
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }
     let(:tax_advisor) { create :contact_person }
@@ -89,12 +90,11 @@ RSpec.describe ContactRelationship, type: :model do
     let!(:second_mm) { create :mandate_member, mandate: second_mandate, contact: tax_advisor, member_type: :bookkeeper }
 
     it 'returns contact_relationships to contacts who are owner of a mandate' do
-      Bullet.enable = false
       indirect_relationships = ContactRelationship.indirectly_associating_mandates_to_contact_with_id(parent.id)
 
       expect(indirect_relationships).to match_array([indirect_mandate_relationship])
-      Bullet.enable = true
     end
+    Bullet.enable = true
   end
 
   describe 'person to person relationships' do
