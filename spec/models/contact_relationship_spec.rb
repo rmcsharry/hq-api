@@ -25,7 +25,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ContactRelationship, type: :model, bullet: false do
+RSpec.describe ContactRelationship, type: :model do
   describe '#role' do
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }

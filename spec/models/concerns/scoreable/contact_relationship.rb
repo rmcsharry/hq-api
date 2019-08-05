@@ -4,6 +4,14 @@ require 'rails_helper'
 
 RSpec.describe Scoreable::ContactRelationship do
   describe '#rescore_owner' do
+    before(:all) do
+      ContactRelationship.set_callback(:commit, :after, :rescore_owner, unless: -> { already_has_role? })
+    end
+
+    after(:all) do
+      ContactRelationship.skip_callback(:commit, :after, :rescore_owner, unless: -> { already_has_role? })
+    end
+
     describe 'for contact_relationship' do
       let!(:subject) { create(:contact_organization) }
       let!(:relationship_1) { build(:contact_relationship, role: 'shareholder') }
@@ -14,6 +22,7 @@ RSpec.describe Scoreable::ContactRelationship do
         it 'is correct when relationship is added' do
           relationship_1.target_contact = subject
           subject.passive_contact_relationships << relationship_1
+          relationship_1.save!
 
           expect(subject.data_integrity_missing_fields).not_to include('shareholder')
           expect(subject.data_integrity_missing_fields.length).to eq(20)
