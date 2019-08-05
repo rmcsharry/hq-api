@@ -25,9 +25,8 @@
 
 require 'rails_helper'
 
-RSpec.describe ContactRelationship, type: :model do
+RSpec.describe ContactRelationship, type: :model, bullet: false do
   describe '#role' do
-    Bullet.enable = false
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }
     let(:another_child) { create :contact_person }
@@ -36,7 +35,6 @@ RSpec.describe ContactRelationship, type: :model do
     it { is_expected.to enumerize(:role) }
 
     it 'validates uniqueness per role and contact set' do
-      Bullet.enable = false
       first_parent_relationship = ContactRelationship.create!(
         source_contact: parent,
         target_contact: child,
@@ -58,7 +56,6 @@ RSpec.describe ContactRelationship, type: :model do
       )
       expect(relationship_duplicate).not_to be_valid
     end
-    Bullet.enable = true
   end
 
   describe '#target_contact' do
@@ -91,12 +88,10 @@ RSpec.describe ContactRelationship, type: :model do
     let!(:second_mm) { create :mandate_member, mandate: second_mandate, contact: tax_advisor, member_type: :bookkeeper }
 
     it 'returns contact_relationships to contacts who are owner of a mandate' do
-      Bullet.enable = false
       indirect_relationships = ContactRelationship.indirectly_associating_mandates_to_contact_with_id(parent.id)
 
       expect(indirect_relationships).to match_array([indirect_mandate_relationship])
     end
-    Bullet.enable = true
   end
 
   describe 'person to person relationships' do
