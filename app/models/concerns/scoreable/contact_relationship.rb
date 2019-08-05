@@ -20,11 +20,15 @@ module Scoreable
     end
 
     def already_has_role?
-      return true if target_contact.passive_contact_relationships.includes(:target_contact).where('role = ?', role).count > 1
+      return true if target_contact.passive_contact_relationships.where('role = ?', role).count > 1
+    end
+
+    def rule_does_not_apply?
+      target_contact.type != 'Contact::Organization'
     end
 
     def score_impacted?
-      return true if target_contact.type == 'Contact::Organization' || already_has_role?
+      return false if rule_does_not_apply? || already_has_role?
 
       # does the added role match the relationships rule for the contact?
       target_contact.class::SCORE_RULES.select { |r| r[:model_key] == 'passive_contact_relationships' }.each do |rule|

@@ -7,7 +7,7 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore_owner, unless: -> { already_has_document_category? }
+      after_commit :rescore_owner
     end
 
     private
@@ -23,8 +23,12 @@ module Scoreable
       owner.documents.where('category = ?', category).count > 1
     end
 
+    def rule_does_not_apply?
+      owner_type != 'Contact' && owner_type != 'Mandate'
+    end
+
     def score_impacted?
-      return false unless owner_type == 'Contact' || owner_type == 'Mandate'
+      return false if rule_does_not_apply? || already_has_document_category?
 
       # does the document match the documents rule for the owner?
       rule = owner.class::SCORE_RULES.select { |r| r[:model_key] == 'documents' }[0]
