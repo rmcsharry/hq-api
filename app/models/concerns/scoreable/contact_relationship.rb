@@ -7,7 +7,7 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      after_commit :rescore_owner, unless: -> { already_has_role? }
+      after_commit :rescore_owner
     end
 
     private
@@ -20,11 +20,11 @@ module Scoreable
     end
 
     def already_has_role?
-      return true if target_contact.passive_contact_relationships.where('role = ?', role).count > 1
+      return true if target_contact.passive_contact_relationships.includes(:target_contact).where('role = ?', role).count > 1
     end
 
     def score_impacted?
-      return false unless target_contact.type == 'Contact::Organization'
+      return true if target_contact.type == 'Contact::Organization' || already_has_role?
 
       # does the added role match the relationships rule for the contact?
       target_contact.class::SCORE_RULES.select { |r| r[:model_key] == 'passive_contact_relationships' }.each do |rule|
