@@ -71,7 +71,6 @@ RSpec.describe ContactRelationship, type: :model do
   end
 
   describe 'indirect mandate relationships' do
-    Bullet.enable = false
     let(:parent) { create :contact_person }
     let(:child) { create :contact_person }
     let(:tax_advisor) { create :contact_person }
