@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Score related objects (contct/mandate) when a tax detail changes
+  # Score related objects (contct/mandate) when a compliance detail changes
   module ComplianceDetail
     extend ActiveSupport::Concern
 

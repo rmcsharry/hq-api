@@ -48,8 +48,6 @@
 class Contact < ApplicationRecord
   include ExportableAttributes
   include ScoreableContact
-  # include Scoreable::TaxDetail
-  # include Scoreable::ComplianceDetail
   extend Enumerize
   strip_attributes only: %i[
     commercial_register_number commercial_register_office first_name last_name maiden_name nationality
