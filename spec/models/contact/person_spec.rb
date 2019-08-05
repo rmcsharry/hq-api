@@ -44,7 +44,6 @@
 #
 
 require 'rails_helper'
-require 'scoreable'
 
 RSpec.describe Contact::Person, type: :model do
   it { is_expected.to validate_presence_of(:first_name) }
