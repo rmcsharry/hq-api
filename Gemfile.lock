@@ -144,6 +144,8 @@ GEM
       activesupport (>= 3.0.0)
     coderay (1.1.2)
     colorize (0.8.1)
+    composite_primary_keys (11.2.0)
+      activerecord (~> 5.2.1)
     concurrent-ruby (1.1.5)
     connection_pool (2.2.2)
     crass (1.0.4)
@@ -470,6 +472,7 @@ DEPENDENCIES
   bullet (= 5.7.5)
   carmen
   colorize
+  composite_primary_keys
   database_cleaner
   devise
   devise-async

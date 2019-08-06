@@ -21,8 +21,14 @@
 
 # Defines the Mandate Groups Mandate (join-table)
 class MandateGroupsMandate < ApplicationRecord
-  has_many :mandate_groups, dependent: :nullify
-  has_many :mandates, dependent: :nullify
+  self.primary_keys = :mandate_group_id, :mandate_id
+
+  belongs_to :mandate_group
+  belongs_to :mandate
+
+  def id
+    mandate_id
+  end
 
   has_paper_trail(
     meta: {
