@@ -151,4 +151,28 @@ RSpec.describe MANDATE_GROUPS_ENDPOINT, type: :request do
       end
     end
   end
+
+  describe 'DELETE /v1/mandate-groups/<id>' do
+    subject { -> { delete("#{MANDATE_GROUPS_ENDPOINT}/#{mandate_group.id}", params: {}, headers: auth_headers) } }
+    let!(:user) { create :user, roles: %i[admin families_read families_destroy] }
+    let!(:mandate) { create :mandate, mandate_groups: [mandate_group] }
+
+    context 'with valid payload for family' do
+      let!(:mandate_group) { create(:mandate_group, group_type: 'family') }
+
+      it 'deletes the mandate group' do
+        is_expected.to change(MandateGroup, :count).by(-1)
+        expect(response).to have_http_status(204)
+      end
+    end
+
+    context 'with valid payload for organization' do
+      let!(:mandate_group) { create(:mandate_group, group_type: 'organization') }
+
+      it 'deletes the mandate group' do
+        is_expected.to change(MandateGroup, :count).by(-1)
+        expect(response).to have_http_status(204)
+      end
+    end
+  end
 end
