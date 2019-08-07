@@ -6,12 +6,8 @@ require 'devise/jwt/test_helpers'
 RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
   include ActiveJob::TestHelper
 
-  let(:random_user) { create(:user) }
-  let(:tax_detail) { create :tax_detail, de_tax_number: '21/815/08150' }
-  let(:contact_person) do
-    create(:contact_person, :with_mandate, mandate: mandate, user: random_user, tax_detail: tax_detail)
-  end
-  let!(:mandate) { create(:mandate) }
+  let(:primary_owner) { create(:contact_person) }
+  let!(:mandate) { create(:mandate, :with_owner, owner: primary_owner) }
   let!(:user) do
     create(
       :user,
@@ -24,7 +20,7 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
 
   describe 'GET /v1/investor-reports/:id/quarterly-report-document' do
     let!(:fund) { create(:fund) }
-    let!(:investor) { create(:investor, fund: fund, mandate: mandate, primary_owner: primary_owner) }
+    let!(:investor) { create(:investor, fund: fund, mandate: mandate) }
     let!(:fund_report) { create(:fund_report, fund: fund, investors: [investor]) }
     let!(:investor_report) { InvestorReport.find_by! investor: investor, fund_report: fund_report }
     let!(:document) do
@@ -60,8 +56,6 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
     end
 
     context 'with person as primary owner' do
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
-
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
         content = response_document.to_s
@@ -74,7 +68,7 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
     end
 
     context 'with organization as primary owner' do
-      let(:primary_owner) { create(:contact_organization, :with_mandate, mandate: mandate) }
+      let(:primary_owner) { create(:contact_organization) }
 
       it 'downloads the filled template' do
         expect(response).to have_http_status(201)
@@ -89,7 +83,7 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
 
     context 'with missing template' do
       let(:document) { nil }
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
+      let(:primary_owner) { create(:contact_person) }
 
       it 'returns `not_found` error code' do
         expect(response).to have_http_status(404)
@@ -110,11 +104,28 @@ RSpec.describe INVESTOR_REPORTS_ENDPOINT, type: :request do
         )
         doc
       end
-      let(:primary_owner) { create(:contact_person, :with_mandate, mandate: mandate) }
+      let(:primary_owner) { create(:contact_person) }
 
       it 'returns unmodified pdf document' do
         expected_document = File.open(Rails.root.join('spec', 'fixtures', 'pdfs', 'hqtrust_sample.pdf'))
         expect(Base64.encode64(expected_document.read)).to eq(Base64.encode64(response.body))
+      end
+    end
+
+    context 'with missing owner, contacts and addresses on mandate' do
+      let!(:mandate) { create(:mandate) }
+
+      it 'downloads the (only partially) filled template' do
+        expect(investor.primary_owner).to be_nil
+        expect(investor.primary_contact).to be_nil
+        expect(investor.secondary_contact).to be_nil
+        expect(investor.legal_address).to be_nil
+        expect(investor.contact_address).to be_nil
+
+        expect(response).to have_http_status(201)
+        content = response_document.to_s
+
+        expect(content).to include(fund.name)
       end
     end
   end

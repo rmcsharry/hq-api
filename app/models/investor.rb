@@ -4,42 +4,27 @@
 #
 # Table name: investors
 #
-#  aasm_state                           :string           not null
-#  amount_total                         :decimal(20, 2)
-#  bank_account_id                      :uuid
-#  capital_account_number               :string
-#  contact_address_id                   :uuid
-#  contact_salutation_primary_contact   :boolean
-#  contact_salutation_primary_owner     :boolean
-#  contact_salutation_secondary_contact :boolean
-#  created_at                           :datetime         not null
-#  fund_id                              :uuid
-#  id                                   :uuid             not null, primary key
-#  investment_date                      :datetime
-#  legal_address_id                     :uuid
-#  mandate_id                           :uuid
-#  primary_contact_id                   :uuid
-#  primary_owner_id                     :uuid
-#  secondary_contact_id                 :uuid
-#  updated_at                           :datetime         not null
+#  aasm_state             :string           not null
+#  amount_total           :decimal(20, 2)
+#  bank_account_id        :uuid
+#  capital_account_number :string
+#  created_at             :datetime         not null
+#  fund_id                :uuid
+#  id                     :uuid             not null, primary key
+#  investment_date        :datetime
+#  mandate_id             :uuid
+#  updated_at             :datetime         not null
 #
 # Indexes
 #
-#  index_investors_on_fund_id               (fund_id)
-#  index_investors_on_mandate_id            (mandate_id)
-#  index_investors_on_primary_contact_id    (primary_contact_id)
-#  index_investors_on_secondary_contact_id  (secondary_contact_id)
+#  index_investors_on_fund_id     (fund_id)
+#  index_investors_on_mandate_id  (mandate_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (bank_account_id => bank_accounts.id)
-#  fk_rails_...  (contact_address_id => addresses.id)
 #  fk_rails_...  (fund_id => funds.id)
-#  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
-#  fk_rails_...  (primary_contact_id => contacts.id)
-#  fk_rails_...  (primary_owner_id => contacts.id)
-#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 # Defines the Investor
@@ -51,24 +36,20 @@ class Investor < ApplicationRecord
 
   strip_attributes only: :capital_account_number, collapse_spaces: true
 
-  BELONG_TO_CONTACTS = 'must belong to contacts (primary owner or primary/secondary contact'
   BELONG_TO_MANDATE = 'must belong to mandate'
-  BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
 
   belongs_to :bank_account, autosave: true
-  belongs_to :contact_address, class_name: 'Address', autosave: true
   belongs_to :fund, inverse_of: :investors, autosave: true
-  belongs_to :legal_address, class_name: 'Address', autosave: true
   belongs_to :mandate, inverse_of: :investments, autosave: true
-  belongs_to :primary_owner, class_name: 'Contact', autosave: true
-  belongs_to :primary_contact, class_name: 'Contact::Person', optional: true, inverse_of: :primary_contact_investors
-  belongs_to(
-    :secondary_contact, class_name: 'Contact::Person', optional: true, inverse_of: :secondary_contact_investors
-  )
   has_many :investor_reports, dependent: :destroy
   has_many :fund_reports, -> { distinct }, through: :investor_reports
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :investor_cashflows, dependent: :nullify
+  has_one :contact_address, through: :mandate
+  has_one :legal_address, through: :mandate
+  has_one :primary_contact, through: :mandate
+  has_one :primary_owner, through: :mandate
+  has_one :secondary_contact, through: :mandate
   has_one :fund_subscription_agreement,
           -> { where(category: :fund_subscription_agreement) },
           class_name: 'Document::FundSubscriptionAgreement',
@@ -101,12 +82,20 @@ class Investor < ApplicationRecord
   validates :fund, presence: true
   validates :mandate, presence: true
   validates :amount_total, presence: true
-  validates :primary_owner, presence: true
   validate :attributes_in_signed_state
   validate :bank_account_belongs_to_mandate
-  validate :contact_address_belongs_to_contacts
-  validate :legal_address_belongs_to_primary_owner
-  validate :primary_owner_belongs_to_mandate
+
+  delegate(
+    :contact_address,
+    :contact_salutation_primary_contact,
+    :contact_salutation_primary_owner,
+    :contact_salutation_secondary_contact,
+    :legal_address,
+    :primary_contact,
+    :primary_owner,
+    :secondary_contact,
+    to: :mandate
+  )
 
   def amount_called
     investor_cashflows.sum(&:capital_call_total_amount)
@@ -187,25 +176,6 @@ class Investor < ApplicationRecord
 
   def bank_account_belongs_to_mandate
     errors.add(:bank_account, BELONG_TO_MANDATE) if bank_account.present? && bank_account.owner != mandate
-  end
-
-  def primary_owner_belongs_to_mandate
-    return if primary_owner.blank? || mandate.owners.map(&:contact).include?(primary_owner)
-
-    errors.add(:primary_owner, BELONG_TO_MANDATE)
-  end
-
-  def contact_address_belongs_to_contacts
-    return if contact_address.blank? ||
-              [primary_owner, primary_contact, secondary_contact].compact.include?(contact_address.owner)
-
-    errors.add(:contact_address, BELONG_TO_CONTACTS)
-  end
-
-  def legal_address_belongs_to_primary_owner
-    return if legal_address.blank? || legal_address.owner == primary_owner
-
-    errors.add(:legal_address, BELONG_TO_PRIMARY_OWNER)
   end
 
   def set_investment_date

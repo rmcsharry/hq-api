@@ -70,10 +70,10 @@ class Document
       fund_cashflow = investor_cashflow.fund_cashflow
       fund = investor.fund
       bank_account = fund.bank_accounts.first
-      primary_owner = investor.primary_owner.decorate
-      legal_address = primary_owner.legal_address&.decorate
+      primary_owner = investor.primary_owner&.decorate
+      legal_address = primary_owner&.legal_address&.decorate
       primary_address = investor.contact_address&.decorate
-      gender_text = primary_owner.gender_text
+      gender_text = primary_owner&.gender_text
       mandate = investor.mandate.decorate
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
@@ -111,10 +111,10 @@ class Document
           called_percentage: investor_cashflow.investor_called_percentage,
           confidential: mandate.humanize_confidential,
           contact_address: {
-            city: primary_address.city,
+            city: primary_address&.city,
             full_address: primary_address&.letter_address(addressees: investor.salutation_contacts),
-            postal_code: primary_address.postal_code,
-            street_and_number: primary_address.street_and_number
+            postal_code: primary_address&.postal_code,
+            street_and_number: primary_address&.street_and_number
           },
           formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
@@ -133,8 +133,8 @@ class Document
             primary_phone: primary_contact&.primary_phone
           },
           primary_owner: {
-            formal_salutation: primary_owner.formal_salutation(with_first_name: false),
-            full_name: primary_owner.name,
+            formal_salutation: primary_owner&.formal_salutation(with_first_name: false),
+            full_name: primary_owner&.name,
             gender: gender_text
           },
           secondary_consultant: {
@@ -194,12 +194,12 @@ class Document
       fund_report = fund_report.decorate
       investor = investor.decorate
       fund = investor.fund
-      primary_owner = investor.primary_owner.decorate
-      legal_address = primary_owner.legal_address&.decorate
+      primary_owner = investor.primary_owner&.decorate
+      legal_address = primary_owner&.legal_address&.decorate
       primary_address = investor.contact_address&.decorate
       current_date = format_date(date: Time.zone.now)
       description = Quill::Delta.new(fund_report.description, true).to_s
-      gender_text = primary_owner.gender_text
+      gender_text = primary_owner&.gender_text
       mandate = investor.mandate.decorate
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
@@ -225,10 +225,10 @@ class Document
           amount_total: investor.amount_total,
           confidential: mandate.humanize_confidential,
           contact_address: {
-            city: primary_address.city,
+            city: primary_address&.city,
             full_address: primary_address&.letter_address(addressees: investor.salutation_contacts),
-            postal_code: primary_address.postal_code,
-            street_and_number: primary_address.street_and_number
+            postal_code: primary_address&.postal_code,
+            street_and_number: primary_address&.street_and_number
           },
           formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
@@ -245,8 +245,8 @@ class Document
             primary_phone: primary_contact&.primary_phone
           },
           primary_owner: {
-            formal_salutation: primary_owner.formal_salutation(with_first_name: false),
-            full_name: primary_owner.name,
+            formal_salutation: primary_owner&.formal_salutation(with_first_name: false),
+            full_name: primary_owner&.name,
             gender: gender_text
           },
           secondary_consultant: {
@@ -270,14 +270,14 @@ class Document
     def self.fund_subscription_agreement_context(investor)
       investor = investor.decorate
       fund = investor.fund
-      primary_owner = investor.primary_owner.decorate
+      primary_owner = investor.primary_owner&.decorate
       bank_account = investor.bank_account
       primary_contact = investor.primary_contact&.decorate
       secondary_contact = investor.secondary_contact&.decorate
       current_date = format_date(date: Time.zone.now)
-      primary_owner_birth_date = primary_owner.date_of_birth ? format_date(date: primary_owner.date_of_birth) : '-'
-      legal_address = primary_owner.legal_address&.decorate
-      primary_fax = primary_owner.contact_details.find_by(type: 'ContactDetail::Fax', primary: true)&.value
+      primary_owner_birth_date = primary_owner&.date_of_birth ? format_date(date: primary_owner&.date_of_birth) : '-'
+      legal_address = primary_owner&.legal_address&.decorate
+      primary_fax = primary_owner&.contact_details&.find_by(type: 'ContactDetail::Fax', primary: true)&.value
       mandate = investor.mandate.decorate
       primary_consultant = mandate.primary_consultant&.decorate
       secondary_consultant = mandate.secondary_consultant&.decorate
@@ -301,7 +301,7 @@ class Document
           contact_address: {
             full_address: primary_address&.letter_address(addressees: investor.salutation_contacts)
           },
-          contact_phone: primary_owner.primary_phone&.value,
+          contact_phone: primary_owner&.primary_phone&.value,
           formal_salutation: investor.formal_salutation(with_first_name: false),
           legal_address: {
             addition: legal_address&.addition,
@@ -324,14 +324,14 @@ class Document
           },
           primary_owner: {
             birth_date: primary_owner_birth_date,
-            commercial_register_number: primary_owner.commercial_register_number,
-            commercial_register_office: primary_owner.commercial_register_office,
-            full_name: primary_owner.name,
-            nationality: primary_owner.nationality,
-            organization_type: primary_owner.organization_type,
-            place_of_birth: primary_owner.place_of_birth,
+            commercial_register_number: primary_owner&.commercial_register_number,
+            commercial_register_office: primary_owner&.commercial_register_office,
+            full_name: primary_owner&.name,
+            nationality: primary_owner&.nationality,
+            organization_type: primary_owner&.organization_type,
+            place_of_birth: primary_owner&.place_of_birth,
             primary_fax: primary_fax,
-            tax_numbers: primary_owner.tax_numbers
+            tax_numbers: primary_owner&.tax_numbers
           },
           secondary_consultant: {
             full_name: secondary_consultant&.name,

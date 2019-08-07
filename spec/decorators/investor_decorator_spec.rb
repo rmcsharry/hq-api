@@ -7,13 +7,21 @@ RSpec.describe InvestorDecorator do
     build(
       :investor,
       amount_total: 100_000,
-      primary_contact: primary_contact,
-      primary_owner: primary_owner,
-      secondary_contact: secondary_contact,
-      contact_salutation_primary_owner: contact_salutation_primary_owner,
-      contact_salutation_primary_contact: contact_salutation_primary_contact,
-      contact_salutation_secondary_contact: contact_salutation_secondary_contact
+      mandate: mandate
     ).decorate
+  end
+
+  let(:mandate) do
+    create(
+      :mandate,
+      :with_owner,
+      contact_salutation_primary_contact: contact_salutation_primary_contact,
+      contact_salutation_primary_owner: contact_salutation_primary_owner,
+      contact_salutation_secondary_contact: contact_salutation_secondary_contact,
+      owner: primary_owner,
+      primary_contact: primary_contact,
+      secondary_contact: secondary_contact
+    )
   end
   let!(:primary_owner) do
     create(:contact_person, first_name: 'Max', gender: :male, last_name: 'Mustermann', professional_title: 'dr')

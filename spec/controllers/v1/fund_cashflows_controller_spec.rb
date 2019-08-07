@@ -111,8 +111,8 @@ RSpec.describe FUND_CASHFLOWS_ENDPOINT, type: :request do
       let(:fund) { create(:fund, name: 'Fund') }
       let(:contact_person1) { create(:contact_person, first_name: 'First', last_name: 'Last') }
       let(:contact_person2) { create(:contact_person, first_name: 'Fore', last_name: 'Family') }
-      let(:mandate1) { create(:mandate, :with_owner, owner: contact_person1) }
-      let(:mandate2) { create(:mandate, :with_owner, owner: contact_person2) }
+      let(:mandate1) { create(:mandate, :with_multiple_owners, owner: contact_person1) }
+      let(:mandate2) { create(:mandate, :with_multiple_owners, owner: contact_person2) }
       let(:investor1) { create(:investor, :signed, fund: fund, mandate: mandate1) }
       let(:investor2) { create(:investor, :signed, fund: fund, mandate: mandate2) }
       let!(:fund_cashflow) { create(:fund_cashflow, fund: fund, number: 1, valuta_date: Date.new(2019, 3, 1)) }

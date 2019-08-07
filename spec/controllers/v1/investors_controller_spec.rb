@@ -22,7 +22,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
   let(:auth_headers) { Devise::JWT::TestHelpers.auth_headers(headers, user) }
 
   describe 'GET /v1/investors' do
-    let!(:investors) { create_list(:investor, 4, mandate: mandate, primary_owner: contact_person) }
+    let!(:investors) { create_list(:investor, 4, mandate: mandate) }
 
     context 'sort by joined associations' do
       subject do
@@ -69,10 +69,7 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
         create(
           :investor,
           fund: fund,
-          mandate: mandate.reload,
-          primary_contact: primary_contact.reload,
-          primary_owner: contact_person.reload,
-          secondary_contact: secondary_contact.reload
+          mandate: mandate.reload
         )
       end
       let!(:document) do
@@ -134,6 +131,28 @@ RSpec.describe INVESTORS_ENDPOINT, type: :request do
 
         it 'receives a 403' do
           expect(response).to have_http_status(403)
+        end
+      end
+
+      context 'with missing owner, contacts and addresses on mandate' do
+        let(:document_name) { 'Zeichnungsschein_Vorlage.docx' }
+
+        let!(:mandate) { create(:mandate) }
+
+        it 'downloads the (only partially) filled template' do
+          expect(investor.primary_owner).to be_nil
+          expect(investor.primary_contact).to be_nil
+          expect(investor.secondary_contact).to be_nil
+          expect(investor.legal_address).to be_nil
+          expect(investor.contact_address).to be_nil
+
+          expect(response).to have_http_status(201)
+          content = @response_document.to_s
+
+          expect(content).to include(fund.name)
+
+          # Check that there are no un-replaced templating tokens
+          expect(content).not_to match(/\{[a-z_\.]+\}/)
         end
       end
     end
