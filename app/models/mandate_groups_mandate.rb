@@ -4,8 +4,8 @@
 #
 # Table name: mandate_groups_mandates
 #
-#  mandate_group_id :uuid
-#  mandate_id       :uuid
+#  mandate_group_id :uuid             primary key
+#  mandate_id       :uuid             primary key
 #
 # Indexes
 #

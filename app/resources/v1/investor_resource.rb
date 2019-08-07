@@ -53,6 +53,14 @@ module V1
         .order("mandates.owner_name #{direction}")
     }
 
+    sort :"fund.state", apply: lambda { |records, direction, _context|
+      records.joins(:fund).order("funds.aasm_state #{direction}")
+    }
+
+    sort :"fund.name", apply: lambda { |records, direction, _context|
+      records.joins(:fund).order("funds.name #{direction}")
+    }
+
     class << self
       def updatable_fields(context)
         super(context) - %i[

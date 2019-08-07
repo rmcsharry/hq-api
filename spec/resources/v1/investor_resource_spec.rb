@@ -38,4 +38,8 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to filter :fund_id }
   it { is_expected.to filter :mandate_id }
   it { is_expected.to filter :fund_report_id }
+
+  it { is_expected.to have_sortable_field(:"fund.name") }
+  it { is_expected.to have_sortable_field(:"fund.state") }
+  it { is_expected.to have_sortable_field(:"mandate.owner_name") }
 end
