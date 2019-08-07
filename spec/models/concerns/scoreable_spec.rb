@@ -155,19 +155,28 @@ RSpec.describe Scoreable, bullet: false do
       end
 
       context 'when all rules apply' do
+        let(:primary_owner) { build(:contact_person) }
         let!(:subject) do
           create(
             :mandate,
-            :with_owner,
             :with_bank_account,
-            :with_scoreable_data
+            :with_scoreable_data,
+            :with_owner,
+            owner: primary_owner,
+            primary_owner: primary_owner
           )
         end
 
         it 'scores maximum' do
-          subject.documents << build(:document, category: 'contract_hq')
-          subject.activities << build(:activity_note)
-          subject.mandate_members << create(:mandate_member, mandate: subject, contact: build(:contact_person))
+          subject.documents << create(:document, category: 'contract_hq')
+          subject.activities << create(:activity_note)
+          subject.mandate_members <<
+            [
+              create(:mandate_member, mandate: subject, member_type: :primary_consultant),
+              create(:mandate_member, mandate: subject, member_type: :secondary_consultant),
+              create(:mandate_member, mandate: subject, member_type: :assistant),
+              create(:mandate_member, mandate: subject, member_type: :bookkeeper)
+            ]
           subject.reload
           subject.calculate_score
 
