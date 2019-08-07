@@ -4,38 +4,56 @@
 #
 # Table name: mandates
 #
-#  aasm_state                       :string
-#  category                         :string
-#  comment                          :text
-#  confidential                     :boolean          default(FALSE), not null
-#  created_at                       :datetime         not null
-#  current_state_transition_id      :uuid
-#  datev_creditor_id                :string
-#  datev_debitor_id                 :string
-#  default_currency                 :string
-#  id                               :uuid             not null, primary key
-#  import_id                        :integer
-#  mandate_number                   :string
-#  previous_state_transition_id     :uuid
-#  prospect_assets_under_management :decimal(20, 10)
-#  prospect_fees_fixed_amount       :decimal(20, 10)
-#  prospect_fees_min_amount         :decimal(20, 10)
-#  prospect_fees_percentage         :decimal(20, 10)
-#  psplus_id                        :string
-#  psplus_pe_id                     :string
-#  updated_at                       :datetime         not null
-#  valid_from                       :date
-#  valid_to                         :date
+#  aasm_state                           :string
+#  category                             :string
+#  comment                              :text
+#  confidential                         :boolean          default(FALSE), not null
+#  contact_address_id                   :uuid
+#  contact_salutation_primary_contact   :boolean
+#  contact_salutation_primary_owner     :boolean
+#  contact_salutation_secondary_contact :boolean
+#  created_at                           :datetime         not null
+#  current_state_transition_id          :uuid
+#  datev_creditor_id                    :string
+#  datev_debitor_id                     :string
+#  default_currency                     :string
+#  id                                   :uuid             not null, primary key
+#  import_id                            :integer
+#  legal_address_id                     :uuid
+#  mandate_number                       :string
+#  previous_state_transition_id         :uuid
+#  primary_contact_id                   :uuid
+#  primary_owner_id                     :uuid
+#  prospect_assets_under_management     :decimal(20, 10)
+#  prospect_fees_fixed_amount           :decimal(20, 10)
+#  prospect_fees_min_amount             :decimal(20, 10)
+#  prospect_fees_percentage             :decimal(20, 10)
+#  psplus_id                            :string
+#  psplus_pe_id                         :string
+#  secondary_contact_id                 :uuid
+#  updated_at                           :datetime         not null
+#  valid_from                           :date
+#  valid_to                             :date
 #
 # Indexes
 #
+#  index_mandates_on_contact_address_id            (contact_address_id)
 #  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_legal_address_id              (legal_address_id)
 #  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
+#  index_mandates_on_primary_contact_id            (primary_contact_id)
+#  index_mandates_on_primary_owner_id              (primary_owner_id)
+#  index_mandates_on_secondary_contact_id          (secondary_contact_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (contact_address_id => addresses.id)
 #  fk_rails_...  (current_state_transition_id => state_transitions.id)
+#  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (previous_state_transition_id => state_transitions.id)
+#  fk_rails_...  (primary_contact_id => contacts.id)
+#  fk_rails_...  (primary_owner_id => contacts.id)
+#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 require 'rails_helper'
@@ -56,6 +74,12 @@ RSpec.describe Mandate, type: :model do
   it { is_expected.to respond_to(:prospect_fees_fixed_amount) }
   it { is_expected.to respond_to(:prospect_fees_min_amount) }
   it { is_expected.to respond_to(:prospect_fees_percentage) }
+
+  it { is_expected.to belong_to(:contact_address).optional }
+  it { is_expected.to belong_to(:legal_address).optional }
+  it { is_expected.to belong_to(:primary_owner).optional }
+  it { is_expected.to belong_to(:primary_contact).optional }
+  it { is_expected.to belong_to(:secondary_contact).optional }
 
   describe 'creation of a mandate' do
     let(:initial_state) { Mandate.aasm.initial_state }
@@ -547,6 +571,131 @@ RSpec.describe Mandate, type: :model do
     describe '#current_state_total_tasks_count' do
       it 'returns number of tasks of the current state' do
         expect(mandate.current_state_total_tasks_count).to eq(2)
+      end
+    end
+  end
+
+  describe '#primary_owner' do
+    let(:primary_owner) { build(:contact_person) }
+
+    context 'is owner of mandate' do
+      subject { build(:mandate, :with_owner, owner: primary_owner, primary_owner: primary_owner) }
+
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is not owner of mandate' do
+      subject { build(:mandate, :with_owner, primary_owner: primary_owner) }
+
+      it 'is invalid' do
+        expect(subject).to be_invalid
+      end
+    end
+  end
+
+  describe '#primary_contact' do
+    subject { build(:mandate, primary_contact: contact) }
+
+    context 'is a person' do
+      let(:contact) { build(:contact_person) }
+
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is an organization' do
+      let(:contact) { build(:contact_organization) }
+
+      it 'is invalid' do
+        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
+      end
+    end
+  end
+
+  describe '#secondary_contact' do
+    subject { build(:mandate, secondary_contact: contact) }
+
+    context 'is a person' do
+      let(:contact) { build(:contact_person) }
+
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is an organization' do
+      let(:contact) { build(:contact_organization) }
+
+      it 'is invalid' do
+        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
+      end
+    end
+  end
+
+  describe '#contact_address' do
+    subject { build(:mandate, :with_owner, owner: primary_owner, contact_address: address) }
+
+    let(:primary_owner) { build(:contact_person) }
+
+    context 'is owned by primary owner' do
+      let(:address) { build(:address, owner: primary_owner) }
+
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is owned by primary contact' do
+      let(:primary_contact) { build(:contact_person) }
+      let(:address) { build(:address, owner: primary_contact) }
+
+      it 'is valid' do
+        subject.primary_contact = primary_contact
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is owned by secondary contact' do
+      let(:secondary_contact) { build(:contact_person) }
+      let(:address) { build(:address, owner: secondary_contact) }
+
+      it 'is valid' do
+        subject.secondary_contact = secondary_contact
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is not owned by primary owner or primary/secondary contact' do
+      let(:address) { build(:address) }
+
+      it 'is invalid' do
+        expect(subject).to be_invalid
+      end
+    end
+  end
+
+  describe '#legal_address' do
+    subject { build(:mandate, :with_owner, owner: primary_owner, legal_address: address) }
+
+    let(:primary_owner) { build(:contact_person) }
+    let(:legal_address) { build(:address, owner: primary_owner) }
+
+    context 'is owned by primary owner' do
+      let(:address) { legal_address }
+
+      it 'is valid' do
+        expect(subject).to be_valid
+      end
+    end
+
+    context 'is not owned by primary owner' do
+      let(:address) { build(:address) }
+
+      it 'is invalid' do
+        expect(subject).to be_invalid
       end
     end
   end

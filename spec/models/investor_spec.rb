@@ -4,42 +4,27 @@
 #
 # Table name: investors
 #
-#  aasm_state                           :string           not null
-#  amount_total                         :decimal(20, 2)
-#  bank_account_id                      :uuid
-#  capital_account_number               :string
-#  contact_address_id                   :uuid
-#  contact_salutation_primary_contact   :boolean
-#  contact_salutation_primary_owner     :boolean
-#  contact_salutation_secondary_contact :boolean
-#  created_at                           :datetime         not null
-#  fund_id                              :uuid
-#  id                                   :uuid             not null, primary key
-#  investment_date                      :datetime
-#  legal_address_id                     :uuid
-#  mandate_id                           :uuid
-#  primary_contact_id                   :uuid
-#  primary_owner_id                     :uuid
-#  secondary_contact_id                 :uuid
-#  updated_at                           :datetime         not null
+#  aasm_state             :string           not null
+#  amount_total           :decimal(20, 2)
+#  bank_account_id        :uuid
+#  capital_account_number :string
+#  created_at             :datetime         not null
+#  fund_id                :uuid
+#  id                     :uuid             not null, primary key
+#  investment_date        :datetime
+#  mandate_id             :uuid
+#  updated_at             :datetime         not null
 #
 # Indexes
 #
-#  index_investors_on_fund_id               (fund_id)
-#  index_investors_on_mandate_id            (mandate_id)
-#  index_investors_on_primary_contact_id    (primary_contact_id)
-#  index_investors_on_secondary_contact_id  (secondary_contact_id)
+#  index_investors_on_fund_id     (fund_id)
+#  index_investors_on_mandate_id  (mandate_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (bank_account_id => bank_accounts.id)
-#  fk_rails_...  (contact_address_id => addresses.id)
 #  fk_rails_...  (fund_id => funds.id)
-#  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (mandate_id => mandates.id)
-#  fk_rails_...  (primary_contact_id => contacts.id)
-#  fk_rails_...  (primary_owner_id => contacts.id)
-#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 require 'rails_helper'
@@ -49,22 +34,28 @@ RSpec.describe Investor, type: :model do
 
   it { is_expected.to validate_presence_of(:amount_total) }
   it { is_expected.to validate_presence_of(:bank_account) }
-  it { is_expected.to validate_presence_of(:contact_address) }
   it { is_expected.to validate_presence_of(:fund) }
-  it { is_expected.to validate_presence_of(:legal_address) }
   it { is_expected.to validate_presence_of(:mandate) }
-  it { is_expected.to validate_presence_of(:primary_owner) }
 
   it { is_expected.to belong_to(:bank_account) }
-  it { is_expected.to belong_to(:contact_address) }
   it { is_expected.to belong_to(:fund) }
-  it { is_expected.to belong_to(:legal_address) }
   it { is_expected.to belong_to(:mandate) }
-  it { is_expected.to belong_to(:primary_owner) }
   it { is_expected.to have_many(:documents) }
+  it { is_expected.to have_one(:contact_address) }
   it { is_expected.to have_one(:fund_subscription_agreement) }
-  it { is_expected.to belong_to(:primary_contact).optional }
-  it { is_expected.to belong_to(:secondary_contact).optional }
+  it { is_expected.to have_one(:legal_address) }
+  it { is_expected.to have_one(:primary_contact) }
+  it { is_expected.to have_one(:primary_owner) }
+  it { is_expected.to have_one(:secondary_contact) }
+
+  it { is_expected.to respond_to(:contact_address) }
+  it { is_expected.to respond_to(:contact_salutation_primary_contact) }
+  it { is_expected.to respond_to(:contact_salutation_primary_owner) }
+  it { is_expected.to respond_to(:contact_salutation_secondary_contact) }
+  it { is_expected.to respond_to(:legal_address) }
+  it { is_expected.to respond_to(:primary_contact) }
+  it { is_expected.to respond_to(:primary_owner) }
+  it { is_expected.to respond_to(:secondary_contact) }
 
   describe '#sign' do
     let(:investor) { create :investor }
@@ -352,136 +343,6 @@ RSpec.describe Investor, type: :model do
 
     context 'does not belong to mandate' do
       let(:bank_account) { build(:bank_account) }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-      end
-    end
-  end
-
-  describe '#primary_owner' do
-    subject { build(:investor, mandate: mandate, primary_owner: contact) }
-
-    let(:mandate) { build(:mandate) }
-    let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-
-    context 'is owner of mandate' do
-      let(:contact) { primary_owner }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not owner of mandate' do
-      let(:contact) { build(:contact_person) }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-      end
-    end
-  end
-
-  describe '#primary_contact' do
-    subject { build(:investor, primary_contact: contact) }
-
-    context 'is a person' do
-      let(:contact) { build(:contact_person) }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is an organization' do
-      let(:contact) { build(:contact_organization) }
-
-      it 'is invalid' do
-        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
-      end
-    end
-  end
-
-  describe '#secondary_contact' do
-    subject { build(:investor, secondary_contact: contact) }
-
-    context 'is a person' do
-      let(:contact) { build(:contact_person) }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is an organization' do
-      let(:contact) { build(:contact_organization) }
-
-      it 'is invalid' do
-        expect { subject.valid? }.to raise_error(ActiveRecord::AssociationTypeMismatch)
-      end
-    end
-  end
-
-  describe '#contact_address' do
-    subject { build(:investor, mandate: mandate, primary_owner: primary_owner, contact_address: address) }
-
-    let(:mandate) { build(:mandate) }
-    let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-
-    context 'is owned by primary owner' do
-      let(:address) { build(:address, owner: primary_owner) }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is owned by primary contact' do
-      let(:primary_contact) { build(:contact_person, :with_mandate, mandate: mandate) }
-      let(:address) { build(:address, owner: primary_contact) }
-
-      it 'is valid' do
-        subject.primary_contact = primary_contact
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is owned by secondary contact' do
-      let(:secondary_contact) { build(:contact_person, :with_mandate, mandate: mandate) }
-      let(:address) { build(:address, owner: secondary_contact) }
-
-      it 'is valid' do
-        subject.secondary_contact = secondary_contact
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not owned by primary owner or primary/secondary contact' do
-      let(:address) { build(:address) }
-
-      it 'is invalid' do
-        expect(subject).to be_invalid
-      end
-    end
-  end
-
-  describe '#legal_address' do
-    subject { build(:investor, mandate: mandate, primary_owner: primary_owner, legal_address: address) }
-
-    let(:mandate) { build(:mandate) }
-    let(:primary_owner) { build(:contact_person, :with_mandate, mandate: mandate) }
-    let(:legal_address) { build(:address, owner: primary_owner) }
-
-    context 'is owned by primary owner' do
-      let(:address) { legal_address }
-
-      it 'is valid' do
-        expect(subject).to be_valid
-      end
-    end
-
-    context 'is not owned by primary owner' do
-      let(:address) { build(:address) }
 
       it 'is invalid' do
         expect(subject).to be_invalid

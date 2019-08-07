@@ -25,7 +25,7 @@ module V1
 
     def download_documents(regenerate: false)
       fund_cashflow = FundCashflow
-                      .includes(investor_cashflows: { investor: %i[contact_address mandate], fund_cashflow: :fund })
+                      .includes(investor_cashflows: { investor: [mandate: :contact_address], fund_cashflow: :fund })
                       .find(params.require(:id))
       authorize fund_cashflow, :show?
 

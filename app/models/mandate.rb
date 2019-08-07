@@ -4,38 +4,56 @@
 #
 # Table name: mandates
 #
-#  aasm_state                       :string
-#  category                         :string
-#  comment                          :text
-#  confidential                     :boolean          default(FALSE), not null
-#  created_at                       :datetime         not null
-#  current_state_transition_id      :uuid
-#  datev_creditor_id                :string
-#  datev_debitor_id                 :string
-#  default_currency                 :string
-#  id                               :uuid             not null, primary key
-#  import_id                        :integer
-#  mandate_number                   :string
-#  previous_state_transition_id     :uuid
-#  prospect_assets_under_management :decimal(20, 10)
-#  prospect_fees_fixed_amount       :decimal(20, 10)
-#  prospect_fees_min_amount         :decimal(20, 10)
-#  prospect_fees_percentage         :decimal(20, 10)
-#  psplus_id                        :string
-#  psplus_pe_id                     :string
-#  updated_at                       :datetime         not null
-#  valid_from                       :date
-#  valid_to                         :date
+#  aasm_state                           :string
+#  category                             :string
+#  comment                              :text
+#  confidential                         :boolean          default(FALSE), not null
+#  contact_address_id                   :uuid
+#  contact_salutation_primary_contact   :boolean
+#  contact_salutation_primary_owner     :boolean
+#  contact_salutation_secondary_contact :boolean
+#  created_at                           :datetime         not null
+#  current_state_transition_id          :uuid
+#  datev_creditor_id                    :string
+#  datev_debitor_id                     :string
+#  default_currency                     :string
+#  id                                   :uuid             not null, primary key
+#  import_id                            :integer
+#  legal_address_id                     :uuid
+#  mandate_number                       :string
+#  previous_state_transition_id         :uuid
+#  primary_contact_id                   :uuid
+#  primary_owner_id                     :uuid
+#  prospect_assets_under_management     :decimal(20, 10)
+#  prospect_fees_fixed_amount           :decimal(20, 10)
+#  prospect_fees_min_amount             :decimal(20, 10)
+#  prospect_fees_percentage             :decimal(20, 10)
+#  psplus_id                            :string
+#  psplus_pe_id                         :string
+#  secondary_contact_id                 :uuid
+#  updated_at                           :datetime         not null
+#  valid_from                           :date
+#  valid_to                             :date
 #
 # Indexes
 #
+#  index_mandates_on_contact_address_id            (contact_address_id)
 #  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_legal_address_id              (legal_address_id)
 #  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
+#  index_mandates_on_primary_contact_id            (primary_contact_id)
+#  index_mandates_on_primary_owner_id              (primary_owner_id)
+#  index_mandates_on_secondary_contact_id          (secondary_contact_id)
 #
 # Foreign Keys
 #
+#  fk_rails_...  (contact_address_id => addresses.id)
 #  fk_rails_...  (current_state_transition_id => state_transitions.id)
+#  fk_rails_...  (legal_address_id => addresses.id)
 #  fk_rails_...  (previous_state_transition_id => state_transitions.id)
+#  fk_rails_...  (primary_contact_id => contacts.id)
+#  fk_rails_...  (primary_owner_id => contacts.id)
+#  fk_rails_...  (secondary_contact_id => contacts.id)
 #
 
 # Defines the Mandate model
@@ -55,20 +73,18 @@ class Mandate < ApplicationRecord
     alternative_investments institutional reporting other
   ].freeze
 
-  # rubocop:disable Rails/InverseOf
-  has_one :assistant_mandate_member,
-          -> { where(member_type: :assistant) },
-          class_name: 'MandateMember'
-  has_one :bookkeeper_mandate_member,
-          -> { where(member_type: :bookkeeper) },
-          class_name: 'MandateMember'
-  has_one :primary_consultant_mandate_member,
-          -> { where(member_type: :primary_consultant) },
-          class_name: 'MandateMember'
-  has_one :secondary_consultant_mandate_member,
-          -> { where(member_type: :secondary_consultant) },
-          class_name: 'MandateMember'
+  BELONG_TO_CONTACTS = 'must belong to contacts (primary owner or primary/secondary contact'
+  BELONG_TO_MANDATE = 'must belong to mandate'
+  BELONG_TO_PRIMARY_OWNER = 'must belong to primary owner'
 
+  belongs_to :contact_address, class_name: 'Address', autosave: true, optional: true
+  belongs_to :legal_address, class_name: 'Address', autosave: true, optional: true
+  belongs_to :primary_owner, class_name: 'Contact', autosave: true, optional: true, inverse_of: :primary_owner_mandates
+  belongs_to :primary_contact, class_name: 'Contact::Person', optional: true, inverse_of: :primary_contact_mandates
+  belongs_to :secondary_contact,
+             class_name: 'Contact::Person',
+             optional: true,
+             inverse_of: :secondary_contact_mandates
   belongs_to :current_state_transition,
              class_name: 'StateTransition',
              optional: true,
@@ -77,12 +93,22 @@ class Mandate < ApplicationRecord
              class_name: 'StateTransition',
              optional: true,
              autosave: true
-  # rubocop:enable Rails/InverseOf
+
+  # rubocop:disable Rails/InverseOf
+  has_one :assistant_mandate_member, -> { where(member_type: :assistant) }, class_name: 'MandateMember'
+  has_one :bookkeeper_mandate_member, -> { where(member_type: :bookkeeper) }, class_name: 'MandateMember'
+  has_one :primary_consultant_mandate_member,
+          -> { where(member_type: :primary_consultant) },
+          class_name: 'MandateMember'
+  has_one :secondary_consultant_mandate_member,
+          -> { where(member_type: :secondary_consultant) },
+          class_name: 'MandateMember'
 
   has_one :assistant, through: :assistant_mandate_member, source: :contact
   has_one :bookkeeper, through: :bookkeeper_mandate_member, source: :contact
   has_one :primary_consultant, through: :primary_consultant_mandate_member, source: :contact
   has_one :secondary_consultant, through: :secondary_consultant_mandate_member, source: :contact
+  # rubocop:enable Rails/InverseOf
 
   has_many :bank_accounts, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
@@ -225,14 +251,17 @@ class Mandate < ApplicationRecord
       .where('mm.member_type': %i[assistant bookkeeper primary_consultant secondary_consultant])
   }
 
+  validate :contact_address_belongs_to_contacts
+  validate :legal_address_belongs_to_primary_owner
+  validate :presence_of_current_state_transition, if: :previous_state_transition?
+  validate :presence_of_primary_consultant, if: :client?
+  validate :primary_owner_belongs_to_mandate
+  validate :valid_to_greater_or_equal_valid_from
   validates :category, presence: true
+  validates :default_currency, presence: true, if: :default_currency_required?
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
   validates :psplus_pe_id, length: { maximum: 15 }
-  validates :default_currency, presence: true, if: :default_currency_required?
-  validate :valid_to_greater_or_equal_valid_from
-  validate :presence_of_primary_consultant, if: :client?
-  validate :presence_of_current_state_transition, if: :previous_state_transition?
 
   enumerize :category, in: CATEGORIES, scope: true
   enumerize :default_currency, in: CURRENCIES
@@ -304,6 +333,25 @@ class Mandate < ApplicationRecord
     prospect_assets_under_management.present? ||
       prospect_fees_fixed_amount.present? ||
       prospect_fees_min_amount.present?
+  end
+
+  def contact_address_belongs_to_contacts
+    return if contact_address.blank? ||
+              [primary_owner, primary_contact, secondary_contact].compact.include?(contact_address.owner)
+
+    errors.add(:contact_address, BELONG_TO_CONTACTS)
+  end
+
+  def legal_address_belongs_to_primary_owner
+    return if legal_address.blank? || legal_address.owner == primary_owner
+
+    errors.add(:legal_address, BELONG_TO_PRIMARY_OWNER)
+  end
+
+  def primary_owner_belongs_to_mandate
+    return if primary_owner.blank? || owners.map(&:contact).include?(primary_owner)
+
+    errors.add(:primary_owner, BELONG_TO_MANDATE)
   end
 end
 # rubocop:enable Metrics/ClassLength

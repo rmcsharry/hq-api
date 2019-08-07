@@ -25,6 +25,9 @@ RSpec.describe V1::MandateResource, type: :resource do
   it { is_expected.to have_attribute :psplus_pe_id }
   it { is_expected.to have_attribute :state }
   it { is_expected.to have_attribute :valid_from }
+  it { is_expected.to have_attribute :contact_salutation_primary_owner }
+  it { is_expected.to have_attribute :contact_salutation_primary_contact }
+  it { is_expected.to have_attribute :contact_salutation_secondary_contact }
   it { is_expected.to have_attribute :valid_to }
 
   it { is_expected.to have_many(:bank_accounts) }
@@ -38,10 +41,15 @@ RSpec.describe V1::MandateResource, type: :resource do
 
   it { is_expected.to have_one(:assistant).with_class_name('Contact') }
   it { is_expected.to have_one(:bookkeeper).with_class_name('Contact') }
+  it { is_expected.to have_one(:contact_address) }
   it { is_expected.to have_one(:current_state_transition).with_class_name('StateTransition') }
+  it { is_expected.to have_one(:legal_address) }
   it { is_expected.to have_one(:previous_state_transition).with_class_name('StateTransition') }
   it { is_expected.to have_one(:primary_consultant).with_class_name('Contact') }
+  it { is_expected.to have_one(:primary_contact).with_class_name('Contact') }
+  it { is_expected.to have_one(:primary_owner) }
   it { is_expected.to have_one(:secondary_consultant).with_class_name('Contact') }
+  it { is_expected.to have_one(:secondary_contact).with_class_name('Contact') }
 
   it { is_expected.to filter(:"assistant.name") }
   it { is_expected.to filter(:"bookkeeper.name") }

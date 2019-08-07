@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_15_160315) do
+ActiveRecord::Schema.define(version: 2019_08_02_153944) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -275,25 +275,15 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
   create_table "investors", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "fund_id"
     t.uuid "mandate_id"
-    t.uuid "legal_address_id"
-    t.uuid "contact_address_id"
     t.uuid "bank_account_id"
-    t.uuid "primary_owner_id"
     t.string "aasm_state", null: false
     t.datetime "investment_date"
     t.decimal "amount_total", precision: 20, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.uuid "primary_contact_id"
-    t.uuid "secondary_contact_id"
     t.string "capital_account_number"
-    t.boolean "contact_salutation_primary_owner"
-    t.boolean "contact_salutation_primary_contact"
-    t.boolean "contact_salutation_secondary_contact"
     t.index ["fund_id"], name: "index_investors_on_fund_id"
     t.index ["mandate_id"], name: "index_investors_on_mandate_id"
-    t.index ["primary_contact_id"], name: "index_investors_on_primary_contact_id"
-    t.index ["secondary_contact_id"], name: "index_investors_on_secondary_contact_id"
   end
 
   create_table "list_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -374,8 +364,21 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
     t.string "psplus_pe_id"
     t.uuid "previous_state_transition_id"
     t.uuid "current_state_transition_id"
+    t.uuid "contact_address_id"
+    t.uuid "legal_address_id"
+    t.uuid "primary_contact_id"
+    t.uuid "primary_owner_id"
+    t.uuid "secondary_contact_id"
+    t.boolean "contact_salutation_primary_contact"
+    t.boolean "contact_salutation_primary_owner"
+    t.boolean "contact_salutation_secondary_contact"
+    t.index ["contact_address_id"], name: "index_mandates_on_contact_address_id"
     t.index ["current_state_transition_id"], name: "index_mandates_on_current_state_transition_id"
+    t.index ["legal_address_id"], name: "index_mandates_on_legal_address_id"
     t.index ["previous_state_transition_id"], name: "index_mandates_on_previous_state_transition_id"
+    t.index ["primary_contact_id"], name: "index_mandates_on_primary_contact_id"
+    t.index ["primary_owner_id"], name: "index_mandates_on_primary_owner_id"
+    t.index ["secondary_contact_id"], name: "index_mandates_on_secondary_contact_id"
   end
 
   create_table "newsletter_subscribers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -564,12 +567,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
   add_foreign_key "investor_cashflows", "investors"
   add_foreign_key "investor_reports", "fund_reports"
   add_foreign_key "investor_reports", "investors"
-  add_foreign_key "investors", "addresses", column: "contact_address_id"
-  add_foreign_key "investors", "addresses", column: "legal_address_id"
   add_foreign_key "investors", "bank_accounts"
-  add_foreign_key "investors", "contacts", column: "primary_contact_id"
-  add_foreign_key "investors", "contacts", column: "primary_owner_id"
-  add_foreign_key "investors", "contacts", column: "secondary_contact_id"
   add_foreign_key "investors", "funds"
   add_foreign_key "investors", "mandates"
   add_foreign_key "list_items", "lists"
@@ -580,6 +578,11 @@ ActiveRecord::Schema.define(version: 2019_07_15_160315) do
   add_foreign_key "mandate_groups_user_groups", "user_groups"
   add_foreign_key "mandate_members", "contacts"
   add_foreign_key "mandate_members", "mandates"
+  add_foreign_key "mandates", "addresses", column: "contact_address_id"
+  add_foreign_key "mandates", "addresses", column: "legal_address_id"
+  add_foreign_key "mandates", "contacts", column: "primary_contact_id"
+  add_foreign_key "mandates", "contacts", column: "primary_owner_id"
+  add_foreign_key "mandates", "contacts", column: "secondary_contact_id"
   add_foreign_key "mandates", "state_transitions", column: "current_state_transition_id"
   add_foreign_key "mandates", "state_transitions", column: "previous_state_transition_id"
   add_foreign_key "task_comments", "tasks"

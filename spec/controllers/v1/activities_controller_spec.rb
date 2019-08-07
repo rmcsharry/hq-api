@@ -115,7 +115,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
   describe 'POST /v1/activities' do
     subject { -> { post(ACTIVITIES_ENDPOINT, params: payload.to_json, headers: auth_headers) } }
 
-    context 'with valid payload' do
+    context 'with valid payload', bullet: false do
       let(:started_at) { 1.day.ago.to_s }
       let(:payload) do
         {
@@ -152,7 +152,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
       end
     end
 
-    context 'with valid payload for a Note' do
+    context 'with valid payload for a Note', bullet: false do
       let(:payload) do
         {
           data: {

@@ -58,7 +58,6 @@ class Contact < ApplicationRecord
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :nullify
   has_many :mandate_members, dependent: :destroy
   has_many :mandates, through: :mandate_members
-  has_many :investors, foreign_key: :primary_owner_id, inverse_of: :primary_owner, dependent: :nullify
   has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
   has_many :task_links, class_name: 'Task', as: :linked_object, inverse_of: :linked_object, dependent: :destroy
   has_many :active_contact_relationships,
@@ -72,12 +71,16 @@ class Contact < ApplicationRecord
            foreign_key: :target_contact_id,
            inverse_of: :target_contact
   has_many(
-    :primary_contact_investors, class_name: 'Investor', foreign_key: :primary_contact_id,
-                                inverse_of: :primary_contact, dependent: :nullify
+    :primary_owner_mandates, class_name: 'Mandate', foreign_key: :primary_owner_id, inverse_of: :primary_owner,
+                             dependent: :nullify
   )
   has_many(
-    :secondary_contact_investors, class_name: 'Investor', foreign_key: :secondary_contact_id,
-                                  inverse_of: :secondary_contact, dependent: :nullify
+    :primary_contact_mandates, class_name: 'Mandate', foreign_key: :primary_contact_id,
+                               inverse_of: :primary_contact, dependent: :nullify
+  )
+  has_many(
+    :secondary_contact_mandates, class_name: 'Mandate', foreign_key: :secondary_contact_id,
+                                 inverse_of: :secondary_contact, dependent: :nullify
   )
   has_many :list_items, as: :listable, class_name: 'List::Item', dependent: :destroy, inverse_of: :listable
   has_many :lists, through: :list_items

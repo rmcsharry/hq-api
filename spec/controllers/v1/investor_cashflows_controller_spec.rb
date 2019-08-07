@@ -50,11 +50,8 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
   end
 
   describe 'GET /v1/investor-cashflows/:id/cashflow-document', bullet: false do
-    let(:contact_person) { create(:contact_person, :with_contact_details) }
-    let(:mandate) { create(:mandate) }
-    let!(:mandate_member) do
-      create(:mandate_member, mandate: mandate, contact: contact_person, member_type: :owner)
-    end
+    let(:primary_owner) { create(:contact_person, :with_contact_details) }
+    let(:mandate) { create(:mandate, :with_owner, owner: primary_owner, contact_salutation_primary_owner: true) }
     let!(:user) do
       create(
         :user,
@@ -68,13 +65,9 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
       create(
         :investor,
         :signed,
-        contact_address: primary_owner.primary_contact_address,
         fund: fund,
-        legal_address: primary_owner.legal_address,
         mandate: mandate,
-        primary_owner: primary_owner,
-        amount_total: 1,
-        contact_salutation_primary_owner: true
+        amount_total: 1
       )
     end
     let!(:cashflow_type) { :distribution }
@@ -118,8 +111,6 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     describe 'with person as primary_owner' do
-      let(:primary_owner) { create :contact_person, :with_contact_details, :with_mandate, mandate: mandate }
-
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
         let(:document_name) { 'Kapitalabruf_Vorlage.docx' }
@@ -177,7 +168,7 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     describe 'with organization as primary_owner' do
-      let(:primary_owner) { create :contact_organization, :with_contact_details, :with_mandate, mandate: mandate }
+      let(:primary_owner) { create :contact_organization, :with_contact_details }
 
       context 'with actual template for a capital call' do
         let!(:cashflow_type) { :capital_call }
@@ -221,7 +212,6 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
     end
 
     context 'with missing funds permissions' do
-      let(:primary_owner) { create :contact_person, :with_contact_details, :with_mandate, mandate: mandate }
       let(:document_name) { 'Ausschuettung_Vorlage.docx' }
       let!(:user) do
         create(
@@ -233,6 +223,34 @@ RSpec.describe INVESTOR_CASHFLOWS_ENDPOINT, type: :request do
 
       it 'receives a 403' do
         expect(response).to have_http_status(403)
+      end
+    end
+
+    context 'with missing owner, contacts and addresses on mandate' do
+      let!(:cashflow_type) { :capital_call }
+      let(:document_name) { 'Kapitalabruf_Vorlage.docx' }
+      let(:mandate) { create(:mandate) }
+
+      it 'downloads the (only partially) filled template' do
+        expect(investor.primary_owner).to be_nil
+        expect(investor.primary_contact).to be_nil
+        expect(investor.secondary_contact).to be_nil
+        expect(investor.legal_address).to be_nil
+        expect(investor.contact_address).to be_nil
+
+        expect(response).to have_http_status(201)
+        content = @response_document.to_s
+
+        cashflow = investor_cashflow.decorate
+
+        expect(content).to include('Kapitalabruf')
+        expect(content).to include(fund.name)
+        expect(content).to include(fund.currency)
+        expect(content).to include(cashflow.net_cashflow_amount)
+        expect(content).to include(cashflow.net_cashflow_percentage)
+
+        # Check that there are no un-replaced templating tokens
+        expect(content).not_to match(/\{[a-z_\.]+\}/)
       end
     end
   end

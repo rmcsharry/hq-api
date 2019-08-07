@@ -10,6 +10,9 @@ module V1
       :category,
       :comment,
       :confidential,
+      :contact_salutation_primary_contact,
+      :contact_salutation_primary_owner,
+      :contact_salutation_secondary_contact,
       :current_state_completed_tasks_count,
       :current_state_total_tasks_count,
       :datev_creditor_id,
@@ -43,10 +46,15 @@ module V1
     has_many :versions, relation_name: 'child_versions', class_name: 'Version'
     has_one :assistant, class_name: 'Contact'
     has_one :bookkeeper, class_name: 'Contact'
+    has_one :contact_address, class_name: 'Address'
     has_one :current_state_transition, class_name: 'StateTransition'
-    has_one :primary_consultant, class_name: 'Contact'
-    has_one :secondary_consultant, class_name: 'Contact'
+    has_one :legal_address, class_name: 'Address'
     has_one :previous_state_transition, class_name: 'StateTransition'
+    has_one :primary_consultant, class_name: 'Contact'
+    has_one :primary_contact, class_name: 'Contact'
+    has_one :primary_owner, class_name: 'Contact'
+    has_one :secondary_consultant, class_name: 'Contact'
+    has_one :secondary_contact, class_name: 'Contact'
 
     def owner_ids=(relationship_key_values)
       relationship_key_values.each do |key|
@@ -313,7 +321,18 @@ module V1
           records = records.with_owner_name.preload(owners: [:contact])
         end
 
-        records
+        preload_contacts_for_update_state(records: records, options: options)
+      end
+
+      def preload_contacts_for_update_state(records:, options:)
+        return records unless options.dig(:context, :request_method) == 'POST' &&
+                              options.dig(:context, :controller) == 'v1/mandates' &&
+                              options.dig(:context, :pundit_user)&.request&.env
+                                     &.dig(
+                                       'action_dispatch.request.path_parameters', :custom_action, :name
+                                     ) == :update_state
+
+        records.with_owner_name.preload(owners: [:contact])
       end
 
       def preload_xlsx(records:, options:)

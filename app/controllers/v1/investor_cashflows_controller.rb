@@ -32,7 +32,7 @@ module V1
 
     def download_cashflow_document(regenerate: false)
       investor_cashflow = InvestorCashflow
-                          .includes(:documents, investor: :contact_address, fund_cashflow: :fund)
+                          .includes(:documents, fund_cashflow: :fund)
                           .find(params.require(:id))
       authorize investor_cashflow, :show?
 

@@ -19,7 +19,7 @@ module V1
 
     def download_documents(regenerate: false)
       fund_report = FundReport
-                    .includes(:fund, investors: %i[contact_address mandate])
+                    .includes(:fund, investors: [mandate: [:contact_address]])
                     .find(params.require(:id))
       authorize fund_report, :show?
 

@@ -29,11 +29,14 @@ namespace :db do
       puts 'Creating mandates'
       Rake::Task['db:populate:mandates'].invoke
 
-      puts 'Creating bank accounts'
-      Rake::Task['db:populate:bank_accounts'].invoke
-
       puts 'Creating mandate members'
       Rake::Task['db:populate:mandate_members'].invoke
+
+      puts 'Creating mandate state transitions'
+      Rake::Task['db:populate:mandate_state_transitions'].invoke
+
+      puts 'Creating bank accounts'
+      Rake::Task['db:populate:bank_accounts'].invoke
 
       puts 'Creating contact relationships'
       Rake::Task['db:populate:contact_relationships'].invoke
@@ -285,19 +288,25 @@ namespace :db do
     end
 
     task mandates: :environment do
-      contacts = Contact::Person.all
+      contacts = Contact.all
+      contact_persons = Contact::Person.all
       admin_user = User.find_by(email: 'admin@hqfinanz.de')
       mandate_groups_organizations = MandateGroup.organizations
       mandate_groups_organizations_length = mandate_groups_organizations.length
       mandate_groups_families = MandateGroup.families
       mandate_groups_families_length = mandate_groups_families.length
       special_family = mandate_groups_families.first
+      mandates = []
       48.times do |i|
         valid_from = Faker::Date.between(15.years.ago, Time.zone.today)
-        Mandate.create!(
-          aasm_state: :prospect_not_qualified,
-          assistant: contacts.sample,
-          bookkeeper: contacts.sample,
+        primary_owner = contacts.sample
+        primary_contact = rand > 0.2 ? contact_persons.sample : nil
+        secondary_contact = primary_contact.present? && rand > 0.5 ? contact_persons.sample : nil
+
+        mandates << Mandate.new(
+          aasm_state: Mandate.aasm.states.sample,
+          assistant: contact_persons.sample,
+          bookkeeper: contact_persons.sample,
           category: Mandate::CATEGORIES.sample,
           comment: Faker::Company.catch_phrase,
           datev_creditor_id: Faker::Number.number(10),
@@ -306,7 +315,15 @@ namespace :db do
           mandate_groups_families: [special_family] | [mandate_groups_families[i % mandate_groups_families_length]],
           mandate_groups_organizations: [mandate_groups_organizations[i % mandate_groups_organizations_length]],
           mandate_number: "#{Faker::Number.number(3)}-#{Faker::Number.number(3)}-#{Faker::Number.number(3)}",
-          primary_consultant: contacts.sample,
+          primary_consultant: contact_persons.sample,
+          primary_owner: primary_owner,
+          primary_contact: primary_contact,
+          secondary_contact: secondary_contact,
+          contact_address: primary_owner.primary_contact_address,
+          legal_address: primary_owner.legal_address,
+          contact_salutation_primary_owner: primary_contact.present? && rand > 0.2,
+          contact_salutation_secondary_contact: secondary_contact.present? && rand > 0.2,
+          contact_salutation_primary_contact: true,
           prospect_assets_under_management: (Faker::Number.between(500, 50_000) * 1000).to_f,
           prospect_fees_fixed_amount: (Faker::Number.between(100, 1_000) * 10).to_f,
           prospect_fees_min_amount: (Faker::Number.between(50, 1_500) * 10).to_f,
@@ -316,23 +333,40 @@ namespace :db do
           secondary_consultant: admin_user.contact,
           valid_from: valid_from,
           valid_to: rand > 0.8 ? Faker::Date.between(valid_from, 5.years.from_now) : nil
-        )
+        ).save!(validate: false)
       end
+    end
+
+    task mandate_state_transitions: :environment do
+      users = User.all
 
       Mandate.all.each do |mandate|
-        target_state = mandate.aasm.states.sample
-        successor_states = mandate.permitted_successor_states
-        until mandate.state.to_sym == target_state.name || successor_states.length.zero?
-          mandate.public_send :"become_#{successor_states.sample}!", User.all.sample
-          successor_states = mandate.permitted_successor_states
+        mandate_state_transitions = []
+        target_state = mandate.state
+        predecessor_states = Mandate.aasm.states.map(&:name).split(target_state)[0] + [target_state]
+
+        predecessor_states.each do |state|
+          mandate_state_transitions << StateTransition.create!(
+            event: "become_#{state}",
+            is_successor: true,
+            state: state,
+            subject: mandate,
+            user: users.sample
+          )
         end
+
+        # rubocop:disable Rails/SkipsModelValidations
+        mandate.update_columns(
+          current_state_transition_id: mandate_state_transitions[-1]&.id,
+          previous_state_transition_id: mandate_state_transitions[-2]&.id
+        )
+        # rubocop:enable Rails/SkipsModelValidations
       end
     end
 
     task mandate_members: :environment do
-      contacts = Contact.all
       mandate_members = Mandate.all.map do |mandate|
-        MandateMember.new(contact: contacts.sample, mandate: mandate, member_type: :owner)
+        MandateMember.new(contact: mandate.primary_owner, mandate: mandate, member_type: :owner)
       end
       MandateMember.import!(mandate_members)
     end
@@ -488,19 +522,15 @@ namespace :db do
           .where('bank_accounts.id IS NOT NULL')
           .where.not(state: :prospect_not_qualified)
           .sample(number_of_investors).each do |mandate|
-          primary_owner = mandate.owners.sample.contact
 
           state = %i[created signed].sample
           investor = Investor.new(
             aasm_state: state,
             amount_total: Faker::Number.between(100_000, 100_000_000).round(2),
             bank_account: mandate.bank_accounts.sample,
-            contact_address: primary_owner.primary_contact_address,
             fund: fund,
             investment_date: state == :signed ? Faker::Date.between(2.years.ago, 0.days.ago) : nil,
-            legal_address: primary_owner.legal_address,
-            mandate: mandate,
-            primary_owner: primary_owner
+            mandate: mandate
           )
           if state == :signed
             investor.build_fund_subscription_agreement(

@@ -28,8 +28,8 @@ module V1
     has_one :fund_subscription_agreement, class_name: 'Document'
     has_one :legal_address, class_name: 'Address'
     has_one :mandate
-    has_one :primary_owner, class_name: 'Contact'
     has_one :primary_contact, class_name: 'Contact'
+    has_one :primary_owner, class_name: 'Contact'
     has_one :secondary_contact, class_name: 'Contact'
 
     has_many :documents
@@ -62,17 +62,27 @@ module V1
     }
 
     class << self
+      # rubocop:disable Metrics/MethodLength
       def updatable_fields(context)
         super(context) - %i[
           amount_called
           amount_open
           amount_total_distribution
+          contact_address
+          contact_salutation_primary_contact
+          contact_salutation_primary_owner
+          contact_salutation_secondary_contact
           current_value
           dpi
           irr
+          legal_address
+          primary_contact
+          primary_owner
+          secondary_contact
           tvpi
         ]
       end
+      # rubocop:enable Metrics/MethodLength
     end
   end
 end
