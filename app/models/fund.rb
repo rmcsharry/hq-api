@@ -67,11 +67,13 @@ class Fund < ApplicationRecord
   has_many :child_versions, class_name: 'Version', as: :parent_item # rubocop:disable Rails/HasManyOrHasOneDependent
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
   has_many :fund_cashflows, dependent: :destroy
-  has_many :investor_cashflows, through: :fund_cashflows
   has_many :fund_reports, dependent: :destroy
-  has_many :investor_reports, through: :fund_reports
   has_many :fund_templates, class_name: 'Document::FundTemplate', as: :owner, inverse_of: :owner, dependent: :destroy
+  has_many :investor_cashflows, through: :fund_cashflows
+  has_many :investor_reports, through: :fund_reports
   has_many :investors, dependent: :destroy
+  has_many :reminders, class_name: 'Task', as: :subject, inverse_of: :subject, dependent: :destroy
+  has_many :task_links, class_name: 'Task', as: :linked_object, inverse_of: :linked_object, dependent: :destroy
 
   has_paper_trail(
     meta: {

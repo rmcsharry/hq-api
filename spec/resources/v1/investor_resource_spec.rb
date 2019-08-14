@@ -19,15 +19,10 @@ RSpec.describe V1::InvestorResource, type: :resource do
   it { is_expected.to have_attribute :tvpi }
   it { is_expected.to have_attribute :updated_at }
 
-  it { is_expected.to have_one(:bank_account) }
-  it { is_expected.to have_one(:contact_address) }
-  it { is_expected.to have_one(:fund) }
-  it { is_expected.to have_one(:fund_subscription_agreement) }
-  it { is_expected.to have_one(:legal_address) }
-  it { is_expected.to have_one(:mandate) }
-  it { is_expected.to have_one(:primary_contact).with_class_name('Contact') }
-  it { is_expected.to have_one(:primary_owner) }
-  it { is_expected.to have_one(:secondary_contact).with_class_name('Contact') }
+  it { is_expected.to have_one :bank_account }
+  it { is_expected.to have_one :fund }
+  it { is_expected.to have_one :fund_subscription_agreement }
+  it { is_expected.to have_one :mandate }
 
   it { is_expected.to have_many :documents }
   it { is_expected.to have_many :investor_reports }

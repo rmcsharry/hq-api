@@ -114,6 +114,17 @@ RSpec.describe Task::DocumentExpiryReminder, type: :model do
         expect(reminder.linked_object).to eq(mandate)
       end
     end
+
+    context 'when document owner is a fund' do
+      let!(:fund) { create(:fund) }
+      let!(:document) { create(:document, owner: fund) }
+
+      it 'assigns mandate' do
+        reminder.subject = document
+
+        expect(reminder.linked_object).to eq(fund)
+      end
+    end
   end
 
   describe 'automatic derivation of assignees', bullet: false do

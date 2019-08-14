@@ -79,9 +79,7 @@ class Task
     end
 
     def derived_linked_object(subject)
-      return subject.owner if subject.owner.is_a? Contact
-
-      return subject.owner if subject.owner.is_a? Mandate
+      return subject.owner if subject.owner.is_a?(Contact) || subject.owner.is_a?(Mandate) || subject.owner.is_a?(Fund)
 
       nil
     end
