@@ -10,8 +10,7 @@ module Scoreable
     end
 
     def rescore_contact
-      contact.calculate_score
-      contact.save!
+      contact.rescore
     end
   end
 end
