@@ -33,8 +33,7 @@ module Scoreable
         object.update(updated_at: Time.zone.now) # Needed only so that the execute callbacks on the related object fire
         object.execute_after_commit do
           object.reload # without this calculate_score will not see the activity changes
-          object.calculate_score
-          object.save!
+          object.rescore
         end
       end
     end

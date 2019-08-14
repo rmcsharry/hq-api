@@ -15,8 +15,7 @@ module Scoreable
     def rescore_owner
       return unless score_impacted? # no need to recalculate owner score if document does not match the score rule
 
-      owner.calculate_score # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
-      owner.save!
+      owner.rescore # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
     end
 
     def already_has_document_category?

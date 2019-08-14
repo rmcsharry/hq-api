@@ -13,8 +13,7 @@ module Scoreable
     def rescore_owner
       return if owner.bank_accounts.count > 1
 
-      owner.calculate_score # NOTE since owner is a mandate, this will trigger calling factor_owners_into_score
-      owner.save!
+      owner.rescore # NOTE since owner is a mandate, this will trigger calling factor_owners_into_score
     end
   end
 end

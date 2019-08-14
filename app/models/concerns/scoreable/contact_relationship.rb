@@ -15,8 +15,7 @@ module Scoreable
     def rescore_owner
       return unless score_impacted?
 
-      target_contact.calculate_score # NOTE since owner is a mandate, this will trigger calling factor_owners_into_score
-      target_contact.save!
+      target_contact.rescore # NOTE since owner is a mandate, this will trigger calling factor_owners_into_score
     end
 
     def already_has_role?
