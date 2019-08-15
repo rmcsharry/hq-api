@@ -19,7 +19,7 @@ module Scoreable
     end
 
     def already_has_role?
-      return true if target_contact.passive_contact_relationships.where('role = ?', role).count > 1
+      target_contact.passive_contact_relationships.where('role = ?', role).count > 1
     end
 
     def rule_does_not_apply?
