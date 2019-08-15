@@ -10,7 +10,6 @@ module Scoreable
     end
 
     def rescore_mandate
-      Bullet.enable = false
       mandate.rescore
     end
   end
