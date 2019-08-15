@@ -349,7 +349,7 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         }
       end
 
-      it 'updates the activity' do
+      it 'updates the activity', bullet: false do
         Bullet.enable = false
         expect(activity.type).to eq 'Activity::Call'
         expect(activity.started_at).to eq started_at
