@@ -18,23 +18,22 @@ module Scoreable
       target_contact.rescore # NOTE since owner is a mandate, this will trigger calling factor_owners_into_score
     end
 
-    def already_has_role?
-      target_contact.passive_contact_relationships.where('role = ?', role).count > 1
-    end
-
-    def rule_does_not_apply?
-      target_contact.type != 'Contact::Organization'
-    end
-
     def score_impacted?
-      return false if rule_does_not_apply? || already_has_role?
+      less_than_two? && rule_applies? && relevant_role?
+    end
 
+    def less_than_two?
+      target_contact.passive_contact_relationships.where('role = ?', role).count < 2
+    end
+
+    def rule_applies?
+      target_contact.type == 'Contact::Organization'
+    end
+
+    def relevant_role?
       # does the added role match the relationships rule for the contact?
-      target_contact.class::SCORE_RULES.select { |r| r[:model_key] == 'passive_contact_relationships' }.each do |rule|
-        _, value = rule[:name].split('==')
-        return true if role == value
-      end
-      false
+      rules = target_contact.class::SCORE_RULES.select { |r| r[:model_key] == 'passive_contact_relationships' }
+      rules.any? { |rule| rule[:name].split('==')[1] == role }
     end
   end
 end

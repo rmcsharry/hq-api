@@ -18,21 +18,22 @@ module Scoreable
       owner.rescore # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
     end
 
-    def already_has_document_category?
-      owner.documents.where('category = ?', category).count > 1
-    end
-
-    def rule_does_not_apply?
-      owner_type != 'Contact' && owner_type != 'Mandate'
-    end
-
     def score_impacted?
-      return false if rule_does_not_apply? || already_has_document_category?
+      less_than_two? && rule_applies? && relevant_role?
+    end
 
-      # does the document match the documents rule for the owner?
-      rule = owner.class::SCORE_RULES.select { |r| r[:model_key] == 'documents' }[0]
-      _, value = rule[:name].split('==')
-      category == value
+    def less_than_two?
+      owner.documents.where('category = ?', category).count < 2
+    end
+
+    def rule_applies?
+      owner_type == 'Contact' || owner_type == 'Mandate'
+    end
+
+    def relevant_role?
+      # does the added role match the relationships rule for the contact?
+      rules = owner.class::SCORE_RULES.select { |r| r[:model_key] == 'documents' }
+      rules.any? { |rule| rule[:name].split('==')[1] == category }
     end
   end
 end
