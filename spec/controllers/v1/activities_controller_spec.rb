@@ -361,7 +361,6 @@ RSpec.describe ACTIVITIES_ENDPOINT, type: :request do
         expect(updated_activity.type).to eq 'Activity::Note'
         expect(updated_activity.creator).to_not eq user
         expect(updated_activity.mandates).to include(mandate_1, mandate_2)
-        Bullet.enable = true
       end
     end
   end
