@@ -2,7 +2,7 @@
 
 module Scoreable
   # Score related objects (contact/mandate) when a compliance detail changes
-  module ComplianceDetail
+  module DetailBase
     extend ActiveSupport::Concern
 
     included do

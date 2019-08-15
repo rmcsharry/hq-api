@@ -35,7 +35,7 @@
 # Defines the Tax Details of a Contact
 class TaxDetail < ApplicationRecord
   extend Enumerize
-  include Scoreable::TaxDetail
+  include Scoreable::DetailBase
 
   strip_attributes only: %i[
     de_tax_id de_tax_number de_tax_office eu_vat_number

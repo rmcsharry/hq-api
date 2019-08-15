@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Rescore a mandate when members change
+  # Score a mandate when its members change
   module MandateMember
     extend ActiveSupport::Concern
 

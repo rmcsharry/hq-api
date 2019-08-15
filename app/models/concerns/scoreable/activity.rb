@@ -12,19 +12,19 @@ module Scoreable
 
       before_destroy do
         contacts.each do |contact|
-          self.class.store_callback_to_rescore(contact) if contact.one_activity?
+          self.class.store_callback_to_rescore(contact) if one_activity?(object: contact)
         end
         mandates.each do |mandate|
-          self.class.store_callback_to_rescore(mandate) if mandate.one_activity?
+          self.class.store_callback_to_rescore(mandate) if one_activity?(object: mandate)
         end
       end
 
       def rescore_contact(contact)
-        self.class.store_callback_to_rescore(contact) if contact.no_activities?
+        self.class.store_callback_to_rescore(contact) if no_activities?(object: contact)
       end
 
       def rescore_mandate(mandate)
-        self.class.store_callback_to_rescore(mandate) if mandate.no_activities?
+        self.class.store_callback_to_rescore(mandate) if no_activities?(object: mandate)
       end
     end
 
@@ -36,6 +36,14 @@ module Scoreable
           object.rescore
         end
       end
+    end
+
+    def one_activity?(object:)
+      object.activities.count == 1
+    end
+
+    def no_activities?(object:)
+      object.activities.count.zero?
     end
   end
 end

@@ -27,7 +27,7 @@
 # Defines the Compliance Details of a Contact
 class ComplianceDetail < ApplicationRecord
   extend Enumerize
-  include Scoreable::ComplianceDetail
+  include Scoreable::DetailBase
 
   strip_attributes only: :occupation_title, collapse_spaces: true
 
