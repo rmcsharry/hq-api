@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Scoreable
-  # Score related objects (mandate) when a reltionship role
+  # Score related objects (mandate) when a relationship role
   # is FIRST ADDED TO or FINALLY REMOVED FROM the related objects
   module ContactRelationship
     extend ActiveSupport::Concern
