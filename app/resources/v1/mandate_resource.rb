@@ -59,6 +59,14 @@ module V1
     has_one :secondary_consultant, class_name: 'Contact'
     has_one :secondary_contact, class_name: 'Contact'
 
+    def data_integrity_score
+      @model.decorate.data_integrity_score
+    end
+
+    def data_integrity_partial_score
+      @model.decorate.data_integrity_partail_score
+    end
+
     def owner_ids=(relationship_key_values)
       relationship_key_values.each do |key|
         @model.owners << MandateMember.new(member_type: 'owner', contact: Contact.find(key))
