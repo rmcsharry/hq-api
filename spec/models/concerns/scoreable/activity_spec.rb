@@ -9,7 +9,7 @@ RSpec.describe Scoreable::Activity, bullet: false do
         # NOTE
         # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
         # instead of the random score from the contact factory
-        let!(:subject) { create(:contact_person) }
+        subject { create(:contact_person) }
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
@@ -40,26 +40,34 @@ RSpec.describe Scoreable::Activity, bullet: false do
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
         end
 
-        it 'does not rescore when adding activites after the first one' do
-          activity_1.save!
-          stub_const('Contact', double)
-          activity_2.contacts << subject
+        context 'when adding activites after the first one' do
+          before do
+            activity_1.save!
+            stub_const('Contact', double)
+            activity_2.contacts << subject
+          end
 
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+          it 'does not rescore' do
+            expect(subject.data_integrity_missing_fields).not_to include('activities')
+            expect(subject.data_integrity_missing_fields.length).to eq(23)
+            expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+          end
         end
 
-        it 'does not rescore when removing activites except one' do
-          activity_1.save!
-          activity_2.contacts << subject
-          activity_2.save!
-          stub_const('Contact', double)
-          activity_1.destroy!
+        context 'when removing activites (rule: at least one)' do
+          before do
+            activity_1.save!
+            activity_2.contacts << subject
+            activity_2.save!
+            stub_const('Contact', double)
+            activity_1.destroy!
+          end
 
-          expect(subject.data_integrity_missing_fields).not_to include('activities')
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+          it 'does not rescore' do
+            expect(subject.data_integrity_missing_fields).not_to include('activities')
+            expect(subject.data_integrity_missing_fields.length).to eq(23)
+            expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
+          end
         end
       end
     end
@@ -69,7 +77,7 @@ RSpec.describe Scoreable::Activity, bullet: false do
         # NOTE
         # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
         # instead of the random score from the contact factory
-        let!(:subject) { create(:contact_organization) }
+        subject { create(:contact_organization) }
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
@@ -106,13 +114,17 @@ RSpec.describe Scoreable::Activity, bullet: false do
           activity_2.contacts << subject
         end
 
-        it 'does not rescore when removing activites except one' do
-          activity_1.save!
-          activity_2.contacts << subject
-          activity_2.save!
+        context 'when removing activites (rule: at least one)' do
+          before do
+            activity_1.save!
+            activity_2.contacts << subject
+            activity_2.save!
+          end
 
-          expect(subject).not_to receive(:calculate_score)
-          activity_1.destroy!
+          it 'does not rescore' do
+            expect(subject).not_to receive(:calculate_score)
+            activity_1.destroy!
+          end
         end
       end
     end
@@ -122,7 +134,7 @@ RSpec.describe Scoreable::Activity, bullet: false do
         # NOTE
         # We create instead of build, to ensure the after_save callback fires, giving the correct starting score
         # instead of the random score from the contact factory
-        let!(:subject) { create(:mandate) }
+        subject { create(:mandate) }
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
@@ -159,13 +171,17 @@ RSpec.describe Scoreable::Activity, bullet: false do
           activity_2.mandates << subject
         end
 
-        it 'does not rescore when removing activites except one' do
-          activity_1.save!
-          activity_2.mandates << subject
-          activity_2.save!
+        context 'when removing activites (rule: at least one)' do
+          before do
+            activity_1.save!
+            activity_2.mandates << subject
+            activity_2.save!
+          end
 
-          expect(subject).not_to receive(:calculate_score)
-          activity_1.destroy!
+          it 'does not rescore' do
+            expect(subject).not_to receive(:calculate_score)
+            activity_1.destroy!
+          end
         end
       end
     end

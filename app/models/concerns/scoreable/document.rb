@@ -10,13 +10,13 @@ module Scoreable
       after_commit :rescore_owner
     end
 
-    private
-
     def rescore_owner
       return unless score_impacted? # no need to recalculate owner score if document does not match the score rule
 
       owner.rescore # NOTE if owner is a mandate, this will trigger calling factor_owners_into_score
     end
+
+    private
 
     def score_impacted?
       less_than_two? && rule_applies? && relevant_role?

@@ -13,26 +13,25 @@ RSpec.describe Scoreable::ContactRelationship do
     end
 
     describe 'for contact_relationship' do
-      let!(:subject) { create(:contact_organization) }
+      subject { create(:contact_organization) }
       let!(:relationship_1) { build(:contact_relationship, role: 'shareholder') }
       let!(:relationship_2) { build(:contact_relationship, role: 'shareholder') }
       let!(:relationship_3) { build(:contact_relationship, role: 'bookkeeper') }
 
+      before do
+        relationship_1.target_contact = subject
+        subject.passive_contact_relationships << relationship_1
+        relationship_1.save!
+      end
+
       context 'when rule: a related model property has a specific value (role == shareholder)' do
         it 'is correct when relationship is added' do
-          relationship_1.target_contact = subject
-          subject.passive_contact_relationships << relationship_1
-          relationship_1.save!
-
           expect(subject.data_integrity_missing_fields).not_to include('shareholder')
           expect(subject.data_integrity_missing_fields.length).to eq(20)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.1698)
         end
 
         it 'is not rescored when existing role is added again' do
-          relationship_1.target_contact = subject
-          subject.passive_contact_relationships << relationship_1
-
           expect(subject).not_to receive(:calculate_score)
           relationship_2.target_contact = subject
           subject.passive_contact_relationships << relationship_2
