@@ -13,16 +13,17 @@ RSpec.describe Scoreable::Activity, bullet: false do
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
-        it 'scores correctly when initial activity is added' do
+        before do
           activity_1.contacts << subject
+        end
 
+        it 'scores correctly when initial activity is added' do
           expect(subject.data_integrity_missing_fields).not_to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(23)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.3469)
         end
 
         it 'scores correctly when final activity is removed' do
-          activity_1.contacts << subject
           activity_1.contacts.destroy(subject)
           activity_1.save!
 
@@ -32,7 +33,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'scores correctly when final activity itself is destroyed' do
-          activity_1.contacts << subject
           activity_1.destroy!
 
           expect(subject.data_integrity_missing_fields).to include('activities')
@@ -41,7 +41,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when adding activites after the first one' do
-          activity_1.contacts << subject
           activity_1.save!
           stub_const('Contact', double)
           activity_2.contacts << subject
@@ -52,7 +51,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when removing activites except one' do
-          activity_1.contacts << subject
           activity_1.save!
           activity_2.contacts << subject
           activity_2.save!
@@ -75,16 +73,17 @@ RSpec.describe Scoreable::Activity, bullet: false do
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
-        it 'scores correctly when initial activity is added' do
+        before do
           activity_1.contacts << subject
+        end
 
+        it 'scores correctly when initial activity is added' do
           expect(subject.data_integrity_missing_fields).not_to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(20)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.2547)
         end
 
         it 'scores correctly when final activity is removed' do
-          activity_1.contacts << subject
           activity_1.contacts.destroy(subject)
 
           expect(subject.data_integrity_missing_fields).to include('activities')
@@ -93,7 +92,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'scores correctly when final activity itself is destroyed' do
-          activity_1.contacts << subject
           activity_1.destroy!
 
           expect(subject.data_integrity_missing_fields).to include('activities')
@@ -102,7 +100,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when adding activites after the first one' do
-          activity_1.contacts << subject
           activity_1.save!
 
           expect(subject).not_to receive(:calculate_score)
@@ -110,7 +107,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when removing activites except one' do
-          activity_1.contacts << subject
           activity_1.save!
           activity_2.contacts << subject
           activity_2.save!
@@ -130,16 +126,17 @@ RSpec.describe Scoreable::Activity, bullet: false do
         let!(:activity_1) { create(:activity_note) }
         let!(:activity_2) { create(:activity_note) }
 
-        it 'scores correctly when initial activity is added' do
+        before do
           activity_1.mandates << subject
+        end
 
+        it 'scores correctly when initial activity is added' do
           expect(subject.data_integrity_missing_fields).not_to include('activities')
           expect(subject.data_integrity_missing_fields.length).to eq(10)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.4805)
         end
 
         it 'scores correctly when final activity is removed' do
-          activity_1.mandates << subject
           activity_1.mandates.destroy(subject)
 
           expect(subject.data_integrity_missing_fields).to include('activities')
@@ -148,7 +145,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'scores correctly when final activity itself is destroyed' do
-          activity_1.mandates << subject
           activity_1.destroy!
 
           expect(subject.data_integrity_missing_fields).to include('activities')
@@ -157,7 +153,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when adding activites after the first one' do
-          activity_1.mandates << subject
           activity_1.save!
 
           expect(subject).not_to receive(:calculate_score)
@@ -165,7 +160,6 @@ RSpec.describe Scoreable::Activity, bullet: false do
         end
 
         it 'does not rescore when removing activites except one' do
-          activity_1.mandates << subject
           activity_1.save!
           activity_2.mandates << subject
           activity_2.save!
