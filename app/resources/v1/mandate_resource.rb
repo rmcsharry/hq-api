@@ -64,7 +64,7 @@ module V1
     end
 
     def data_integrity_partial_score
-      @model.decorate.data_integrity_partail_score
+      @model.decorate.data_integrity_partial_score
     end
 
     def owner_ids=(relationship_key_values)
