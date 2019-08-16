@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Scoreable::BaseDetail, bullet: false do
+RSpec.describe Scoreable::DetailBase, bullet: false do
   describe '#rescore_contact (for ComplianceDetail)' do
     describe 'for contact_person' do
       let!(:subject) { build(:contact_person) }

@@ -7,9 +7,6 @@ module Scoreable
     extend ActiveSupport::Concern
 
     included do
-      has_and_belongs_to_many :contacts, -> { distinct }, before_add: :rescore_contact, after_remove: :rescore_contact
-      has_and_belongs_to_many :mandates, -> { distinct }, before_add: :rescore_mandate, after_remove: :rescore_mandate
-
       before_destroy do
         contacts.each do |contact|
           self.class.store_callback_to_rescore(contact) if one_activity?(object: contact)
