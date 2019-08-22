@@ -6,7 +6,7 @@ RSpec.describe Scoreable, bullet: false do
   describe '#calculate_score' do
     describe 'for contact_person' do
       context 'when some rules apply' do
-        let!(:subject) { build(:contact_person) }
+        subject { build(:contact_person) }
 
         it 'is correct when minimum rules pass' do
           # NOTE
@@ -30,41 +30,27 @@ RSpec.describe Scoreable, bullet: false do
       end
 
       context 'when all rules apply' do
-        let!(:subject) { build(:contact_person, :with_contact_details, :with_scoreable_data) }
+        subject { build(:contact_person, :with_contact_details, :with_scoreable_data) }
 
-        it 'scores maximum' do
+        before do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'kyc')
           subject.compliance_detail = build(:compliance_detail, contact: subject)
           subject.tax_detail = build(:tax_detail, :with_scoreable_person_data)
           subject.save!
           subject.calculate_score
+        end
 
+        it 'scores maximum' do
           expect(subject.data_integrity_missing_fields.length).to eq(0)
           expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
-        end
-      end
-
-      context 'when person is a mandate owner' do
-        let!(:subject) { build(:contact_person, :with_mandate) }
-
-        it 'rescores the mandate when the owner score changes' do
-          subject.calculate_score
-          expect(subject.data_integrity_missing_fields.length).to eq(24)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1626)
-
-          subject.nationality = 'DE'
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields.length).to eq(23)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.2168)
         end
       end
     end
 
     describe 'for contact_organization' do
       context 'when some rules apply' do
-        let!(:subject) { build(:contact_organization) }
+        subject { build(:contact_organization) }
 
         it 'is correct when minimum rules pass' do
           # NOTE
@@ -88,7 +74,7 @@ RSpec.describe Scoreable, bullet: false do
       end
 
       context 'when all rules apply' do
-        let!(:subject) do
+        subject do
           create(
             :contact_organization,
             :with_contact_details,
@@ -97,39 +83,24 @@ RSpec.describe Scoreable, bullet: false do
           )
         end
 
-        it 'scores maximum' do
+        before do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'kyc')
           subject.compliance_detail = build(:compliance_detail, contact: subject)
           subject.tax_detail = build(:tax_detail, :with_scoreable_organization_data)
           subject.calculate_score
+        end
 
+        it 'scores maximum' do
           expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
           expect(subject.data_integrity_missing_fields.length).to eq(0)
-        end
-      end
-
-      context 'when organization is a mandate owner' do
-        let!(:subject) { build(:contact_organization, :with_mandate) }
-
-        it 'rescores the mandate when the owner score changes' do
-          subject.calculate_score
-          expect(subject.data_integrity_missing_fields.length).to eq(21)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.0943)
-
-          subject.organization_category = Faker::Company.type
-          subject.save!
-          subject.calculate_score
-
-          expect(subject.data_integrity_missing_fields.length).to eq(20)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.1415)
         end
       end
     end
 
     describe 'for mandate' do
       context 'when some rules apply' do
-        let!(:subject) { build(:mandate) }
+        subject { build(:mandate) }
 
         it 'is correct when minimum rules pass' do
           # NOTE
@@ -156,7 +127,7 @@ RSpec.describe Scoreable, bullet: false do
 
       context 'when all rules apply' do
         let(:primary_owner) { build(:contact_person) }
-        let!(:subject) do
+        subject do
           create(
             :mandate,
             :with_bank_account,
@@ -167,7 +138,7 @@ RSpec.describe Scoreable, bullet: false do
           )
         end
 
-        it 'scores maximum' do
+        before do
           subject.documents << create(:document, category: 'contract_hq')
           subject.activities << create(:activity_note)
           subject.mandate_members <<
@@ -179,66 +150,73 @@ RSpec.describe Scoreable, bullet: false do
             ]
           subject.reload
           subject.calculate_score
+        end
 
+        it 'scores maximum' do
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
           expect(subject.data_integrity_missing_fields.length).to eq(0)
         end
       end
 
       context 'when the mandate owner rule is factored in' do
-        let!(:subject) { create(:mandate, :with_bank_account, :with_scoreable_data) }
+        subject { create(:mandate, :with_bank_account, :with_scoreable_data) }
         let!(:contact) { create(:contact_person, :with_contact_details, :with_scoreable_data) }
 
-        it 'is correct (both scores) when no owner' do
+        before do
           subject.activities << build(:activity_note)
           subject.documents << build(:document, category: 'contract_hq')
-          subject.calculate_score
+          contact.calculate_score
+        end
 
+        it 'is correct (both scores) when no owner' do
           expect(subject.data_integrity_missing_fields).to include('owner')
           expect(subject.data_integrity_missing_fields.length).to eq(1)
           expect(subject.data_integrity_partial_score).to be_within(0.0001).of(0.9351)
           expect(subject.data_integrity_score).to be_within(0.0001).of(0.4676)
         end
 
-        it 'is correct (max partial score but lower overall score) when 1 owner added who is not scored max' do
-          subject.activities << build(:activity_note)
-          subject.documents << build(:document, category: 'contract_hq')
-          contact.calculate_score
-          contact.save!
-          # now the contact score is persisted, add the contact as the owner, and calculate the mandate score
-          subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
-          subject.save!
-          subject.reload
-          subject.calculate_score
+        context 'when 1 owner added who is not scored max' do
+          before do
+            contact.save!
+            # now the contact score is persisted, add the contact as the owner, and calculate the mandate score
+            subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
+            subject.save!
+            subject.reload
+            subject.calculate_score
+          end
 
-          expect(subject.data_integrity_missing_fields).not_to include('owner')
-          expect(subject.data_integrity_missing_fields.length).to eq(0)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(0.7439)
+          it 'scores max partial score but lower overall score' do
+            expect(subject.data_integrity_missing_fields).not_to include('owner')
+            expect(subject.data_integrity_missing_fields.length).to eq(0)
+            expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
+            expect(subject.data_integrity_score).to be_within(0.0001).of(0.7439)
+          end
         end
 
-        it 'is correct (max for both scores) when 1 owner added who is scored max' do
-          contact.activities << build(:activity_note)
-          contact.documents << build(:document, category: 'kyc')
-          contact.compliance_detail = build(:compliance_detail, contact: contact)
-          contact.tax_detail = build(:tax_detail, :with_scoreable_person_data)
-          contact.calculate_score
-          contact.save!
-          # ensure the contact is at max before running the actual test
-          expect(contact.data_integrity_missing_fields.length).to eq(0)
-          expect(contact.data_integrity_score).to be_within(0.0001).of(1.0)
+        context 'when 1 owner added who is scored max' do
+          it 'is correct (max for both scores)' do
+            contact.activities << build(:activity_note)
+            contact.documents << build(:document, category: 'kyc')
+            contact.compliance_detail = build(:compliance_detail, contact: contact)
+            contact.tax_detail = build(:tax_detail, :with_scoreable_person_data)
+            contact.calculate_score
+            contact.save!
+            # ensure the contact is at max before running the actual test
+            expect(contact.data_integrity_missing_fields.length).to eq(0)
+            expect(contact.data_integrity_score).to be_within(0.0001).of(1.0)
 
-          # now max the mandate score, including the contact as owner
-          subject.activities << create(:activity_note)
-          subject.documents << create(:document, category: 'contract_hq')
-          subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
-          subject.save!
-          subject.reload
-          subject.calculate_score
+            # now max the mandate score, including the contact as owner
+            subject.activities << create(:activity_note)
+            subject.documents << create(:document, category: 'contract_hq')
+            subject.mandate_members << create(:mandate_member, mandate: subject, contact: contact)
+            subject.save!
+            subject.reload
+            subject.calculate_score
 
-          expect(subject.data_integrity_missing_fields.length).to eq(0)
-          expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
-          expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
+            expect(subject.data_integrity_missing_fields.length).to eq(0)
+            expect(subject.data_integrity_partial_score).to be_within(0.0001).of(1.0)
+            expect(subject.data_integrity_score).to be_within(0.0001).of(1.0)
+          end
         end
 
         it 'is correct (both scores) when owner is removed' do
