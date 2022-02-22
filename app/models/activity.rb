@@ -27,12 +27,15 @@
 # Defines the Activity model
 class Activity < ApplicationRecord
   include Lockable
+
   strip_attributes only: :title, collapse_spaces: true
 
   belongs_to :creator, class_name: 'User', inverse_of: :activities
   has_many :documents, as: :owner, inverse_of: :owner, dependent: :destroy
-  has_and_belongs_to_many :mandates, -> { distinct }
-  has_and_belongs_to_many :contacts, -> { distinct }
+
+  has_and_belongs_to_many :contacts, -> { distinct }, before_add: :rescore_contact, after_remove: :rescore_contact
+  has_and_belongs_to_many :mandates, -> { distinct }, before_add: :rescore_mandate, after_remove: :rescore_mandate
+  include Scoreable::Activity
 
   has_paper_trail(skip: SKIPPED_ATTRIBUTES)
 

@@ -4,33 +4,36 @@
 #
 # Table name: contacts
 #
-#  comment                    :text
-#  commercial_register_number :string
-#  commercial_register_office :string
-#  created_at                 :datetime         not null
-#  date_of_birth              :date
-#  date_of_death              :date
-#  first_name                 :string
-#  gender                     :string
-#  id                         :uuid             not null, primary key
-#  import_id                  :integer
-#  last_name                  :string
-#  legal_address_id           :uuid
-#  maiden_name                :string
-#  nationality                :string
-#  nobility_title             :string
-#  organization_category      :string
-#  organization_industry      :string
-#  organization_name          :string
-#  organization_type          :string
-#  place_of_birth             :string
-#  primary_contact_address_id :uuid
-#  professional_title         :string
-#  type                       :string
-#  updated_at                 :datetime         not null
+#  comment                       :text
+#  commercial_register_number    :string
+#  commercial_register_office    :string
+#  created_at                    :datetime         not null
+#  data_integrity_missing_fields :string           default([]), is an Array
+#  data_integrity_score          :decimal(5, 4)    default(0.0)
+#  date_of_birth                 :date
+#  date_of_death                 :date
+#  first_name                    :string
+#  gender                        :string
+#  id                            :uuid             not null, primary key
+#  import_id                     :integer
+#  last_name                     :string
+#  legal_address_id              :uuid
+#  maiden_name                   :string
+#  nationality                   :string
+#  nobility_title                :string
+#  organization_category         :string
+#  organization_industry         :string
+#  organization_name             :string
+#  organization_type             :string
+#  place_of_birth                :string
+#  primary_contact_address_id    :uuid
+#  professional_title            :string
+#  type                          :string
+#  updated_at                    :datetime         not null
 #
 # Indexes
 #
+#  index_contacts_on_data_integrity_score        (data_integrity_score)
 #  index_contacts_on_legal_address_id            (legal_address_id)
 #  index_contacts_on_primary_contact_address_id  (primary_contact_address_id)
 #
@@ -44,6 +47,7 @@
 # rubocop:disable Metrics/ClassLength
 class Contact < ApplicationRecord
   include ExportableAttributes
+  include ScoreableContact
   extend Enumerize
   strip_attributes only: %i[
     commercial_register_number commercial_register_office first_name last_name maiden_name nationality
@@ -127,6 +131,7 @@ class Contact < ApplicationRecord
   before_validation :assign_primary_contact_address, on: :create
 
   validates_associated :legal_address, :primary_contact_address, :compliance_detail, :tax_detail
+  validates :data_integrity_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   alias_attribute :contact_type, :type
 

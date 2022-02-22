@@ -15,6 +15,9 @@ module V1
       :contact_salutation_secondary_contact,
       :current_state_completed_tasks_count,
       :current_state_total_tasks_count,
+      :data_integrity_score,
+      :data_integrity_partial_score,
+      :data_integrity_missing_fields,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,
@@ -56,6 +59,14 @@ module V1
     has_one :secondary_consultant, class_name: 'Contact'
     has_one :secondary_contact, class_name: 'Contact'
 
+    def data_integrity_score
+      @model.decorate.data_integrity_score
+    end
+
+    def data_integrity_partial_score
+      @model.decorate.data_integrity_partial_score
+    end
+
     def owner_ids=(relationship_key_values)
       relationship_key_values.each do |key|
         @model.owners << MandateMember.new(member_type: 'owner', contact: Contact.find(key))
@@ -84,6 +95,8 @@ module V1
 
     filters(
       :category,
+      :data_integrity_score_min,
+      :data_integrity_score_max,
       :datev_creditor_id,
       :datev_debitor_id,
       :default_currency,
@@ -121,6 +134,14 @@ module V1
       records
         .joins(:current_state_transition)
         .where('state_transitions.created_at >= ?', Date.parse(value[0]))
+    }
+
+    filter :data_integrity_score_min, apply: lambda { |records, value, _options|
+      records.where('mandates.data_integrity_score >= ?', value[0].to_f / 100)
+    }
+
+    filter :data_integrity_score_max, apply: lambda { |records, value, _options|
+      records.where('mandates.data_integrity_score <= ?', value[0].to_f / 100)
     }
 
     filter :not_in_list_with_id, apply: lambda { |records, value, _options|

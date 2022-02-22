@@ -14,6 +14,9 @@
 #  contact_salutation_secondary_contact :boolean
 #  created_at                           :datetime         not null
 #  current_state_transition_id          :uuid
+#  data_integrity_missing_fields        :string           default([]), is an Array
+#  data_integrity_partial_score         :decimal(5, 4)    default(0.0)
+#  data_integrity_score                 :decimal(5, 4)    default(0.0)
 #  datev_creditor_id                    :string
 #  datev_debitor_id                     :string
 #  default_currency                     :string
@@ -39,6 +42,7 @@
 #
 #  index_mandates_on_contact_address_id            (contact_address_id)
 #  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_data_integrity_score          (data_integrity_score)
 #  index_mandates_on_legal_address_id              (legal_address_id)
 #  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
 #  index_mandates_on_primary_contact_id            (primary_contact_id)
@@ -62,6 +66,8 @@ class Mandate < ApplicationRecord
   extend Enumerize
   include AASM
   include RememberStateTransitions
+  include Scoreable
+  include Scoreable::Mandate
 
   strip_attributes only: %i[
     datev_creditor_id datev_debitor_id mandate_number psplus_id psplus_pe_id
@@ -262,6 +268,8 @@ class Mandate < ApplicationRecord
   validates :mandate_groups_organizations, presence: true
   validates :psplus_id, length: { maximum: 15 }
   validates :psplus_pe_id, length: { maximum: 15 }
+  validates :data_integrity_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
+  validates :data_integrity_partial_score, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 1 }
 
   enumerize :category, in: CATEGORIES, scope: true
   enumerize :default_currency, in: CURRENCIES

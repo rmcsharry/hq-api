@@ -106,11 +106,12 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
     let!(:mandate1) do
       create(
         :mandate, :with_owner, owner: owner_contact, category: 'family_office_with_investment_advice',
-                               primary_consultant: contact
+                               primary_consultant: contact, data_integrity_score: 0.95
       )
     end
     let!(:mandate2) do
-      create(:mandate, :with_owner, owner: owner_contact, category: 'wealth_management', secondary_consultant: contact)
+      create(:mandate, :with_owner, owner: owner_contact, category: 'wealth_management',
+                                    secondary_consultant: contact, data_integrity_score: 0.1)
     end
     let!(:mandate3) do
       create(:mandate, :with_owner, owner: owner_contact, category: 'investment_advice', assistant: contact)
@@ -332,6 +333,84 @@ RSpec.describe MANDATES_ENDPOINT, type: :request do
             body = JSON.parse(response.body)
             expect(body.keys).to include 'data', 'meta', 'links'
             expect(body['meta']['record-count']).to eq 4
+          end
+        end
+      end
+
+      context 'filter by data integrity score' do
+        subject do
+          get(
+            MANDATES_ENDPOINT,
+            params: {
+              filter: { "dataIntegrityScoreMin": min }
+            },
+            headers: auth_headers
+          )
+        end
+
+        describe 'min (with no max)' do
+          # min value correspond to the range set in the factory
+          let(:min) { 95 }
+
+          it 'finds one mandate' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 1
+          end
+        end
+      end
+
+      context 'filter by data integrity score' do
+        subject do
+          get(
+            MANDATES_ENDPOINT,
+            params: {
+              filter: { "dataIntegrityScoreMax": max }
+            },
+            headers: auth_headers
+          )
+        end
+
+        describe 'max (with no min)' do
+          # max value correspond to the range set in the factory
+          let(:max) { 10 }
+
+          it 'finds one mandate' do
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 1
+          end
+        end
+      end
+
+      context 'filter by data integrity score' do
+        subject do
+          get(
+            MANDATES_ENDPOINT,
+            params: {
+              filter: { "dataIntegrityScoreMin": min, "dataIntegrityScoreMax": max }
+            },
+            headers: auth_headers
+          )
+        end
+
+        describe 'min and max' do
+          # min max values correspond to the range set in the factory
+          let(:min) { 20 }
+          let(:max) { 80 }
+
+          it 'finds four mandates' do
+            Bullet.enable = false
+            subject
+            expect(response).to have_http_status(200)
+            body = JSON.parse(response.body)
+            expect(body.keys).to include 'data', 'meta', 'links'
+            expect(body['meta']['record-count']).to eq 2
+            Bullet.enable = true
           end
         end
       end

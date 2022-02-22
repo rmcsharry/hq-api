@@ -12,6 +12,8 @@ module V1
       :compliance_detail,
       :contact_details,
       :contact_type,
+      :data_integrity_score,
+      :data_integrity_missing_fields,
       :date_of_birth,
       :date_of_death,
       :first_name,
@@ -99,6 +101,10 @@ module V1
       @save_needed = true
     end
 
+    def data_integrity_score
+      @model.decorate.data_integrity_score
+    end
+
     def name_list
       @model.decorate.name_list
     end
@@ -111,6 +117,8 @@ module V1
       :comment,
       :commercial_register_number,
       :commercial_register_office,
+      :data_integrity_score_min,
+      :data_integrity_score_max,
       :gender,
       :is_mandate_member,
       :is_mandate_owner,
@@ -124,6 +132,14 @@ module V1
 
     filter :contact_type, apply: lambda { |records, value, _options|
       records.where('contacts.type = ?', value[0])
+    }
+
+    filter :data_integrity_score_min, apply: lambda { |records, value, _options|
+      records.where('contacts.data_integrity_score >= ?', value[0].to_f / 100)
+    }
+
+    filter :data_integrity_score_max, apply: lambda { |records, value, _options|
+      records.where('contacts.data_integrity_score <= ?', value[0].to_f / 100)
     }
 
     filter :mandate_id, apply: lambda { |records, value, _options|

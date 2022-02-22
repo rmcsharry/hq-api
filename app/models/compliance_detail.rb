@@ -27,6 +27,8 @@
 # Defines the Compliance Details of a Contact
 class ComplianceDetail < ApplicationRecord
   extend Enumerize
+  include Scoreable::DetailBase
+
   strip_attributes only: :occupation_title, collapse_spaces: true
 
   WPHG_CLASSIFICATIONS = %i[none private born_professional chosen_professional suitable_counterparty].freeze

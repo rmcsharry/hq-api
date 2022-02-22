@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Defines the decorator for mandates
-class MandateDecorator < Draper::Decorator
+class MandateDecorator < ApplicationDecorator
   delegate_all
 
   def humanize_confidential
@@ -15,5 +15,13 @@ class MandateDecorator < Draper::Decorator
       .map { |member| member.contact.decorate.name_list }
       .sort
       .to_sentence(locale: :de)
+  end
+
+  def data_integrity_partial_score
+    format_percentage(object.data_integrity_partial_score * 100, 0)
+  end
+
+  def data_integrity_score
+    format_percentage(object.data_integrity_score * 100, 0)
   end
 end

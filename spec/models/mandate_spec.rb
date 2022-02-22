@@ -14,6 +14,9 @@
 #  contact_salutation_secondary_contact :boolean
 #  created_at                           :datetime         not null
 #  current_state_transition_id          :uuid
+#  data_integrity_missing_fields        :string           default([]), is an Array
+#  data_integrity_partial_score         :decimal(5, 4)    default(0.0)
+#  data_integrity_score                 :decimal(5, 4)    default(0.0)
 #  datev_creditor_id                    :string
 #  datev_debitor_id                     :string
 #  default_currency                     :string
@@ -39,6 +42,7 @@
 #
 #  index_mandates_on_contact_address_id            (contact_address_id)
 #  index_mandates_on_current_state_transition_id   (current_state_transition_id)
+#  index_mandates_on_data_integrity_score          (data_integrity_score)
 #  index_mandates_on_legal_address_id              (legal_address_id)
 #  index_mandates_on_previous_state_transition_id  (previous_state_transition_id)
 #  index_mandates_on_primary_contact_id            (primary_contact_id)
@@ -55,7 +59,6 @@
 #  fk_rails_...  (primary_owner_id => contacts.id)
 #  fk_rails_...  (secondary_contact_id => contacts.id)
 #
-
 require 'rails_helper'
 
 RSpec.describe Mandate, type: :model do
@@ -310,6 +313,22 @@ RSpec.describe Mandate, type: :model do
   describe '#category' do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to enumerize(:category) }
+  end
+
+  describe '#data_integrity_missing_fields' do
+    it { is_expected.to respond_to(:data_integrity_missing_fields) }
+  end
+
+  describe '#data_integrity_partial_score' do
+    it { is_expected.to respond_to(:data_integrity_partial_score) }
+    it { is_expected.to validate_numericality_of(:data_integrity_partial_score).is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:data_integrity_partial_score).is_less_than_or_equal_to(1) }
+  end
+
+  describe '#data_integrity_score' do
+    it { is_expected.to respond_to(:data_integrity_score) }
+    it { is_expected.to validate_numericality_of(:data_integrity_score).is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:data_integrity_score).is_less_than_or_equal_to(1) }
   end
 
   describe '#default_currency' do

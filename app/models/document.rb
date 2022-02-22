@@ -33,6 +33,7 @@ class Document < ApplicationRecord
   include AASM
   include Lockable
   include RememberStateTransitions
+  include Scoreable::Document
 
   CATEGORIES = %i[
     bank_documents

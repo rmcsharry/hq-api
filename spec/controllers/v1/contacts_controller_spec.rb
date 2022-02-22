@@ -584,6 +584,88 @@ RSpec.describe CONTACTS_ENDPOINT, type: :request do
         end
       end
     end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "dataIntegrityScoreMin": min }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person, data_integrity_score: 0.95) }
+
+      describe 'min (with no max)' do
+        # min value correspond to the range set in the factory
+        let(:min) { 95 }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "dataIntegrityScoreMax": max }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
+
+      describe 'max (with no min)' do
+        # max value correspond to the range set in the factory
+        let(:max) { 10 }
+
+        it 'finds one contact' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 1
+        end
+      end
+    end
+
+    context 'filter by data integrity score' do
+      subject do
+        get(
+          CONTACTS_ENDPOINT,
+          params: {
+            filter: { "dataIntegrityScoreMin": min, "dataIntegrityScoreMax": max }
+          },
+          headers: auth_headers
+        )
+      end
+
+      let(:contact) { create(:contact_person, data_integrity_score: 0.1) }
+
+      describe 'min and max' do
+        # min max values correspond to the range set in the factory
+        let(:min) { 20 }
+        let(:max) { 80 }
+
+        it 'finds ten contacts' do
+          subject
+          expect(response).to have_http_status(200)
+          body = JSON.parse(response.body)
+          expect(body.keys).to include 'data', 'meta', 'links'
+          expect(body['meta']['record-count']).to eq 10
+        end
+      end
+    end
   end
 
   describe 'GET /v1/contacts/<contact_id>/versions' do
